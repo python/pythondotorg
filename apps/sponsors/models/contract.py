@@ -266,3 +266,15 @@ class Contract(models.Model):
         if commit:
             self.sponsorship.save()
             self.save()
+
+    def redraft(self, commit=True):
+        """Return a nullified contract to draft, clearing stale finalized documents."""
+        if self.DRAFT not in self.next_status:
+            msg = f"Can't re-draft a {self.get_status_display()} contract."
+            raise InvalidStatusError(msg)
+
+        self.status = self.DRAFT
+        self.document = ""
+        self.document_docx = ""
+        if commit:
+            self.save()

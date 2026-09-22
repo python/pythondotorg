@@ -27,7 +27,7 @@
         <!-- Step 1: Generate -->
         <div class="manage-fieldset" style="margin-bottom:24px;">
             <legend>Step 1: Generate Contract</legend>
-            {% if contract.document %}
+            {% if contract.document and not contract.is_draft %}
             <div class="manage-alert manage-alert-success">
                 Contract has been generated.
                 <a href="{{ contract.document.url }}" target="_blank" rel="noopener noreferrer" style="margin-left:8px;font-weight:600;">Download PDF</a>
@@ -35,7 +35,7 @@
                 <a href="{{ contract.document_docx.url }}" target="_blank" rel="noopener noreferrer" style="margin-left:8px;font-weight:600;">Download DOCX</a>
                 {% endif %}
             </div>
-            {% else %}
+            {% elif contract.is_draft %}
             <p style="font-size:13px;color:#555;margin:0 0 12px;">
                 Generate the contract PDF and DOCX. This finalizes the document and marks it as "Awaiting Signature".
             </p>
@@ -47,7 +47,7 @@
             {% endif %}
         </div>
 
-        {% if contract.document %}
+        {% if contract.is_draft or contract.awaiting_signature and contract.document %}
         <!-- Step 2: Send -->
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
             <!-- Send to Sponsor -->
@@ -55,6 +55,7 @@
                 <legend>Send to Sponsor</legend>
                 <p style="font-size:13px;color:#555;margin:0 0 8px;">
                     Send the contract directly to the sponsor's contacts:
+                    {% if contract.is_draft %}Sending generates fresh PDF and DOCX files from the current terms.{% endif %}
                 </p>
                 <div style="margin-bottom:12px;">
                     {% for email in sponsor_emails %}

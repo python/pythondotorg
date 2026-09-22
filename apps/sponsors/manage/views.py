@@ -8,6 +8,7 @@ import csv
 import datetime
 import io
 import zipfile
+from smtplib import SMTPException
 from tempfile import NamedTemporaryFile
 
 from django.conf import settings
@@ -1059,19 +1060,11 @@ class SponsorshipApproveSignedView(SponsorshipAdminRequiredMixin, View):
             kwargs = form.cleaned_data
             kwargs["request"] = request
             try:
-                # Delete existing draft contract if one exists (e.g. from composer)
-                try:
-                    existing_contract = sp.contract
-                    if existing_contract.is_draft:
-                        existing_contract.delete()
-                except Contract.DoesNotExist:
-                    pass
-                # Approve the sponsorship and create a draft contract
-                use_case = use_cases.ApproveSponsorshipApplicationUseCase.build()
-                sp = use_case.execute(sp, **kwargs)
-                # Execute it with the uploaded signed contract
-                use_case = use_cases.ExecuteExistingContractUseCase.build()
-                use_case.execute(sp.contract, kwargs["signed_contract"], request=request)
+                with transaction.atomic():
+                    use_case = use_cases.ApproveSponsorshipApplicationUseCase.build()
+                    sp = use_case.execute(sp, **kwargs)
+                    use_case = use_cases.ExecuteExistingContractUseCase.build()
+                    use_case.execute(sp.contract, kwargs["signed_contract"], request=request)
                 messages.success(request, f'Sponsorship for "{sp.sponsor.name}" approved with signed contract.')
             except InvalidStatusError as e:
                 messages.error(request, str(e))
@@ -1238,6 +1231,16 @@ class SponsorshipEditView(SponsorshipAdminRequiredMixin, UpdateView):
     def get_queryset(self):
         """Return sponsorships with related sponsor and package."""
         return Sponsorship.objects.select_related("sponsor", "package")
+
+    @transaction.atomic
+    def post(self, request, *args, **kwargs):
+        """Check editability on the locked row before binding and saving changes."""
+        self.object = get_object_or_404(self.get_queryset().select_for_update(of=("self",)), pk=kwargs["pk"])
+        if not self.object.open_for_editing:
+            messages.error(request, "This sponsorship is locked and cannot be edited.")
+            return redirect(reverse("manage_sponsorship_detail", args=[self.object.pk]))
+        form = self.get_form()
+        return self.form_valid(form) if form.is_valid() else self.form_invalid(form)
 
     def get_success_url(self):
         """Return URL to sponsorship detail after update."""
@@ -1410,28 +1413,97 @@ class ContractSendView(SponsorshipAdminRequiredMixin, View):
         return redirect(reverse("manage_contract_send", args=[sp.pk]))
 
     @staticmethod
+    def _render_current_terms(contract):
+        """Render both formats, returning (None, None) if either fails."""
+        from apps.sponsors.contracts import render_contract_to_docx_file, render_contract_to_pdf_file
+
+        try:
+            pdf_bytes = render_contract_to_pdf_file(contract)
+            docx_bytes = render_contract_to_docx_file(contract)
+        except (OSError, RuntimeError, ImportError):
+            return None, None
+        if not pdf_bytes or not docx_bytes:
+            return None, None
+        return pdf_bytes, docx_bytes
+
+    @staticmethod
     def _handle_send_sponsor(request, sp, contract):
+        recipient_list = sp.verified_emails
+        if not recipient_list:
+            messages.error(request, "No verified sponsor emails to send to.")
+            return redirect(reverse("manage_contract_send", args=[sp.pk]))
+
+        try:
+            ContractSendView._finalize_and_notify_sponsor(sp.pk, contract.pk, request)
+        except InvalidStatusError as exc:
+            messages.error(request, str(exc))
+            return redirect(reverse("manage_contract_send", args=[sp.pk]))
+        except (SMTPException, OSError):
+            messages.error(request, "The contract could not be sent. Please try again.")
+            return redirect(reverse("manage_contract_send", args=[sp.pk]))
+
+        messages.success(request, f"Contract sent to sponsor ({', '.join(recipient_list)}).")
+        return redirect(reverse("manage_sponsorship_detail", args=[sp.pk]))
+
+    @staticmethod
+    @transaction.atomic
+    def _finalize_and_notify_sponsor(sp_pk, contract_pk, request):
+        """Send current documents; roll back database changes on delivery failure."""
         from apps.sponsors.notifications import ContractNotificationToSponsors
 
-        if not contract.document:
-            messages.error(request, "Generate the contract first before sending to sponsor.")
-            return redirect(reverse("manage_contract_send", args=[sp.pk]))
-        notification = ContractNotificationToSponsors()
-        notification.notify(contract=contract, request=request)
-        recipient_list = ", ".join(sp.verified_emails)
-        messages.success(request, f"Contract sent to sponsor ({recipient_list}).")
-        return redirect(reverse("manage_sponsorship_detail", args=[sp.pk]))
+        Sponsorship.objects.select_for_update().get(pk=sp_pk)
+        contract = get_object_or_404(Contract.objects.select_for_update(), pk=contract_pk, sponsorship_id=sp_pk)
+
+        if contract.status not in (Contract.DRAFT, Contract.AWAITING_SIGNATURE):
+            msg = f"Can't send a {contract.get_status_display()} contract."
+            raise InvalidStatusError(msg)
+
+        if contract.is_draft:
+            pdf_bytes, docx_bytes = ContractSendView._render_current_terms(contract)
+            if not pdf_bytes:
+                msg = "Failed to generate the contract documents. Nothing was sent."
+                raise InvalidStatusError(msg)
+            contract.set_final_version(pdf_bytes, docx_bytes)
+        elif not contract.document:
+            msg = "Generate the contract first before sending to sponsor."
+            raise InvalidStatusError(msg)
+
+        sent_count = ContractNotificationToSponsors().notify(contract=contract, request=request)
+        if sent_count != 1:
+            msg = "The email backend did not send the contract."
+            raise SMTPException(msg)
 
     @staticmethod
     def _handle_send_internal(request, sp, contract):
         from django.core.mail import EmailMessage
 
-        from apps.sponsors.contracts import render_contract_to_docx_file, render_contract_to_pdf_file
-
         internal_email = request.POST.get("internal_email", "").strip()
         if not internal_email:
             messages.error(request, "Please enter an email address.")
             return redirect(reverse("manage_contract_send", args=[sp.pk]))
+
+        if contract.is_draft:
+            # Draft terms can change any time, so always render fresh.
+            pdf_content, docx_content = ContractSendView._render_current_terms(contract)
+            if not pdf_content:
+                messages.error(request, "Failed to generate the contract documents. Nothing was sent.")
+                return redirect(reverse("manage_contract_send", args=[sp.pk]))
+        elif not contract.document:
+            messages.error(request, "No contract document available to send.")
+            return redirect(reverse("manage_contract_send", args=[sp.pk]))
+        else:
+            # Finalized contracts are immutable: reuse the stored snapshot
+            # instead of gratuitously re-rendering it.
+            try:
+                with contract.document.open("rb") as f:
+                    pdf_content = f.read()
+                docx_content = None
+                if contract.document_docx:
+                    with contract.document_docx.open("rb") as f:
+                        docx_content = f.read()
+            except FileNotFoundError:
+                messages.error(request, "The stored contract document is missing.")
+                return redirect(reverse("manage_contract_send", args=[sp.pk]))
 
         email = EmailMessage(
             subject=f"[Internal Review] Contract for {sp.sponsor.name}",
@@ -1439,31 +1511,7 @@ class ContractSendView(SponsorshipAdminRequiredMixin, View):
             from_email=settings.SPONSORSHIP_NOTIFICATION_FROM_EMAIL,
             to=[internal_email],
         )
-
-        # Use stored files if available, otherwise render live
-        pdf_content = None
-        if contract.document:
-            try:
-                with contract.document.open("rb") as f:
-                    pdf_content = f.read()
-            except FileNotFoundError:
-                pass
-        if not pdf_content:
-            pdf_content = render_contract_to_pdf_file(contract)
-
-        if pdf_content:
-            email.attach("Contract.pdf", pdf_content, "application/pdf")
-
-        docx_content = None
-        if contract.document_docx:
-            try:
-                with contract.document_docx.open("rb") as f:
-                    docx_content = f.read()
-            except FileNotFoundError:
-                pass
-        if not docx_content:
-            docx_content = render_contract_to_docx_file(contract)
-
+        email.attach("Contract.pdf", pdf_content, "application/pdf")
         if docx_content:
             email.attach(
                 "Contract.docx",
@@ -1471,7 +1519,14 @@ class ContractSendView(SponsorshipAdminRequiredMixin, View):
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
             )
 
-        email.send()
+        try:
+            sent = email.send()
+        except (SMTPException, OSError):
+            sent = 0
+        if sent != 1:
+            messages.error(request, "The contract could not be sent. Please try again.")
+            return redirect(reverse("manage_contract_send", args=[sp.pk]))
+
         messages.success(request, f"Contract sent to {internal_email} for internal review.")
         return redirect(reverse("manage_sponsorship_detail", args=[sp.pk]))
 
@@ -1537,25 +1592,30 @@ class ContractRedraftView(SponsorshipAdminRequiredMixin, View):
         sp = get_object_or_404(Sponsorship, pk=pk)
         try:
             contract = sp.contract
-            if Contract.DRAFT not in contract.next_status:
-                messages.error(request, f"Cannot re-draft a {contract.get_status_display()} contract.")
-            else:
-                contract.status = Contract.DRAFT
-                contract.save()
-                messages.success(request, f"Contract re-drafted (Revision {contract.revision}).")
+            contract.redraft()
+            messages.success(request, f"Contract re-drafted (Revision {contract.revision}).")
         except Contract.DoesNotExist:
             messages.error(request, "No contract exists.")
+        except InvalidStatusError as e:
+            messages.error(request, str(e))
         return redirect(reverse("manage_sponsorship_detail", args=[pk]))
 
 
 class ContractRegenerateView(SponsorshipAdminRequiredMixin, View):
     """Detach the current contract (preserving it as outdated) and create a new draft."""
 
+    @transaction.atomic
     def post(self, request, pk):
         """Regenerate the contract for a sponsorship."""
-        sp = get_object_or_404(Sponsorship, pk=pk)
+        sp = get_object_or_404(Sponsorship.objects.select_for_update(), pk=pk)
+        if not sp.open_for_editing:
+            messages.error(request, "This sponsorship is locked and cannot be edited.")
+            return redirect(reverse("manage_sponsorship_detail", args=[pk]))
         try:
             old_contract = sp.contract
+            if old_contract.status == Contract.EXECUTED:
+                messages.error(request, "An executed contract cannot be regenerated.")
+                return redirect(reverse("manage_sponsorship_detail", args=[pk]))
             old_contract.sponsorship = None
             old_contract.status = Contract.OUTDATED
             old_contract.save()
@@ -1564,7 +1624,7 @@ class ContractRegenerateView(SponsorshipAdminRequiredMixin, View):
         new_contract = Contract.new(sp)
         # Set revision to count of historical contracts for this sponsor
         historical_count = Contract.objects.filter(
-            sponsor_info__contains=sp.sponsor.name, sponsorship__isnull=True, status=Contract.OUTDATED
+            sponsor_info__startswith=sp.sponsor.name + ",", sponsorship__isnull=True, status=Contract.OUTDATED
         ).count()
         new_contract.revision = historical_count
         new_contract.save()
@@ -2692,7 +2752,11 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
         if not contract_id or not sponsorship_id:
             return None, None, redirect(reverse("manage_composer") + "?step=1")
 
-        contract = Contract.objects.filter(pk=contract_id).select_related("sponsorship__sponsor").first()
+        contract = (
+            Contract.objects.filter(pk=contract_id, sponsorship_id=sponsorship_id)
+            .select_related("sponsorship__sponsor")
+            .first()
+        )
         if not contract:
             return None, None, redirect(reverse("manage_composer") + "?step=1")
 
@@ -2722,6 +2786,7 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
         messages.error(request, "Unknown action.")
         return redirect(reverse("manage_composer") + "?step=6")
 
+    @transaction.atomic
     def _handle_save_contract(self, request, data, contract, sponsor):
         """Save edited contract fields.
 
@@ -2729,6 +2794,11 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
         Rebuilds sponsor_contact from the sponsor's primary contact.
         Falls back to the hidden field values if structured data is missing.
         """
+        sponsorship = get_object_or_404(Sponsorship.objects.select_for_update(), pk=data["sponsorship_id"])
+        contract = get_object_or_404(Contract.objects.select_for_update(), pk=contract.pk, sponsorship=sponsorship)
+        if not sponsorship.open_for_editing or not contract.is_draft:
+            messages.error(request, "This contract cannot be edited in its current state.")
+            return redirect(reverse("manage_sponsorship_detail", args=[sponsorship.pk]))
         # Rebuild sponsor_info from structured fields
         si_description = request.POST.get("si_description", "").strip()
         if si_description:
@@ -2743,8 +2813,7 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
         si_phone = request.POST.get("si_phone", "").strip()
         sponsor.primary_phone = si_phone or sponsor.primary_phone
         si_address1 = request.POST.get("si_address1", "").strip()
-        if si_address1:
-            sponsor.mailing_address_line_1 = si_address1
+        sponsor.mailing_address_line_1 = si_address1 or sponsor.mailing_address_line_1
         sponsor.mailing_address_line_2 = request.POST.get("si_address2", "").strip()
         si_city = request.POST.get("si_city", "").strip()
         if si_city:
@@ -2841,8 +2910,29 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
             )
 
+    @transaction.atomic
+    def _finalize_and_send_contract(self, contract, sponsor, email):
+        """Keep finalization retryable when rendering or delivery fails."""
+        # Match approval's lock order and reload the current contract state.
+        Sponsorship.objects.select_for_update().get(pk=contract.sponsorship_id)
+        contract = get_object_or_404(
+            Contract.objects.select_for_update(), pk=contract.pk, sponsorship_id=contract.sponsorship_id
+        )
+        if not contract.is_draft:
+            msg = f"Can't send a {contract.get_status_display()} contract."
+            raise InvalidStatusError(msg)
+        pdf_bytes, docx_bytes = self._render_contract_files(contract)
+        if not pdf_bytes:
+            return False
+        self._attach_contract_files(email, sponsor, pdf_bytes, docx_bytes)
+        contract.set_final_version(pdf_bytes, docx_bytes)
+        if email.send() != 1:
+            msg = "The email backend did not send the contract."
+            raise SMTPException(msg)
+        return True
+
     def _handle_send_proposal_with_contract(self, request, data, contract, sponsor):
-        """Generate final contract files, attach to email, and send to sponsor."""
+        """Finalize and send together so a delivery failure leaves a retryable draft."""
         from django.core.mail import EmailMessage
 
         emails = self._collect_recipients(request, sponsor)
@@ -2857,18 +2947,6 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
             request.POST.get("email_body", "").strip()
             or f"Please find the attached sponsorship agreement for {sponsor.name}."
         )
-
-        pdf_bytes, docx_bytes = self._render_contract_files(contract)
-        if not pdf_bytes and not docx_bytes:
-            messages.error(request, "Failed to generate contract files. Check that pypandoc is installed.")
-            return redirect(reverse("manage_composer") + "?step=6")
-
-        # Finalize the contract — requires at least PDF to persist
-        if pdf_bytes:
-            contract.set_final_version(pdf_bytes, docx_bytes)
-        else:
-            messages.error(request, "PDF generation failed. Contract was not finalized. Only DOCX will be attached.")
-
         email = EmailMessage(
             subject=subject,
             body=body,
@@ -2881,9 +2959,17 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
             email.cc = [cc]
         if bcc:
             email.bcc = [bcc]
-
-        self._attach_contract_files(email, sponsor, pdf_bytes, docx_bytes)
-        email.send()
+        try:
+            sent = self._finalize_and_send_contract(contract, sponsor, email)
+        except InvalidStatusError as exc:
+            messages.error(request, str(exc))
+            return redirect(reverse("manage_composer") + "?step=6")
+        except (SMTPException, OSError):
+            messages.error(request, "The contract could not be sent. Please try again.")
+            return redirect(reverse("manage_composer") + "?step=6")
+        if not sent:
+            messages.error(request, "PDF generation failed. The contract was not sent.")
+            return redirect(reverse("manage_composer") + "?step=6")
 
         request.session.pop("composer", None)
         messages.success(request, f"Contract sent to {', '.join(emails)}.")

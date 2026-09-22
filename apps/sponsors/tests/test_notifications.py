@@ -5,8 +5,9 @@ from django.conf import settings
 from django.contrib.admin.models import ADDITION, CHANGE, LogEntry
 from django.contrib.contenttypes.models import ContentType
 from django.core import mail
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.template.loader import render_to_string
-from django.test import RequestFactory, TestCase
+from django.test import RequestFactory, TestCase, override_settings
 from django.utils import timezone
 from model_bakery import baker
 
@@ -187,6 +188,7 @@ class ContractNotificationToPSFTests(TestCase):
         self.assertEqual(content, expected_content)
 
 
+@override_settings(STORAGES={"default": {"BACKEND": "django.core.files.storage.InMemoryStorage"}})
 class ContractNotificationToSponsorsTests(TestCase):
     def setUp(self):
         self.notification = notifications.ContractNotificationToSponsors()
@@ -200,8 +202,8 @@ class ContractNotificationToSponsorsTests(TestCase):
         self.contract = baker.make_recipe(
             "apps.sponsors.tests.awaiting_signature_contract",
             sponsorship=sponsorship,
-            _fill_optional=["document", "document_docx"],
-            _create_files=True,
+            document=SimpleUploadedFile("contract.pdf", b"%PDF-1.7 PDF contract"),
+            document_docx=SimpleUploadedFile("contract.docx", b"PK\x03\x04 DOCX contract"),
         )
         self.subject_template = "sponsors/email/sponsor_contract_subject.txt"
         self.content_template = "sponsors/email/sponsor_contract.txt"
@@ -251,7 +253,7 @@ class ContractNotificationToSponsorsTests(TestCase):
         self.assertEqual(len(email.attachments), 1)
         name, content, mime = email.attachments[0]
         self.assertEqual(name, "Contract.docx")
-        self.assertEqual(mime, "application/msword")
+        self.assertEqual(mime, "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
         self.assertEqual(content, expected_content)
 
 

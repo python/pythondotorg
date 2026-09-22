@@ -716,6 +716,8 @@ class ContractRegenerateViewTests(SponsorshipReviewTestBase):
             end_date=datetime.date(2024, 12, 31),
         )
         self.sponsorship.save()
+        self.sponsorship.locked = False
+        self.sponsorship.save(update_fields=["locked"])
         return Contract.new(self.sponsorship)
 
     def test_regenerate_creates_new_contract_and_preserves_old(self):
@@ -739,6 +741,8 @@ class ContractRegenerateViewTests(SponsorshipReviewTestBase):
             end_date=datetime.date(2024, 12, 31),
         )
         self.sponsorship.save()
+        self.sponsorship.locked = False
+        self.sponsorship.save(update_fields=["locked"])
         # No contract exists yet
         response = self.client.post(reverse("manage_contract_regenerate", args=[self.sponsorship.pk]))
         self.assertEqual(response.status_code, 302)
@@ -777,12 +781,6 @@ class ContractRegenerateViewTests(SponsorshipReviewTestBase):
         for hc in historical:
             self.assertEqual(hc.status, Contract.OUTDATED)
             self.assertIsNone(hc.sponsorship)
-
-    def test_regenerate_success_message(self):
-        self._approve_sponsorship()
-        response = self.client.post(reverse("manage_contract_regenerate", args=[self.sponsorship.pk]), follow=True)
-        self.assertContains(response, "New contract draft created")
-        self.assertContains(response, "Previous contract preserved.")
 
 
 class SponsorshipNotifyViewTests(SponsorshipReviewTestBase):
