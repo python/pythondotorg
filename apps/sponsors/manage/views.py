@@ -1,6 +1,6 @@
 """Views for the sponsor management UI.
 
-Locked down to users in the 'Sponsorship Admin' group (or staff/superuser).
+Restricted to active Sponsorship Admin group members and active superusers.
 """
 
 import contextlib
@@ -65,16 +65,14 @@ from pydotorg.mixins import GroupRequiredMixin, LoginRequiredMixin
 
 
 class SponsorshipAdminRequiredMixin(LoginRequiredMixin, GroupRequiredMixin):
-    """Require user to be in 'Sponsorship Admin' group or be staff."""
+    """Require an active sponsorship administrator or superuser."""
 
     group_required = "Sponsorship Admin"
     raise_exception = True
 
     def check_membership(self, group):
-        """Allow staff users in addition to group members."""
-        if self.request.user.is_staff:
-            return True
-        return super().check_membership(group)
+        """Reject inactive accounts before checking the group or superuser role."""
+        return self.request.user.is_active and super().check_membership(group)
 
 
 class ManageDashboardView(SponsorshipAdminRequiredMixin, TemplateView):

@@ -6,12 +6,14 @@ import io
 from unittest import mock
 
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, Permission
+from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
-from django.test import TestCase, override_settings
+from django.test import RequestFactory, TestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
 
+from apps.sponsors.manage.views import ManageDashboardView
 from apps.sponsors.models import (
     Contract,
     LegalClause,
@@ -66,34 +68,55 @@ class SponsorManageTestBase(TestCase):
 
     def setUp(self):
         self.staff_user = get_user_model().objects.create_user("staff", "staff@example.com", "pass", is_staff=True)
+        self.staff_user.groups.add(self.group)
         self.group_user = get_user_model().objects.create_user("groupuser", "group@example.com", "pass")
         self.group_user.groups.add(self.group)
         self.anon_user = get_user_model().objects.create_user("anon", "anon@example.com", "pass")
 
 
 class AccessControlTests(SponsorManageTestBase):
-    """Test that views are properly locked down."""
+    """Only active group members and active superusers may use management views."""
 
     def test_anonymous_redirected_to_login(self):
-        self.client.logout()
         response = self.client.get(reverse("manage_dashboard"))
         self.assertEqual(response.status_code, 302)
         self.assertIn("login", response.url)
 
-    def test_non_group_user_denied(self):
-        self.client.login(username="anon", password="pass")
-        response = self.client.get(reverse("manage_dashboard"))
-        self.assertEqual(response.status_code, 403)
+    def test_non_members_denied_even_with_staff_status_and_model_permissions(self):
+        self.staff_user.groups.clear()
+        self.staff_user.user_permissions.set(Permission.objects.filter(content_type__app_label="sponsors"))
+        for user in (self.anon_user, self.staff_user):
+            with self.subTest(user=user.username):
+                self.client.force_login(user)
+                response = self.client.get(reverse("manage_dashboard"))
+                self.assertEqual(response.status_code, 403)
 
-    def test_staff_user_allowed(self):
-        self.client.login(username="staff", password="pass")
+    def test_group_member_allowed_without_staff_or_model_permissions(self):
+        self.client.force_login(self.group_user)
         response = self.client.get(reverse("manage_dashboard"))
         self.assertEqual(response.status_code, 200)
 
-    def test_group_user_allowed(self):
-        self.client.login(username="groupuser", password="pass")
+    def test_active_superuser_allowed_without_staff_or_group_membership(self):
+        user = get_user_model().objects.create_user("superuser", is_superuser=True, is_staff=False)
+        self.client.force_login(user)
         response = self.client.get(reverse("manage_dashboard"))
         self.assertEqual(response.status_code, 200)
+
+    def test_inactive_group_member_and_superuser_denied(self):
+        superuser = get_user_model().objects.create_user("superuser", is_superuser=True, is_staff=True)
+        for user in (self.group_user, superuser):
+            with self.subTest(user=user.username):
+                user.is_active = False
+                request = RequestFactory().get(reverse("manage_dashboard"))
+                request.user = user
+                with self.assertRaises(PermissionDenied):
+                    ManageDashboardView.as_view()(request)
+
+    def test_group_removal_revokes_access_in_existing_session(self):
+        self.client.force_login(self.group_user)
+        self.assertEqual(self.client.get(reverse("manage_dashboard")).status_code, 200)
+        self.group_user.groups.clear()
+        self.assertEqual(self.client.get(reverse("manage_dashboard")).status_code, 403)
 
 
 class DashboardViewTests(SponsorManageTestBase):
@@ -347,6 +370,63 @@ class SponsorshipReviewTestBase(SponsorManageTestBase):
             year=self.year,
             status=Sponsorship.APPLIED,
         )
+
+
+class CompositeActionAccessTests(SponsorshipReviewTestBase):
+    """Group access applies to mutations as well as management pages."""
+
+    def setUp(self):
+        super().setUp()
+        self.staff_user.groups.clear()
+
+    def test_reject_denies_unrelated_staff_and_allows_group_member(self):
+        url = reverse("manage_sponsorship_reject", args=[self.sponsorship.pk])
+        response = self.client.post(url, {"action": "reject_silent"})
+        self.assertEqual(response.status_code, 403)
+        self.sponsorship.refresh_from_db()
+        self.assertEqual(self.sponsorship.status, Sponsorship.APPLIED)
+
+        self.client.force_login(self.group_user)
+        response = self.client.post(url, {"action": "reject_silent"})
+        self.assertEqual(response.status_code, 302)
+        self.sponsorship.refresh_from_db()
+        self.assertEqual(self.sponsorship.status, Sponsorship.REJECTED)
+
+    def test_composer_edit_denies_unrelated_staff_and_allows_group_member(self):
+        contract = Contract.new(self.sponsorship)
+        original_description = self.sponsor.description
+        data = {"action": "save_contract", "si_description": "Updated description", "benefits_list": "- Revised terms"}
+        url = reverse("manage_composer") + "?step=6"
+        for user, expected_status in ((self.staff_user, 403), (self.group_user, 302)):
+            with self.subTest(user=user.username):
+                self.client.force_login(user)
+                session = self.client.session
+                session["composer"] = {"sponsorship_id": self.sponsorship.pk, "contract_id": contract.pk}
+                session.save()
+                response = self.client.post(url, data)
+                self.assertEqual(response.status_code, expected_status)
+                self.sponsor.refresh_from_db()
+                expected_description = original_description if expected_status == 403 else "Updated description"
+                self.assertEqual(self.sponsor.description, expected_description)
+        contract.refresh_from_db()
+        self.assertEqual(contract.benefits_list.raw, "- Revised terms")
+
+    def test_regeneration_denies_unrelated_staff_and_allows_group_member(self):
+        contract = Contract.new(self.sponsorship)
+        url = reverse("manage_contract_regenerate", args=[self.sponsorship.pk])
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 403)
+        contract.refresh_from_db()
+        self.assertEqual(contract.sponsorship_id, self.sponsorship.pk)
+        self.assertEqual(contract.status, Contract.DRAFT)
+
+        self.client.force_login(self.group_user)
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 302)
+        contract.refresh_from_db()
+        self.assertIsNone(contract.sponsorship_id)
+        self.assertEqual(contract.status, Contract.OUTDATED)
+        self.assertNotEqual(Contract.objects.get(sponsorship=self.sponsorship).pk, contract.pk)
 
 
 class SponsorshipListViewTests(SponsorshipReviewTestBase):
@@ -1580,12 +1660,12 @@ class ComposerAccessTests(SponsorManageTestBase):
         response = self.client.get(reverse("manage_composer"))
         self.assertEqual(response.status_code, 403)
 
-    def test_staff_user_allowed(self):
+    def test_staff_group_member_allowed(self):
         self.client.login(username="staff", password="pass")
         response = self.client.get(reverse("manage_composer"))
         self.assertEqual(response.status_code, 200)
 
-    def test_group_user_allowed(self):
+    def test_group_member_allowed_without_model_permissions(self):
         self.client.login(username="groupuser", password="pass")
         response = self.client.get(reverse("manage_composer"))
         self.assertEqual(response.status_code, 200)

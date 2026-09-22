@@ -1,1 +1,1 @@
-"""Sponsor management UI — locked down to Sponsorship Admin group and staff."""
+"""Sponsor management UI for active Sponsorship Admin members and superusers."""
