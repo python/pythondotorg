@@ -152,7 +152,7 @@
 </div>
 {% endif %}
 
-{{ chart_data_json|json_script:"chart-data" }}
+{{ chart_data|json_script:"chart-data" }}
 <script>
 (function() {
     var D = JSON.parse(document.getElementById('chart-data').textContent);

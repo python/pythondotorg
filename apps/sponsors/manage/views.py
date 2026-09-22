@@ -562,22 +562,6 @@ class FinancesView(SponsorshipAdminRequiredMixin, TemplateView):
 
     template_name = "sponsors/manage/finances.html"
 
-    def _year_summary(self, year):
-        """Return revenue stats for a single year."""
-        base = Sponsorship.objects.filter(year=year)
-        committed = base.filter(status__in=[Sponsorship.APPROVED, Sponsorship.FINALIZED])
-        total = committed.aggregate(total=Sum("sponsorship_fee"))["total"] or 0
-        finalized = base.filter(status=Sponsorship.FINALIZED).aggregate(total=Sum("sponsorship_fee"))["total"] or 0
-        count = committed.count()
-        return {
-            "year": year,
-            "total": total,
-            "finalized": finalized,
-            "pending": total - finalized,
-            "count": count,
-            "avg": total // count if count else 0,
-        }
-
     def _package_breakdown(self, year_qs):
         """Return revenue grouped by package tier."""
         rows = (
@@ -592,10 +576,23 @@ class FinancesView(SponsorshipAdminRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         """Return context with financial data for charts."""
         context = super().get_context_data(**kwargs)
-        import json
 
-        all_years = Sponsorship.objects.values_list("year", flat=True).distinct().order_by("year")
-        all_years = [y for y in all_years if y]
+        committed = Q(status__in=[Sponsorship.APPROVED, Sponsorship.FINALIZED])
+        yoy = list(
+            Sponsorship.objects.filter(year__isnull=False)
+            .exclude(year=0)
+            .values("year")
+            .annotate(
+                total=Sum("sponsorship_fee", filter=committed, default=0),
+                finalized=Sum("sponsorship_fee", filter=Q(status=Sponsorship.FINALIZED), default=0),
+                count=Count("id", filter=committed),
+            )
+            .order_by("year")
+        )
+        for summary in yoy:
+            summary["pending"] = summary["total"] - summary["finalized"]
+            summary["avg"] = summary["total"] // summary["count"] if summary["count"] else 0
+        all_years = [summary["year"] for summary in yoy]
 
         selected_year = self.request.GET.get("year")
         if selected_year:
@@ -603,40 +600,43 @@ class FinancesView(SponsorshipAdminRequiredMixin, TemplateView):
         elif all_years:
             selected_year = all_years[-1]
 
-        # YoY data (chronological for charts)
-        yoy = [self._year_summary(y) for y in all_years]
-
         # Selected year detail
         year_qs = Sponsorship.objects.filter(
             year=selected_year, status__in=[Sponsorship.APPROVED, Sponsorship.FINALIZED]
         )
-        total_revenue = year_qs.aggregate(total=Sum("sponsorship_fee"))["total"] or 0
-        total_count = year_qs.count()
-        finalized_revenue = (
-            year_qs.filter(status=Sponsorship.FINALIZED).aggregate(total=Sum("sponsorship_fee"))["total"] or 0
+        all_year = Sponsorship.objects.filter(year=selected_year)
+        totals = all_year.aggregate(
+            total=Sum("sponsorship_fee", filter=committed, default=0),
+            count=Count("id", filter=committed),
+            finalized=Sum("sponsorship_fee", filter=Q(status=Sponsorship.FINALIZED), default=0),
+            approved_revenue=Sum("sponsorship_fee", filter=Q(status=Sponsorship.APPROVED), default=0),
+            applied=Count("id", filter=Q(status=Sponsorship.APPLIED)),
+            approved=Count("id", filter=Q(status=Sponsorship.APPROVED)),
+            finalized_count=Count("id", filter=Q(status=Sponsorship.FINALIZED)),
+            rejected=Count("id", filter=Q(status=Sponsorship.REJECTED)),
         )
-        approved_revenue = (
-            year_qs.filter(status=Sponsorship.APPROVED).aggregate(total=Sum("sponsorship_fee"))["total"] or 0
-        )
+        total_revenue = totals["total"]
+        total_count = totals["count"]
+        finalized_revenue = totals["finalized"]
+        approved_revenue = totals["approved_revenue"]
 
         # Package breakdown
         by_package = self._package_breakdown(year_qs)
 
         # Status breakdown (all statuses for selected year)
-        all_year = Sponsorship.objects.filter(year=selected_year)
         status_counts = {
-            "applied": all_year.filter(status=Sponsorship.APPLIED).count(),
-            "approved": all_year.filter(status=Sponsorship.APPROVED).count(),
-            "finalized": all_year.filter(status=Sponsorship.FINALIZED).count(),
-            "rejected": all_year.filter(status=Sponsorship.REJECTED).count(),
+            "applied": totals["applied"],
+            "approved": totals["approved"],
+            "finalized": totals["finalized_count"],
+            "rejected": totals["rejected"],
         }
 
         # Per-sponsorship detail table
         sponsorships = (
-            year_qs.select_related("sponsor", "package").prefetch_related("benefits").order_by("-sponsorship_fee")
+            year_qs.select_related("sponsor", "package")
+            .annotate(internal_total=Sum("benefits__benefit_internal_value", default=0))
+            .order_by("-sponsorship_fee")
         )
-        for sp in sponsorships:
-            sp.internal_total = sp.estimated_cost
 
         # JSON data for Chart.js
         chart_data = {
@@ -671,7 +671,7 @@ class FinancesView(SponsorshipAdminRequiredMixin, TemplateView):
                 "yoy": yoy,
                 "status_counts": status_counts,
                 "sponsorships": sponsorships,
-                "chart_data_json": json.dumps(chart_data),
+                "chart_data": chart_data,
             }
         )
         return context
@@ -883,18 +883,11 @@ class SponsorshipListView(SponsorshipAdminRequiredMixin, ListView):
 
     def get_queryset(self):
         """Return sponsorships filtered by status, year, and search term."""
-        qs = Sponsorship.objects.select_related("sponsor", "package").order_by("-applied_on")
-
         self.filter_status = self.request.GET.get("status", "")
         self.filter_year = self.request.GET.get("year", "")
         self.filter_search = self.request.GET.get("search", "")
 
-        qs = qs.filter(status=self.filter_status) if self.filter_status else qs.exclude(status=Sponsorship.REJECTED)
-        if self.filter_year:
-            qs = qs.filter(year=int(self.filter_year))
-        if self.filter_search:
-            qs = qs.filter(Q(sponsor__name__icontains=self.filter_search))
-        return qs
+        return _filtered_sponsorship_queryset(self.request)
 
     def get_context_data(self, **kwargs):
         """Return context with filter form and status counts."""
@@ -905,10 +898,11 @@ class SponsorshipListView(SponsorshipAdminRequiredMixin, ListView):
         context["filter_search"] = self.filter_search
         context["today"] = tz.now().date()
         # Individual count vars for template
-        context["count_applied"] = Sponsorship.objects.filter(status=Sponsorship.APPLIED).count()
-        context["count_approved"] = Sponsorship.objects.filter(status=Sponsorship.APPROVED).count()
-        context["count_finalized"] = Sponsorship.objects.filter(status=Sponsorship.FINALIZED).count()
-        context["count_rejected"] = Sponsorship.objects.filter(status=Sponsorship.REJECTED).count()
+        status_counts = dict(Sponsorship.objects.values_list("status").annotate(count=Count("id")))
+        context["count_applied"] = status_counts.get(Sponsorship.APPLIED, 0)
+        context["count_approved"] = status_counts.get(Sponsorship.APPROVED, 0)
+        context["count_finalized"] = status_counts.get(Sponsorship.FINALIZED, 0)
+        context["count_rejected"] = status_counts.get(Sponsorship.REJECTED, 0)
         return context
 
 
