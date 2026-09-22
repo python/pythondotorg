@@ -1,6 +1,8 @@
 # development
 DATABASE_URL=postgres:///pythondotorg
 SEARCHBOX_SSL_URL=http://127.0.0.1:9200/
+# Comma-separated exact origins for things like CF tunnels and zrok
+CSRF_TRUSTED_ORIGINS=
 
 # production required
 SECRET_KEY=
