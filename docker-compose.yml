@@ -2,15 +2,17 @@ services:
   postgres:
     image: postgres:15.3-bullseye
     ports:
-      - "5433:5432"
+      - "127.0.0.1:5433:5432"
     environment:
       POSTGRES_USER: pythondotorg
       POSTGRES_PASSWORD: pythondotorg
       POSTGRES_DB: pythondotorg
       POSTGRES_HOST_AUTH_METHOD: trust  # never do this in production!
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "pythondotorg", "-d", "pythondotorg"]
+      # The entrypoint's temporary initialization server only accepts Unix sockets.
+      test: ["CMD", "pg_isready", "-h", "127.0.0.1", "-U", "pythondotorg", "-d", "pythondotorg"]
       interval: 1s
+      start_period: 30s
 
   redis:
     image: redis:7-bullseye
@@ -33,7 +35,7 @@ services:
     volumes:
       - .:/code
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     environment:
       DATABASE_URL: postgresql://pythondotorg:pythondotorg@postgres:5432/pythondotorg
       DJANGO_SETTINGS_MODULE: pydotorg.settings.local
