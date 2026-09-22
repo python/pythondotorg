@@ -1,0 +1,83 @@
+{% extends "sponsors/manage/_base.html" %}
+
+{% block page_title %}Legal Clauses | Sponsor Management{% endblock %}
+
+{% with active_tab="more" %}
+
+{% block manage_breadcrumbs %}
+<div class="manage-crumbs">
+    <a href="{% url 'manage_dashboard' %}">Dashboard</a>
+    <span class="sep">/</span>
+    <span class="current">Legal Clauses</span>
+</div>
+{% endblock %}
+
+{% block topbar_actions %}
+    <a href="{% url 'manage_legal_clause_create' %}" class="btn btn-sm btn-primary">+ New Clause</a>
+{% endblock %}
+
+{% block manage_content %}
+    {% if clauses %}
+    <table class="manage-table">
+        <thead>
+            <tr>
+                <th style="width:40px;text-align:center;">Order</th>
+                <th>Internal Name</th>
+                <th style="width:40%;">Clause Text</th>
+                <th style="text-align:center;">Benefits</th>
+                <th style="width:80px;text-align:center;">Move</th>
+                <th style="width:80px;text-align:right;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for clause in clauses %}
+            <tr>
+                <td style="text-align:center;color:#999;font-size:12px;">{{ clause.order }}</td>
+                <td>
+                    <a href="{% url 'manage_legal_clause_edit' clause.pk %}" style="font-weight:600;color:#1a1a2e;text-decoration:none;">
+                        {{ clause.internal_name }}
+                    </a>
+                </td>
+                <td style="font-size:12px;color:#555;max-width:400px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                    {{ clause.clause|truncatechars:120 }}
+                </td>
+                <td style="text-align:center;">
+                    {% with bc=clause.benefits.count %}
+                    {% if bc %}<span class="tag tag-blue">{{ bc }}</span>{% else %}<span style="color:#ccc;">&mdash;</span>{% endif %}
+                    {% endwith %}
+                </td>
+                <td style="text-align:center;">
+                    <div style="display:flex;gap:2px;justify-content:center;">
+                        {% if not forloop.first %}
+                        <form method="post" action="{% url 'manage_legal_clause_move' clause.pk %}" style="display:inline;">
+                            {% csrf_token %}
+                            <input type="hidden" name="direction" value="up">
+                            <button type="submit" class="date-quick-btn" title="Move up" style="padding:2px 6px;font-size:12px;">&#9650;</button>
+                        </form>
+                        {% endif %}
+                        {% if not forloop.last %}
+                        <form method="post" action="{% url 'manage_legal_clause_move' clause.pk %}" style="display:inline;">
+                            {% csrf_token %}
+                            <input type="hidden" name="direction" value="down">
+                            <button type="submit" class="date-quick-btn" title="Move down" style="padding:2px 6px;font-size:12px;">&#9660;</button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </td>
+                <td style="text-align:right;">
+                    <a href="{% url 'manage_legal_clause_edit' clause.pk %}" style="font-size:12px;color:#3776ab;text-decoration:none;">Edit</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">&#167;</div>
+        <p>No legal clauses defined yet.</p>
+        <a href="{% url 'manage_legal_clause_create' %}" class="btn btn-primary">Create First Clause</a>
+    </div>
+    {% endif %}
+{% endblock %}
+
+{% endwith %}
