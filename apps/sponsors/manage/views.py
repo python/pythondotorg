@@ -8,8 +8,9 @@ import csv
 import datetime
 import io
 import zipfile
+from pathlib import Path
+from shutil import copyfileobj
 from smtplib import SMTPException
-from tempfile import NamedTemporaryFile
 
 from django.conf import settings
 from django.contrib import messages
@@ -19,6 +20,7 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone as tz
+from django.utils.text import slugify
 from django.views import View
 from django.views.generic import CreateView, DeleteView, DetailView, FormView, ListView, TemplateView, UpdateView
 
@@ -62,6 +64,7 @@ from apps.sponsors.models import (
     SponsorshipPackage,
     SponsorshipProgram,
 )
+from apps.sponsors.models.enums import AssetsRelatedTo
 from pydotorg.mixins import GroupRequiredMixin, LoginRequiredMixin
 
 
@@ -1072,35 +1075,51 @@ class SponsorshipApproveSignedView(SponsorshipAdminRequiredMixin, View):
         return render(request, "sponsors/manage/sponsorship_approve_signed.html", context)
 
 
+def _write_sponsorship_assets(zip_file, sponsorship):
+    """Write submitted required assets, resolving each asset against its owner."""
+    required_names = {}
+    for feature in BenefitFeature.objects.required_assets().from_sponsorship(sponsorship):
+        required_names.setdefault(feature.related_to, set()).add(feature.internal_name)
+
+    sponsor_name = sponsorship.sponsor.slug if sponsorship.sponsor else "unknown"
+    directory = sponsor_name or f"sponsor-{sponsorship.sponsor_id}"
+    written = 0
+    for related_to, owner in (
+        (AssetsRelatedTo.SPONSOR.value, sponsorship.sponsor),
+        (AssetsRelatedTo.SPONSORSHIP.value, sponsorship),
+    ):
+        if owner is None:
+            continue
+        for asset in owner.assets.filter(internal_name__in=required_names.get(related_to, ())):
+            if not asset.has_value:
+                continue
+            name = slugify(asset.internal_name) or f"asset-{asset.pk}"
+            value = asset.value
+            if asset.is_file:
+                extension = slugify(Path(value.name).suffix)
+                filename = f"{name}.{extension}" if extension else name
+                with value.open("rb") as source, zip_file.open(f"{directory}/{filename}", "w") as destination:
+                    copyfileobj(source, destination)
+            else:
+                zip_file.writestr(f"{directory}/{name}.txt", value)
+            written += 1
+    return written
+
+
 class AssetExportView(SponsorshipAdminRequiredMixin, View):
     """Export required assets for a sponsorship as a ZIP file."""
 
     def get(self, request, pk):
         """Generate and return a ZIP of all submitted assets for the sponsorship."""
         sp = get_object_or_404(Sponsorship.objects.select_related("sponsor"), pk=pk)
-        assets = list(BenefitFeature.objects.required_assets().from_sponsorship(sp))
-
-        # Filter to only assets that have values
-        assets_with_values = [a for a in assets if a.has_value]
-        if not assets_with_values:
+        buffer = io.BytesIO()
+        with zipfile.ZipFile(buffer, "w") as zip_file:
+            written = _write_sponsorship_assets(zip_file, sp)
+        if not written:
             messages.warning(request, "No submitted assets to export.")
             return redirect(reverse("manage_sponsorship_detail", args=[pk]))
 
-        sponsor_name = sp.sponsor.name if sp.sponsor else "unknown"
-        buffer = io.BytesIO()
-        zip_file = zipfile.ZipFile(buffer, "w")
-
-        for asset in assets_with_values:
-            if not asset.is_file:
-                zip_file.writestr(f"{sponsor_name}/{asset.internal_name}.txt", asset.value)
-            else:
-                suffix = "." + asset.value.name.split(".")[-1]
-                prefix = asset.internal_name
-                with NamedTemporaryFile(suffix=suffix, prefix=prefix) as temp_file:
-                    temp_file.write(asset.value.read())
-                    zip_file.write(temp_file.name, arcname=f"{sponsor_name}/{prefix}{suffix}")
-
-        zip_file.close()
+        sponsor_name = (sp.sponsor.slug if sp.sponsor else None) or f"sponsor-{sp.sponsor_id}"
         response = HttpResponse(buffer.getvalue())
         response["Content-Type"] = "application/x-zip-compressed"
         response["Content-Disposition"] = f'attachment; filename="{sponsor_name}-assets.zip"'
@@ -1123,27 +1142,8 @@ class BulkAssetExportView(SponsorshipAdminRequiredMixin, View):
             return redirect(reverse("manage_sponsorships"))
 
         buffer = io.BytesIO()
-        zip_file = zipfile.ZipFile(buffer, "w")
-        total_assets = 0
-
-        for sp in sponsorships:
-            assets = list(BenefitFeature.objects.required_assets().from_sponsorship(sp))
-            sponsor_name = sp.sponsor.name if sp.sponsor else "unknown"
-
-            for asset in assets:
-                if not asset.has_value:
-                    continue
-                total_assets += 1
-                if not asset.is_file:
-                    zip_file.writestr(f"{sponsor_name}/{asset.internal_name}.txt", asset.value)
-                else:
-                    suffix = "." + asset.value.name.split(".")[-1]
-                    prefix = asset.internal_name
-                    with NamedTemporaryFile(suffix=suffix, prefix=prefix) as temp_file:
-                        temp_file.write(asset.value.read())
-                        zip_file.write(temp_file.name, arcname=f"{sponsor_name}/{prefix}{suffix}")
-
-        zip_file.close()
+        with zipfile.ZipFile(buffer, "w") as zip_file:
+            total_assets = sum(_write_sponsorship_assets(zip_file, sp) for sp in sponsorships)
 
         if total_assets == 0:
             messages.warning(request, "No submitted assets found for the selected sponsorships.")
@@ -1917,6 +1917,13 @@ def _filtered_sponsorship_queryset(request):
     return qs
 
 
+def _csv_text(value):
+    """Keep untrusted text from being interpreted as a spreadsheet formula."""
+    if value and (value[0] in "\t\r\n" or value.lstrip().startswith(("=", "+", "-", "@"))):
+        return "'" + value
+    return value
+
+
 def _write_sponsorship_csv(sponsorships, response):
     """Write sponsorship rows to a CSV response using csv.writer."""
     writer = csv.writer(response)
@@ -1946,16 +1953,16 @@ def _write_sponsorship_csv(sponsorships, response):
         contact = primary_contacts.get(sp.sponsor_id) if sp.sponsor_id else None
         writer.writerow(
             [
-                sp.sponsor.name if sp.sponsor else "Unknown",
-                sp.package.name if sp.package else "",
-                sp.sponsorship_fee or "",
+                _csv_text(sp.sponsor.name) if sp.sponsor else "Unknown",
+                _csv_text(sp.package.name) if sp.package else "",
+                sp.sponsorship_fee if sp.sponsorship_fee is not None else "",
                 sp.year or "",
                 sp.get_status_display(),
                 sp.applied_on.isoformat() if sp.applied_on else "",
                 sp.start_date.isoformat() if sp.start_date else "",
                 sp.end_date.isoformat() if sp.end_date else "",
-                contact.name if contact else "",
-                contact.email if contact else "",
+                _csv_text(contact.name) if contact else "",
+                _csv_text(contact.email) if contact else "",
             ]
         )
     return response
@@ -2007,18 +2014,10 @@ class BulkActionDispatchView(SponsorshipAdminRequiredMixin, View):
         selected_ids = request.POST.getlist("selected_ids")
 
         if action == "export_csv":
-            if selected_ids:
-                sponsorships = list(
-                    Sponsorship.objects.select_related("sponsor", "package")
-                    .filter(pk__in=selected_ids)
-                    .order_by("-applied_on")
-                )
-            else:
+            if not selected_ids:
                 messages.warning(request, "No sponsorships selected.")
                 return redirect(reverse("manage_sponsorships"))
-            response = HttpResponse(content_type="text/csv")
-            response["Content-Disposition"] = 'attachment; filename="sponsorships.csv"'
-            return _write_sponsorship_csv(sponsorships, response)
+            return SponsorshipExportView.as_view()(request)
 
         if action == "send_notification":
             if not selected_ids:

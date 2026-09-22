@@ -1,5 +1,7 @@
-"""Regression coverage for chart data and legal clause rendering."""
+"""Regression coverage for chart data, legal clauses, and safe CSV exports."""
 
+import csv
+import io
 import json
 
 from bs4 import BeautifulSoup
@@ -196,3 +198,68 @@ class ComposerInsertClauseRegressionTests(ManageRenderingRegressionTestBase):
         self.assertNotIn("\\u000A", btn["data-clause"])
         self.assertNotIn("\\n", btn["data-clause"])
         self.assertIn("\n", btn["data-clause"])
+
+
+class SponsorshipReviewTestBase(ManageRenderingRegressionTestBase):
+    """Fixture with a single sponsor/sponsorship, for CSV export regression tests."""
+
+    def setUp(self):
+        super().setUp()
+        self.package = SponsorshipPackage.objects.create(
+            name="Visionary", slug="visionary", sponsorship_amount=150000, year=self.year
+        )
+
+    def _make_sponsorship(self, sponsor_name, fee, status=Sponsorship.APPLIED):
+        sponsor = Sponsor.objects.create(name=sponsor_name)
+        return Sponsorship.objects.create(
+            sponsor=sponsor,
+            package=self.package,
+            sponsorship_fee=fee,
+            year=self.year,
+            status=status,
+        )
+
+    def _parse_csv(self, response):
+        content = response.content.decode("utf-8")
+        reader = csv.DictReader(io.StringIO(content))
+        return list(reader)
+
+
+class CsvFormulaInjectionRegressionTests(SponsorshipReviewTestBase):
+    """CSV exports neutralize untrusted text without changing numeric values."""
+
+    def test_get_export_neutralizes_text_columns_and_preserves_fees(self):
+        sp = self._make_sponsorship("=SUM(1,2)", 0)
+        self.package.name = "+SUM(1,2)"
+        self.package.save(update_fields=["name"])
+        SponsorContact.objects.create(
+            sponsor=sp.sponsor,
+            name="@SUM(1,2)",
+            email="-invoice@example.com",
+            primary=True,
+        )
+        self._make_sponsorship("Ordinary = Sponsor", None)
+        response = self.client.get(reverse("manage_sponsorship_export"))
+        self.assertEqual(response.status_code, 200)
+        rows = {row["Sponsor Name"]: row for row in self._parse_csv(response)}
+        row = rows["'=SUM(1,2)"]
+        self.assertEqual(row["Package"], "'+SUM(1,2)")
+        self.assertEqual(row["Primary Contact Name"], "'@SUM(1,2)")
+        self.assertEqual(row["Primary Contact Email"], "'-invoice@example.com")
+        self.assertEqual(row["Fee"], "0")
+        self.assertEqual(rows["Ordinary = Sponsor"]["Fee"], "")
+
+    def test_selected_and_bulk_exports_neutralize_whitespace_before_formula(self):
+        name = ' \t=HYPERLINK("https://example.com")'
+        sp = self._make_sponsorship(name, 42)
+        for route in ("manage_sponsorship_export", "manage_bulk_action"):
+            with self.subTest(route=route):
+                response = self.client.post(
+                    reverse(route),
+                    {"action": "export_csv", "selected_ids": [sp.pk]},
+                )
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(
+                    [(row["Sponsor Name"], row["Fee"]) for row in self._parse_csv(response)],
+                    [("'" + name, "42")],
+                )

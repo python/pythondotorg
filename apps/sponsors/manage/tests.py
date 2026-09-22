@@ -3,20 +3,29 @@
 import csv
 import datetime
 import io
+import zipfile
+from tempfile import TemporaryDirectory
 from unittest import mock
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group, Permission
 from django.core.exceptions import PermissionDenied
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.http import HttpResponse
 from django.test import RequestFactory, TestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
+from model_bakery import baker
 
 from apps.sponsors.manage.views import ManageDashboardView
 from apps.sponsors.models import (
     Contract,
+    ImgAsset,
     LegalClause,
+    RequiredImgAsset,
+    RequiredResponseAsset,
+    RequiredTextAsset,
+    ResponseAsset,
     Sponsor,
     SponsorBenefit,
     SponsorContact,
@@ -28,6 +37,7 @@ from apps.sponsors.models import (
     SponsorshipProgram,
     TextAsset,
 )
+from apps.sponsors.models.enums import AssetsRelatedTo
 
 
 @override_settings(LOGIN_URL="/accounts/login/")
@@ -1397,6 +1407,79 @@ class SponsorshipApproveSignedViewTests(SponsorshipReviewTestBase):
 
 class AssetExportViewTests(SponsorshipReviewTestBase):
     """Test asset export as ZIP."""
+
+    def _require_asset(self, feature_model, internal_name, related_to):
+        benefit = SponsorBenefit.new_copy(self.benefit, sponsorship=self.sponsorship)
+        return baker.make(
+            feature_model,
+            sponsor_benefit=benefit,
+            internal_name=internal_name,
+            related_to=related_to,
+        )
+
+    def _export(self, *, bulk):
+        if bulk:
+            return self.client.post(
+                reverse("manage_bulk_action"),
+                {"action": "export_assets", "selected_ids": [self.sponsorship.pk]},
+            )
+        return self.client.get(reverse("manage_sponsorship_export_assets", args=[self.sponsorship.pk]))
+
+    def test_exports_submitted_required_assets_from_the_correct_owner(self):
+        self._require_asset(RequiredResponseAsset, "consent", AssetsRelatedTo.SPONSOR.value)
+        self._require_asset(RequiredTextAsset, "description", AssetsRelatedTo.SPONSORSHIP.value)
+        self._require_asset(RequiredTextAsset, "empty", AssetsRelatedTo.SPONSORSHIP.value)
+        self._require_asset(RequiredTextAsset, "missing", AssetsRelatedTo.SPONSORSHIP.value)
+        # Shared requirements must not create duplicate ZIP members.
+        self._require_asset(RequiredResponseAsset, "consent", AssetsRelatedTo.SPONSOR.value)
+        ResponseAsset.objects.create(content_object=self.sponsor, internal_name="consent", response="NO")
+        ResponseAsset.objects.create(content_object=self.sponsorship, internal_name="consent", response="YES")
+        TextAsset.objects.create(
+            content_object=self.sponsorship, internal_name="description", text="Submitted sponsorship text"
+        )
+        TextAsset.objects.create(content_object=self.sponsorship, internal_name="empty", text="")
+        TextAsset.objects.create(content_object=self.sponsor, internal_name="unrequested", text="Do not export")
+
+        for bulk in (False, True):
+            with self.subTest(bulk=bulk):
+                response = self._export(bulk=bulk)
+                self.assertEqual(response.status_code, 200)
+                with zipfile.ZipFile(io.BytesIO(response.content)) as archive:
+                    self.assertCountEqual(archive.namelist(), ["acme-corp/consent.txt", "acme-corp/description.txt"])
+                    self.assertEqual(archive.read("acme-corp/consent.txt"), b"NO")
+                    self.assertEqual(archive.read("acme-corp/description.txt"), b"Submitted sponsorship text")
+
+    def test_exports_complete_file_bytes_with_safe_archive_paths(self):
+        self.sponsor.name = "../Acme\r\nCorp"
+        self.sponsor.save(update_fields=["name"])
+        self._require_asset(RequiredImgAsset, "../logo", AssetsRelatedTo.SPONSOR.value)
+        content = b"small binary asset\x00\xff"
+        with TemporaryDirectory() as media_root, self.settings(MEDIA_ROOT=media_root):
+            ImgAsset.objects.create(
+                content_object=self.sponsor,
+                internal_name="../logo",
+                image=SimpleUploadedFile("logo.png", content, content_type="image/png"),
+            )
+            for bulk in (False, True):
+                with self.subTest(bulk=bulk):
+                    response = self._export(bulk=bulk)
+                    self.assertEqual(response.status_code, 200)
+                    with zipfile.ZipFile(io.BytesIO(response.content)) as archive:
+                        self.assertEqual(archive.namelist(), ["acme-corp/logo.png"])
+                        self.assertEqual(archive.read("acme-corp/logo.png"), content)
+
+    def test_unsubmitted_required_assets_redirect_instead_of_exporting(self):
+        self._require_asset(RequiredResponseAsset, "consent", AssetsRelatedTo.SPONSOR.value)
+        ResponseAsset.objects.create(content_object=self.sponsor, internal_name="consent", response=None)
+        for bulk in (False, True):
+            with self.subTest(bulk=bulk):
+                response = self._export(bulk=bulk)
+                expected = (
+                    reverse("manage_sponsorships")
+                    if bulk
+                    else reverse("manage_sponsorship_detail", args=[self.sponsorship.pk])
+                )
+                self.assertRedirects(response, expected, fetch_redirect_response=False)
 
     def test_export_assets_requires_auth(self):
         self.client.logout()
