@@ -2,15 +2,17 @@ services:
   postgres:
     image: postgres:15.3-bullseye
     ports:
-      - "5433:5432"
+      - "127.0.0.1:5433:5432"
     environment:
       POSTGRES_USER: pythondotorg
       POSTGRES_PASSWORD: pythondotorg
       POSTGRES_DB: pythondotorg
       POSTGRES_HOST_AUTH_METHOD: trust  # never do this in production!
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "pythondotorg", "-d", "pythondotorg"]
+      # The entrypoint's temporary initialization server only accepts Unix sockets.
+      test: ["CMD", "pg_isready", "-h", "127.0.0.1", "-U", "pythondotorg", "-d", "pythondotorg"]
       interval: 1s
+      start_period: 30s
 
   redis:
     image: redis:7-bullseye
@@ -20,6 +22,12 @@ services:
      test: ["CMD", "redis-cli","ping"]
      interval: 1s
 
+  maildev:
+    image: maildev/maildev:2.1.0
+    ports:
+      - "1080:1080"
+      - "1025:1025"
+
   web:
     build: .
     image: pythondotorg:docker-compose
@@ -27,10 +35,12 @@ services:
     volumes:
       - .:/code
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     environment:
       DATABASE_URL: postgresql://pythondotorg:pythondotorg@postgres:5432/pythondotorg
       DJANGO_SETTINGS_MODULE: pydotorg.settings.local
+      EMAIL_HOST: maildev
+      EMAIL_PORT: "1025"
     depends_on:
       postgres:
         condition: service_healthy

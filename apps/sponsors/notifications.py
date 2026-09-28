@@ -38,7 +38,7 @@ class BaseEmailSponsorshipNotification:
         return {k: kwargs.get(k) for k in self.email_context_keys}
 
     def notify(self, **kwargs):
-        """Build and send the notification email."""
+        """Build and send the notification email, returning the delivery count."""
         context = self.get_email_context(**kwargs)
 
         email = EmailMessage(
@@ -50,7 +50,7 @@ class BaseEmailSponsorshipNotification:
         for attachment in self.get_attachments(context):
             email.attach(*attachment)
 
-        email.send()
+        return email.send()
 
 
 class AppliedSponsorshipNotificationToPSF(BaseEmailSponsorshipNotification):
@@ -142,12 +142,11 @@ class ContractNotificationToSponsors(BaseEmailSponsorshipNotification):
         contract = context["contract"]
         if contract.document_docx:
             document = contract.document_docx
-            ext, app_type = "docx", "msword"
+            ext, app_type = "docx", "vnd.openxmlformats-officedocument.wordprocessingml.document"
         else:  # fallback to PDF for existing contracts
             document = contract.document
             ext, app_type = "pdf", "pdf"
 
-        document = context["contract"].document
         with document.open("rb") as fd:
             content = fd.read()
         return [(f"Contract.{ext}", content, f"application/{app_type}")]

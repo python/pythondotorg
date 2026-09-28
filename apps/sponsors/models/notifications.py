@@ -1,6 +1,8 @@
 """Email notification template models for sponsor communications."""
 
 from django.conf import settings
+from django.db import models
+from django.utils import timezone
 
 from apps.mailing.models import BaseEmailTemplate
 
@@ -57,3 +59,45 @@ class SponsorEmailNotificationTemplate(BaseEmailTemplate):
             to=recipients,
             context={"sponsorship": sponsorship},
         )
+
+
+class SponsorshipNotificationLog(models.Model):
+    """Persisted record of every notification sent to a sponsorship."""
+
+    sponsorship = models.ForeignKey(
+        "sponsors.Sponsorship",
+        on_delete=models.CASCADE,
+        related_name="notification_logs",
+    )
+    subject = models.CharField(max_length=500)
+    content = models.TextField(blank=True)
+    recipients = models.TextField(help_text="Comma-separated email addresses")
+    contact_types = models.CharField(max_length=200, blank=True)
+    sent_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
+    sent_at = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        """Meta configuration for SponsorshipNotificationLog."""
+
+        ordering = ["-sent_at"]
+        verbose_name = "Notification Log"
+        verbose_name_plural = "Notification Logs"
+
+    def __str__(self):
+        """Return a human-readable representation of the log entry."""
+        return f"{self.subject} → {self.sponsorship} ({self.sent_at:%Y-%m-%d %H:%M})"
+
+    @property
+    def recipient_list(self):
+        """Return recipients as a list of email addresses."""
+        return [r.strip() for r in self.recipients.split(",") if r.strip()]
+
+    @property
+    def contact_type_list(self):
+        """Return contact types as a list of strings."""
+        return [t.strip() for t in self.contact_types.split(",") if t.strip()]

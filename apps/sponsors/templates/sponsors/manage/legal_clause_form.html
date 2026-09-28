@@ -1,0 +1,85 @@
+{% extends "sponsors/manage/_base.html" %}
+
+{% block page_title %}{% if is_create %}New Legal Clause{% else %}Edit {{ object.internal_name }}{% endif %} | Sponsor Management{% endblock %}
+
+{% with active_tab="more" %}
+
+{% block manage_breadcrumbs %}
+<div class="manage-crumbs">
+    <a href="{% url 'manage_dashboard' %}">Dashboard</a>
+    <span class="sep">/</span>
+    <a href="{% url 'manage_legal_clauses' %}">Legal Clauses</a>
+    <span class="sep">/</span>
+    <span class="current">{% if is_create %}New{% else %}{{ object.internal_name }}{% endif %}</span>
+</div>
+{% endblock %}
+
+{% block manage_content %}
+    <div class="manage-form">
+        <h2 style="font-size:18px;font-weight:700;color:#1a1a2e;margin:0 0 4px;">
+            {% if is_create %}Create Legal Clause{% else %}Edit Legal Clause{% endif %}
+        </h2>
+        {% if not is_create and benefit_count %}
+        <p style="font-size:13px;color:#777;margin:0 0 20px;">
+            Used by <span style="color:#e74c3c;">{{ benefit_count }} benefit{{ benefit_count|pluralize }}</span>
+        </p>
+        {% else %}
+        <p style="font-size:13px;color:#777;margin:0 0 20px;">
+            {% if is_create %}Legal clause text that gets pulled into contracts via benefit associations.{% endif %}
+        </p>
+        {% endif %}
+
+        {% if form.errors %}
+        <div class="form-errors">
+            <strong>Please correct the errors below:</strong>
+            <ul>
+            {% for field, errors in form.errors.items %}
+                {% for error in errors %}
+                <li>{{ field }}: {{ error }}</li>
+                {% endfor %}
+            {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+
+            <fieldset class="manage-fieldset">
+                <legend>Clause Details</legend>
+
+                <div class="form-group">
+                    <label for="id_internal_name">Internal Name</label>
+                    {{ form.internal_name }}
+                    <span class="helptext">Friendly name for PSF staff reference (not shown in contracts).</span>
+                    {% if form.internal_name.errors %}<div class="field-errors">{{ form.internal_name.errors.0 }}</div>{% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_clause">Clause Text</label>
+                    {{ form.clause }}
+                    <span class="helptext">The legal text that appears in contracts. Rendered as markdown.</span>
+                    {% if form.clause.errors %}<div class="field-errors">{{ form.clause.errors.0 }}</div>{% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_notes">Notes</label>
+                    {{ form.notes }}
+                    {% if form.notes.errors %}<div class="field-errors">{{ form.notes.errors.0 }}</div>{% endif %}
+                </div>
+            </fieldset>
+
+            <div style="display:flex;gap:10px;align-items:center;padding-top:8px;">
+                <button type="submit" class="btn btn-primary">
+                    {% if is_create %}Create Clause{% else %}Save Changes{% endif %}
+                </button>
+                <a href="{% url 'manage_legal_clauses' %}" class="btn btn-secondary">Cancel</a>
+                {% if not is_create %}
+                <a href="{% url 'manage_legal_clause_delete' object.pk %}" class="btn btn-danger" style="margin-left:auto;">Delete</a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+{% endblock %}
+
+{% endwith %}

@@ -1,0 +1,141 @@
+{% extends "sponsors/manage/_base.html" %}
+
+{% block page_title %}{% if is_create %}New Package{% else %}Edit {{ object.name }}{% endif %} | Sponsor Management{% endblock %}
+
+{% with active_tab="packages" %}
+
+{% block topbar_actions %}{% endblock %}
+
+{% block manage_breadcrumbs %}
+<div class="manage-crumbs">
+    <a href="{% url 'manage_dashboard' %}">Dashboard</a>
+    <span class="sep">/</span>
+    <a href="{% url 'manage_packages' %}">Packages</a>
+    <span class="sep">/</span>
+    <span class="current">{% if is_create %}New Package{% else %}{{ object.name }}{% endif %}</span>
+</div>
+{% endblock %}
+
+{% block manage_content %}
+    <div class="manage-form">
+        <h2 style="font-size:18px;font-weight:700;color:#1a1a2e;margin:0 0 4px;">
+            {% if is_create %}Create New Package{% else %}Edit Package{% endif %}
+        </h2>
+        {% if not is_create %}
+        <p style="font-size:13px;color:#777;margin:0 0 20px;">
+            {{ object.name }} ({{ object.year }})
+            {% if benefit_count %}&middot; <span class="tag tag-blue">{{ benefit_count }} benefit{{ benefit_count|pluralize }}</span>{% endif %}
+        </p>
+        {% else %}
+        <p style="font-size:13px;color:#777;margin:0 0 20px;">Define a sponsorship tier/level.</p>
+        {% endif %}
+
+        {% if form.errors %}
+        <div class="form-errors">
+            <strong>Please correct the errors below:</strong>
+            <ul>
+            {% for field, errors in form.errors.items %}
+                {% for error in errors %}
+                <li>{{ field }}: {{ error }}</li>
+                {% endfor %}
+            {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+
+            <fieldset class="manage-fieldset">
+                <legend>Package Details</legend>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="id_name">Name</label>
+                        {{ form.name }}
+                    </div>
+                    <div class="form-group">
+                        <label for="id_slug">Slug</label>
+                        {{ form.slug }}
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="id_sponsorship_amount">Sponsorship Amount ($)</label>
+                        {{ form.sponsorship_amount }}
+                    </div>
+                    <div class="form-group">
+                        <label for="id_year">Year</label>
+                        {{ form.year }}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="id_logo_dimension">Logo Dimension (px)</label>
+                    {{ form.logo_dimension }}
+                    <span class="helptext">Internal value used to control logos dimensions at sponsors page.</span>
+                </div>
+            </fieldset>
+
+            <fieldset class="manage-fieldset">
+                <legend>Options</legend>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                    <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;padding:8px 12px;background:#f7f8fa;border-radius:4px;">
+                        {{ form.advertise }} Advertise in application
+                    </label>
+                    <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;padding:8px 12px;background:#f7f8fa;border-radius:4px;">
+                        {{ form.allow_a_la_carte }} Allow a la carte benefits
+                    </label>
+                </div>
+            </fieldset>
+
+            <fieldset class="manage-fieldset">
+                <legend>Included Benefits</legend>
+                <div class="form-group" style="margin-bottom:0;">
+                    <label for="id_benefits">
+                        Benefits{% if not is_create and benefit_count %} <span class="tag tag-blue">{{ benefit_count }}</span>{% endif %}
+                    </label>
+                    {% if form.fields.benefits.queryset %}
+                    <div class="checkbox-list">
+                        {% for checkbox in form.benefits %}
+                        {{ checkbox }}
+                        {% endfor %}
+                    </div>
+                    <span class="helptext">Checked benefits are included in this package. Uncheck to remove them.</span>
+                    {% else %}
+                    <p style="margin:0;color:#777;font-size:13px;">No benefits are available for the selected year yet.</p>
+                    {% endif %}
+                    {% if form.benefits.errors %}<div class="field-errors">{{ form.benefits.errors.0 }}</div>{% endif %}
+                </div>
+            </fieldset>
+
+            <div style="display:flex;gap:10px;align-items:center;padding-top:8px;">
+                <button type="submit" class="btn btn-primary">
+                    {% if is_create %}Create Package{% else %}Save Changes{% endif %}
+                </button>
+                <a href="{% url 'manage_packages' %}" class="btn btn-secondary">Cancel</a>
+                {% if not is_create %}
+                <a href="{% url 'manage_package_delete' object.pk %}" class="btn btn-danger" style="margin-left:auto;">Delete</a>
+                {% endif %}
+            </div>
+        </form>
+        {% if is_create %}
+        <script>
+        (function() {
+            var nameInput = document.getElementById('id_name');
+            var slugInput = document.getElementById('id_slug');
+            var slugEdited = false;
+            slugInput.addEventListener('input', function() { slugEdited = true; });
+            nameInput.addEventListener('input', function() {
+                if (!slugEdited) {
+                    slugInput.value = nameInput.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+                }
+            });
+        })();
+        </script>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% endwith %}

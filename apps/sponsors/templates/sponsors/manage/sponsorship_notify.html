@@ -1,0 +1,127 @@
+{% extends "sponsors/manage/_base.html" %}
+
+{% block page_title %}Notify {{ sponsorship.sponsor.name }} | Sponsorship Management{% endblock %}
+
+{% with active_tab="sponsorships" %}
+
+{% block manage_breadcrumbs %}
+<div class="manage-crumbs">
+    <a href="{% url 'manage_dashboard' %}">Dashboard</a>
+    <span class="sep">/</span>
+    <a href="{% url 'manage_sponsorships' %}">Sponsorships</a>
+    <span class="sep">/</span>
+    <a href="{% url 'manage_sponsorship_detail' sponsorship.pk %}">{{ sponsorship.sponsor.name }}</a>
+    <span class="sep">/</span>
+    <span class="current">Send Notification</span>
+</div>
+{% endblock %}
+
+{% block manage_content %}
+<style>
+    .tpl-var-btn {
+        display: inline-block;
+        padding: 4px 10px;
+        font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+        font-size: 12px;
+        background: #fff;
+        border: 1px solid #d0d0d0;
+        border-radius: 4px;
+        cursor: pointer;
+        color: #3776ab;
+        transition: background 0.1s, border-color 0.1s;
+    }
+    .tpl-var-btn:hover {
+        background: #e8f0fe;
+        border-color: #3776ab;
+    }
+</style>
+
+<div class="manage-form">
+    <h2 style="font-size:20px;font-weight:700;color:#1a1a2e;margin:0 0 20px;">Send Notification to {{ sponsorship.sponsor.name }}</h2>
+
+    {% if form.non_field_errors %}
+    <div class="form-errors">
+        <ul>{% for e in form.non_field_errors %}<li>{{ e }}</li>{% endfor %}</ul>
+    </div>
+    {% endif %}
+
+    {% if email_preview %}
+    <div class="manage-fieldset" style="margin-bottom:24px;background:#f7f8fa;">
+        <legend>Email Preview</legend>
+        <div class="sp-field">
+            <div class="sp-label">Subject</div>
+            <div class="sp-value">{{ email_preview.subject }}</div>
+        </div>
+        <div class="sp-field" style="margin-top:12px;">
+            <div class="sp-label">Body</div>
+            <div style="background:#fff;border:1px solid #e0e0e0;border-radius:4px;padding:16px;font-size:13px;white-space:pre-wrap;font-family:monospace;line-height:1.6;margin-top:4px;">{{ email_preview.body }}</div>
+        </div>
+        <div class="sp-field" style="margin-top:12px;">
+            <div class="sp-label">Recipients</div>
+            <div class="sp-value">{{ email_preview.to|join:", " }}</div>
+        </div>
+    </div>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+
+        <fieldset class="manage-fieldset">
+            <legend>Contact Types</legend>
+            <div class="form-group">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                    {% for checkbox in form.contact_types %}
+                    <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;padding:8px 12px;background:#f7f8fa;border-radius:4px;">
+                        {{ checkbox.tag }} {{ checkbox.choice_label }}
+                    </label>
+                    {% endfor %}
+                </div>
+                {% if form.contact_types.errors %}
+                <div class="field-errors">{{ form.contact_types.errors }}</div>
+                {% endif %}
+            </div>
+        </fieldset>
+
+        <fieldset class="manage-fieldset">
+            <legend>Message</legend>
+            <div class="form-group">
+                <label for="{{ form.notification.id_for_label }}">{{ form.notification.label }}</label>
+                {{ form.notification }}
+                {% if form.notification.help_text %}<span class="helptext">{{ form.notification.help_text }}</span>{% endif %}
+            </div>
+
+            <div style="text-align:center;font-size:12px;color:#999;margin:12px 0;text-transform:uppercase;letter-spacing:1px;">-- or custom content --</div>
+
+            <div class="form-group">
+                <label for="{{ form.subject.id_for_label }}">{{ form.subject.label }}</label>
+                {{ form.subject }}
+            </div>
+            <div class="form-group">
+                <label for="{{ form.content.id_for_label }}">{{ form.content.label }}</label>
+                {{ form.content }}
+            </div>
+        </fieldset>
+
+        <!-- Template variables — click to copy -->
+        <fieldset class="manage-fieldset" style="background:#f7f8fa;">
+            <legend>Template Variables</legend>
+            <p style="font-size:12px;color:#777;margin:0 0 10px;">Click to copy, then paste into subject or content.</p>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                {% for var in template_vars %}
+                <button type="button" class="tpl-var-btn" data-var="{% templatetag openvariable %} {{ var }} {% templatetag closevariable %}" onclick="navigator.clipboard.writeText(this.dataset.var);var b=this;b.textContent='Copied!';setTimeout(function(){b.textContent=b.dataset.var},1200)">
+                    {% templatetag openvariable %} {{ var }} {% templatetag closevariable %}
+                </button>
+                {% endfor %}
+            </div>
+        </fieldset>
+
+        <div style="display:flex;gap:10px;margin-top:20px;">
+            <button type="submit" name="preview" class="btn btn-secondary">Preview</button>
+            <button type="submit" name="confirm" class="btn btn-primary">Send Notification</button>
+            <a href="{% url 'manage_sponsorship_detail' sponsorship.pk %}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% endwith %}
