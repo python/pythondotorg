@@ -106,6 +106,97 @@ they represent:
 :contract.py: The `Contract` model which is used to generate the final contract document and other
               support models;
 
+Agreements
+----------
+
+The ``agreements`` app handles configurable order forms and custom contracts: preparation,
+revisions, signatures, and countersignatures. Staff with the *Can prepare, edit, send, and
+countersign agreements* permission work from ``/agreements/``.
+
+:Programs: Create and edit programs in the Django admin. A program's name, catalog, prices,
+           service descriptions, discounts, and document copy are database configuration,
+           not application source. Programs are staff-only by default. Enabling *is public*
+           makes a program browsable at ``/agreements/programs/<slug>/`` and lets signed-in
+           customers start orders. Publish the cited terms separately before making a program
+           public. Staff can prepare private orders for a linked customer without exposing
+           the program's catalog to everyone.
+:Terms: Create a set of terms in the admin, then edit its text at ``/agreements/terms/``.
+        Save a private draft or publish an immutable version with a label and change note.
+        Publishing a version does not make it public: the separate *Make published versions
+        public* setting controls that. Private versions are readable only by staff and parties
+        to documents citing them. An emailed signatory can review the cited versions through
+        their signing link. Permanent addresses are
+        ``/agreements/terms/<slug>/<version>/``. Documents cite the address and version;
+        integrity hashes are retained internally rather than shown to signatories.
+:Offering: Making a draft ready to sign freezes its document, complete program configuration,
+           fees, and cited terms versions. Later catalog or terms changes do not affect it.
+           Withdrawing an unsigned offer returns it to draft and disables signing links;
+           a new offer uses current configuration.
+:Editing: Before signing, staff can edit an offered document for that counterparty only.
+          Each save records a revision and note. Signing requires the exact revision the
+          signatory reviewed. Signed text cannot be edited.
+:Signing: Use the linked python.org account, an emailed one-time link (valid for 14 days),
+          or a signed PDF collected through another signing service or on paper.
+          Authorized customers and staff can upload signed copies. Copies stay in the
+          database, not public media storage.
+:Countersigning: The staff queue lists documents awaiting the PSF's signature. Countersigning
+                 can include a fully executed uploaded copy and emails the signed PDF.
+:Custom contracts: Write one-off contracts at ``/agreements/contracts/new/``, optionally
+                   incorporating versioned terms.
+:New kinds: Other applications can register an ``apps.agreements.registry.Kind`` for a
+            model with an ``agreement`` field; see ``apps/agreements/orders/kinds.py``.
+
+Private configuration imports
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Keep commercial configuration and legal drafts outside the public repository, including
+migrations, fixtures, examples, and tests. Import an operator-supplied JSON file with::
+
+    python manage.py import_agreement_program /private/path/program.json
+
+Use ``-`` instead of a path to read stdin. Imports are atomic. An existing terms version
+must match exactly; changing its text requires a new version label. Updating program
+configuration does not rewrite offered orders.
+
+The root object contains ``program`` and an optional ``terms`` list:
+
+* ``program``: ``slug``, ``title``, ``description``, ``is_public`` (false by default),
+  and ``definition``.
+* Each terms entry: ``slug``, ``title``, optional ``under_review`` and ``is_public``,
+  and ``versions`` containing ``version``, ``markdown``, and optional ``notes``.
+* ``definition``: ordered ``agreements`` and shared ``discounts`` lists. Optional document
+  copy fields are ``order_title``, ``order_intro``, ``covered_entities_label``,
+  ``covered_entities_help``, ``attestation_label``, ``attestation_help``, and ``payment``
+  (``annual``, ``multi_year``, ``renewal``, ``other_charges``).
+* Each catalog agreement: ``slug``, ``title``, ``terms_slug``, and ``tiers``; optional
+  ``short_name``, ``tagline``, ``default_tier``, ``services``, and ``addons``.
+* Each tier: ``key``, ``name``, ``annual_fee`` as a decimal string, four
+  ``response_targets``, ``fair_use``, and optional ``includes``.
+* Each service: ``key``, ``name``, ``description``, and optional ``tiers`` restricting
+  which tiers include it.
+* Each discount: ``key``, ``name``, integer ``percent``, ``term_months`` (a positive multiple
+  of 12), and optional ``requires_attestation``. Discounts apply to tier fees only.
+* Each add-on: ``key``, ``name``, ``description``, ``price_summary``, ``pricing``, optional
+  ``included_in_tiers``, and ``params``. Parameters have ``key``, ``label``, ``kind``
+  (``choice``, ``count``, ``text``, or ``lines``), optional ``choices`` pairs,
+  ``help_text``, ``minimum``, and ``required_when`` parameter/value conditions.
+
+Pricing uses declarative rules, never executable expressions:
+
+* ``fixed``: ``amount``.
+* ``quantity``: ``parameter`` and ``unit_amount``; optional ``base_amount`` and
+  ``included`` quantity. A lines parameter is priced by its number of entries.
+* ``brackets``: ``parameter``, ascending ``bands`` of ``up_to`` and ``amount``,
+  and an ``overflow_basis`` explaining separately quoted quantities.
+* ``choice``: ``parameter`` and ``options`` mapping every choice to another pricing rule.
+* ``sum``: ``components`` sharing the same recurrence.
+* ``unpriced``: descriptive billing ``basis``, with no upfront amount.
+
+Except for ``choice`` wrappers, rules accept ``recurring``, ``basis``, and ``detail``.
+Money values are finite, nonnegative decimal strings with at most two decimal places.
+One-time charges are billed once even for multi-year terms. See the fictional catalog in
+``apps/agreements/tests/catalog_data.py`` for a complete schema example.
+
 
 Events
 ------
