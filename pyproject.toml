@@ -61,7 +61,7 @@ dependencies = [
 prod = [
     "boto3==1.43.93",
     "django-storages==1.14.6",
-    "gunicorn==23.0.0",
+    "gunicorn==26.2.0",
     "sentry-sdk[django]==2.69.1",
     "whitenoise==6.12.0",
 ]
