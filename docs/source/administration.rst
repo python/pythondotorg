@@ -135,6 +135,9 @@ countersign agreements* permission work from ``/agreements/``.
 :Editing: Before signing, staff can edit an offered document for that counterparty only.
           Each save records a revision and note. Signing requires the exact revision the
           signatory reviewed. Signed text cannot be edited.
+:Document display: Pages and emails use the reference printed in the document when present.
+                   Browser views omit generated fingerprint metadata from older documents;
+                   their stored text and complete PDF/DOCX downloads remain intact.
 :Signing: Use the linked python.org account, an emailed one-time link (valid for 14 days),
           or a signed PDF collected through another signing service or on paper.
           Authorized customers and staff can upload signed copies. Copies stay in the
