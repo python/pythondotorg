@@ -62,7 +62,6 @@ Code style
 - Use ``make lint`` (ruff) to catch issues and ``make fmt`` (ruff) to
   auto-format
 
-
 .. _GitHub: https://github.com/python/pythondotorg/issues
 .. _license: https://github.com/python/pythondotorg/blob/main/LICENSE
 .. _pythondotorg: https://github.com/python/pythondotorg
