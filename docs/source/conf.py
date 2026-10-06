@@ -26,7 +26,11 @@ html_title = "Python.org Website"
 
 pygments_style = "sphinx"
 
-html_theme = "furo"
+html_theme = "shibuya"
+html_theme_options = {
+    "accent_color": "blue",
+    "github_url": "https://github.com/python/pythondotorg",
+}
 
 htmlhelp_basename = "PythonorgWebsitedoc"
 
