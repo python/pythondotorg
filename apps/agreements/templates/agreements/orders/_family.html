@@ -33,6 +33,24 @@
   </fieldset>
   {% if show_errors %}{{ aform.tier.errors }}{% endif %}
 
+  <fieldset class="pb-group pb-base-services" id="{{ slug }}-services" aria-describedby="{{ slug }}-services-help{% if show_errors and aform.services.errors %} {{ slug }}-services-errors{% endif %}">
+    <legend>Base services<span class="screen-reader-text"> for {{ agreement.short_name }}</span></legend>
+    <p class="pb-help" id="{{ slug }}-services-help">Select only the base services you want. Selecting none is allowed. The Service Tier fee stays the same regardless of your base-service selection.</p>
+    {% if show_errors and aform.services.errors %}<div id="{{ slug }}-services-errors">{{ aform.services.errors }}</div>{% endif %}
+    <div class="pb-fields">
+      {% for service, tiers in agreement.service_rows %}
+        <label class="choice pb-base-service" for="{{ slug }}-service-{{ service.key }}" data-service-tiers="{{ service.tiers|join:' ' }}" data-service-name="{{ service.name }}">
+          <input type="checkbox" id="{{ slug }}-service-{{ service.key }}" name="{{ aform.services.html_name }}" value="{{ service.key }}"{% if service.key in aform.services.value %} checked{% endif %}{% if show_errors and aform.services.errors %} aria-invalid="true" aria-describedby="{{ slug }}-services-errors"{% endif %}>
+          <span>{{ service.name }} <span class="choice-help">{% if tiers %}Available at {{ tiers }} only.{% else %}Available at every tier.{% endif %}{% if service.description %} {{ service.description }}{% endif %}</span></span>
+        </label>
+      {% empty %}
+        <p class="pb-help">There are no base services to select for this agreement family.</p>
+      {% endfor %}
+    </div>
+    {% if agreement.services %}<p class="pb-help pb-services-empty" hidden>No base services are available at this tier.</p>{% endif %}
+    <p class="pb-help pb-services-changed" role="status" hidden></p>
+  </fieldset>
+
   {% include "agreements/orders/_comparison.html" %}
 
 </section>

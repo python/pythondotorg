@@ -61,7 +61,12 @@ def make_order(
         }
     )
     for slug, selections in (agreements or {"studio": STUDIO}).items():
-        OrderLine.objects.create(order=order, agreement=slug, **selections)
+        line_selections = dict(selections)
+        if "services" not in line_selections:
+            line_selections["services"] = [
+                service.key for service in order.catalog.agreements[slug].services_at(line_selections["tier"])
+            ]
+        OrderLine.objects.create(order=order, agreement=slug, **line_selections)
     return order
 
 
@@ -89,7 +94,9 @@ def payload(agreements: Iterable[str] = ("studio", "workshop"), **overrides: Any
         "billing_contact_name": "AP",
         "billing_contact_email": "ap@example.com",
         "studio-tier": "basic",
+        "studio-services": ["access"],
         "workshop-tier": "max",
+        "workshop-services": ["materials", "planning"],
         **overrides,
     }
 
@@ -288,9 +295,12 @@ class OnlineSigningTests(TestCase):
         )
 
     def test_signing_freezes_document_catalog_terms_and_fees(self) -> None:
+        OrderLine.objects.filter(order=self.order, agreement="studio").update(services=["planning"])
         self.sign()
         order = reload(self.order)
         original = documents.order_form_markdown(order)
+        self.assertIn("Studio planning", original)
+        self.assertNotIn("Studio access", original)
         self.assertEqual(order.status, Agreement.Status.SIGNED)
         self.assertEqual(cast("Agreement", order.agreement).signature_method, Agreement.SignatureMethod.ACCOUNT)
         self.assertEqual(cast("Agreement", order.agreement).signer_email, "ada@example.com")
@@ -299,6 +309,7 @@ class OnlineSigningTests(TestCase):
         definition = deepcopy(self.program.definition)
         definition["agreements"][0]["title"] = "Changed service"
         definition["agreements"][0]["tiers"][1]["annual_fee"] = "9999"
+        definition["agreements"][0]["services"] = []
         definition["order_title"] = "Changed order title"
         Program.objects.filter(pk=self.program.pk).update(title="Changed program", definition=definition)
         Order.objects.filter(pk=order.pk).update(legal_name="Changed After Signing")
@@ -307,12 +318,16 @@ class OnlineSigningTests(TestCase):
         self.assertEqual(frozen.fee_totals, old_total)
         self.assertEqual(frozen.program_title, "Example Services")
         self.assertEqual(frozen.agreement_list[0].agreement_obj.title, "Example Studio Services")
+        self.assertEqual(frozen.agreement_list[0].services, ["planning"])
+        self.assertEqual([service.name for service in frozen.agreement_list[0].selected_services], ["Studio planning"])
 
     def test_signing_refuses_a_changed_preview_without_leaving_an_offer(self) -> None:
-        seen = self.preview_sha256()
-        OrderLine.objects.filter(order=self.order, agreement="studio").update(tier="max")
-        self.sign(document_sha256=seen)
-        self.assertIsNone(reload(self.order).agreement)
+        for changes in ({"tier": "max"}, {"services": ["planning"]}):
+            with self.subTest(changes=changes):
+                seen = self.preview_sha256()
+                OrderLine.objects.filter(order=self.order, agreement="studio").update(**changes)
+                self.sign(document_sha256=seen)
+                self.assertIsNone(reload(self.order).agreement)
 
     def test_signing_requires_acceptance(self) -> None:
         self.assertEqual(self.sign(accept="").status_code, 400)
@@ -445,7 +460,7 @@ class StaffHandlingTests(TestCase):
         self.assertIn("forty-five (45) days", agreement.document_markdown)
 
     def test_withdrawing_reopens_the_order_at_current_prices(self) -> None:
-        order = make_order(self.customer, program=self.program)
+        order = make_order(self.customer, {"studio": {"tier": "plus", "services": ["access"]}}, program=self.program)
         agreement = workflow.offer(get_kind("order"), order, user=self.officer)
         definition = deepcopy(self.program.definition)
         definition["agreements"][0]["tiers"][1]["annual_fee"] = "2600"
@@ -455,6 +470,10 @@ class StaffHandlingTests(TestCase):
         reopened = reload(order)
         self.assertTrue(reopened.is_editable)
         self.assertEqual(reopened.fee_totals["annual"], 2600)
+        self.assertEqual(reopened.agreements.get().services, ["access"])
+        text = documents.order_form_markdown(reopened)
+        self.assertIn("Studio access", text)
+        self.assertNotIn("Studio planning", text)
 
     def test_published_terms_apply_only_to_orders_offered_afterwards(self) -> None:
         terms = Terms.objects.get(slug="studio-terms")
@@ -481,6 +500,105 @@ class OrderBuilderTests(TestCase):
         self.assertEqual([line.agreement for line in order.agreement_list], ["studio", "workshop"])
         self.assertEqual(order.agreements.get(agreement="workshop").tier, "max")
         self.assertEqual(order.customer_account, self.user)
+
+    def test_selected_services_persist_and_render_without_unselected_scope(self) -> None:
+        response = self.client.post(
+            self.url,
+            payload(["studio"], **{"studio-tier": "plus", "studio-services": ["planning"]}),
+        )
+        order = Order.objects.get()
+        self.assertRedirects(response, order.get_absolute_url())
+        self.assertEqual(order.agreements.get().services, ["planning"])
+        self.assertContains(self.client.get(order.get_absolute_url()), "Studio planning")
+        self.assertNotContains(self.client.get(order.get_absolute_url()), "Studio access")
+        text = documents.order_form_markdown(order)
+        self.assertIn("Studio planning", text)
+        self.assertNotIn("Studio access", text)
+
+        response = self.client.post(
+            reverse("agreements:order_edit", args=[order.pk]),
+            payload(["studio"], **{"studio-tier": "plus", "studio-services": ["access"]}),
+        )
+        self.assertRedirects(response, order.get_absolute_url())
+        saved = reload(order)
+        self.assertEqual(saved.agreements.get().services, ["access"])
+        text = documents.order_form_markdown(saved)
+        self.assertIn("Studio access", text)
+        self.assertNotIn("Studio planning", text)
+
+    def test_services_are_saved_and_presented_in_catalog_order(self) -> None:
+        self.client.post(
+            self.url,
+            payload(["studio"], **{"studio-tier": "plus", "studio-services": ["planning", "access"]}),
+        )
+        order = Order.objects.get()
+        self.assertEqual(order.agreements.get().services, ["access", "planning"])
+        text = documents.order_form_markdown(order)
+        self.assertLess(text.index("Studio access"), text.index("Studio planning"))
+
+    def test_empty_and_subset_selections_keep_the_same_tier_fee(self) -> None:
+        for services in ([], ["planning"], ["access", "planning"]):
+            with self.subTest(services=services):
+                data = payload(["studio"], **{"studio-tier": "plus", "studio-services": services})
+                response = self.client.post(self.url, data)
+                order = Order.objects.latest("created")
+                self.assertRedirects(response, order.get_absolute_url())
+                self.assertEqual(order.agreements.get().services, services)
+                self.assertEqual(order.fee_totals, {"annual": 2400, "one_time": 0})
+                quote = self.client.get(reverse("agreements:quote", args=[self.program.slug]), data)
+                self.assertEqual(quote.status_code, 200)
+                self.assertEqual(quote.json()["display"]["total_annual"], "$2,400")
+                text = documents.order_form_markdown(order)
+                self.assertEqual("Studio access" in text, "access" in services)
+                self.assertEqual("Studio planning" in text, "planning" in services)
+
+        response = self.client.post(
+            reverse("agreements:order_edit", args=[order.pk]),
+            payload(["studio"], **{"studio-tier": "plus", "studio-services": []}),
+        )
+        self.assertRedirects(response, order.get_absolute_url())
+        emptied = reload(order)
+        self.assertEqual(emptied.agreements.get().services, [])
+        self.assertEqual(emptied.fee_totals["annual"], 2400)
+        agreement = workflow.offer(get_kind("order"), emptied, user=self.user)
+        self.assertNotIn("Studio access", agreement.document_markdown)
+        self.assertNotIn("Studio planning", agreement.document_markdown)
+
+    def test_tiers_with_no_eligible_base_services_can_be_ordered(self) -> None:
+        for services in ([], [self.program.definition["agreements"][0]["services"][1]]):
+            with self.subTest(services=services):
+                definition = deepcopy(self.program.definition)
+                definition["agreements"][0]["services"] = services
+                Program.objects.filter(pk=self.program.pk).update(definition=definition)
+                response = self.client.post(self.url, payload(["studio"], **{"studio-services": []}))
+                order = Order.objects.latest("created")
+                self.assertRedirects(response, order.get_absolute_url())
+                self.assertEqual(order.agreements.get().services, [])
+                agreement = workflow.offer(get_kind("order"), order, user=self.user)
+                self.assertNotIn("Studio access", agreement.document_markdown)
+                self.assertNotIn("Studio planning", agreement.document_markdown)
+                self.assertEqual(reload(order).fee_totals["annual"], 1200)
+
+    def test_invalid_services_cannot_create_or_mutate_an_order(self) -> None:
+        order = make_order(self.user, {"studio": {"tier": "plus", "services": ["planning"]}}, program=self.program)
+        original = documents.order_form_markdown(order)
+        for services in (["unknown"], ["planning"], ["materials"]):
+            with self.subTest(services=services):
+                data = payload(
+                    ["studio"], legal_name="Must not be saved", **{"studio-tier": "basic", "studio-services": services}
+                )
+                self.assertEqual(self.client.post(self.url, data).status_code, 200)
+                self.assertEqual(Order.objects.count(), 1)
+                response = self.client.post(reverse("agreements:order_edit", args=[order.pk]), data)
+                self.assertEqual(response.status_code, 200)
+                unchanged = reload(order)
+                self.assertEqual(unchanged.legal_name, order.legal_name)
+                line = unchanged.agreements.get()
+                self.assertEqual((line.tier, line.services), ("plus", ["planning"]))
+                self.assertEqual(documents.order_form_markdown(unchanged), original)
+                quote = self.client.get(reverse("agreements:quote", args=[self.program.slug]), data)
+                self.assertEqual(quote.status_code, 400)
+                self.assertNotIn("display", quote.json())
 
     def test_customers_cannot_set_special_terms(self) -> None:
         self.client.post(self.url, payload(**{"studio-special_terms": "Free forever"}))
@@ -637,6 +755,57 @@ class OrderBuilderTests(TestCase):
         self.client.post(reverse("agreements:order_edit", args=[draft.pk]), payload(["studio"]))
         self.assertEqual(reload(draft).fee_totals["annual"], 1200)
         self.assertEqual(reload(offered).fee_totals["annual"], 2400)
+
+    def test_withdrawn_service_scope_requires_correction_against_the_live_catalog(self) -> None:
+        for change in ("removed", "tier_restricted"):
+            with self.subTest(change=change):
+                Program.objects.filter(pk=self.program.pk).update(definition=self.program.definition)
+                order = make_order(
+                    self.user, {"studio": {"tier": "plus", "services": ["planning"]}}, program=self.program
+                )
+                agreement = workflow.offer(get_kind("order"), order, user=self.user)
+                original = agreement.document_markdown
+                original_sha256 = agreement.document_sha256
+                original_preview = documents.order_form_markdown(reload(order))
+                self.assertIn("Studio planning", original)
+                self.assertNotIn("Studio access", original)
+                definition = deepcopy(self.program.definition)
+                studio = definition["agreements"][0]
+                if change == "removed":
+                    studio["services"] = studio["services"][:1]
+                else:
+                    studio["services"][1]["tiers"] = ["max"]
+                Program.objects.filter(pk=self.program.pk).update(definition=definition)
+
+                frozen = reload(order)
+                self.assertEqual(documents.order_form_markdown(frozen), original_preview)
+                self.assertEqual([service.key for service in frozen.agreement_list[0].selected_services], ["planning"])
+                self.assertContains(self.client.get(order.get_absolute_url()), "Studio planning")
+                workflow.withdraw(agreement, user=self.user)
+                reopened = reload(order)
+                self.assertEqual(reopened.agreements.get().services, ["planning"])
+                edit_url = reverse("agreements:order_edit", args=[order.pk])
+                self.assertContains(self.client.get(order.get_absolute_url()), edit_url)
+                agreement_count = Agreement.objects.count()
+                response = self.client.post(reverse("agreements:order_offer", args=[order.pk]))
+                self.assertRedirects(response, order.get_absolute_url())
+                rejected = reload(order)
+                self.assertIsNone(rejected.agreement)
+                self.assertEqual(rejected.catalog_snapshot, {})
+                self.assertEqual(rejected.agreements.get().services, ["planning"])
+                self.assertEqual(rejected.agreements.get().pricing, {})
+                self.assertEqual(Agreement.objects.count(), agreement_count)
+
+                response = self.client.post(
+                    edit_url, payload(["studio"], **{"studio-tier": "plus", "studio-services": ["access"]})
+                )
+                self.assertRedirects(response, order.get_absolute_url())
+                replacement = workflow.offer(get_kind("order"), reload(order), user=self.user)
+                self.assertIn("Studio access", replacement.document_markdown)
+                self.assertNotIn("Studio planning", replacement.document_markdown)
+                agreement.refresh_from_db()
+                self.assertEqual(agreement.document_markdown, original)
+                self.assertEqual(agreement.document_sha256, original_sha256)
 
 
 class PrivateProgramTests(TestCase):

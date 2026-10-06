@@ -30,6 +30,7 @@
       title: el.dataset.familyTitle,
       include: el.querySelector(".pb-include-input"),
       radios: $$(".pb-tier-input", el),
+      services: $$(".pb-base-service", el),
       extraGroup,
       extras: extraGroup ? $$(".pb-extra", extraGroup) : [],
     };
@@ -38,6 +39,11 @@
   const extraBox = (row) => row.querySelector(".pb-extra-toggle input[type='checkbox']");
   const extraName = (row) => row.querySelector(".pb-extra-name").textContent.trim();
   const tierOf = (family) => family.radios.find((radio) => radio.checked) || null;
+  const serviceBox = (row) => row.querySelector("input[type='checkbox']");
+  const selectedServices = (family) => family.services.filter((row) => {
+    const box = serviceBox(row);
+    return box.checked && !box.disabled;
+  });
   const tierColumn = (radio) => radio.closest(".pb-tier");
   const included = () => families.filter((family) => family.include.checked && tierOf(family));
   const familyOf = (node) => {
@@ -121,6 +127,25 @@
     const tier = on ? tierOf(family) : null;
     family.el.classList.toggle("is-included", Boolean(on && tier));
     if (family.extraGroup) family.extraGroup.hidden = !tier;
+    const serviceTierKey = tier?.value || family.el.dataset.lastTier || family.el.dataset.defaultTier;
+    const unavailable = [];
+    let availableCount = 0;
+    family.services.forEach((row) => {
+      const allowedTiers = row.dataset.serviceTiers.split(" ").filter(Boolean);
+      const available = !allowedTiers.length || allowedTiers.includes(serviceTierKey);
+      const box = serviceBox(row);
+      row.hidden = !available;
+      box.disabled = !tier || !available;
+      if (available) availableCount += 1;
+      else if (box.checked) unavailable.push(row.dataset.serviceName);
+    });
+    const emptyServices = family.el.querySelector(".pb-services-empty");
+    if (emptyServices) emptyServices.hidden = availableCount > 0;
+    const changedServices = family.el.querySelector(".pb-services-changed");
+    changedServices.hidden = !tier || !unavailable.length;
+    changedServices.textContent = unavailable.length
+      ? `Not selected at this tier: ${unavailable.join(", ")}. Your earlier choices are kept if you switch back to an eligible tier.`
+      : "";
     family.extras.forEach((row) => {
       const box = extraBox(row);
       const includedIn = (row.dataset.includedIn || "").split(" ").filter(Boolean);
@@ -252,7 +277,7 @@
     }
 
     function revealTarget(target, focus = true) {
-      // An old extras link must not silently add a service that has since been removed.
+      // An old extras link must not silently add an agreement family that has since been removed.
       const extraGroup = target.closest("[data-extras-for]");
       const family = extraGroup && familyOf(extraGroup);
       if (family && (!family.include.checked || !tierOf(family))) target = family.el;
@@ -284,7 +309,7 @@
       if (!unresolved && included().length) return true;
       const message = unresolved
         ? `Choose a tier for ${unresolved.name} before continuing.`
-        : "Choose at least one service tier before continuing.";
+        : "Choose at least one agreement family and tier before continuing.";
       state.failure = message;
       render();
       const family = unresolved || families[0];
@@ -436,6 +461,10 @@
     chosen.forEach((family) => {
       const tier = tierOf(family);
       params.append(tier.name, tier.value);
+      selectedServices(family).forEach((row) => {
+        const box = serviceBox(row);
+        params.append(box.name, box.value);
+      });
       family.extras.forEach((row) => {
         const box = extraBox(row);
         if (!box.checked || box.disabled) return;
@@ -450,6 +479,7 @@
   }
 
   function fieldLabel(slug, fieldName) {
+    if (fieldName === "services") return "Base services";
     const field = form.querySelector(`[name="${CSS.escape(`${slug}-${fieldName}`)}"]`);
     const row = field?.closest(".pb-extra");
     if (!row) return "";
@@ -605,6 +635,15 @@
     list.append(
       line(`${column.dataset.tierName} tier`, amountNode(quoted?.display.tier_fee || column.dataset.fee, "a year"), {
         className: "pb-line-tier",
+        detail: "Base-service selections do not change this fee.",
+      }),
+    );
+    const services = selectedServices(family);
+    list.append(
+      line("Base services", el("span"), {
+        detail: services.length
+          ? services.map((row) => row.dataset.serviceName).join(", ")
+          : "No base services selected.",
       }),
     );
 
@@ -708,8 +747,8 @@
         "p",
         "",
         families.length > 1
-          ? "Choose a tier from any service to start. You can mix tiers across services and add extras."
-          : "Choose a tier to start, then add any extras.",
+          ? "Choose an agreement family and tier to start, then select its base services and extras."
+          : "Choose a tier to start, then select base services and extras.",
       ),
     );
     return empty;
@@ -791,6 +830,12 @@
     refresh(0);
     announce(`${family.name} removed. Your choices are kept if you add it again.`);
     summaryTitle.focus();
+  });
+
+  window.addEventListener("pageshow", (event) => {
+    if (!event.persisted) return;
+    syncAll();
+    refresh(0);
   });
 
   families.forEach((family) => {
