@@ -7,9 +7,9 @@ version: 2
 build:
   os: ubuntu-22.04
   tools:
-    python: "3"
+    python: "3.14"
 
   commands:
-      - python -m pip install --group docs .
-      - make -C docs html JOBS=$(nproc) BUILDDIR=_readthedocs
-      - mv docs/_readthedocs _readthedocs
+    - curl --fail --silent --show-error --location https://astral.sh/uv/0.12.17/install.sh --output /tmp/uv-installer.sh
+    - env UV_INSTALL_DIR="$HOME/.local/bin" UV_NO_MODIFY_PATH=1 sh /tmp/uv-installer.sh
+    - PATH="$HOME/.local/bin:$PATH" make docs DOCS_BUILDDIR="$READTHEDOCS_OUTPUT"
