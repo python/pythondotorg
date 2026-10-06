@@ -16,6 +16,15 @@ pass `next` to return to the including page after each action.
 
 {% include "agreements/_record.html" %}
 
+{% if is_staff and agreement.status == "executed" %}
+  <form method="post" action="{% url 'agreements:resend_executed_copy' agreement.pk %}" class="sign-form">
+    {% csrf_token %}
+    {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+    <p>Send the signed PDF to {{ agreement.signer_email }} without changing either signature.</p>
+    <button type="submit">Email signed copy</button>
+  </form>
+{% endif %}
+
 {% if countersign_form %}
   <section class="countersign" aria-labelledby="countersign-title">
     <h2 id="countersign-title">Countersign for the Python Software Foundation</h2>

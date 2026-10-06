@@ -135,6 +135,9 @@ countersign agreements* permission work from ``/agreements/``.
            restrictions still apply.
 :Terms: Create a set of terms in the admin, then edit its text at ``/agreements/terms/``.
         Save a private draft or publish an immutable version with a label and change note.
+        Once a version is published, its terms slug is read-only in the admin so cited
+        addresses remain permanent. The draft editor is at
+        ``/agreements/terms/<slug>/edit/draft/``; ``edit`` is also a valid version label.
         Publishing a version does not make it public: the separate *Make published versions
         public* setting controls that. Private versions are readable only by staff and parties
         to documents citing them. An emailed signatory can review the cited versions through
@@ -156,9 +159,16 @@ countersign agreements* permission work from ``/agreements/``.
           Authorized customers and staff can upload signed copies. Copies stay in the
           database, not public media storage.
 :Countersigning: The staff queue lists documents awaiting the PSF's signature. Countersigning
-                 can include a fully executed uploaded copy and emails the signed PDF.
+                 can include a fully executed uploaded copy and emails that exact PDF,
+                 including external signatures and audit pages. Without an uploaded
+                 executed copy, the application generates the signed PDF.
+                 If rendering or email delivery fails, the countersignature still stands.
+                 Use **Email signed copy** on the executed agreement to retry delivery
+                 without signing again. This action is available only to agreement managers.
 :Custom contracts: Write one-off contracts at ``/agreements/contracts/new/``, optionally
-                   incorporating versioned terms.
+                   incorporating versioned terms. Creation uses this workflow, not the
+                   Django admin. Linked customers return to their accessible agreement
+                   record after signing, uploading a copy, or withdrawing an offer.
 :New kinds: Other applications can register an ``apps.agreements.registry.Kind`` for a
             model with an ``agreement`` field; see ``apps/agreements/orders/kinds.py``.
 

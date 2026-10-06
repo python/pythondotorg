@@ -12,7 +12,7 @@ from django.views.decorators.http import require_POST
 
 from apps.agreements import documents, notifications, workflow
 from apps.agreements.forms.signing import CountersignForm, DeclineForm, SignedCopyForm, SignForm, SigningLinkForm
-from apps.agreements.models import MANAGE_PERMISSION
+from apps.agreements.models import MANAGE_PERMISSION, Agreement
 from apps.agreements.views.agreements import detail
 from apps.agreements.views.helpers import _agreement_or_404, file_response, signature_of
 
@@ -129,6 +129,20 @@ def send_link(request, pk):
     return _back(request, agreement)
 
 
+def _deliver_executed_copy(request, agreement):
+    try:
+        notifications.send_executed_copy(agreement)
+    except (OSError, RuntimeError):
+        logger.exception("Could not email executed agreement %s", agreement.pk)
+        messages.error(
+            request,
+            "The agreement is executed, but its signed copy could not be emailed. "
+            "Use Email signed copy to try again without countersigning.",
+        )
+        return False
+    return True
+
+
 @permission_required(MANAGE_PERMISSION)
 @require_POST
 def countersign(request, pk):
@@ -145,8 +159,20 @@ def countersign(request, pk):
     except workflow.InvalidTransitionError as exc:
         messages.error(request, str(exc))
     else:
-        notifications.send_executed_copy(agreement)
-        messages.success(request, f"Countersigned. The signed copy was emailed to {agreement.signer_email}.")
+        if _deliver_executed_copy(request, agreement):
+            messages.success(request, f"Countersigned. The signed copy was emailed to {agreement.signer_email}.")
+    return _back(request, agreement)
+
+
+@permission_required(MANAGE_PERMISSION)
+@require_POST
+def resend_executed_copy(request, pk):
+    """Retry delivery without applying the PSF signature again."""
+    agreement = _agreement_or_404(request, pk)
+    if agreement.status != Agreement.Status.EXECUTED:
+        raise Http404
+    if _deliver_executed_copy(request, agreement):
+        messages.success(request, f"The signed copy was emailed to {agreement.signer_email}.")
     return _back(request, agreement)
 
 

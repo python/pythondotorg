@@ -17,6 +17,7 @@ urlpatterns = [
     path("<uuid:pk>/withdraw/", signing.withdraw, name="withdraw"),
     path("<uuid:pk>/signing-link/", signing.send_link, name="send_link"),
     path("<uuid:pk>/countersign/", signing.countersign, name="countersign"),
+    path("<uuid:pk>/email-signed-copy/", signing.resend_executed_copy, name="resend_executed_copy"),
     path("<uuid:pk>/decline/", signing.decline, name="decline"),
     path("<uuid:pk>/edit/", agreements.edit, name="edit"),
     path("sign/<str:token>/", signing.sign_link, name="sign_link"),
