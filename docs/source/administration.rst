@@ -107,6 +107,14 @@ they represent:
               support models;
 
 
+Contract files
+^^^^^^^^^^^^^^
+
+Contracts are emailed to verified sponsor contacts. Website downloads are limited
+to authorized sponsorship managers and contract administrators, including signed
+copies. New contract files use private storage; public media is unchanged.
+
+
 Events
 ------
 
