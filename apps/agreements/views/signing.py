@@ -224,10 +224,9 @@ def sign_link(request, token):
         try:
             workflow.sign_with_link(link, signature, seen_sha256=form.cleaned_data["document_sha256"])
         except workflow.DocumentChangedError as exc:
-            form.add_error(None, str(exc))
-            form = SignForm(initial={"document_sha256": link.agreement.document_sha256, "signer_name": link.name})
-            messages.error(request, str(exc))
             agreement.refresh_from_db()
+            form = SignForm(initial={"document_sha256": agreement.document_sha256, "signer_name": link.name})
+            messages.error(request, str(exc))
         except workflow.InvalidTransitionError:
             return _link_response(request, "agreements/sign_link.html", {"unusable": True}, status=410)
         else:
