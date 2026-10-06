@@ -2,6 +2,7 @@
 
 from django.contrib import messages
 from django.contrib.auth.decorators import permission_required
+from django.db import transaction
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
@@ -12,8 +13,11 @@ from apps.agreements.kinds import CustomContractKind
 from apps.agreements.models import MANAGE_PERMISSION, CustomContract
 
 
-def _custom_or_404(pk):
-    return get_object_or_404(CustomContract.objects.select_related("agreement", "terms"), pk=pk)
+def _custom_or_404(pk, *, for_update=False):
+    contracts = CustomContract.objects.select_related("agreement", "terms")
+    if for_update:
+        contracts = contracts.select_for_update(of=("self",))
+    return get_object_or_404(contracts, pk=pk)
 
 
 @permission_required(MANAGE_PERMISSION)
@@ -28,11 +32,12 @@ def custom_create(request):
 
 
 @permission_required(MANAGE_PERMISSION)
+@transaction.atomic
 def custom_edit(request, pk):
     """Change a contract that hasn't been offered; once offered, edit the agreement instead."""
-    contract = _custom_or_404(pk)
-    if contract.agreement:
-        return redirect("agreements:edit", pk=contract.agreement.pk)
+    contract = _custom_or_404(pk, for_update=request.method == "POST")
+    if contract.agreement_id is not None:
+        return redirect("agreements:edit", pk=contract.agreement_id)
     form = CustomContractForm(request.POST or None, instance=contract)
     if request.method == "POST" and form.is_valid():
         form.save()
