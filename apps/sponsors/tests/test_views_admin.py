@@ -401,7 +401,7 @@ class ApproveSignedSponsorshipAdminViewTests(TestCase):
             "end_date": today + timedelta(days=100),
             "package": self.package.pk,
             "sponsorship_fee": 500,
-            "signed_contract": io.BytesIO(b"Signed contract"),
+            "signed_contract": SimpleUploadedFile("signed.pdf", b"%PDF-1.4\n%%EOF", content_type="application/pdf"),
         }
 
     def test_display_confirmation_form_on_get(self):
@@ -429,7 +429,7 @@ class ApproveSignedSponsorshipAdminViewTests(TestCase):
         self.assertRedirects(response, expected_url, fetch_redirect_response=True)
         self.assertEqual(self.sponsorship.status, Sponsorship.FINALIZED)
         self.assertEqual(contract.status, Contract.EXECUTED)
-        self.assertEqual(contract.signed_document.read(), b"Signed contract")
+        self.assertEqual(contract.signed_document.read(), b"%PDF-1.4\n%%EOF")
         msg = next(iter(get_messages(response.wsgi_request)))
         assert_message(msg, "Signed sponsorship was approved!", messages.SUCCESS)
 
@@ -586,7 +586,7 @@ class ExecuteContractViewTests(TestCase):
         self.url = reverse("admin:sponsors_contract_execute", args=[self.contract.pk])
         self.data = {
             "confirm": "yes",
-            "signed_document": SimpleUploadedFile("contract.txt", b"Contract content"),
+            "signed_document": SimpleUploadedFile("contract.pdf", b"%PDF-1.4\n%%EOF", content_type="application/pdf"),
         }
 
     def tearDown(self):

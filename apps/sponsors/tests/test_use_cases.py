@@ -189,7 +189,7 @@ class ExecuteContractUseCaseTests(TestCase):
         self.notifications = [Mock()]
         self.use_case = use_cases.ExecuteContractUseCase(self.notifications)
         self.user = baker.make(settings.AUTH_USER_MODEL)
-        self.file = SimpleUploadedFile("contract.txt", b"Contract content")
+        self.file = SimpleUploadedFile("contract.pdf", b"%PDF-1.4\n%%EOF", content_type="application/pdf")
         self.contract = baker.make_recipe(
             "apps.sponsors.tests.empty_contract",
             status=Contract.AWAITING_SIGNATURE,
@@ -221,7 +221,7 @@ class ExecuteExistingContractUseCaseTests(TestCase):
         self.notifications = [Mock()]
         self.use_case = use_cases.ExecuteExistingContractUseCase(self.notifications)
         self.user = baker.make(settings.AUTH_USER_MODEL)
-        self.file = SimpleUploadedFile("contract.txt", b"Contract content")
+        self.file = SimpleUploadedFile("contract.pdf", b"%PDF-1.4\n%%EOF", content_type="application/pdf")
         self.contract = baker.make_recipe("apps.sponsors.tests.empty_contract", status=Contract.DRAFT)
 
     def tearDown(self):
@@ -237,8 +237,8 @@ class ExecuteExistingContractUseCaseTests(TestCase):
         self.use_case.execute(self.contract, self.file)
         self.contract.refresh_from_db()
         self.assertEqual(self.contract.status, Contract.EXECUTED)
-        self.assertEqual(b"Contract content", self.contract.signed_document.read())
-        self.assertEqual(f"{Contract.SIGNED_PDF_DIR}1234.txt", self.contract.signed_document.name)
+        self.assertEqual(b"%PDF-1.4\n%%EOF", self.contract.signed_document.read())
+        self.assertEqual(f"{Contract.SIGNED_PDF_DIR}1234.pdf", self.contract.signed_document.name)
 
     def test_build_use_case_with_default_notifications(self):
         uc = use_cases.ExecuteExistingContractUseCase.build()

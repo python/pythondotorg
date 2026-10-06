@@ -39,6 +39,8 @@ from apps.sponsors.models import (
 )
 from apps.sponsors.models.enums import AssetsRelatedTo
 
+FAKE_PDF_BYTES = b"%PDF-1.4\n1 0 obj\n<< /Type /Catalog >>\nendobj\n%%EOF"
+
 
 @override_settings(LOGIN_URL="/accounts/login/")
 class SponsorManageTestBase(TestCase):
@@ -1340,7 +1342,7 @@ class SponsorshipApproveSignedViewTests(SponsorshipReviewTestBase):
     def test_approve_signed_sponsorship(self):
         from django.core.files.uploadedfile import SimpleUploadedFile
 
-        signed_doc = SimpleUploadedFile("signed.pdf", b"fake-pdf-content", content_type="application/pdf")
+        signed_doc = SimpleUploadedFile("signed.pdf", FAKE_PDF_BYTES, content_type="application/pdf")
         response = self.client.post(
             reverse("manage_sponsorship_approve_signed", args=[self.sponsorship.pk]),
             {
@@ -1361,7 +1363,7 @@ class SponsorshipApproveSignedViewTests(SponsorshipReviewTestBase):
     def test_approve_signed_bad_dates_rejected(self):
         from django.core.files.uploadedfile import SimpleUploadedFile
 
-        signed_doc = SimpleUploadedFile("signed.pdf", b"fake-pdf-content", content_type="application/pdf")
+        signed_doc = SimpleUploadedFile("signed.pdf", FAKE_PDF_BYTES, content_type="application/pdf")
         response = self.client.post(
             reverse("manage_sponsorship_approve_signed", args=[self.sponsorship.pk]),
             {

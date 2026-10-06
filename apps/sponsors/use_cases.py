@@ -16,6 +16,7 @@ from apps.sponsors.models import (
     SponsorshipNotificationLog,
     SponsorshipPackage,
 )
+from apps.sponsors.validators import validate_signed_contract
 
 logger = logging.getLogger(__name__)
 
@@ -150,6 +151,7 @@ class ExecuteExistingContractUseCase(BaseUseCaseWithNotifications):
 
     def execute(self, contract, contract_file, **kwargs):
         """Attach the signed document, execute the contract, and handle overlaps."""
+        validate_signed_contract(contract_file)
         contract.signed_document = contract_file
         contract.execute(force=self.force_execute)
         overlapping_sponsorship = (

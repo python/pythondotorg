@@ -16,6 +16,8 @@ from apps.sponsors.exceptions import InvalidStatusError
 from apps.sponsors.manage.tests import SponsorshipReviewTestBase
 from apps.sponsors.models import Contract, SponsorBenefit, SponsorContact, Sponsorship
 
+FAKE_PDF_BYTES = b"%PDF-1.4\n1 0 obj\n<< /Type /Catalog >>\nendobj\n%%EOF"
+
 
 class ManageContractRegressionTests(SponsorshipReviewTestBase):
     def setUp(self):
@@ -34,7 +36,7 @@ class ManageContractRegressionTests(SponsorshipReviewTestBase):
     def _post_approval(self, *, signed=False, **overrides):
         payload = {**self.approval_data, **overrides}
         if signed:
-            payload["signed_contract"] = SimpleUploadedFile("signed.pdf", b"signed-bytes")
+            payload["signed_contract"] = SimpleUploadedFile("signed.pdf", FAKE_PDF_BYTES)
         route = "manage_sponsorship_approve_signed" if signed else "manage_sponsorship_approve"
         return self.client.post(reverse(route, args=[self.sponsorship.pk]), payload)
 
@@ -82,7 +84,7 @@ class ManageContractRegressionTests(SponsorshipReviewTestBase):
             self.contract.set_final_version(b"existing pdf", b"existing docx")
         elif status == Contract.EXECUTED:
             use_cases.ExecuteExistingContractUseCase([]).execute(
-                self.contract, SimpleUploadedFile("signed.pdf", b"signed-bytes")
+                self.contract, SimpleUploadedFile("signed.pdf", FAKE_PDF_BYTES)
             )
         documents = (self.contract.document.name, self.contract.signed_document.name)
         # The caller still holds the pre-approval sponsorship instance.

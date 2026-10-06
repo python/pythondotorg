@@ -25,6 +25,7 @@ from apps.sponsors.models import (
     SponsorshipProgram,
     TieredBenefitConfiguration,
 )
+from apps.sponsors.validators import validate_signed_contract
 
 
 def year_choices():
@@ -325,6 +326,7 @@ class SponsorshipApproveSignedForm(SponsorshipApproveForm):
         label="Signed contract document",
         help_text="Upload the final version of the signed contract (PDF or DOCX).",
         widget=forms.ClearableFileInput(attrs={"style": INPUT_STYLE, "accept": ".pdf,.docx"}),
+        validators=[validate_signed_contract],
     )
 
 
@@ -451,6 +453,7 @@ class ExecuteContractForm(forms.Form):
         label="Signed contract document",
         help_text="Upload the signed contract (PDF or DOCX).",
         widget=forms.ClearableFileInput(attrs={"style": INPUT_STYLE, "accept": ".pdf,.docx"}),
+        validators=[validate_signed_contract],
     )
 
 
