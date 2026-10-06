@@ -29,7 +29,7 @@ urlpatterns = [
     ),
     path("terms/", terms.terms_list, name="terms_list"),
     path("terms/<slug:slug>/", terms.terms, name="terms"),
-    path("terms/<slug:slug>/edit/", terms.terms_edit, name="terms_edit"),
+    path("terms/<slug:slug>/edit/draft/", terms.terms_edit, name="terms_edit"),
     path("terms/<slug:slug>/download.<str:fmt>", terms.terms_download, name="terms_download"),
     # Permanent: signed documents cite these addresses.
     path("terms/<slug:slug>/<slug:version>/", terms.terms, name="terms_version"),
