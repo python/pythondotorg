@@ -34,10 +34,14 @@ class TermsForm(forms.Form):
     )
     action = forms.ChoiceField(choices=((SAVE, "Save draft"), (PUBLISH, "Publish")), required=False)
 
-    def __init__(self, *args, terms, **kwargs):
-        """Bind to ``terms`` so version labels can be checked for reuse."""
+    def __init__(self, *args, terms, can_publish, **kwargs):
+        """Bind terms and expose publication fields only to administrators."""
         super().__init__(*args, **kwargs)
         self.terms = terms
+        if not can_publish:
+            for field in ("under_review", "is_public", "version", "notes"):
+                del self.fields[field]
+            self.fields["action"].choices = ((self.SAVE, "Save draft"),)
 
     def clean_markdown(self):
         """Normalize line endings; terms don't carry signature placeholders."""
