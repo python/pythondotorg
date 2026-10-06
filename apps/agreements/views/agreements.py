@@ -8,6 +8,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.views.decorators.cache import never_cache
 
 from apps.agreements import documents, workflow
 from apps.agreements.auth import administrator_required, preparer_required
@@ -26,6 +27,7 @@ if TYPE_CHECKING:
 RECENT = 25
 
 
+@never_cache
 @preparer_required
 def queue(request: HttpRequest) -> HttpResponse:
     """Every agreement that needs the PSF or the counterparty, then recent ones and custom drafts."""
@@ -43,6 +45,7 @@ def queue(request: HttpRequest) -> HttpResponse:
     )
 
 
+@never_cache
 @login_required
 def detail(request: HttpRequest, pk: UUID, status: int = 200, **bound: BaseForm | None) -> HttpResponse:
     """Review an agreement and act on it."""
@@ -79,6 +82,7 @@ def copy_download(request: HttpRequest, pk: UUID, kind: str) -> HttpResponse:
     return response
 
 
+@never_cache
 @administrator_required
 def edit(request: HttpRequest, pk: UUID) -> HttpResponse:
     """Edit one agreement's text before it is signed; every saved edit is a new revision."""

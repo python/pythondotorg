@@ -8,6 +8,7 @@ from django.contrib import messages
 from django.db import transaction
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
+from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_POST
 
 from apps.agreements import documents, workflow
@@ -32,6 +33,7 @@ def _custom_or_404(pk: UUID, *, for_update: bool = False) -> CustomContract:
     return get_object_or_404(contracts, pk=pk)
 
 
+@never_cache
 @preparer_required
 def custom_create(request: HttpRequest) -> HttpResponse:
     """Write a new one-off contract."""
@@ -43,6 +45,7 @@ def custom_create(request: HttpRequest) -> HttpResponse:
     return render(request, "agreements/custom_form.html", {"form": form, "nav": "custom"})
 
 
+@never_cache
 @preparer_required
 @transaction.atomic
 def custom_edit(request: HttpRequest, pk: UUID) -> HttpResponse:
@@ -59,6 +62,7 @@ def custom_edit(request: HttpRequest, pk: UUID) -> HttpResponse:
     return render(request, "agreements/custom_form.html", {"form": form, "contract": contract, "nav": "custom"})
 
 
+@never_cache
 @preparer_required
 def custom_detail(request: HttpRequest, pk: UUID) -> HttpResponse:
     """Preview a draft contract; once offered, the agreement page takes over."""

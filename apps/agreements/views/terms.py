@@ -8,6 +8,7 @@ from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
+from django.views.decorators.cache import never_cache
 
 from apps.agreements import documents, workflow
 from apps.agreements.auth import can_prepare, is_administrator, preparer_required
@@ -100,6 +101,7 @@ def terms_download(request: HttpRequest, slug: str, fmt: str, version: str | Non
     return _terms_cache(request, response, terms)
 
 
+@never_cache
 @preparer_required
 def terms_list(request: HttpRequest) -> HttpResponse:
     """Every set of terms, for staff to edit."""
@@ -108,6 +110,7 @@ def terms_list(request: HttpRequest) -> HttpResponse:
     )
 
 
+@never_cache
 @preparer_required
 def terms_edit(request: HttpRequest, slug: str) -> HttpResponse:
     """Prepare draft text; only administrators configure or publish terms."""

@@ -155,6 +155,11 @@ signing links. Removing group membership removes management access on the next r
 historical authorship or offering does not retain access. Agreement, order, and custom-contract
 records are read-only in the Django admin; use the site workflow to change their state.
 
+Private agreement pages, including queues, terms listings, and contract and terms draft
+editors, send ``Cache-Control: private, no-store`` with immediate expiry and revalidation
+directives. Browsers and shared caches must not retain these responses or reuse them
+after session or role revocation. Anonymous public terms remain publicly cacheable.
+
 :Programs: Agreements Administrators create and edit programs in the Django admin. A program's
            name, catalog, prices, service descriptions, discounts, and document copy are database
            configuration, not application source. Programs are private by default. Enabling *is public*
