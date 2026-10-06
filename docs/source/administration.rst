@@ -180,6 +180,9 @@ records are read-only in the Django admin; use the site workflow to change their
 :Editing: Before signing, Agreements Administrators can edit an offered document for that counterparty only.
           Each save records a revision and note. Signing requires the exact revision the
           signatory reviewed. Signed text cannot be edited.
+          If another administrator saves first, the editor preserves your text and note,
+          displays the current revision and a comparison, and asks you to review or merge
+          before replacing it. Another intervening edit still requires a fresh review.
           Embedded images are not supported; editors report them as field errors before
           saving or previewing rather than leaving an unrenderable document.
 :Document display: Pages and emails use the reference printed in the document when present.

@@ -77,6 +77,7 @@ def edit(request, pk):
     initial = {"markdown": agreement.document_markdown, "base_sha256": agreement.document_sha256}
     form = EditDocumentForm(request.POST or None, initial=initial)
     preview = None
+    conflict = None
     if request.method == "POST" and form.is_valid():
         data = form.cleaned_data
         if "preview" in request.POST:
@@ -92,6 +93,15 @@ def edit(request, pk):
                     user=request.user,
                     base_sha256=data["base_sha256"],
                 )
+            except workflow.DocumentChangedError:
+                agreement.refresh_from_db()
+                submitted = request.POST.copy()
+                submitted["base_sha256"] = agreement.document_sha256
+                form = EditDocumentForm(submitted)
+                conflict = {
+                    "current_markdown": agreement.document_markdown,
+                    "diff": _diff(agreement.document_markdown, data["markdown"]),
+                }
             except (workflow.InvalidTransitionError, ValueError) as exc:
                 messages.error(request, str(exc))
             else:
@@ -105,6 +115,13 @@ def edit(request, pk):
     return render(
         request,
         "agreements/edit.html",
-        {"agreement": agreement, "form": form, "preview": preview, "history": history, "nav": "queue"},
-        status=400 if form.errors else 200,
+        {
+            "agreement": agreement,
+            "form": form,
+            "preview": preview,
+            "conflict": conflict,
+            "history": history,
+            "nav": "queue",
+        },
+        status=409 if conflict else (400 if form.errors else 200),
     )
