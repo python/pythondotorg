@@ -173,8 +173,12 @@ after session or role revocation. Anonymous public terms remain publicly cacheab
            preserve entries, and validation reveals the field that needs attention.
            Account linkage (Administrators only) and contract adjustments are in a collapsed
            preparation section of Contacts & billing.
-           New packages start empty unless a service is explicitly preselected. Choosing a
-           tier includes its service; extras included at that tier are not charged again.
+           New packages start empty unless an agreement is explicitly preselected. Choosing a
+           tier adds that agreement to the package; select its individual base services separately.
+           Base-service selections start empty and do not change the tier fee. Only selected
+           services appear on the Order Form. Changing tiers can make a service unavailable;
+           review the remaining selections before continuing. Extras included at that tier
+           are not charged again.
            The live summary, saved order, and newly generated Order Form separate recurring
            and one-time fees, and show prepaid totals for multi-year terms. Existing frozen
            documents and fee snapshots are not rewritten. Review identifies the terms
@@ -182,6 +186,9 @@ after session or role revocation. Anonymous public terms remain publicly cacheab
            Without JavaScript, all sections appear together: use each service's inclusion
            checkbox and review fees on the next page. Existing private-order access
            restrictions still apply.
+           Existing orders retain their previously included base services on upgrade, using
+           the frozen catalog for offered orders. Adding services to a catalog does not
+           automatically add them to existing drafts. Signed documents and fees remain unchanged.
 :Terms: Create a set of terms in the admin, then edit its text at ``/agreements/terms/``.
         Save a private draft or publish an immutable version with a label and change note.
         Unpublished sets open in the draft editor. Creating a set requires membership in
