@@ -5,7 +5,7 @@ from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from django.urls import reverse
 
-from apps.agreements.documents import final_markdown, render_pdf
+from apps.agreements.documents import final_markdown, render_pdf, terms_download_markdown
 from apps.agreements.models import SignedCopy
 
 
@@ -25,14 +25,24 @@ def send_signing_link(request, link, token):
 
 
 def send_executed_copy(agreement):
-    """Email the stored fully signed PDF, or render one when no executed copy is on file."""
+    """Email the executed PDF and every immutable terms version it incorporates."""
     if not agreement.signer_email:
         return
     copy = agreement.signed_copies.filter(kind=SignedCopy.Kind.EXECUTED).first()
     pdf = bytes(copy.content) if copy is not None else render_pdf(final_markdown(agreement))
+    versions = agreement.terms_versions.select_related("terms")
+    attachments = [(f"psf-agreement-{agreement.reference}.pdf", pdf, "application/pdf")]
+    attachments.extend(
+        (
+            f"{version.terms.slug}-{version.version}.pdf",
+            render_pdf(terms_download_markdown(version)),
+            "application/pdf",
+        )
+        for version in versions
+    )
     _send(
         "executed",
-        {"agreement": agreement},
+        {"agreement": agreement, "terms_versions": versions},
         agreement.signer_email,
-        attachments=[(f"psf-agreement-{agreement.reference}.pdf", pdf, "application/pdf")],
+        attachments=attachments,
     )

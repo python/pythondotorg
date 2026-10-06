@@ -201,6 +201,9 @@ records are read-only in the Django admin; use the site workflow to change their
                  can include a fully executed uploaded copy and emails that exact PDF,
                  including external signatures and audit pages. Without an uploaded
                  executed copy, the application generates the signed PDF.
+                 Delivery also includes PDFs of every terms version cited by that agreement,
+                 not newer published versions. Keep the full bundle: private online terms
+                 may be inaccessible after a one-time signing link is used.
                  If rendering or email delivery fails, the countersignature still stands.
                  Use **Email signed copy** on the executed agreement to retry delivery
                  without signing again. This action is available only to Agreements Administrators.

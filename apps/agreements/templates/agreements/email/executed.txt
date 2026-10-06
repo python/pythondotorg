@@ -2,7 +2,7 @@
 
 The Python Software Foundation has countersigned {{ agreement.title }} (reference {{ agreement.reference }}) with {{ agreement.counterparty_name }}. It took effect on {{ agreement.countersigned_at|date:"F j, Y" }}.
 
-The signed copy is attached. Keep it for your records.
+The signed copy is attached.{% if terms_versions %} The cited terms versions are also attached, so you can retain them even if their online pages are private.{% endif %} Keep these documents for your records.
 
 Python Software Foundation
 {% endautoescape %}
