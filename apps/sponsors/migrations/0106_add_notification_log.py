@@ -8,7 +8,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("sponsors", "0104_add_sponsor_white_logo"),
+        ("sponsors", "0105_update_polymorphic_options"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 

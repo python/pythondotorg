@@ -17,7 +17,7 @@ def backfill_original_sponsorship(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("sponsors", "0105_add_notification_log"),
+        ("sponsors", "0106_add_notification_log"),
     ]
 
     operations = [
