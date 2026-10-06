@@ -151,11 +151,11 @@ ROOT_URLCONF = "pydotorg.urls"
 # Note that we don't need to activate 'XFrameOptionsMiddleware' and
 # 'SecurityMiddleware' because we set appropriate headers in python/psf-salt.
 MIDDLEWARE = [
+    "pydotorg.middleware.AdminNoCaching",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "csp.middleware.CSPMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
-    "pydotorg.middleware.AdminNoCaching",
     "pydotorg.middleware.GlobalSurrogateKey",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
