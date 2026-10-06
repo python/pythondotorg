@@ -1,0 +1,32 @@
+{% extends "agreements/base.html" %}
+{% load static agreements %}
+
+{% block title %}Service orders{% endblock %}
+{% block body_attributes %}class="psf agreements agreement-orders"{% endblock %}
+{% block head %}{{ block.super }}<link rel="stylesheet" href="{% static 'agreements/package-builder.css' %}?v=6">{% endblock %}
+{% block crumbs %}<li>Service orders</li>{% endblock %}
+
+{% block left_sidebar %}
+<aside class="left-sidebar" aria-label="Order navigation">
+  <div class="section-navigation sidebar-widget">
+    <ul class="section-nav menu">
+      <li class="{% if nav == 'programs' %}current_item selected{% endif %}"><a href="{% url 'agreements:program_list' %}">Programs</a></li>
+      {% if user.is_authenticated %}
+        <li class="{% if nav == 'orders' %}current_item selected{% endif %}"><a href="{% url 'agreements:order_list' %}">Your orders</a></li>
+        {% if user|can_prepare_agreements %}
+          <li class="{% if nav == 'staff' %}current_item selected{% endif %}"><a href="{% url 'agreements:staff_orders' %}">All orders</a></li>
+          <li><a href="{% url 'agreements:queue' %}">Agreements to countersign</a></li>
+        {% endif %}
+      {% endif %}
+    </ul>
+  </div>
+  <div class="sidebar-widget account-widget">
+    {% if user.is_authenticated %}
+      <p>Signed in as <strong>{{ user.get_full_name|default:user.get_username }}</strong><br>{{ user.email }}</p>
+    {% else %}
+      <p>Sign in with your python.org account to place an order.</p>
+      <a class="button" href="{% url 'account_login' %}?next={{ request.get_full_path|urlencode }}">Sign in</a>
+    {% endif %}
+  </div>
+</aside>
+{% endblock %}

@@ -106,6 +106,149 @@ they represent:
 :contract.py: The `Contract` model which is used to generate the final contract document and other
               support models;
 
+Agreements
+----------
+
+The ``agreements`` app handles configurable order forms and custom contracts: preparation,
+revisions, signatures, and countersignatures. Management access at ``/agreements/`` is
+controlled only by membership in these groups:
+
+* **Agreements Editors** can read agreement records, private programs, and terms; prepare,
+  edit, and discard unoffered order and custom-contract drafts; and save or preview terms
+  drafts. They cannot publish terms, change configuration, offer documents for others,
+  revise offered documents, send signing links, record others' signatures, or countersign.
+* **Agreements Administrators** have those preparation rights and can manage configuration,
+  publish terms, offer documents, revise unsigned offers, send signing links, record signed
+  copies, decline, withdraw, countersign, and resend executed copies.
+
+Only Agreements Administrators may assign, replace, or remove a draft's linked customer
+or counterparty account. Editors can prepare all other draft fields, including special
+terms, but their new drafts remain unlinked and edits preserve any existing account.
+Customers creating their own public orders are linked automatically. An Editor linked
+as the customer by an Administrator retains that customer's offer and signing rights.
+
+Migrations create both groups without permissions or members and remove the obsolete
+``agreements.manage_agreement`` permission. After deployment, explicitly add the appropriate
+users to these groups in the Django admin. No users are enrolled automatically, and no
+programs, terms, pricing, or agreements are seeded. Direct permissions, other groups'
+model permissions, ``is_staff``, and superuser status do not grant agreement-management
+access. Even superusers must join an agreement group. Django admin access additionally
+requires an active staff account; the site workflow does not require ``is_staff``.
+
+Creating, changing, or deleting Django groups is restricted to superusers, including group
+names, permission assignments, and the admin bulk delete action. Delegated ``auth.add_group``,
+``auth.change_group``, and ``auth.delete_group`` permissions do not authorize those writes.
+Superusers are trusted identity administrators who can provision agreement roles; they
+still need group membership to use the agreements workflow themselves.
+
+Only superusers can grant or remove staff status, superuser status, groups (including
+both agreement roles), or direct permissions on user accounts. Staff with delegated
+user-administration permissions can edit, deactivate, reset passwords for, and delete
+ordinary accounts only. Accounts that hold any authority (superuser, staff, direct or
+group permissions, or either agreement role, even when inactive) are view-only to them,
+including password changes, the changelist active toggle, bulk deletion, and API key inlines.
+
+Authenticated accounts outside both groups receive a permission-denied page for management
+views; anonymous visitors are directed to sign in. Linked customers retain their own
+order and signing rights independently of group membership, as do valid one-time
+signing links. Removing group membership removes management access on the next request;
+historical authorship or offering does not retain access. Agreement, order, and custom-contract
+records are read-only in the Django admin; use the site workflow to change their state.
+
+Private agreement pages, including queues, terms listings, and contract and terms draft
+editors, send ``Cache-Control: private, no-store`` with immediate expiry and revalidation
+directives. Browsers and shared caches must not retain these responses or reuse them
+after session or role revocation. Anonymous public terms remain publicly cacheable.
+
+:Programs: Agreements Administrators create and edit programs in the Django admin. A program's
+           name, catalog, prices, service descriptions, discounts, and document copy are database
+           configuration, not application source. Programs are private by default. Enabling *is public*
+           makes a program browsable at ``/agreements/programs/<slug>/`` and lets signed-in
+           customers start orders. Publish the cited terms separately before making a program
+           public. Staff can prepare private orders for a linked customer without exposing
+           the program's catalog to everyone.
+:Packages: Customers move through Services, Extras, Term, Organization, and Contacts & billing
+           before reviewing the saved Order Form. Service comparisons expand beneath the tier
+           cards; optional extras are visible on their own step. Back, Next, and browser history
+           preserve entries, and validation reveals the field that needs attention.
+           Account linkage (Administrators only) and contract adjustments are in a collapsed
+           preparation section of Contacts & billing.
+           New packages start empty unless a service is explicitly preselected. Choosing a
+           tier includes its service; extras included at that tier are not charged again.
+           The live summary, saved order, and newly generated Order Form separate recurring
+           and one-time fees, and show prepaid totals for multi-year terms. Existing frozen
+           documents and fee snapshots are not rewritten. Review identifies the terms
+           required by the selections.
+           Without JavaScript, all sections appear together: use each service's inclusion
+           checkbox and review fees on the next page. Existing private-order access
+           restrictions still apply.
+:Terms: Create a set of terms in the admin, then edit its text at ``/agreements/terms/``.
+        Save a private draft or publish an immutable version with a label and change note.
+        Unpublished sets open in the draft editor. Creating a set requires membership in
+        Agreements Administrators and Django admin access; editors should ask an administrator.
+        Once a version is published, its terms slug is read-only in the admin so cited
+        addresses remain permanent. The draft editor is at
+        ``/agreements/terms/<slug>/edit/draft/``; ``edit`` is also a valid version label.
+        Publishing a version does not make it public: the separate *Make published versions
+        public* setting controls that. Private versions are readable only by agreement group
+        members and linked parties to documents citing them. An emailed signatory can review the cited versions through
+        their signing link. Permanent addresses are
+        ``/agreements/terms/<slug>/<version>/``. Documents cite the address and version;
+        integrity hashes are retained internally rather than shown to signatories.
+        Public terms responses are publicly cacheable only for anonymous visitors.
+        Responses to signed-in users are private and must not be stored by shared caches.
+        Terms cited by any public program cannot be made private. Make every referencing
+        program private first; both the terms editor and Django admin enforce this order.
+:Offering: Making a draft ready to sign freezes its document, complete program configuration,
+           fees, and cited terms versions. Later catalog or terms changes do not affect it.
+           Withdrawing an unsigned offer returns it to draft and disables signing links;
+           a new offer uses current configuration.
+           Order signing and offering check current account authorization while holding the
+           draft lock; a removed or reassigned customer cannot use a stale request.
+:Editing: Before signing, Agreements Administrators can edit an offered document for that counterparty only.
+          Each save records a revision and note. Signing requires the exact revision the
+          signatory reviewed. Signed text cannot be edited.
+          If another administrator saves first, the editor preserves your text and note,
+          displays the current revision and a comparison, and asks you to review or merge
+          before replacing it. Another intervening edit still requires a fresh review.
+          Embedded images are not supported; editors report them as field errors before
+          saving or previewing rather than leaving an unrenderable document.
+:Document display: Pages and emails use the reference printed in the document when present.
+                   Browser views omit generated fingerprint metadata from older documents;
+                   their stored text and complete PDF/DOCX downloads remain intact.
+:Signing: Use the linked python.org account, an emailed one-time link (valid for 14 days),
+          or a signed PDF collected through another signing service or on paper.
+          Linked customers and Agreements Administrators can upload signed copies. Copies stay in the
+          database, not public media storage.
+          If an invitation email fails, the page reports the failure and removes the
+          undelivered, unused link. Existing invitations remain valid; send a new link
+          to retry delivery.
+          Signing-link pages, their cited terms, and their error responses omit analytics
+          and advertising scripts so those scripts cannot report signing credentials.
+          If the document changes during link signing, the refreshed form keeps the
+          signatory's entered name and title but requires acceptance of the new text.
+          Confirmation shows the recorded signatory, even if different from the invitation.
+:Countersigning: The staff queue lists documents awaiting the PSF's signature. Countersigning
+                 can include a fully executed uploaded copy and emails that exact PDF,
+                 including external signatures and audit pages. Without an uploaded
+                 executed copy, the application generates the signed PDF.
+                 Delivery also includes PDFs of every terms version cited by that agreement,
+                 not newer published versions. Keep the full bundle: private online terms
+                 may be inaccessible after a one-time signing link is used.
+                 If rendering or email delivery fails, the countersignature still stands.
+                 Use **Email signed copy** on the executed agreement to retry delivery
+                 without signing again. This action is available only to Agreements Administrators.
+                 If the recorded signatory has no email address, execution still succeeds,
+                 but the page explicitly warns that nothing was emailed and hides the resend
+                 control. Download and deliver the signed PDF and cited terms separately.
+:Custom contracts: Write one-off contracts at ``/agreements/contracts/new/``, optionally
+                   incorporating versioned terms. Creation, editing, and deletion use
+                   this workflow; the Django admin is read-only. Linked customers return
+                   to their accessible agreement record after signing, uploading a copy,
+                   or withdrawing an offer.
+:New kinds: Other applications can register an ``apps.agreements.registry.Kind`` for a
+            model with an ``agreement`` field; see ``apps/agreements/orders/kinds.py``.
+
 
 Events
 ------

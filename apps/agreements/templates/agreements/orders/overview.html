@@ -1,0 +1,57 @@
+{% extends "agreements/orders/base.html" %}
+{% load agreements %}
+{% block title %}{{ program.title }}{% endblock %}
+{% block crumbs %}
+<li><a href="{% url 'agreements:program_list' %}">Programs</a><span class="prompt">&gt;&gt;&gt;</span></li>
+<li>{{ program.title }}</li>
+{% endblock %}
+
+{% block content %}
+<article class="text program-overview">
+  <header class="article-header"><h1 class="page-title">{{ program.title }}</h1></header>
+  {% if program.description %}<p class="introduction">{{ program.description|linebreaksbr }}</p>{% endif %}
+  {% if not program.is_public %}<p class="agreement-meta">Private program — staff-prepared orders only.</p>{% endif %}
+  {% if under_review %}
+    <div class="user-feedback level-notice"><p><strong>Draft terms.</strong> Some terms are under review and may change before they are offered.</p></div>
+  {% endif %}
+
+  <div class="po-invite">
+    <div class="po-invite-text">
+      <h2 class="po-invite-title">{% if program.is_public %}Build your support package{% else %}Prepare a package for a customer{% endif %}</h2>
+      <p>Choose a tier for {% if agreements|length > 1 %}one service or several{% else %}{{ agreements.0.short_name|default:"the service" }}{% endif %}, add any extras, and see your fees as you go. Everything goes on one Order Form, signed once.</p>
+    </div>
+    <a class="button button-primary po-invite-cta" href="{% url 'agreements:order_create' program.slug %}">{% if program.is_public %}Build a package{% else %}Prepare a package{% endif %}</a>
+  </div>
+
+  {% for agreement in agreements %}
+    <section class="agreement-summary po-family" aria-labelledby="po-{{ agreement.slug }}">
+      <h2 id="po-{{ agreement.slug }}">{{ agreement.short_name }}</h2>
+      {% if agreement.tagline %}<p class="po-tagline">{{ agreement.tagline }}</p>{% endif %}
+      <div class="po-table-wrap">
+        <table class="tier-table">
+          <caption class="screen-reader-text">{{ agreement.short_name }} service tiers</caption>
+          <thead><tr><th scope="col">Service tier</th><th scope="col" class="num">Annual fee</th><th scope="col">Critical (P1) response</th><th scope="col" class="num">Requests a year</th></tr></thead>
+          <tbody>
+            {% for tier in agreement.tiers %}
+              <tr><th scope="row">{{ tier.name }}</th><td class="num">{{ tier.annual_fee|money }}</td><td>{{ tier.response_targets.0 }}</td><td class="num">{{ tier.fair_use }}</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% if agreement.services %}
+        <p class="agreement-services">Includes {% for service, tiers in agreement.service_rows %}{{ service.name }}{% if tiers %} ({{ tiers }} only){% endif %}{% if not forloop.last %}; {% endif %}{% endfor %}.</p>
+      {% endif %}
+      {% if agreement.addons %}
+        <p class="agreement-services">Extras, priced separately: {% for addon in agreement.addons %}{{ addon.name }}{% if not forloop.last %}; {% endif %}{% endfor %}.</p>
+      {% endif %}
+      <p class="po-terms">Provided under the <a href="{% url 'agreements:terms' agreement.terms_slug %}">{{ agreement.title }}</a>.</p>
+    </section>
+  {% endfor %}
+
+  {% if orders %}
+    <h2>Your orders</h2>
+    {% include "agreements/orders/_order_table.html" %}
+    <p><a href="{% url 'agreements:order_list' %}">All your orders</a></p>
+  {% endif %}
+</article>
+{% endblock %}

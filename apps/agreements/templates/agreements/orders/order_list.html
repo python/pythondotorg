@@ -1,0 +1,18 @@
+{% extends "agreements/orders/base.html" %}
+{% block title %}Your orders{% endblock %}
+{% block crumbs %}
+<li><a href="{% url 'agreements:program_list' %}">Programs</a><span class="prompt">&gt;&gt;&gt;</span></li>
+<li>Your orders</li>
+{% endblock %}
+
+{% block content %}
+<article class="text">
+  <header class="article-header"><h1 class="page-title">Your orders</h1></header>
+  {% if orders %}
+    {% include "agreements/orders/_order_table.html" %}
+  {% else %}
+    <p>You haven't started an order yet. Nothing is binding until you sign.</p>
+  {% endif %}
+  <p class="actions"><a class="button button-primary" href="{% url 'agreements:program_list' %}">Browse programs</a></p>
+</article>
+{% endblock %}
