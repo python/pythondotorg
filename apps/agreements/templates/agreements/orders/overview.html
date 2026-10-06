@@ -18,7 +18,7 @@
   <div class="po-invite">
     <div class="po-invite-text">
       <h2 class="po-invite-title">{% if program.is_public %}Build your support package{% else %}Prepare a package for a customer{% endif %}</h2>
-      <p>Choose a tier for {% if agreements|length > 1 %}one service or several{% else %}{{ agreements.0.short_name|default:"the service" }}{% endif %}, add any extras, and see your fees as you go. Everything goes on one Order Form, signed once.</p>
+      <p>Choose a tier for {% if agreements|length > 1 %}one agreement family or several{% else %}{{ agreements.0.short_name|default:"the agreement" }}{% endif %}, add any extras, and see your fees as you go. Everything goes on one Order Form, signed once.</p>
     </div>
     <a class="button button-primary po-invite-cta" href="{% url 'agreements:order_create' program.slug %}">{% if program.is_public %}Build a package{% else %}Prepare a package{% endif %}</a>
   </div>
