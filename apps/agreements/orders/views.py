@@ -56,8 +56,10 @@ def _order_rows(orders):
     return rows
 
 
-def _order_or_404(request, pk):
+def _order_or_404(request, pk, *, for_update=False):
     orders = _orders() if request.user.has_perm(MANAGE_PERMISSION) else _own_orders(request.user)
+    if for_update:
+        orders = orders.select_for_update(of=("self",))
     return get_object_or_404(orders, pk=pk)
 
 
@@ -189,9 +191,10 @@ def order_create(request, slug):
 
 @never_cache
 @login_required
+@transaction.atomic
 def order_edit(request, pk):
     """Change selections until the Order Form is offered for signature."""
-    order = _order_or_404(request, pk)
+    order = _order_or_404(request, pk, for_update=request.method == "POST")
     if not order.can_edit(request.user):
         messages.error(request, "This Order Form is out for signature. Withdraw it to change the selections.")
         return redirect(order)
