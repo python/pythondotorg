@@ -163,7 +163,14 @@ def quote(request: HttpRequest, slug: str) -> JsonResponse:
         except ValidationError as exc:
             errors[key] = exc.messages
             continue
-        quotes.append({"slug": key, "name": builder.agreements[key].short_name, **priced.as_dict()})
+        quotes.append(
+            {
+                "slug": key,
+                "name": builder.agreements[key].short_name,
+                "services": form.cleaned_data["services"],
+                **priced.as_dict(),
+            }
+        )
     if errors:
         return JsonResponse({"errors": errors}, status=400)
     total_annual = sum((Decimal(q["total_annual"]) for q in quotes), Decimal(0))
