@@ -171,6 +171,8 @@ records are read-only in the Django admin; use the site workflow to change their
         their signing link. Permanent addresses are
         ``/agreements/terms/<slug>/<version>/``. Documents cite the address and version;
         integrity hashes are retained internally rather than shown to signatories.
+        Public terms responses are publicly cacheable only for anonymous visitors.
+        Responses to signed-in users are private and must not be stored by shared caches.
 :Offering: Making a draft ready to sign freezes its document, complete program configuration,
            fees, and cited terms versions. Later catalog or terms changes do not affect it.
            Withdrawing an unsigned offer returns it to draft and disables signing links;

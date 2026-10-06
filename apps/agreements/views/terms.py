@@ -51,8 +51,9 @@ def _readable_terms(request, slug, version):
     return terms, shown
 
 
-def _terms_cache(response, terms):
-    response["Cache-Control"] = "public, max-age=3600" if terms.is_public else "private, no-store"
+def _terms_cache(request, response, terms):
+    public = terms.is_public and not request.user.is_authenticated
+    response["Cache-Control"] = "public, max-age=3600" if public else "private, no-store"
     if not terms.is_public:
         response["X-Robots-Tag"] = "noindex"
     return response
@@ -75,7 +76,7 @@ def terms(request, slug, version=None):
             "can_read_current": terms.is_public or can_prepare(request.user),
         },
     )
-    return _terms_cache(response, terms)
+    return _terms_cache(request, response, terms)
 
 
 def terms_download(request, slug, fmt, version=None):
@@ -85,7 +86,7 @@ def terms_download(request, slug, fmt, version=None):
         raise Http404
     content = documents.RENDERERS[fmt](documents.terms_download_markdown(shown))
     response = file_response(content, fmt, f"{terms.slug}-{shown.version}")
-    return _terms_cache(response, terms)
+    return _terms_cache(request, response, terms)
 
 
 @preparer_required
