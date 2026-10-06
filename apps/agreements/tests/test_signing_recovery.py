@@ -2,6 +2,7 @@ from smtplib import SMTPException
 from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
+from django.contrib.messages import ERROR, get_messages
 from django.core import mail
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
@@ -78,18 +79,20 @@ class SigningRecoveryTests(TestCase):
                     workflow.Signature("Customer", "Director", self.customer.email),
                     seen_sha256=agreement.document_sha256,
                 )
-                with patch(target, side_effect=error), self.assertLogs("apps.agreements.views.signing", level="ERROR"):
+                mail.outbox.clear()
+                with patch(target, side_effect=error):
                     response = self.client.post(
                         reverse("agreements:countersign", args=[agreement.pk]),
                         {"name": "Officer", "title": "Executive Director", "accept": "on"},
                     )
                 self.assertEqual(response.status_code, 302)
+                self.assertEqual(mail.outbox, [])
+                self.assertIn(ERROR, [message.level for message in get_messages(response.wsgi_request)])
                 agreement.refresh_from_db()
                 self.assertEqual(agreement.status, Agreement.Status.EXECUTED)
                 signed_at = agreement.countersigned_at
                 resend_url = reverse("agreements:resend_executed_copy", args=[agreement.pk])
                 self.assertContains(self.client.get(agreement.get_absolute_url()), resend_url)
-                mail.outbox.clear()
                 response = self.client.post(resend_url)
                 self.assertEqual(response.status_code, 302)
                 agreement.refresh_from_db()
