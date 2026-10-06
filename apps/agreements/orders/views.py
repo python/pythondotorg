@@ -62,6 +62,9 @@ def _order_rows(orders: Iterable[Order]) -> list[dict[str, Any]]:
     for order in orders:
         row: dict[str, Any] = {"order": order}
         try:
+            if order.is_editable:
+                for line in order.agreement_list:
+                    _ = line.selected_services
             row["selections"] = [(line.agreement_obj.short_name, line.tier_name) for line in order.agreement_list]
             row["fees"] = order.fee_totals
         except (ValidationError, KeyError):

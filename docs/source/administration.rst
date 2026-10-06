@@ -189,6 +189,9 @@ after session or role revocation. Anonymous public terms remain publicly cacheab
            Existing orders retain their previously included base services on upgrade, using
            the frozen catalog for offered orders. Adding services to a catalog does not
            automatically add them to existing drafts. Signed documents and fees remain unchanged.
+           If a catalog change makes a draft's selected service unavailable, customer order
+           lists and the staff order queue show **Review selections** instead of fees.
+           Offered orders continue to use their frozen catalog.
 :Terms: Create a set of terms in the admin, then edit its text at ``/agreements/terms/``.
         Save a private draft or publish an immutable version with a label and change note.
         Unpublished sets open in the draft editor. Creating a set requires membership in

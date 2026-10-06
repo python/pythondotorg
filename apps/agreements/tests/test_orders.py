@@ -756,6 +756,30 @@ class OrderBuilderTests(TestCase):
         self.assertEqual(reload(draft).fee_totals["annual"], 1200)
         self.assertEqual(reload(offered).fee_totals["annual"], 2400)
 
+    def test_unavailable_draft_services_require_review_in_customer_and_staff_lists(self) -> None:
+        draft = make_order(self.user, {"studio": {"tier": "plus", "services": ["planning"]}}, program=self.program)
+        offered = make_order(self.user, {"studio": {"tier": "plus", "services": ["planning"]}}, program=self.program)
+        workflow.offer(get_kind("order"), offered, user=self.user)
+        officer = make_officer()
+        for change in ("removed", "tier_restricted"):
+            definition = deepcopy(self.program.definition)
+            if change == "removed":
+                definition["agreements"][0]["services"] = definition["agreements"][0]["services"][:1]
+            else:
+                definition["agreements"][0]["services"][1]["tiers"] = ["max"]
+            Program.objects.filter(pk=self.program.pk).update(definition=definition)
+            for user, url in (
+                (self.user, reverse("agreements:order_list")),
+                (self.user, self.program.get_absolute_url()),
+                (officer, reverse("agreements:staff_orders")),
+            ):
+                with self.subTest(change=change, url=url):
+                    self.client.force_login(user)
+                    listing = self.client.get(url)
+                    self.assertContains(listing, "Review selections", count=1)
+                    self.assertContains(listing, reverse("agreements:order_edit", args=[draft.pk]))
+                    self.assertContains(listing, offered.get_absolute_url())
+
     def test_withdrawn_service_scope_requires_correction_against_the_live_catalog(self) -> None:
         for change in ("removed", "tier_restricted"):
             with self.subTest(change=change):
