@@ -6,6 +6,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 
 from apps.agreements.documents import final_markdown, render_pdf
+from apps.agreements.models import SignedCopy
 
 
 def _send(template, context, to, attachments=()):
@@ -24,10 +25,11 @@ def send_signing_link(request, link, token):
 
 
 def send_executed_copy(agreement):
-    """Email the counterparty's signatory the fully signed document."""
+    """Email the stored fully signed PDF, or render one when no executed copy is on file."""
     if not agreement.signer_email:
         return
-    pdf = render_pdf(final_markdown(agreement))
+    copy = agreement.signed_copies.filter(kind=SignedCopy.Kind.EXECUTED).first()
+    pdf = bytes(copy.content) if copy is not None else render_pdf(final_markdown(agreement))
     _send(
         "executed",
         {"agreement": agreement},
