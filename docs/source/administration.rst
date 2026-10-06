@@ -121,6 +121,12 @@ controlled only by membership in these groups:
   publish terms, offer documents, revise unsigned offers, send signing links, record signed
   copies, decline, withdraw, countersign, and resend executed copies.
 
+Only Agreements Administrators may assign, replace, or remove a draft's linked customer
+or counterparty account. Editors can prepare all other draft fields, including special
+terms, but their new drafts remain unlinked and edits preserve any existing account.
+Customers creating their own public orders are linked automatically. An Editor linked
+as the customer by an Administrator retains that customer's offer and signing rights.
+
 Migrations create both groups without permissions or members and remove the obsolete
 ``agreements.manage_agreement`` permission. After deployment, explicitly add the appropriate
 users to these groups in the Django admin. No users are enrolled automatically, and no
@@ -153,8 +159,8 @@ records are read-only in the Django admin; use the site workflow to change their
            before reviewing the saved Order Form. Service comparisons expand beneath the tier
            cards; optional extras are visible on their own step. Back, Next, and browser history
            preserve entries, and validation reveals the field that needs attention.
-           Staff account linkage and contract adjustments are in a collapsed, staff-only section
-           of Contacts & billing.
+           Account linkage (Administrators only) and contract adjustments are in a collapsed
+           preparation section of Contacts & billing.
            New packages start empty unless a service is explicitly preselected. Choosing a
            tier includes its service; extras included at that tier are not charged again.
            The live summary, saved order, and newly generated Order Form separate recurring

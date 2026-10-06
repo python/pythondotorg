@@ -55,12 +55,16 @@ class CustomContractForm(forms.ModelForm):
             "above and below this text."
         }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, can_link_accounts=False, **kwargs):
         """Offer only terms with a published version, and show the current account."""
         super().__init__(*args, **kwargs)
         self.fields["terms"].queryset = Terms.objects.filter(versions__isnull=False).distinct()
-        account = self.instance.counterparty_account
-        self.fields["counterparty_account_email"].initial = account.email if account else ""
+        self.can_link_accounts = can_link_accounts
+        if can_link_accounts:
+            account = self.instance.counterparty_account
+            self.fields["counterparty_account_email"].initial = account.email if account else ""
+        else:
+            del self.fields["counterparty_account_email"]
 
     def clean_counterparty_account_email(self):
         """Resolve the email to exactly one account."""
@@ -76,5 +80,6 @@ class CustomContractForm(forms.ModelForm):
 
     def save(self, commit=True):
         """Store the resolved account."""
-        self.instance.counterparty_account = self.cleaned_data["counterparty_account_email"]
+        if self.can_link_accounts:
+            self.instance.counterparty_account = self.cleaned_data["counterparty_account_email"]
         return super().save(commit=commit)

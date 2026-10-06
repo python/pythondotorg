@@ -23,7 +23,7 @@ def _custom_or_404(pk, *, for_update=False):
 @preparer_required
 def custom_create(request):
     """Write a new one-off contract."""
-    form = CustomContractForm(request.POST or None)
+    form = CustomContractForm(request.POST or None, can_link_accounts=is_administrator(request.user))
     if request.method == "POST" and form.is_valid():
         form.instance.created_by = request.user
         contract = form.save()
@@ -40,7 +40,7 @@ def custom_edit(request, pk):
         if not is_administrator(request.user):
             return redirect(contract.agreement)
         return redirect("agreements:edit", pk=contract.agreement_id)
-    form = CustomContractForm(request.POST or None, instance=contract)
+    form = CustomContractForm(request.POST or None, instance=contract, can_link_accounts=is_administrator(request.user))
     if request.method == "POST" and form.is_valid():
         form.save()
         return redirect(contract)

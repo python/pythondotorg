@@ -18,7 +18,9 @@
     {% include "agreements/_field.html" with field=form.title %}
     <div class="field-row">
       {% include "agreements/_field.html" with field=form.counterparty_name %}
-      {% include "agreements/_field.html" with field=form.counterparty_account_email %}
+      {% if form.counterparty_account_email %}
+        {% include "agreements/_field.html" with field=form.counterparty_account_email %}
+      {% endif %}
     </div>
     {% include "agreements/_field.html" with field=form.terms %}
     {% include "agreements/_field.html" with field=form.body_markdown %}

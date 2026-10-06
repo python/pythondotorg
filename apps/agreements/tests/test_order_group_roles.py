@@ -52,7 +52,7 @@ class OrderGroupRoleTests(TestCase):
         self.assertEqual(response.status_code, 302)
         created = Order.objects.exclude(pk=self.order.pk).get()
         self.assertEqual(created.created_by, self.editor)
-        self.assertEqual(created.customer_account, self.customer)
+        self.assertIsNone(created.customer_account)
         response = self.client.post(
             reverse("agreements:order_edit", args=[created.pk]),
             payload(
@@ -66,6 +66,7 @@ class OrderGroupRoleTests(TestCase):
         created.refresh_from_db()
         self.assertEqual(created.legal_name, "Example Revised Workshops, Inc.")
         self.assertEqual(created.agreements.get().special_terms, "Example payment terms.")
+        self.assertIsNone(created.customer_account)
         self.assertEqual(self.client.post(reverse("agreements:order_delete", args=[created.pk])).status_code, 302)
         self.assertFalse(Order.objects.filter(pk=created.pk).exists())
 

@@ -48,7 +48,7 @@ class OrderForm(forms.ModelForm):
             "notices_contact": forms.Textarea(attrs={"rows": 2}),
         }
 
-    def __init__(self, *args, catalog, agreements, preselect=(), staff=False, **kwargs):
+    def __init__(self, *args, catalog, agreements, can_link_accounts=False, **kwargs):
         """Configure available selections, account linkage and contact rows."""
         super().__init__(*args, **kwargs)
         self.catalog = catalog
@@ -60,7 +60,7 @@ class OrderForm(forms.ModelForm):
         self.fields["discount_attestation"].help_text = catalog.attestation_help
         order = self.instance
         editing = not order._state.adding  # noqa: SLF001 - Django model state API
-        if staff:
+        if can_link_accounts:
             account = order.customer_account
             self.fields["customer_account_email"] = forms.EmailField(
                 required=False,
@@ -77,7 +77,6 @@ class OrderForm(forms.ModelForm):
                 discount.key == order.discount and discount.requires_attestation for discount in catalog.discounts
             )
         else:
-            self.initial["agreements"] = list(preselect)
             self.initial["discount"] = catalog.discounts[0].key
         existing = order.authorized_contacts if editing else []
         for i in range(1, MAX_CONTACTS + 1):
@@ -265,9 +264,10 @@ class AgreementForm(forms.Form):
 class OrderBuilder:
     """An order form and one form for each available agreement."""
 
-    def __init__(self, data=None, *, program, order=None, preselect=(), staff=False):
+    def __init__(self, data=None, *, program, order=None, staff=False, can_link_accounts=False):
         """Restrict the builder to the program and any private-order scope."""
         self.order, self.program, self.staff = order, program, staff
+        self.can_link_accounts = can_link_accounts
         self.catalog = order.catalog if order else program.catalog
         lines = {line.agreement: line for line in order.agreement_list} if order else {}
         self.agreements = {
@@ -280,8 +280,7 @@ class OrderBuilder:
             instance=order,
             catalog=self.catalog,
             agreements=self.agreements,
-            preselect=preselect,
-            staff=staff,
+            can_link_accounts=can_link_accounts,
         )
         self.agreement_forms = {
             slug: AgreementForm(data, agreement=agreement, line=lines.get(slug), staff=staff)
@@ -323,9 +322,9 @@ class OrderBuilder:
         order.program = self.program
         if order.created_by_id is None:
             order.created_by = user
-        if self.staff:
+        if self.can_link_accounts:
             order.customer_account = self.order_form.cleaned_data["customer_account_email"]
-        elif order.customer_account_id is None:
+        elif not self.staff and order._state.adding:  # noqa: SLF001 - Django model state API
             order.customer_account = user
         order.authorized_contacts = self.order_form.cleaned_data["contacts"]
         order.save()

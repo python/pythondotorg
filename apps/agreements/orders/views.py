@@ -121,7 +121,13 @@ def quote(request, slug):
         program = order.program
     else:
         program = _program_or_404(request, slug)
-    builder = OrderBuilder(request.GET, program=program, order=order, staff=can_prepare(request.user))
+    builder = OrderBuilder(
+        request.GET,
+        program=program,
+        order=order,
+        staff=can_prepare(request.user),
+        can_link_accounts=is_administrator(request.user),
+    )
     selections = builder.order_form.fields["agreements"]
     errors = {}
     try:
@@ -161,7 +167,13 @@ def quote(request, slug):
 
 def _builder(request, program, order=None):
     staff = can_prepare(request.user)
-    builder = OrderBuilder(request.POST or None, program=program, order=order, staff=staff)
+    builder = OrderBuilder(
+        request.POST or None,
+        program=program,
+        order=order,
+        staff=staff,
+        can_link_accounts=is_administrator(request.user),
+    )
     if not order:
         preselect = [slug for slug in request.GET.getlist("agreement") if slug in builder.agreements]
         builder.order_form.initial["agreements"] = preselect
