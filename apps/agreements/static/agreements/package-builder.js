@@ -136,9 +136,15 @@
       const box = serviceBox(row);
       row.hidden = !available && !box.checked;
       box.disabled = !tier || (!available && !box.checked);
-      box.setCustomValidity(tier && !available && box.checked
-        ? "Deselect this base service or choose a tier that offers it."
-        : "");
+      const conflict = Boolean(tier) && !available && box.checked;
+      box.setCustomValidity(conflict ? "Deselect this base service or choose a tier that offers it." : "");
+      if (conflict) {
+        box.setAttribute("aria-invalid", "true");
+        box.setAttribute("aria-describedby", `${family.slug}-services-changed`);
+      } else {
+        box.removeAttribute("aria-invalid");
+        box.removeAttribute("aria-describedby");
+      }
       if (available) availableCount += 1;
       else if (box.checked) unavailable.push(row.dataset.serviceName);
     });

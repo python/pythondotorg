@@ -48,7 +48,7 @@
       {% endfor %}
     </div>
     {% if agreement.services %}<p class="pb-help pb-services-empty" hidden>No base services are available at this tier.</p>{% endif %}
-    <p class="pb-help pb-services-changed" role="status" hidden></p>
+    <p class="pb-services-changed" id="{{ slug }}-services-changed" role="status" hidden></p>
   </fieldset>
 
   {% include "agreements/orders/_comparison.html" %}
