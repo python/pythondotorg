@@ -9,7 +9,7 @@ from django.db import models
 from django.urls import reverse
 from django.utils.functional import cached_property
 
-from apps.agreements.models.agreements import MANAGE_PERMISSION
+from apps.agreements.auth import can_prepare, is_administrator
 from apps.agreements.models.terms import Terms
 from apps.agreements.orders.catalog import Catalog, validate_catalog
 from apps.agreements.orders.pricing import build_quote, fee_totals, money
@@ -44,7 +44,7 @@ class Program(models.Model):
     @classmethod
     def visible_to(cls, user):
         """Return programs the visitor can browse, never implicitly exposing private catalogs."""
-        return cls.objects.all() if user.has_perm(MANAGE_PERMISSION) else cls.objects.filter(is_public=True)
+        return cls.objects.all() if can_prepare(user) else cls.objects.filter(is_public=True)
 
     @cached_property
     def catalog(self):
@@ -156,14 +156,16 @@ class Order(models.Model):
         return self.customer_account_id is not None and self.customer_account_id == user.pk
 
     def can_view(self, user):
-        """Restrict orders to staff, their creator and their linked customer."""
-        return user.is_authenticated and (
-            user.has_perm(MANAGE_PERMISSION) or user.pk in (self.created_by_id, self.customer_account_id)
-        )
+        """Restrict orders to agreement preparers and their linked customer."""
+        return user.is_authenticated and (can_prepare(user) or self.is_customer(user))
 
     def can_edit(self, user):
         """Allow an authorized viewer to change a draft."""
         return self.is_editable and self.can_view(user)
+
+    def can_offer(self, user):
+        """Allow only administrators or the linked customer to offer a draft."""
+        return self.is_editable and user.is_authenticated and (is_administrator(user) or self.is_customer(user))
 
     @property
     def organization_list(self):

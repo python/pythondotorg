@@ -21,9 +21,9 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.functional import cached_property
 
+from apps.agreements.auth import can_prepare
 from apps.agreements.registry import get_kind
 
-MANAGE_PERMISSION = "agreements.manage_agreement"
 _DOCUMENT_REFERENCE = re.compile(r"^\*Reference ([A-F0-9]{8})\*$", re.MULTILINE)
 
 
@@ -98,10 +98,9 @@ class Agreement(models.Model):
     withdrawn_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
-        """Newest first; one permission covers preparing, editing, and countersigning."""
+        """Newest first; management access comes from the agreement groups."""
 
         ordering = ("-offered_at",)
-        permissions = (("manage_agreement", "Can prepare, edit, send, and countersign agreements"),)
 
     def __str__(self):
         """Return the title and counterparty."""
@@ -142,8 +141,8 @@ class Agreement(models.Model):
         return self.counterparty_account_id is not None and self.counterparty_account_id == user.pk
 
     def can_view(self, user):
-        """PSF staff, the counterparty's account, and whoever the kind allows."""
-        return user.has_perm(MANAGE_PERMISSION) or self.is_counterparty(user) or self.kind_obj.can_view(user, self)
+        """Allow agreement groups, the counterparty, and the subject's customer."""
+        return can_prepare(user) or self.is_counterparty(user) or self.kind_obj.can_view(user, self)
 
 
 class AgreementRevision(models.Model):

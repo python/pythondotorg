@@ -2,6 +2,7 @@
 
 from django.contrib import admin
 
+from apps.agreements.auth import can_prepare, is_administrator
 from apps.agreements.models import (
     Agreement,
     AgreementRevision,
@@ -16,9 +17,38 @@ from apps.agreements.models import (
 )
 
 
+class _AgreementAdmin(admin.ModelAdmin):
+    """Use agreement groups, never Django's model or superuser permissions."""
+
+    def has_module_permission(self, request):
+        return can_prepare(request.user)
+
+    def has_view_permission(self, request, obj=None):
+        return can_prepare(request.user)
+
+
+class _ConfigurationAdmin(_AgreementAdmin):
+    """Allow only administrators to create and change configuration."""
+
+    def has_add_permission(self, request):
+        return is_administrator(request.user)
+
+    def has_change_permission(self, request, obj=None):
+        return is_administrator(request.user)
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+
 class _ReadOnlyInline(admin.TabularInline):
     extra = 0
     can_delete = False
+
+    def has_view_permission(self, request, obj=None):
+        return can_prepare(request.user)
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
     def has_add_permission(self, request, obj=None):
         """Leave creating records to the workflow, which checks them."""
@@ -38,7 +68,7 @@ class TermsVersionInline(_ReadOnlyInline):
 
 
 @admin.register(Terms)
-class TermsAdmin(admin.ModelAdmin):
+class TermsAdmin(_ConfigurationAdmin):
     """Create terms here; edit and publish their text on the site."""
 
     list_display = ("title", "slug", "is_public", "under_review")
@@ -50,22 +80,6 @@ class TermsAdmin(admin.ModelAdmin):
         if obj is not None and obj.versions.exists():
             return ("slug",)
         return ()
-
-    def has_view_permission(self, request, obj=None):
-        """Let agreement managers inspect terms configuration."""
-        return request.user.has_perm("agreements.manage_agreement")
-
-    def has_add_permission(self, request):
-        """Let agreement managers create terms before publishing their first version."""
-        return request.user.has_perm("agreements.manage_agreement")
-
-    def has_change_permission(self, request, obj=None):
-        """Let agreement managers set visibility and metadata."""
-        return request.user.has_perm("agreements.manage_agreement")
-
-    def has_delete_permission(self, request, obj=None):
-        """Keep terms addresses stable."""
-        return False
 
 
 class RevisionInline(_ReadOnlyInline):
@@ -97,7 +111,7 @@ class SigningLinkInline(_ReadOnlyInline):
 
 
 @admin.register(Agreement)
-class AgreementAdmin(admin.ModelAdmin):
+class AgreementAdmin(_AgreementAdmin):
     """Browse agreements; every field is a record."""
 
     list_display = ("title", "counterparty_name", "kind", "status", "offered_at")
@@ -123,7 +137,7 @@ class AgreementAdmin(admin.ModelAdmin):
 
 
 @admin.register(CustomContract)
-class CustomContractAdmin(admin.ModelAdmin):
+class CustomContractAdmin(_AgreementAdmin):
     """Browse custom contracts; write and offer them on the site."""
 
     list_display = ("title", "counterparty_name", "created_by", "created")
@@ -145,29 +159,13 @@ class CustomContractAdmin(admin.ModelAdmin):
 
 
 @admin.register(Program)
-class ProgramAdmin(admin.ModelAdmin):
+class ProgramAdmin(_ConfigurationAdmin):
     """Configure programs privately; publication is an explicit staff decision."""
 
     list_display = ("title", "slug", "is_public")
     list_filter = ("is_public",)
     search_fields = ("title", "slug")
     fields = ("title", "slug", "description", "is_public", "definition")
-
-    def has_view_permission(self, request, obj=None):
-        """Let agreement managers inspect configuration."""
-        return request.user.has_perm("agreements.manage_agreement")
-
-    def has_add_permission(self, request):
-        """Let agreement managers configure new programs."""
-        return request.user.has_perm("agreements.manage_agreement")
-
-    def has_change_permission(self, request, obj=None):
-        """Let agreement managers maintain catalogs."""
-        return request.user.has_perm("agreements.manage_agreement")
-
-    def has_delete_permission(self, request, obj=None):
-        """Keep configured programs that orders may reference."""
-        return False
 
 
 class OrderLineInline(_ReadOnlyInline):
@@ -179,7 +177,7 @@ class OrderLineInline(_ReadOnlyInline):
 
 
 @admin.register(Order)
-class OrderAdmin(admin.ModelAdmin):
+class OrderAdmin(_AgreementAdmin):
     """Browse orders; use their customer-facing page for changes."""
 
     list_display = ("legal_name", "program", "status", "created")

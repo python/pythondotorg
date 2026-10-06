@@ -1,7 +1,6 @@
 """Models registered by the agreements Django app."""
 
 from apps.agreements.models.agreements import (
-    MANAGE_PERMISSION,
     Agreement,
     AgreementRevision,
     CustomContract,
@@ -13,7 +12,6 @@ from apps.agreements.models.terms import CANONICAL_ORIGIN, Terms, TermsVersion
 
 __all__ = [
     "CANONICAL_ORIGIN",
-    "MANAGE_PERMISSION",
     "Agreement",
     "AgreementRevision",
     "CustomContract",
