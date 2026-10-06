@@ -173,6 +173,8 @@ records are read-only in the Django admin; use the site workflow to change their
         integrity hashes are retained internally rather than shown to signatories.
         Public terms responses are publicly cacheable only for anonymous visitors.
         Responses to signed-in users are private and must not be stored by shared caches.
+        Terms cited by any public program cannot be made private. Make every referencing
+        program private first; both the terms editor and Django admin enforce this order.
 :Offering: Making a draft ready to sign freezes its document, complete program configuration,
            fees, and cited terms versions. Later catalog or terms changes do not affect it.
            Withdrawing an unsigned offer returns it to draft and disables signing links;

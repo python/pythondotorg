@@ -50,6 +50,12 @@ class TermsForm(forms.Form):
         _check_markdown(markdown)
         return markdown
 
+    def clean_is_public(self):
+        """Check visibility without changing the terms before the form is valid."""
+        is_public = self.cleaned_data["is_public"]
+        self.terms.validate_is_public(is_public)
+        return is_public
+
     def clean(self):
         """Require a new version label, notes, and a change before publishing."""
         cleaned = super().clean()

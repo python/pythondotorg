@@ -1,12 +1,14 @@
 """Published terms and their immutable versions."""
 
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.functional import cached_property
 
 from apps.agreements.documents import sha256
+from apps.agreements.orders.catalog import Catalog
 
 # Documents are rendered on staging and locally too; they must always cite production.
 CANONICAL_ORIGIN = "https://www.python.org"
@@ -43,6 +45,26 @@ class Terms(models.Model):
     def get_absolute_url(self):
         """Return the public page for the current version."""
         return reverse("agreements:terms", kwargs={"slug": self.slug})
+
+    def validate_is_public(self, is_public):
+        """Keep terms readable while any public program cites their slug."""
+        if is_public or self.pk is None:
+            return
+        from apps.agreements.models.orders import Program
+
+        for definition in Program.objects.filter(is_public=True).values_list("definition", flat=True):
+            catalog = Catalog(definition)
+            if any(item.terms_slug == self.slug for item in catalog.agreements.values()):
+                message = "Make every program that cites these terms private before making the terms private."
+                raise ValidationError(message)
+
+    def clean(self):
+        """Validate publication settings in model forms, including the admin."""
+        super().clean()
+        try:
+            self.validate_is_public(self.is_public)
+        except ValidationError as exc:
+            raise ValidationError({"is_public": exc.messages}) from exc
 
     @cached_property
     def current_version(self):

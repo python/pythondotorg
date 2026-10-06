@@ -19,7 +19,8 @@
     {% include "agreements/_field.html" with field=form.markdown %}
     {% if user|is_agreements_administrator %}
     <label class="choice">{{ form.under_review }} <span>{{ form.under_review.label }}: show a notice wherever these terms appear.</span></label>
-    <label class="choice">{{ form.is_public }} <span>{{ form.is_public.label }}. {{ form.is_public.help_text }}</span></label>
+    <label class="choice{% if form.is_public.errors %} has-error{% endif %}">{{ form.is_public }} <span id="{{ form.is_public.auto_id }}_helptext">{{ form.is_public.label }}. {{ form.is_public.help_text }}</span></label>
+    {{ form.is_public.errors }}
     {% endif %}
 
     <p class="form-actions">
