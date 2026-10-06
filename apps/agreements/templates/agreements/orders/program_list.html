@@ -1,0 +1,20 @@
+{% extends "agreements/orders/base.html" %}
+{% block title %}Programs{% endblock %}
+{% block crumbs %}<li>Programs</li>{% endblock %}
+
+{% block content %}
+<article class="text">
+  <header class="article-header"><h1 class="page-title">Programs</h1></header>
+  {% for program in programs %}
+    <section class="agreement-summary">
+      <h2><a href="{{ program.get_absolute_url }}">{{ program.title }}</a></h2>
+      {% if program.description %}<p>{{ program.description|linebreaksbr }}</p>{% endif %}
+      {% if not program.is_public %}<p class="agreement-meta">Private program — staff-prepared orders only.</p>{% endif %}
+      <p class="actions"><a class="button" href="{{ program.get_absolute_url }}">Compare agreements</a></p>
+    </section>
+  {% empty %}
+    <p>There are no programs available to browse.</p>
+    {% if user.is_authenticated %}<p>You can still <a href="{% url 'agreements:order_list' %}">view orders prepared for your account</a>.</p>{% endif %}
+  {% endfor %}
+</article>
+{% endblock %}

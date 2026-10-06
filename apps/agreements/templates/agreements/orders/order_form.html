@@ -1,0 +1,231 @@
+{% extends "agreements/orders/base.html" %}
+{% load static agreements %}
+{% block title %}{% if order %}Edit package{% else %}Build a package{% endif %}{% endblock %}
+
+{% block crumbs %}
+<li><a href="{% url 'agreements:program_list' %}">Programs</a><span class="prompt">&gt;&gt;&gt;</span></li>
+{% if can_browse_program %}<li><a href="{{ program.get_absolute_url }}">{{ program.title }}</a><span class="prompt">&gt;&gt;&gt;</span></li>{% endif %}
+{% if order %}
+  <li><a href="{{ order.get_absolute_url }}">{{ order.legal_name }}</a><span class="prompt">&gt;&gt;&gt;</span></li>
+  <li>Edit package</li>
+{% else %}
+  <li>Build a package</li>
+{% endif %}
+{% endblock %}
+
+{% block content_attributes %}{% endblock %}
+{% block left_sidebar %}{% endblock %}
+
+{% block content %}
+<article class="text pb-page">
+  <header class="pb-intro">
+    <h1 class="page-title">{% if order %}Edit your package{% else %}Build your {{ program.title }} package{% endif %}</h1>
+    <p class="pb-lede">Choose your services, extras and term, then add your organization and contact details. You'll review the complete Order Form before signing.</p>
+  </header>
+
+  <form method="post" id="order-form" class="package-builder" novalidate data-quote-url="{% url 'agreements:quote' program.slug %}"{% if order %} data-order="{{ order.pk }}"{% endif %}>
+    {% csrf_token %}
+
+    {% if builder.has_errors %}
+      <div class="user-feedback level-error pb-errors" id="pb-errors" role="alert" tabindex="-1" aria-labelledby="pb-errors-title">
+        <h2 class="pb-errors-title" id="pb-errors-title">Some details need attention</h2>
+        <ul>
+          {% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
+          {% for field in form %}{% for error in field.errors %}
+            <li><a href="#{% if field.name == 'agreements' %}services{% elif field.name == 'discount' %}term{% else %}{{ field.id_for_label }}{% endif %}">{% if field.name|slice:':8' == 'contact_' %}Contact {{ field.name|slice:'8:9' }} {{ field.label|lower }}: {% elif field.name != 'agreements' %}{{ field.label }}: {% endif %}{{ error }}</a></li>
+          {% endfor %}{% endfor %}
+          {% for slug, aform in builder.agreement_forms.items %}{% if slug in builder.chosen %}
+            {% for error in aform.non_field_errors %}<li><a href="#family-{{ slug }}">{{ aform.agreement.short_name }}: {{ error }}</a></li>{% endfor %}
+            {% for field in aform %}{% for error in field.errors %}
+              <li><a href="#{% if field.name == 'tier' %}family-{{ slug }}{% else %}{{ field.id_for_label }}{% endif %}">{{ aform.agreement.short_name }}{% if field.name != 'tier' and field.widget_type != 'checkbox' %}, {{ field.label }}{% endif %}: {{ error }}</a></li>
+            {% endfor %}{% endfor %}
+          {% endif %}{% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+
+    <nav class="pb-steps" aria-label="Package setup" hidden>
+      <button type="button" data-step-go="services" aria-controls="services">Services</button>
+      <button type="button" data-step-go="extras" aria-controls="extras">Extras</button>
+      <button type="button" data-step-go="term" aria-controls="term">Term</button>
+      <button type="button" data-step-go="organization" aria-controls="organization">Organization</button>
+      <button type="button" data-step-go="contacts" aria-controls="contacts">Contacts &amp; billing</button>
+    </nav>
+    <p class="pb-progress-text" id="pb-progress-text" hidden></p>
+
+    <div class="pb-layout">
+      <section class="pb-section pb-package" id="services" data-step-panel="services" aria-labelledby="package-title">
+        <div class="pb-section-head">
+          <h2 id="package-title">Choose your services</h2>
+          <p class="pb-help">Choose a tier for each service you need. You can remove a service without losing your choices.</p>
+          <noscript><p class="pb-help">Select “Include in my package” for each service you want, then choose its tier and extras. Prices are confirmed on the next page.</p></noscript>
+        </div>
+        {{ form.agreements.errors }}
+        {% for slug, aform in builder.agreement_forms.items %}
+          {% if slug in builder.chosen %}
+            {% include "agreements/orders/_family.html" with show_errors=True %}
+          {% else %}
+            {% include "agreements/orders/_family.html" with show_errors=False %}
+          {% endif %}
+        {% endfor %}
+      </section>
+
+      <section class="pb-section pb-extras-page" id="extras" data-step-panel="extras" aria-labelledby="extras-title">
+        <h2 id="extras-title">Choose your extras</h2>
+        <p class="pb-help">Add extras for the services in your package, or continue without adding any.</p>
+        <noscript><p class="pb-help">Only extras for services you include in your package will be applied.</p></noscript>
+        <p class="pb-help" id="pb-extras-empty" hidden>There are no extras for your selected services. Continue to choose your term, or <a href="#services">choose a service</a>.</p>
+        {% for slug, aform in builder.agreement_forms.items %}
+          {% if slug in builder.chosen %}
+            {% include "agreements/orders/_extras.html" with show_errors=True %}
+          {% else %}
+            {% include "agreements/orders/_extras.html" with show_errors=False %}
+          {% endif %}
+        {% endfor %}
+      </section>
+
+      <section class="pb-section pb-term" id="term" data-step-panel="term" aria-labelledby="term-title">
+        <h2 id="term-title">Term and discount</h2>
+        <p class="pb-help">Applies to every service in your package. Discounts apply to Service Tier fees only and don't combine. Multi-year terms are prepaid.</p>
+        <fieldset class="pb-term-set">
+          <legend class="screen-reader-text">Term and discount</legend>
+          <div class="pb-term-options">
+            {% for discount in catalog.discounts %}
+              <label class="pb-term-option" for="id_discount_{{ forloop.counter0 }}">
+                <input type="radio" id="id_discount_{{ forloop.counter0 }}" name="{{ form.discount.html_name }}" value="{{ discount.key }}" data-attestation="{{ discount.requires_attestation|yesno:'true,false' }}"{% if form.discount.value == discount.key %} checked{% endif %}>
+                <span class="pb-term-name">{{ discount.name }}</span>
+                <span class="pb-term-detail">{% if discount.percent %}{{ discount.percent }}% off Service Tier fees · {% endif %}{{ discount.term_months }}-month initial term{% if discount.term_months > 12 %}, prepaid{% endif %}</span>
+              </label>
+            {% endfor %}
+          </div>
+        </fieldset>
+        {{ form.discount.errors }}
+        <div id="discount-attest" class="pb-attest{% if form.discount_attestation.errors %} has-error{% endif %}">
+          <label class="choice" for="{{ form.discount_attestation.id_for_label }}">
+            {{ form.discount_attestation }}
+            <span>{{ form.discount_attestation.label }}{% if form.discount_attestation.help_text %} <span class="choice-help">{{ form.discount_attestation.help_text }}</span>{% endif %}</span>
+          </label>
+          {{ form.discount_attestation.errors }}
+        </div>
+      </section>
+
+      <aside class="pb-summary" id="package-summary" aria-labelledby="summary-title">
+        <div class="pb-summary-panel">
+          <h2 class="pb-summary-title" id="summary-title" tabindex="-1">Your package</h2>
+          <div class="pb-summary-body" id="pb-summary-body">
+            <p class="pb-summary-empty">You'll see every fee on the next page, with the complete Order Form, before anything is signed.</p>
+          </div>
+          <div class="pb-summary-status" id="pb-quote-status" hidden></div>
+          <div class="pb-totals" id="pb-totals" hidden></div>
+          {% if catalog.payment.other_charges %}<p class="pb-summary-foot">{{ catalog.payment.other_charges }}</p>{% endif %}
+        </div>
+        <p class="screen-reader-text" role="status" id="pb-announce"></p>
+      </aside>
+
+      <section class="pb-section pb-org" id="organization" data-step-panel="organization" aria-labelledby="org-title">
+        <h2 id="org-title">Your organization</h2>
+        <p class="pb-help">Details for the Order Form. Fields marked <span aria-hidden="true">*</span><span class="screen-reader-text">with an asterisk</span> are required.</p>
+        {% with compact_required=True %}
+        <fieldset class="pb-group">
+          <legend>Organization</legend>
+          <div class="pb-fields">
+            {% include "agreements/_field.html" with field=form.legal_name %}
+            <div class="field-row">
+              {% include "agreements/_field.html" with field=form.jurisdiction field_label="State or country of registration" %}
+              {% include "agreements/_field.html" with field=form.entity_type %}
+            </div>
+            <div class="field-row">
+              {% include "agreements/_field.html" with field=form.address field_label="Principal business address" %}
+              {% include "agreements/_field.html" with field=form.covered_entities %}
+            </div>
+          </div>
+        </fieldset>
+
+        {% endwith %}
+      </section>
+
+      <section class="pb-section pb-org pb-contacts" id="contacts" data-step-panel="contacts" aria-labelledby="contacts-title">
+        <h2 id="contacts-title">Contacts and billing</h2>
+        <p class="pb-help">Add the people who can request services and receive billing notices. Fields marked <span aria-hidden="true">*</span><span class="screen-reader-text">with an asterisk</span> are required.</p>
+        {% with compact_required=True %}
+        <fieldset class="pb-group">
+          <legend>Authorized contacts</legend>
+          <p class="pb-help">Who can request services? Add at least one person.</p>
+          {% for name, email in form.contact_rows %}
+            <fieldset class="pb-contact">
+              <legend>Contact {{ forloop.counter }}</legend>
+              <div class="field-row">
+                {% include "agreements/_field.html" with field=name %}
+                {% include "agreements/_field.html" with field=email %}
+              </div>
+            </fieldset>
+          {% endfor %}
+          <button type="button" class="pb-secondary" id="add-contact" hidden>Add another contact</button>
+        </fieldset>
+
+        <fieldset class="pb-group">
+          <legend>Billing and notices</legend>
+          <div class="pb-fields">
+            <div class="field-row">
+              {% include "agreements/_field.html" with field=form.billing_contact_name %}
+              {% include "agreements/_field.html" with field=form.billing_contact_email %}
+            </div>
+            {% include "agreements/_field.html" with field=form.notices_contact %}
+          </div>
+        </fieldset>
+
+        {% if staff %}
+          <details class="pb-staff-details">
+            <summary>Staff contract adjustments</summary>
+            {% if form.customer_account_email %}
+              {% include "agreements/_field.html" with field=form.customer_account_email %}
+            {% endif %}
+            {% for slug, aform in builder.agreement_forms.items %}
+              {% if aform.special_terms %}
+                <fieldset class="pb-staff">
+                  <legend>Special terms for {{ aform.agreement.short_name }}</legend>
+                  {% include "agreements/_field.html" with field=aform.special_terms %}
+                </fieldset>
+              {% endif %}
+            {% endfor %}
+          </details>
+        {% endif %}
+        {% endwith %}
+
+        <section class="pb-review" id="review" aria-labelledby="review-title">
+        <h2 id="review-title">Agreements for this package</h2>
+        <p class="pb-help">Each service is provided under its own published agreement with the Python Software Foundation. Your package goes on one Order Form that cites them, signed once.</p>
+        <ul class="pb-agreements" id="pb-agreements">
+          {% for agreement in agreements %}
+            <li data-agreement-for="{{ agreement.slug }}"{% if agreement.slug not in builder.chosen %} hidden{% endif %}>
+              <span class="pb-agreement-title">{{ agreement.title }}</span>
+              <span class="pb-agreement-for">for {{ agreement.short_name }}</span>
+              {% with terms=agreement.terms %}{% if terms.under_review %}<span class="status-pill status-notice">Draft terms</span>{% endif %}{% endwith %}
+              <a href="{% url 'agreements:terms' agreement.terms_slug %}" target="_blank" rel="noopener">Read the terms<span class="screen-reader-text"> of the {{ agreement.title }} (opens in a new tab)</span></a>
+            </li>
+          {% endfor %}
+        </ul>
+        <p class="pb-agreements-empty" id="pb-agreements-empty"{% if builder.chosen %} hidden{% endif %}>Choose a service to see its agreement here.</p>
+        <div class="form-actions pb-actions">
+          <button type="submit">Continue to review</button>
+          <a href="{% if order %}{{ order.get_absolute_url }}{% else %}{{ program.get_absolute_url }}{% endif %}">Cancel</a>
+        </div>
+        <p class="pb-fineprint">Next you'll see the complete Order Form with every fee. Nothing is binding until it's signed.</p>
+        </section>
+      </section>
+
+    </div>
+
+    <div class="pb-wizard-actions" id="pb-wizard-actions" hidden>
+      <button type="button" class="pb-secondary" data-step-back>Back</button>
+      <div class="pb-bar" id="pb-bar" hidden>
+        <p class="pb-bar-text"><span class="pb-bar-label">Your package</span> <span class="pb-bar-total" id="pb-bar-total"></span></p>
+        <a class="pb-bar-link" href="#package-summary">View package</a>
+      </div>
+      <button type="button" data-step-next>Continue to extras</button>
+    </div>
+  </form>
+</article>
+{% endblock %}
+
+{% block extra_js %}{{ builder.parameter_conditions|json_script:"order-parameter-conditions" }}<script src="{% static 'agreements/package-builder.js' %}?v=5" defer></script>{% endblock %}

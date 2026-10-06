@@ -200,6 +200,7 @@ INSTALLED_APPS = [
     "django_countries",
     "sorl.thumbnail",
     "pydotorg",
+    "apps.agreements",
     "apps.banners",
     "apps.blogs",
     "apps.boxes",
@@ -330,7 +331,11 @@ CONTENT_SECURITY_POLICY_REPORT_ONLY = {
             UNSAFE_INLINE,
             "https://ajax.googleapis.com",
         ],
-        "img-src": [SELF, "data:", "https://media.ethicalads.io"],
+        "img-src": [
+            SELF,
+            "data:",
+            "https:",
+        ],
         "font-src": [SELF, "data:"],
         "connect-src": [
             SELF,

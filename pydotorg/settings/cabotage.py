@@ -67,6 +67,8 @@ SECURE_PROXY_SSL_HEADER = ("HTTP_FASTLY_SSL", "1")
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 
+ALLAUTH_TRUSTED_CLIENT_IP_HEADER = "Fastly-Client-IP"
+
 sentry_sdk.init(
     dsn=config("SENTRY_DSN"),
     integrations=[DjangoIntegration()],

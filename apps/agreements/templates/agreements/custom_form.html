@@ -1,0 +1,33 @@
+{% extends "agreements/base.html" %}
+{% block title %}{% if contract %}Edit contract{% else %}New contract{% endif %}{% endblock %}
+{% block crumbs %}
+<li><a href="{% url 'agreements:queue' %}">Agreements</a><span class="prompt">&gt;&gt;&gt;</span></li>
+<li>{% if contract %}Edit contract{% else %}New contract{% endif %}</li>
+{% endblock %}
+
+{% block content %}
+<article class="text">
+  <header class="article-header">
+    <h1 class="page-title">{% if contract %}Edit {{ contract.title }}{% else %}New contract{% endif %}</h1>
+  </header>
+  <p class="introduction">For one-off contracts, such as with a PyCon venue or vendor. Write the terms below; the parties, any standing terms you cite, and the signature block are added for you. Nothing is sent until you make it ready to sign.</p>
+
+  <form method="post" class="sign-form">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    {% include "agreements/_field.html" with field=form.title %}
+    <div class="field-row">
+      {% include "agreements/_field.html" with field=form.counterparty_name %}
+      {% if form.counterparty_account_email %}
+        {% include "agreements/_field.html" with field=form.counterparty_account_email %}
+      {% endif %}
+    </div>
+    {% include "agreements/_field.html" with field=form.terms %}
+    {% include "agreements/_field.html" with field=form.body_markdown %}
+    <p class="form-actions">
+      <button type="submit">Save and preview</button>
+      <a href="{% if contract %}{{ contract.get_absolute_url }}{% else %}{% url 'agreements:queue' %}{% endif %}">Cancel</a>
+    </p>
+  </form>
+</article>
+{% endblock %}

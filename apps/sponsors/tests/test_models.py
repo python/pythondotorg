@@ -1280,3 +1280,40 @@ class EmailTargetableConfigurationTest(TestCase):
         repeated, created = config.clone(benefit)
         self.assertFalse(created)
         self.assertEqual(new_cfg.pk, repeated.pk)
+
+
+class PolymorphicDeletionTests(TestCase):
+    def test_sponsorship_deletion_cascades_mixed_features_and_assets(self):
+        sponsorship, retained = baker.make(Sponsorship, _quantity=2)
+        benefit = baker.make(SponsorBenefit, sponsorship=sponsorship)
+        text_feature = baker.make(RequiredTextAsset, sponsor_benefit=benefit)
+        img_feature = baker.make(RequiredImgAsset, sponsor_benefit=benefit)
+        text_asset = TextAsset.objects.create(content_object=sponsorship, internal_name="text")
+        img_asset = ImgAsset.objects.create(content_object=sponsorship, internal_name="image")
+        retained_asset = TextAsset.objects.create(content_object=retained, internal_name="text")
+        retained_feature = baker.make(
+            RequiredTextAsset, sponsor_benefit=baker.make(SponsorBenefit, sponsorship=retained)
+        )
+
+        Sponsorship.objects.filter(pk=sponsorship.pk).delete()
+
+        self.assertFalse(SponsorBenefit.objects.filter(pk=benefit.pk).exists())
+        for obj in (text_feature, img_feature, text_asset, img_asset):
+            with self.subTest(model=type(obj).__name__):
+                self.assertFalse(type(obj).objects.filter(pk=obj.pk).exists())
+        self.assertFalse(BenefitFeature.objects.filter(pk__in=[text_feature.pk, img_feature.pk]).exists())
+        self.assertTrue(Sponsorship.objects.filter(pk=retained.pk).exists())
+        self.assertTrue(TextAsset.objects.filter(pk=retained_asset.pk).exists())
+        self.assertTrue(RequiredTextAsset.objects.filter(pk=retained_feature.pk).exists())
+
+    def test_benefit_deletion_cascades_mixed_configurations(self):
+        benefit = baker.make(SponsorshipBenefit)
+        text_config = baker.make(RequiredTextAssetConfiguration, benefit=benefit)
+        img_config = baker.make(RequiredImgAssetConfiguration, benefit=benefit)
+        retained = baker.make(RequiredTextAssetConfiguration)
+
+        benefit.delete()
+
+        self.assertFalse(RequiredTextAssetConfiguration.objects.filter(pk=text_config.pk).exists())
+        self.assertFalse(RequiredImgAssetConfiguration.objects.filter(pk=img_config.pk).exists())
+        self.assertTrue(RequiredTextAssetConfiguration.objects.filter(pk=retained.pk).exists())

@@ -96,17 +96,15 @@ Then clone the repository:
 $ git clone git://github.com/python/pythondotorg.git
 ```
 
-Then create a virtual environment:
+Install [uv](https://docs.astral.sh/uv/getting-started/installation/), then install
+the locked development dependencies from the repository root:
 
 ```
-$ python3 -m venv venv
+$ uv sync --locked --group dev
 ```
 
-And then you'll need to install dependencies. You don't need to use `pip3` inside a Python 3 virtual environment:
-
-```
-$ pip install -e '.[dev]'
-```
+uv creates `.venv` and uses the Python version in `.python-version`. Run Python
+commands through `uv run` so they use this environment.
 
 *pythondotorg* will look for a PostgreSQL database named `pythondotorg` by default. Run the following command to create a new database:
 
@@ -159,7 +157,7 @@ If you prefer to set this variable in a more permanent way add the above line in
 Whichever database type you chose, now it's time to run migrations:
 
 ```
-$ ./manage.py migrate
+$ uv run ./manage.py migrate
 ```
 
 To minify CSS (optional for development):
@@ -172,7 +170,7 @@ $ make css
 To create initial data for the most used applications, run:
 
 ```
-$ ./manage.py create_initial_data
+$ uv run ./manage.py create_initial_data
 ```
 
 See `pythondotorg`[create_initial_data](https://pythondotorg.readthedocs.io/commands.html#command-create-initial-data) for the command options to specify while creating initial data.
@@ -180,7 +178,7 @@ See `pythondotorg`[create_initial_data](https://pythondotorg.readthedocs.io/comm
 Finally, start the development server:
 
 ```
-$ ./manage.py runserver
+$ uv run ./manage.py runserver
 ```
 
 Optional: Install Elasticsearch
