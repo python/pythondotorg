@@ -62,6 +62,6 @@ class OrderKind(Kind):
         return compose_order_form_markdown(subject)
 
     def can_view(self, user, agreement):
-        """Let the order's creator follow the agreement too."""
+        """Use the order's group and linked-customer access rules."""
         order = self.subject(agreement)
         return order is not None and order.can_view(user)
