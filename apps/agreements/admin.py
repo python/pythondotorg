@@ -33,6 +33,10 @@ class GroupAdmin(BaseGroupAdmin):
         """Protect role names and permissions from delegated group editors."""
         return request.user.is_superuser and super().has_change_permission(request, obj)
 
+    def has_delete_permission(self, request, obj=None):
+        """Keep delegated staff from deleting roles and the memberships they confer."""
+        return request.user.is_superuser and super().has_delete_permission(request, obj)
+
 
 class _AgreementAdmin(admin.ModelAdmin):
     """Use agreement groups, never Django's model or superuser permissions."""
