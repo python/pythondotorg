@@ -2,10 +2,13 @@
 
 from django import template
 
+from apps.agreements.auth import can_prepare, is_administrator
 from apps.agreements.orders.pricing import money
 
 register = template.Library()
 register.filter("money", money)
+register.filter("can_prepare_agreements", can_prepare)
+register.filter("is_agreements_administrator", is_administrator)
 
 STATUSES = {
     "draft": ("neutral", "Draft"),
