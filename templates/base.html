@@ -2,10 +2,12 @@
 <html class="no-js" lang="en" dir="ltr">
 {% load pipeline sitetree %}
 <head>
+    {% if not request.disable_tracking %}
     <script defer
             file-types="bz2,chm,dmg,exe,gz,json,msi,msix,pdf,pkg,tgz,xz,zip"
             data-domain="python.org"
             src="https://analytics.python.org/js/script.file-downloads.outbound-links.js"></script>
+    {% endif %}
 
     <meta charset="utf-8">
 
@@ -21,11 +23,13 @@
     <meta name="HandheldFriendly" content="True">
     <meta name="format-detection" content="telephone=no">
 
+    {% if not request.disable_tracking %}
     <script async
             src="https://media.ethicalads.io/media/client/v1.4.0/ethicalads.min.js"
             integrity="sha256-U3hKDidudIaxBDEzwGJApJgPEf2mWk6cfMWghrAa6i0= sha384-UcmsCqcNRSLW/dV3Lo1oCi2/VaurXbib6p4HyUEOeIa/4OpsrnucrugAefzVZJfI sha512-q4t1L4xEjGV2R4hzqCa41P8jrgFUS8xTb8rdNv4FGvw7FpydVj/kkxBJHOiaoxHa8olCcx1Slk9K+3sNbsM4ug=="
             crossorigin="anonymous"
     ></script>
+    {% endif %}
     <script src="{{ STATIC_URL }}js/libs/modernizr.js"></script>
 
     {% stylesheet 'style' %}

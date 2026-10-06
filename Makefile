@@ -7,7 +7,7 @@ help: ## Display this help text
 # Docker State
 # =============================================================================
 
-.state/docker-build-web: Dockerfile pyproject.toml
+.state/docker-build-web: Dockerfile pyproject.toml uv.lock
 	docker compose build --force-rm web
 	mkdir -p .state && touch .state/docker-build-web
 
@@ -77,19 +77,20 @@ ci: lint fmt test ## Run lint, fmt, then tests
 
 ##@ Documentation
 
+DOCS_BUILDDIR ?= docs/_build
+DOCS_PORT ?= 8001
+
 docs: docs-clean ## Build documentation
 	@echo "=> Building documentation"
-	@uv sync --group docs
-	@uv run sphinx-build -M html docs/source docs/_build/ -E -a -j auto --keep-going
+	@uv run --locked --only-group docs sphinx-build -M html docs/source "$(DOCS_BUILDDIR)" -E -a -j auto --keep-going -W
 
 docs-serve: docs-clean ## Serve documentation with live reload
 	@echo "=> Serving documentation"
-	@uv sync --group docs
-	@uv run sphinx-autobuild docs/source docs/_build/ -j auto --port 0
+	@uv run --locked --only-group docs sphinx-autobuild docs/source "$(DOCS_BUILDDIR)/html" -j auto --port "$(DOCS_PORT)" --keep-going -W
 
 docs-clean: ## Clean built documentation
 	@echo "=> Cleaning documentation build assets"
-	@rm -rf docs/_build
+	@rm -rf "$(DOCS_BUILDDIR)"
 	@echo "=> Removed existing documentation build assets"
 
 # =============================================================================

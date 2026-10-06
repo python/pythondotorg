@@ -1,0 +1,51 @@
+{% extends "agreements/base.html" %}
+{% block title %}{% if agreement %}Sign: {{ agreement.title }}{% else %}Signing link{% endif %}{% endblock %}
+{% block crumbs %}<li>Sign</li>{% endblock %}
+{% block content_attributes %}{% endblock %}
+{% block left_sidebar %}{% endblock %}
+
+{% block content %}
+<article class="text">
+  {% if unusable %}
+    <header class="article-header"><h1 class="page-title">This signing link no longer works</h1></header>
+    <p>It has expired, has already been used, or the document was withdrawn. Ask your contact at the Python Software Foundation for a new link.</p>
+  {% elif signed %}
+    <header class="article-header"><h1 class="page-title">Signed. Thank you.</h1></header>
+    <p>{{ agreement.signer_name }} signed {{ agreement.title }} for {{ agreement.counterparty_name }} (reference {{ agreement.reference }}). The PSF will countersign and email the fully signed copy to {{ agreement.signer_email }}.</p>
+  {% else %}
+    <header class="article-header"><h1 class="page-title">{{ agreement.title }}</h1></header>
+    <p class="agreement-meta">For {{ agreement.counterparty_name }} · Reference <code>{{ agreement.reference }}</code> · Revision {{ agreement.revision }} · Download: <a href="{% url 'agreements:sign_link_document' token 'pdf' %}">PDF</a> · <a href="{% url 'agreements:sign_link_document' token 'docx' %}">DOCX</a></p>
+    {% if metadata_hidden %}<p class="agreement-meta">For the complete document, download the PDF or DOCX.</p>{% endif %}
+    <div class="agreement-scroll" tabindex="0" aria-label="Document text"><div class="agreement-text">{{ html|safe }}</div></div>
+    {% if agreement.terms_versions.exists %}
+      <h2>Terms included in this agreement</h2>
+      <ul>{% for version in agreement.terms_versions.all %}
+        <li><a href="{% url 'agreements:sign_link_terms' token version.pk %}">{{ version.terms.title }} — {{ version.version }}</a></li>
+      {% endfor %}</ul>
+    {% endif %}
+
+    <section aria-labelledby="sign-title">
+      <h2 id="sign-title">Sign</h2>
+      <form method="post" class="sign-form">
+        {% csrf_token %}
+        {{ form.document_sha256 }}
+        {{ form.non_field_errors }}
+        <label class="choice accept{% if form.accept.errors %} has-error{% endif %}">
+          {{ form.accept }}
+          <span>By clicking “Sign” I, on behalf of {{ agreement.counterparty_name }}, sign {{ agreement.title }} (reference {{ agreement.reference }}, revision {{ agreement.revision }}) with the Python Software Foundation, as shown above, including any terms it cites. I represent and warrant that I am authorized to sign on behalf of, and to legally bind, {{ agreement.counterparty_name }}.</span>
+        </label>
+        {{ form.accept.errors }}
+        <div class="field-row">
+          {% include "agreements/_field.html" with field=form.signer_name %}
+          {% include "agreements/_field.html" with field=form.signer_title %}
+        </div>
+        <div class="user-feedback level-general signing-as">
+          <p><strong>Signing as {{ link.email }}</strong>, the address this link was sent to.</p>
+          <p>Your name, title, email, the time, and your IP address are recorded with your signature and the exact text you sign.</p>
+        </div>
+        <button type="submit">Sign</button>
+      </form>
+    </section>
+  {% endif %}
+</article>
+{% endblock %}

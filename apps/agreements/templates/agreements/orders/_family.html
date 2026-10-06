@@ -1,0 +1,57 @@
+{% load agreements %}{% with agreement=aform.agreement tier_options=aform.tier_options %}
+<section class="pb-family{% if show_errors and aform.errors %} has-error{% endif %}" id="family-{{ slug }}" data-family="{{ slug }}" data-family-name="{{ agreement.short_name }}" data-family-title="{{ agreement.title }}" data-default-tier="{{ agreement.default_tier }}" aria-labelledby="family-{{ slug }}-title">
+  <header class="pb-family-head">
+    <div class="pb-family-intro">
+      <h3 class="pb-family-title" id="family-{{ slug }}-title">{{ agreement.short_name }}</h3>
+      {% if agreement.tagline %}<p class="pb-family-tagline">{{ agreement.tagline }}</p>{% endif %}
+    </div>
+    <label class="pb-include" for="include-{{ slug }}">
+      <input type="checkbox" class="pb-include-input" id="include-{{ slug }}" name="{{ form.agreements.html_name }}" value="{{ slug }}"{% if slug in builder.chosen %} checked{% endif %}>
+      <span>Include <span class="screen-reader-text">{{ agreement.short_name }} </span>in my package</span>
+    </label>
+  </header>
+
+  {% if show_errors %}{{ aform.non_field_errors }}{% endif %}
+
+  <fieldset class="pb-tiers">
+    <legend class="screen-reader-text">{{ agreement.short_name }} service tier</legend>
+    <div class="pb-tier-options">
+      {% for option in tier_options %}{% with tier=option.tier %}
+        <div class="pb-tier" data-tier="{{ tier.key }}" data-tier-name="{{ tier.name }}" data-fee="{{ tier.annual_fee|money }}">
+          <div class="pb-tier-head">
+            <input type="radio" class="pb-tier-input" id="{{ slug }}-tier-{{ tier.key }}" name="{{ aform.tier.html_name }}" value="{{ tier.key }}" aria-describedby="{{ slug }}-fee-{{ tier.key }}"{% if aform.tier.value == tier.key %} checked{% endif %}>
+            <label class="pb-tier-name" for="{{ slug }}-tier-{{ tier.key }}">{{ tier.name }}</label>
+            <p class="pb-fee" id="{{ slug }}-fee-{{ tier.key }}"><span class="pb-fee-amount">{{ tier.annual_fee|money }}</span> <span class="pb-fee-unit">a year</span></p>
+          </div>
+          <dl class="pb-tier-facts">
+            <div><dt>Critical (P1) response target</dt><dd>{{ tier.response_targets.0 }}</dd></div>
+            <div><dt>Support requests a year</dt><dd>{{ tier.fair_use }}</dd></div>
+          </dl>
+        </div>
+      {% endwith %}{% endfor %}
+    </div>
+  </fieldset>
+  {% if show_errors %}{{ aform.tier.errors }}{% endif %}
+
+  <fieldset class="pb-group pb-base-services" id="{{ slug }}-services" aria-describedby="{{ slug }}-services-help{% if show_errors and aform.services.errors %} {{ slug }}-services-errors{% endif %}">
+    <legend>Base services<span class="screen-reader-text"> for {{ agreement.short_name }}</span></legend>
+    <p class="pb-help" id="{{ slug }}-services-help">Select only the base services you want. Selecting none is allowed. The Service Tier fee stays the same regardless of your base-service selection.</p>
+    {% if show_errors and aform.services.errors %}<div id="{{ slug }}-services-errors">{{ aform.services.errors }}</div>{% endif %}
+    <div class="pb-fields">
+      {% for service, tiers in agreement.service_rows %}
+        <label class="choice pb-base-service" for="{{ slug }}-service-{{ service.key }}" data-service-tiers="{{ service.tiers|join:' ' }}" data-service-name="{{ service.name }}">
+          <input type="checkbox" id="{{ slug }}-service-{{ service.key }}" name="{{ aform.services.html_name }}" value="{{ service.key }}"{% if service.key in aform.services.value %} checked{% endif %}{% if show_errors and aform.services.errors %} aria-invalid="true" aria-describedby="{{ slug }}-services-errors"{% endif %}>
+          <span>{{ service.name }} <span class="choice-help">{% if tiers %}Available at {{ tiers }} only.{% else %}Available at every tier.{% endif %}{% if service.description %} {{ service.description }}{% endif %}</span></span>
+        </label>
+      {% empty %}
+        <p class="pb-help">There are no base services to select for this agreement family.</p>
+      {% endfor %}
+    </div>
+    {% if agreement.services %}<p class="pb-help pb-services-empty" hidden>No base services are available at this tier.</p>{% endif %}
+    <p class="pb-services-changed" id="{{ slug }}-services-changed" role="status" hidden></p>
+  </fieldset>
+
+  {% include "agreements/orders/_comparison.html" %}
+
+</section>
+{% endwith %}

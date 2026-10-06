@@ -24,22 +24,16 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
         with:
-          python-version-file: '.python-version'
-
-      - name: Cache pip
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('pyproject.toml') }}
-          restore-keys: ${{ runner.os }}-pip-
+          version: "0.12.17"
+          enable-cache: true
 
       - name: Install dependencies
-        run: pip install --group dev -e .
+        run: uv sync --locked --group dev
 
       - name: Check for ungenerated migrations
-        run: python manage.py makemigrations --check --dry-run
+        run: uv run --no-sync python manage.py makemigrations --check --dry-run
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/pythonorg
 
@@ -76,24 +70,21 @@ jobs:
           wget https://github.com/jgm/pandoc/releases/download/2.17.1.1/pandoc-2.17.1.1-1-amd64.deb
           sudo dpkg -i pandoc-2.17.1.1-1-amd64.deb
 
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
         with:
-          python-version-file: '.python-version'
-
-      - name: Cache pip
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('pyproject.toml') }}
-          restore-keys: ${{ runner.os }}-pip-
+          version: "0.12.17"
+          enable-cache: true
 
       - name: Install dependencies
-        run: pip install --group dev -e .
+        run: uv sync --locked --group dev
+
+      - name: Check agreements types
+        run: uv run --no-sync python -m mypy
 
       - name: Run tests
-        run: python -Wd -m coverage run manage.py test -v2
+        run: uv run --no-sync python -Wd -m coverage run manage.py test -v2
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/pythonorg
 
       - name: Check coverage
-        run: coverage report -m --fail-under=75
+        run: uv run --no-sync coverage report -m --fail-under=75
