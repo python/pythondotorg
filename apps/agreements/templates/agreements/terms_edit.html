@@ -1,4 +1,5 @@
 {% extends "agreements/base.html" %}
+{% load agreements %}
 {% block title %}Edit: {{ terms.title }}{% endblock %}
 {% block crumbs %}
 <li><a href="{% url 'agreements:terms_list' %}">Terms</a><span class="prompt">&gt;&gt;&gt;</span></li>
@@ -16,8 +17,10 @@
     {% csrf_token %}
     {{ form.non_field_errors }}
     {% include "agreements/_field.html" with field=form.markdown %}
+    {% if user|is_agreements_administrator %}
     <label class="choice">{{ form.under_review }} <span>{{ form.under_review.label }}: show a notice wherever these terms appear.</span></label>
     <label class="choice">{{ form.is_public }} <span>{{ form.is_public.label }}. {{ form.is_public.help_text }}</span></label>
+    {% endif %}
 
     <p class="form-actions">
       <button type="submit" name="action" value="save" class="secondaryAction">Save draft</button>
@@ -25,6 +28,7 @@
       <a href="{% url 'agreements:terms_list' %}">Cancel</a>
     </p>
 
+    {% if user|is_agreements_administrator %}
     <fieldset class="staff-panel">
       <legend>Publish as a new version</legend>
       <div class="field-row">
@@ -33,6 +37,7 @@
       {% include "agreements/_field.html" with field=form.notes %}
       <button type="submit" name="action" value="publish">Publish</button>
     </fieldset>
+    {% endif %}
   </form>
 
   {% if preview %}

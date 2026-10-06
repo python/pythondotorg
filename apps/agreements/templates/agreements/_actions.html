@@ -16,7 +16,7 @@ pass `next` to return to the including page after each action.
 
 {% include "agreements/_record.html" %}
 
-{% if is_staff and agreement.status == "executed" %}
+{% if is_administrator and agreement.status == "executed" %}
   <form method="post" action="{% url 'agreements:resend_executed_copy' agreement.pk %}" class="sign-form">
     {% csrf_token %}
     {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
@@ -117,7 +117,7 @@ pass `next` to return to the including page after each action.
   </section>
 {% endif %}
 
-{% if is_staff and agreement.status == "offered" %}
+{% if is_administrator and agreement.status == "offered" %}
   <section class="staff-panel" aria-labelledby="staff-title">
     <h2 id="staff-title">PSF staff</h2>
     <p class="actions">

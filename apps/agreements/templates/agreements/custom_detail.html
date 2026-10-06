@@ -19,12 +19,16 @@
 
   <div class="agreement-scroll" tabindex="0" aria-label="Preview"><div class="agreement-text">{{ html|safe }}</div></div>
 
+  {% if user|is_agreements_administrator %}
   <p>Making it ready to sign fixes this text as revision 1. You can then send a signing link, record a signed copy, or {% if contract.counterparty_account %}let {{ contract.counterparty_account.email }} sign on python.org{% else %}name an account that signs online{% endif %}, and still edit it until it is signed.</p>
+  {% endif %}
   <div class="actions">
+    {% if user|is_agreements_administrator %}
     <form method="post" action="{% url 'agreements:custom_offer' contract.pk %}">
       {% csrf_token %}
       <button type="submit">Make ready to sign</button>
     </form>
+    {% endif %}
     <form method="post" action="{% url 'agreements:custom_delete' contract.pk %}" class="discard-form">
       {% csrf_token %}
       <button type="submit">Discard draft</button>

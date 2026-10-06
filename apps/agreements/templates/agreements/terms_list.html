@@ -1,4 +1,5 @@
 {% extends "agreements/base.html" %}
+{% load agreements %}
 {% block title %}Terms{% endblock %}
 {% block crumbs %}<li><a href="{% url 'agreements:queue' %}">Agreements</a><span class="prompt">&gt;&gt;&gt;</span></li><li>Terms</li>{% endblock %}
 
@@ -23,10 +24,10 @@
     </tbody>
   </table>
   </div>
-  {% if user.is_staff and perms.agreements.manage_agreement %}
+  {% if user.is_staff and user|is_agreements_administrator %}
     <p class="help"><a href="{% url 'admin:agreements_terms_add' %}">Add a new set of terms in the admin</a>, then write and publish it here.</p>
   {% else %}
-    <p class="help">Ask an administrator to create a new set of terms, then write and publish it here.</p>
+    <p class="help">Ask an administrator to create new terms or publish your draft.</p>
   {% endif %}
 </article>
 {% endblock %}

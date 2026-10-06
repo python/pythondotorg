@@ -17,7 +17,7 @@
   <header class="article-header">
     <h1 class="page-title">{{ order.legal_name }}</h1>
   </header>
-  <p class="order-meta">{% status_badge order.status %} {{ order.program_title }} order · Reference <code>{{ order.reference }}</code>{% if order.agreement and order.agreement.revision > 1 %} · Order Form revision {{ order.agreement.revision }}{% endif %}{% if is_staff and order.agreement %} · <a href="{{ order.agreement.get_absolute_url }}">Agreement record</a>{% endif %}</p>
+  <p class="order-meta">{% status_badge order.status %} {{ order.program_title }} order · Reference <code>{{ order.reference }}</code>{% if order.agreement and order.agreement.revision > 1 %} · Order Form revision {{ order.agreement.revision }}{% endif %}{% if can_prepare and order.agreement %} · <a href="{{ order.agreement.get_absolute_url }}">Agreement record</a>{% endif %}</p>
 
   {% if configuration_error %}
     <div class="user-feedback level-error"><p>{{ configuration_error }}</p></div>
@@ -108,21 +108,23 @@
       </section>
     {% endif %}
 
-    {% if can_edit %}
+    {% if can_offer %}
       <section class="offline-signing" aria-labelledby="ready-title">
         <h2 id="ready-title">{% if draft_sign_form %}Or sign some other way{% else %}Prepare for signature{% endif %}</h2>
-        <p>Making the Order Form ready to sign fixes its text. Then {% if is_staff %}the PSF can edit it for this customer, email a one-time signing link to anyone, or record a copy signed through DocuSign or on paper{% else %}you can download it to sign through DocuSign, your procurement system, or on paper, and upload the signed copy{% endif %}. It can be withdrawn and changed until it is signed.</p>
+        <p>Making the Order Form ready to sign fixes its text. Then {% if is_administrator %}the PSF can edit it for this customer, email a one-time signing link to anyone, or record a copy signed through DocuSign or on paper{% else %}you can download it to sign through DocuSign, your procurement system, or on paper, and upload the signed copy{% endif %}. It can be withdrawn and changed until it is signed.</p>
         <div class="actions">
           <form method="post" action="{% url 'agreements:order_offer' order.pk %}">
             {% csrf_token %}
             <button type="submit">Make ready to sign</button>
           </form>
-          <form method="post" action="{% url 'agreements:order_delete' order.pk %}" class="discard-form">
-            {% csrf_token %}
-            <button type="submit">Discard draft</button>
-          </form>
         </div>
       </section>
+    {% endif %}
+    {% if can_edit %}
+      <form method="post" action="{% url 'agreements:order_delete' order.pk %}" class="discard-form">
+        {% csrf_token %}
+        <button type="submit">Discard draft</button>
+      </form>
     {% endif %}
   {% endif %}
   {% endif %}

@@ -3,7 +3,7 @@
 {% block title %}{{ agreement.title }}: {{ agreement.counterparty_name }}{% endblock %}
 
 {% block crumbs %}
-{% if is_staff %}<li><a href="{% url 'agreements:queue' %}">Agreements</a><span class="prompt">&gt;&gt;&gt;</span></li>{% endif %}
+{% if can_prepare %}<li><a href="{% url 'agreements:queue' %}">Agreements</a><span class="prompt">&gt;&gt;&gt;</span></li>{% endif %}
 <li>{{ agreement.counterparty_name }}</li>
 {% endblock %}
 

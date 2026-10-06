@@ -1,5 +1,5 @@
 {% extends "agreements/base.html" %}
-{% load static %}
+{% load static agreements %}
 
 {% block title %}Service orders{% endblock %}
 {% block body_attributes %}class="psf agreements agreement-orders"{% endblock %}
@@ -13,7 +13,7 @@
       <li class="{% if nav == 'programs' %}current_item selected{% endif %}"><a href="{% url 'agreements:program_list' %}">Programs</a></li>
       {% if user.is_authenticated %}
         <li class="{% if nav == 'orders' %}current_item selected{% endif %}"><a href="{% url 'agreements:order_list' %}">Your orders</a></li>
-        {% if perms.agreements.manage_agreement %}
+        {% if user|can_prepare_agreements %}
           <li class="{% if nav == 'staff' %}current_item selected{% endif %}"><a href="{% url 'agreements:staff_orders' %}">All orders</a></li>
           <li><a href="{% url 'agreements:queue' %}">Agreements to countersign</a></li>
         {% endif %}
