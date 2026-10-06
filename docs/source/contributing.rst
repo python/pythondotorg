@@ -62,16 +62,6 @@ Code style
 - Use ``make lint`` (ruff) to catch issues and ``make fmt`` (ruff) to
   auto-format
 
-The agreements app requires annotated function signatures. Inside the development
-web container, run its Django-aware type check with:
-
-.. code-block:: bash
-
-   uv run python -m mypy
-
-The configuration in ``pyproject.toml`` checks ``apps/agreements`` without requiring
-a typing migration of the legacy apps. Preserve explicit types for domain objects
-and quote snapshots; keep dynamic types limited to Django and JSON boundaries.
 
 .. _GitHub: https://github.com/python/pythondotorg/issues
 .. _license: https://github.com/python/pythondotorg/blob/main/LICENSE
