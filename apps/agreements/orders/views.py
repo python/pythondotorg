@@ -291,9 +291,10 @@ def order_offer(request, pk):
 
 @login_required
 @require_POST
+@transaction.atomic
 def order_delete(request, pk):
     """Discard an authorized draft without touching offered agreements."""
-    order = _order_or_404(request, pk)
+    order = _order_or_404(request, pk, for_update=True)
     if not order.can_edit(request.user):
         raise Http404
     order.delete()
