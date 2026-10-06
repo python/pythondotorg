@@ -62,6 +62,9 @@ def _order_rows(orders: Iterable[Order]) -> list[dict[str, Any]]:
     for order in orders:
         row: dict[str, Any] = {"order": order}
         try:
+            if order.is_editable:
+                for line in order.agreement_list:
+                    _ = line.selected_services
             row["selections"] = [(line.agreement_obj.short_name, line.tier_name) for line in order.agreement_list]
             row["fees"] = order.fee_totals
         except (ValidationError, KeyError):
@@ -163,7 +166,14 @@ def quote(request: HttpRequest, slug: str) -> JsonResponse:
         except ValidationError as exc:
             errors[key] = exc.messages
             continue
-        quotes.append({"slug": key, "name": builder.agreements[key].short_name, **priced.as_dict()})
+        quotes.append(
+            {
+                "slug": key,
+                "name": builder.agreements[key].short_name,
+                "services": form.cleaned_data["services"],
+                **priced.as_dict(),
+            }
+        )
     if errors:
         return JsonResponse({"errors": errors}, status=400)
     total_annual = sum((Decimal(q["total_annual"]) for q in quotes), Decimal(0))

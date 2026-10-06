@@ -39,7 +39,7 @@ class OrderForm(forms.ModelForm):
 
     agreements = forms.MultipleChoiceField(
         widget=forms.CheckboxSelectMultiple,
-        error_messages={"required": "Choose at least one service package."},
+        error_messages={"required": "Choose at least one agreement family."},
     )
     discount = forms.ChoiceField(widget=forms.RadioSelect)
     discount_attestation = forms.BooleanField(required=False)
@@ -168,9 +168,17 @@ class OrderForm(forms.ModelForm):
 
 
 class AgreementForm(forms.Form):
-    """Tier and add-on selections generated from one catalog agreement."""
+    """Tier, base-service, and add-on selections generated from one agreement."""
 
     tier = forms.ChoiceField(widget=forms.RadioSelect)
+    services = forms.MultipleChoiceField(
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+        label="Base services",
+        error_messages={
+            "invalid_choice": "Unknown base service %(value)s. Choose from the listed base services.",
+        },
+    )
 
     def __init__(
         self,
@@ -185,6 +193,10 @@ class AgreementForm(forms.Form):
         self.agreement = agreement
         cast("forms.ChoiceField", self.fields["tier"]).choices = [(t.key, t.name) for t in agreement.tiers]
         self.initial["tier"] = line.tier if line else agreement.default_tier
+        cast("forms.MultipleChoiceField", self.fields["services"]).choices = [
+            (service.key, service.name) for service in agreement.services
+        ]
+        self.initial["services"] = line.services if line else []
         if staff:
             self.fields["special_terms"] = forms.CharField(
                 required=False,
@@ -243,7 +255,7 @@ class AgreementForm(forms.Form):
         return field
 
     def tier_options(self) -> list[dict[str, Any]]:
-        """Pair every tier with the services and extras its fee includes."""
+        """Pair every tier with its available base services and included extras."""
         return [
             {
                 "tier": tier,
@@ -274,6 +286,22 @@ class AgreementForm(forms.Form):
         """Reject unknown selections and normalize active add-on parameters."""
         cleaned = cast("dict[str, Any]", super().clean())
         tier = cleaned.get("tier")
+        if tier and "services" in cleaned:
+            selected = set(cleaned["services"])
+            available = self.agreement.services_at(tier)
+            unavailable = [
+                service.name
+                for service in self.agreement.services
+                if service.key in selected and service not in available
+            ]
+            if unavailable:
+                self.add_error(
+                    "services",
+                    f"Not available at the selected tier: {', '.join(unavailable)}. "
+                    "Deselect these base services or choose a tier that offers them.",
+                )
+            else:
+                cleaned["services"] = [service.key for service in available if service.key in selected]
         addons: dict[str, dict[str, ParamValue]] = {}
         known = {self.add_prefix(name) for name in self.fields}
         for name in self.data:
@@ -381,7 +409,7 @@ class OrderBuilder:
         order.agreements.exclude(agreement__in=chosen).delete()
         for slug in chosen:
             data = self.agreement_forms[slug].cleaned_data
-            defaults = {"tier": data["tier"], "addons": data["addons"]}
+            defaults = {"tier": data["tier"], "services": data["services"], "addons": data["addons"]}
             if self.staff:
                 defaults["special_terms"] = data["special_terms"].strip()
             OrderLine.objects.update_or_create(order=order, agreement=slug, defaults=defaults)

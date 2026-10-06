@@ -201,7 +201,7 @@ class OrderLineInline(_ReadOnlyInline):
     """Inspect selections without bypassing the builder's validation."""
 
     model = OrderLine
-    fields = ("agreement", "tier", "addons", "special_terms", "pricing")
+    fields = ("agreement", "tier", "services", "addons", "special_terms", "pricing")
     readonly_fields = fields
 
 

@@ -20,7 +20,7 @@
 <article class="text pb-page">
   <header class="pb-intro">
     <h1 class="page-title">{% if order %}Edit your package{% else %}Build your {{ program.title }} package{% endif %}</h1>
-    <p class="pb-lede">Choose your services, extras and term, then add your organization and contact details. You'll review the complete Order Form before signing.</p>
+    <p class="pb-lede">Choose agreement families, base services, extras and term, then add your organization and contact details. You'll review the complete Order Form before signing.</p>
   </header>
 
   <form method="post" id="order-form" class="package-builder" novalidate data-quote-url="{% url 'agreements:quote' program.slug %}"{% if order %} data-order="{{ order.pk }}"{% endif %}>
@@ -37,7 +37,7 @@
           {% for slug, aform in builder.agreement_forms.items %}{% if slug in builder.chosen %}
             {% for error in aform.non_field_errors %}<li><a href="#family-{{ slug }}">{{ aform.agreement.short_name }}: {{ error }}</a></li>{% endfor %}
             {% for field in aform %}{% for error in field.errors %}
-              <li><a href="#{% if field.name == 'tier' %}family-{{ slug }}{% else %}{{ field.id_for_label }}{% endif %}">{{ aform.agreement.short_name }}{% if field.name != 'tier' and field.widget_type != 'checkbox' %}, {{ field.label }}{% endif %}: {{ error }}</a></li>
+              <li><a href="#{% if field.name == 'tier' %}family-{{ slug }}{% elif field.name == 'services' %}{{ slug }}-services{% else %}{{ field.id_for_label }}{% endif %}">{{ aform.agreement.short_name }}{% if field.name != 'tier' and field.widget_type != 'checkbox' %}, {{ field.label }}{% endif %}: {{ error }}</a></li>
             {% endfor %}{% endfor %}
           {% endif %}{% endfor %}
         </ul>
@@ -57,8 +57,8 @@
       <section class="pb-section pb-package" id="services" data-step-panel="services" aria-labelledby="package-title">
         <div class="pb-section-head">
           <h2 id="package-title">Choose your services</h2>
-          <p class="pb-help">Choose a tier for each service you need. You can remove a service without losing your choices.</p>
-          <noscript><p class="pb-help">Select “Include in my package” for each service you want, then choose its tier and extras. Prices are confirmed on the next page.</p></noscript>
+          <p class="pb-help">Choose an agreement family and tier, then select its individual base services. You can remove an agreement family without losing your choices.</p>
+          <noscript><p class="pb-help">Select “Include in my package” for each agreement family you want, then choose its tier, eligible base services and extras. If you change tiers, deselect any base services unavailable at the new tier. Prices are confirmed on the next page.</p></noscript>
         </div>
         {{ form.agreements.errors }}
         {% for slug, aform in builder.agreement_forms.items %}
@@ -72,9 +72,9 @@
 
       <section class="pb-section pb-extras-page" id="extras" data-step-panel="extras" aria-labelledby="extras-title">
         <h2 id="extras-title">Choose your extras</h2>
-        <p class="pb-help">Add extras for the services in your package, or continue without adding any.</p>
-        <noscript><p class="pb-help">Only extras for services you include in your package will be applied.</p></noscript>
-        <p class="pb-help" id="pb-extras-empty" hidden>There are no extras for your selected services. Continue to choose your term, or <a href="#services">choose a service</a>.</p>
+        <p class="pb-help">Add extras for the agreement families in your package, or continue without adding any.</p>
+        <noscript><p class="pb-help">Only extras for agreement families you include in your package will be applied.</p></noscript>
+        <p class="pb-help" id="pb-extras-empty" hidden>There are no extras for your selected agreement families. Continue to choose your term, or <a href="#services">choose an agreement family</a>.</p>
         {% for slug, aform in builder.agreement_forms.items %}
           {% if slug in builder.chosen %}
             {% include "agreements/orders/_extras.html" with show_errors=True %}
@@ -86,7 +86,7 @@
 
       <section class="pb-section pb-term" id="term" data-step-panel="term" aria-labelledby="term-title">
         <h2 id="term-title">Term and discount</h2>
-        <p class="pb-help">Applies to every service in your package. Discounts apply to Service Tier fees only and don't combine. Multi-year terms are prepaid.</p>
+        <p class="pb-help">Applies to every agreement family in your package. Discounts apply to Service Tier fees only and don't combine. Multi-year terms are prepaid.</p>
         <fieldset class="pb-term-set">
           <legend class="screen-reader-text">Term and discount</legend>
           <div class="pb-term-options">
@@ -194,7 +194,7 @@
 
         <section class="pb-review" id="review" aria-labelledby="review-title">
         <h2 id="review-title">Agreements for this package</h2>
-        <p class="pb-help">Each service is provided under its own published agreement with the Python Software Foundation. Your package goes on one Order Form that cites them, signed once.</p>
+        <p class="pb-help">Each agreement family has its own published terms with the Python Software Foundation. Your selected base services and extras go on one Order Form that cites those terms, signed once.</p>
         <ul class="pb-agreements" id="pb-agreements">
           {% for agreement in agreements %}
             <li data-agreement-for="{{ agreement.slug }}"{% if agreement.slug not in builder.chosen %} hidden{% endif %}>
@@ -205,7 +205,7 @@
             </li>
           {% endfor %}
         </ul>
-        <p class="pb-agreements-empty" id="pb-agreements-empty"{% if builder.chosen %} hidden{% endif %}>Choose a service to see its agreement here.</p>
+        <p class="pb-agreements-empty" id="pb-agreements-empty"{% if builder.chosen %} hidden{% endif %}>Choose an agreement family to see its terms here.</p>
         <div class="form-actions pb-actions">
           <button type="submit">Continue to review</button>
           <a href="{% if order %}{{ order.get_absolute_url }}{% else %}{{ program.get_absolute_url }}{% endif %}">Cancel</a>
@@ -228,4 +228,4 @@
 </article>
 {% endblock %}
 
-{% block extra_js %}{{ builder.parameter_conditions|json_script:"order-parameter-conditions" }}<script src="{% static 'agreements/package-builder.js' %}?v=5" defer></script>{% endblock %}
+{% block extra_js %}{{ builder.parameter_conditions|json_script:"order-parameter-conditions" }}<script src="{% static 'agreements/package-builder.js' %}?v=8" defer></script>{% endblock %}

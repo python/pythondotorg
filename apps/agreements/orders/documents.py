@@ -120,7 +120,7 @@ def _agreement_section(line: OrderLine) -> list[str]:
         ("Service Tier", f"**{md(tier.name)}**"),
         ("Response time targets", targets),
         ("Fair-use threshold", f"{tier.fair_use} requests per year"),
-        ("Included services", "; ".join(md(service.name) for service in agreement.services_at(line.tier)) or "None."),
+        ("Selected services", "; ".join(md(service.name) for service in line.selected_services) or "None."),
         *_parameter_rows(line),
         ("Special terms", md(line.special_terms.strip()) if line.special_terms.strip() else "None."),
     ]

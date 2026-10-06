@@ -13,6 +13,7 @@ if TYPE_CHECKING:
     from apps.agreements.models.agreements import Agreement
     from apps.agreements.models.terms import TermsVersion
     from apps.agreements.orders.catalog import Agreement as CatalogAgreement
+    from apps.agreements.orders.catalog import Service
     from apps.agreements.orders.pricing import FeeKey, Quote, QuoteSnapshot
     from apps.users.models import User
 
@@ -215,6 +216,7 @@ class OrderLine(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="agreements")
     agreement = models.SlugField(max_length=64)
     tier = models.CharField(max_length=64)
+    services = models.JSONField(default=list, blank=True)
     addons = models.JSONField(default=dict, blank=True)
     special_terms = models.TextField(blank=True, help_text="Set by staff only; leave empty for none.")
     pricing = models.JSONField(default=dict, blank=True, editable=False)
@@ -232,6 +234,20 @@ class OrderLine(models.Model):
     def agreement_obj(self) -> CatalogAgreement:
         """Return this agreement's configured definition."""
         return self.order.catalog.agreements[self.agreement]
+
+    @property
+    def selected_services(self) -> list[Service]:
+        """Resolve explicit selections against the current or frozen tier's services."""
+        selected = self.services
+        if not isinstance(selected, list) or not all(isinstance(key, str) for key in selected):
+            message = "Selected services must be a list of service keys."
+            raise ValidationError(message)
+        available = self.agreement_obj.services_at(self.tier)
+        keys = set(selected)
+        if keys - {service.key for service in available}:
+            message = "Selected services are no longer available at this tier. Edit this draft to choose services."
+            raise ValidationError(message)
+        return [service for service in available if service.key in keys]
 
     @property
     def tier_name(self) -> str:
