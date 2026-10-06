@@ -331,10 +331,6 @@ CONTENT_SECURITY_POLICY_REPORT_ONLY = {
         "img-src": [
             SELF,
             "data:",
-            # Media is served from the S3 endpoint (AWS_S3_ENDPOINT_URL), and
-            # release notes and job posts embed images from arbitrary hosts
-            # (devguide.python.org, GitHub, personal sites), so any HTTPS
-            # source is allowed rather than a per-host list.
             "https:",
         ],
         "font-src": [SELF, "data:"],
