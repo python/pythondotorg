@@ -45,6 +45,12 @@ class TermsAdmin(admin.ModelAdmin):
     fields = ("slug", "title", "is_public", "under_review")
     inlines = (TermsVersionInline,)
 
+    def get_readonly_fields(self, request, obj=None):
+        """Keep published addresses and catalog references stable."""
+        if obj is not None and obj.versions.exists():
+            return ("slug",)
+        return ()
+
     def has_view_permission(self, request, obj=None):
         """Let agreement managers inspect terms configuration."""
         return request.user.has_perm("agreements.manage_agreement")
