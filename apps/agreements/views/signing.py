@@ -1,5 +1,7 @@
 """Signing actions and one-time invitation links."""
 
+import logging
+
 from allauth.account.adapter import get_adapter
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
@@ -14,12 +16,20 @@ from apps.agreements.models import MANAGE_PERMISSION
 from apps.agreements.views.agreements import detail
 from apps.agreements.views.helpers import _agreement_or_404, file_response, signature_of
 
+logger = logging.getLogger(__name__)
+
+
+def _subject_url(request, agreement):
+    if agreement.kind == "custom" and not request.user.has_perm(MANAGE_PERMISSION):
+        return agreement.get_absolute_url()
+    return agreement.subject_url
+
 
 def _back(request, agreement):
     target = request.POST.get("next", "")
     if url_has_allowed_host_and_scheme(target, allowed_hosts={request.get_host()}, require_https=request.is_secure()):
         return redirect(target)
-    return redirect(agreement.subject_url)
+    return redirect(_subject_url(request, agreement))
 
 
 def _run(request, agreement, action, success):
@@ -88,12 +98,12 @@ def withdraw(request, pk):
     agreement = _agreement_or_404(request, pk)
     if not (agreement.is_counterparty(request.user) or request.user.has_perm(MANAGE_PERMISSION)):
         raise Http404
-    subject_url = agreement.subject_url
+    subject_url = _subject_url(request, agreement)
     if _run(
         request,
         agreement,
         lambda: workflow.withdraw(agreement, user=request.user),
-        "Withdrawn. You can edit the draft again.",
+        "Offer withdrawn.",
     ):
         return redirect(subject_url)
     return _back(request, agreement)
