@@ -74,6 +74,14 @@ from pydotorg.mixins import GroupRequiredMixin, LoginRequiredMixin
 logger = logging.getLogger(__name__)
 
 
+def _int_or_none(value):
+    """Parse value as an int, returning None for blank or malformed input."""
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return None
+
+
 class SponsorshipAdminRequiredMixin(LoginRequiredMixin, GroupRequiredMixin):
     """Require an active sponsorship administrator or superuser."""
 
@@ -102,13 +110,12 @@ class ManageDashboardView(SponsorshipAdminRequiredMixin, TemplateView):
         with contextlib.suppress(SponsorshipCurrentYear.DoesNotExist):
             current_year = SponsorshipCurrentYear.get_year()
 
-        selected_year = self.request.GET.get("year")
-        if selected_year:
-            selected_year = int(selected_year)
-        elif current_year:
-            selected_year = current_year
-        elif years:
-            selected_year = years[0]
+        selected_year = _int_or_none(self.request.GET.get("year"))
+        if selected_year is None:
+            if current_year:
+                selected_year = current_year
+            elif years:
+                selected_year = years[0]
 
         # Stats for the selected year
         year_benefits = (
@@ -246,11 +253,14 @@ class BenefitListView(SponsorshipAdminRequiredMixin, ListView):
         self.filter_package = self.request.GET.get("package", "")
 
         if self.filter_year:
-            qs = qs.filter(year=int(self.filter_year))
+            year = _int_or_none(self.filter_year)
+            qs = qs.filter(year=year) if year is not None else qs.none()
         if self.filter_program:
-            qs = qs.filter(program_id=int(self.filter_program))
+            program = _int_or_none(self.filter_program)
+            qs = qs.filter(program_id=program) if program is not None else qs.none()
         if self.filter_package:
-            qs = qs.filter(packages__id=int(self.filter_package))
+            package = _int_or_none(self.filter_package)
+            qs = qs.filter(packages__id=package) if package is not None else qs.none()
         return qs
 
     def get_context_data(self, **kwargs):
@@ -258,7 +268,7 @@ class BenefitListView(SponsorshipAdminRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         context["filter_form"] = BenefitFilterForm(
             self.request.GET,
-            selected_year=self.filter_year or None,
+            selected_year=_int_or_none(self.filter_year),
         )
         context["filter_year"] = self.filter_year
         context["filter_program"] = self.filter_program
@@ -281,12 +291,12 @@ class BenefitCreateView(SponsorshipAdminRequiredMixin, CreateView):
     def get_initial(self):
         """Return initial form data from query parameters."""
         initial = super().get_initial()
-        year = self.request.GET.get("year")
-        if year:
-            initial["year"] = int(year)
-        program = self.request.GET.get("program")
-        if program:
-            initial["program"] = int(program)
+        year = _int_or_none(self.request.GET.get("year"))
+        if year is not None:
+            initial["year"] = year
+        program = _int_or_none(self.request.GET.get("program"))
+        if program is not None:
+            initial["program"] = program
         return initial
 
     def get_context_data(self, **kwargs):
@@ -371,7 +381,7 @@ class BenefitSyncView(SponsorshipAdminRequiredMixin, View):
                 sponsor_benefit = benefit.sponsorbenefit_set.get(sponsorship_id=int(sp_id))
                 sponsor_benefit.reset_attributes(benefit)
                 count += 1
-            except SponsorBenefit.DoesNotExist:
+            except (ValueError, SponsorBenefit.DoesNotExist):
                 continue
         messages.success(request, f"Updated {count} sponsorship(s) with latest benefit data.")
         return redirect(reverse("manage_benefit_edit", args=[pk]))
@@ -603,10 +613,8 @@ class FinancesView(SponsorshipAdminRequiredMixin, TemplateView):
             summary["avg"] = summary["total"] // summary["count"] if summary["count"] else 0
         all_years = [summary["year"] for summary in yoy]
 
-        selected_year = self.request.GET.get("year")
-        if selected_year:
-            selected_year = int(selected_year)
-        elif all_years:
+        selected_year = _int_or_none(self.request.GET.get("year"))
+        if selected_year is None and all_years:
             selected_year = all_years[-1]
 
         # Selected year detail
@@ -725,7 +733,8 @@ class PackageListView(SponsorshipAdminRequiredMixin, ListView):
         qs = SponsorshipPackage.objects.order_by("-year", "-sponsorship_amount")
         self.filter_year = self.request.GET.get("year", "")
         if self.filter_year:
-            qs = qs.filter(year=int(self.filter_year))
+            year = _int_or_none(self.filter_year)
+            qs = qs.filter(year=year) if year is not None else qs.none()
         return qs
 
     def get_context_data(self, **kwargs):
@@ -758,9 +767,9 @@ class PackageCreateView(SponsorshipAdminRequiredMixin, CreateView):
     def get_initial(self):
         """Return initial form data from query parameters."""
         initial = super().get_initial()
-        year = self.request.GET.get("year")
-        if year:
-            initial["year"] = int(year)
+        year = _int_or_none(self.request.GET.get("year"))
+        if year is not None:
+            initial["year"] = year
         return initial
 
     def get_context_data(self, **kwargs):
@@ -812,10 +821,8 @@ class CloneYearView(SponsorshipAdminRequiredMixin, FormView):
     def get_context_data(self, **kwargs):
         """Return context with source year preview data."""
         context = super().get_context_data(**kwargs)
-        # Preview data for the source year
-        source_year = self.request.GET.get("source_year")
-        if source_year:
-            source_year = int(source_year)
+        source_year = _int_or_none(self.request.GET.get("source_year"))
+        if source_year is not None:
             context["preview_benefits"] = (
                 SponsorshipBenefit.objects.filter(year=source_year)
                 .select_related("program")
@@ -1135,7 +1142,7 @@ class BulkAssetExportView(SponsorshipAdminRequiredMixin, View):
             messages.warning(request, "No sponsorships selected.")
             return redirect(reverse("manage_sponsorships"))
 
-        sponsorships = Sponsorship.objects.select_related("sponsor").filter(pk__in=selected_ids)
+        sponsorships = Sponsorship.objects.select_related("sponsor").filter(pk__in=_safe_int_pks(selected_ids))
         if not sponsorships.exists():
             messages.warning(request, "No sponsorships found.")
             return redirect(reverse("manage_sponsorships"))
@@ -1934,6 +1941,17 @@ class SponsorContactDeleteView(SponsorshipAdminRequiredMixin, View):
 # ── CSV Export & Bulk Actions ─────────────────────────────────────────
 
 
+def _safe_int_pks(raw_ids):
+    """Return the subset of raw_ids that parse as integers."""
+    pks = []
+    for raw in raw_ids:
+        try:
+            pks.append(int(raw))
+        except (TypeError, ValueError):
+            continue
+    return pks
+
+
 def _filtered_sponsorship_queryset(request):
     """Build a Sponsorship queryset from request query params.
 
@@ -1947,7 +1965,12 @@ def _filtered_sponsorship_queryset(request):
 
     qs = qs.filter(status=status) if status else qs.exclude(status=Sponsorship.REJECTED)
     if year:
-        qs = qs.filter(year=int(year))
+        try:
+            qs = qs.filter(year=int(year))
+        except ValueError:
+            # A malformed year must narrow to no results, never silently
+            # broaden back out to "all years".
+            return qs.none()
     if search:
         qs = qs.filter(Q(sponsor__name__icontains=search))
 
@@ -2023,7 +2046,7 @@ class SponsorshipExportView(SponsorshipAdminRequiredMixin, View):
         if selected_ids:
             sponsorships = list(
                 Sponsorship.objects.select_related("sponsor", "package")
-                .filter(pk__in=selected_ids)
+                .filter(pk__in=_safe_int_pks(selected_ids))
                 .order_by("-applied_on")
             )
         else:
@@ -2076,7 +2099,9 @@ class BulkNotifyView(SponsorshipAdminRequiredMixin, View):
     def get(self, request):
         """Render the bulk notification form."""
         ids = request.session.get("bulk_notify_ids", [])
-        sponsorships = list(Sponsorship.objects.select_related("sponsor").filter(pk__in=ids).order_by("-applied_on"))
+        sponsorships = list(
+            Sponsorship.objects.select_related("sponsor").filter(pk__in=_safe_int_pks(ids)).order_by("-applied_on")
+        )
         if not sponsorships:
             messages.warning(request, "No sponsorships selected for notification.")
             return redirect(reverse("manage_sponsorships"))
@@ -2092,7 +2117,9 @@ class BulkNotifyView(SponsorshipAdminRequiredMixin, View):
     def post(self, request):
         """Preview or send bulk notification."""
         ids = request.session.get("bulk_notify_ids", [])
-        sponsorships = list(Sponsorship.objects.select_related("sponsor").filter(pk__in=ids).order_by("-applied_on"))
+        sponsorships = list(
+            Sponsorship.objects.select_related("sponsor").filter(pk__in=_safe_int_pks(ids)).order_by("-applied_on")
+        )
         if not sponsorships:
             messages.warning(request, "No sponsorships selected for notification.")
             return redirect(reverse("manage_sponsorships"))

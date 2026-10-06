@@ -2440,6 +2440,42 @@ class ComposerNavigationTests(SponsorManageTestBase):
         self.assertEqual(len(outbox), 0)
 
 
+class ComposerNumericParamTests(SponsorManageTestBase):
+    """Malformed numeric query/POST parameters must not 500 or silently broaden results."""
+
+    def setUp(self):
+        super().setUp()
+        self.client.login(username="staff", password="pass")
+
+    def test_benefit_list_malformed_year_returns_no_results_not_500(self):
+        response = self.client.get(reverse("manage_benefit_list") + "?year=not-a-number")
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "Logo on python.org")
+
+    def test_package_list_malformed_year_returns_no_results_not_500(self):
+        response = self.client.get(reverse("manage_packages") + "?year=abc")
+        self.assertEqual(response.status_code, 200)
+
+    def test_sponsorship_list_malformed_year_returns_no_results_not_500(self):
+        response = self.client.get(reverse("manage_sponsorships") + "?year=abc")
+        self.assertEqual(response.status_code, 200)
+
+    def test_bulk_export_malformed_selected_ids_ignored_not_500(self):
+        response = self.client.post(
+            reverse("manage_sponsorship_export"),
+            {"selected_ids": ["not-a-number", "also-bad"]},
+        )
+        self.assertEqual(response.status_code, 200)
+
+    def test_benefit_sync_malformed_sponsorship_id_ignored_not_500(self):
+        benefit = SponsorshipBenefit.objects.create(name="Sync Benefit", program=self.program, year=self.year)
+        response = self.client.post(
+            reverse("manage_benefit_sync", args=[benefit.pk]),
+            {"sponsorship_ids": ["not-a-number"]},
+        )
+        self.assertEqual(response.status_code, 302)
+
+
 class DashboardExpiringSoonTests(SponsorManageTestBase):
     """Test dashboard expiring/expired sponsorship sections."""
 
