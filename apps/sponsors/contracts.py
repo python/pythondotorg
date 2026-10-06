@@ -11,6 +11,7 @@ from unidecode import unidecode
 
 _dirname = Path(__file__).parent
 DOCXPAGEBREAK_FILTER = str(_dirname / "pandoc_filters" / "pagebreak.py")
+CONTRACT_SAFETY_FILTER = str(_dirname / "pandoc_filters" / "contract-safety.lua")
 REFERENCE_DOCX = str(_dirname / "reference.docx")
 
 # Disable raw TeX and TeX math so user input can't reach the LaTeX engine as commands
@@ -62,7 +63,13 @@ def render_contract_to_pdf_file(contract, **context):
     """Convert the contract markdown to a PDF file and return its bytes."""
     with tempfile.NamedTemporaryFile(), tempfile.NamedTemporaryFile(suffix=".pdf") as pdf_file:
         markdown = render_markdown_from_template(contract, **context)
-        pypandoc.convert_text(markdown, "pdf", outputfile=pdf_file.name, format=CONTRACT_MARKDOWN_FORMAT)
+        pypandoc.convert_text(
+            markdown,
+            "pdf",
+            outputfile=pdf_file.name,
+            format=CONTRACT_MARKDOWN_FORMAT,
+            extra_args=["--sandbox", "--lua-filter", CONTRACT_SAFETY_FILTER],
+        )
         return pdf_file.read()
 
 
@@ -87,7 +94,14 @@ def render_contract_to_docx_file(contract, **context):
             "docx",
             outputfile=docx_file.name,
             format=CONTRACT_MARKDOWN_FORMAT,
-            filters=[DOCXPAGEBREAK_FILTER],
-            extra_args=["--reference-doc", REFERENCE_DOCX],
+            extra_args=[
+                "--sandbox",
+                "--lua-filter",
+                CONTRACT_SAFETY_FILTER,
+                "--filter",
+                DOCXPAGEBREAK_FILTER,
+                "--reference-doc",
+                REFERENCE_DOCX,
+            ],
         )
         return docx_file.read()

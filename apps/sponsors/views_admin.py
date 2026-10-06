@@ -24,6 +24,8 @@ from apps.sponsors.forms import (
 from apps.sponsors.models import BenefitFeature, EmailTargetable, SponsorshipCurrentYear
 from apps.sponsors.validators import validate_signed_contract
 
+RENDER_FAILURE_EXCEPTIONS = (RuntimeError, OSError, ImportError)
+
 
 def require_change_permission(view):
     """Require the model's change permission for a custom admin view.
@@ -47,10 +49,17 @@ def preview_contract_view(model_admin, request, pk):
     """Render a contract preview as PDF or DOCX based on the format query parameter."""
     contract = get_object_or_404(model_admin.get_queryset(request), pk=pk)
     output_format = request.GET.get("format", "pdf")
-    if output_format == "docx":
-        response = render_contract_to_docx_response(request, contract)
-    else:
-        response = render_contract_to_pdf_response(request, contract)
+    try:
+        if output_format == "docx":
+            response = render_contract_to_docx_response(request, contract)
+        else:
+            response = render_contract_to_pdf_response(request, contract)
+    except RENDER_FAILURE_EXCEPTIONS:
+        response = HttpResponse(
+            "This contract could not be rendered for preview. Please try again or contact an administrator.",
+            status=502,
+            content_type="text/plain",
+        )
     response["X-Frame-Options"] = "SAMEORIGIN"
     return response
 
@@ -164,6 +173,12 @@ def send_contract_view(model_admin, request, pk):
             model_admin.message_user(
                 request,
                 f"Contract with status {status} can't be sent.",
+                messages.ERROR,
+            )
+        except RENDER_FAILURE_EXCEPTIONS:
+            model_admin.message_user(
+                request,
+                "The contract could not be rendered. Please try again or contact an administrator.",
                 messages.ERROR,
             )
 

@@ -1431,10 +1431,14 @@ class ContractPreviewView(SponsorshipAdminRequiredMixin, View):
             return redirect(reverse("manage_sponsorship_detail", args=[pk]))
 
         output_format = request.GET.get("format", "pdf")
-        if output_format == "docx":
-            response = render_contract_to_docx_response(request, contract)
-        else:
-            response = render_contract_to_pdf_response(request, contract)
+        try:
+            if output_format == "docx":
+                response = render_contract_to_docx_response(request, contract)
+            else:
+                response = render_contract_to_pdf_response(request, contract)
+        except (RuntimeError, OSError, ImportError):
+            messages.error(request, "Failed to generate the contract document.")
+            return redirect(reverse("manage_sponsorship_detail", args=[pk]))
         response["X-Frame-Options"] = "SAMEORIGIN"
         return response
 
@@ -1489,6 +1493,8 @@ class ContractSendView(SponsorshipAdminRequiredMixin, View):
             messages.success(request, "Contract generated and finalized. Ready to send.")
         except InvalidStatusError as e:
             messages.error(request, str(e))
+        except (RuntimeError, OSError, ImportError):
+            messages.error(request, "Failed to generate the contract documents. Nothing was sent.")
         return redirect(reverse("manage_contract_send", args=[sp.pk]))
 
     @staticmethod
@@ -2949,13 +2955,21 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
         """Return the contract as a PDF download."""
         from apps.sponsors.contracts import render_contract_to_pdf_response
 
-        return render_contract_to_pdf_response(request, contract)
+        try:
+            return render_contract_to_pdf_response(request, contract)
+        except (RuntimeError, OSError, ImportError):
+            messages.error(request, "Failed to generate the contract PDF.")
+            return redirect(reverse("manage_composer") + "?step=6")
 
     def _handle_download_docx(self, request, data, contract, sponsor):
         """Return the contract as a DOCX download."""
         from apps.sponsors.contracts import render_contract_to_docx_response
 
-        return render_contract_to_docx_response(request, contract)
+        try:
+            return render_contract_to_docx_response(request, contract)
+        except (RuntimeError, OSError, ImportError):
+            messages.error(request, "Failed to generate the contract DOCX.")
+            return redirect(reverse("manage_composer") + "?step=6")
 
     def _handle_finish(self, request, data, contract, sponsor):
         """Clear session and redirect to sponsorship detail without sending email."""
@@ -3108,7 +3122,11 @@ class ComposerContractPreviewView(SponsorshipAdminRequiredMixin, View):
             messages.error(request, "Contract not found.")
             return redirect(reverse("manage_composer"))
 
-        return render_contract_to_pdf_response(request, contract)
+        try:
+            return render_contract_to_pdf_response(request, contract)
+        except (RuntimeError, OSError, ImportError):
+            messages.error(request, "Failed to generate the contract document.")
+            return redirect(reverse("manage_composer") + "?step=6")
 
 
 class GuideView(SponsorshipAdminRequiredMixin, TemplateView):
