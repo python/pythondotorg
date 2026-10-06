@@ -567,11 +567,12 @@ class SponsorshipBenefit(OrderedModel):
         return self.features_config.instance_of(TieredBenefitConfiguration).count() > 0
 
     @transaction.atomic
-    def clone(self, year: int):
+    def clone(self, year: int, *, clone_packages: bool = True):
         """Generate a clone of the current benefit for a custom year.
 
         Clone the benefit and all its related objects (packages,
-        legal clauses, feature configurations).
+        legal clauses, feature configurations). With ``clone_packages=False``
+        the new benefit is left without packages and none are created.
         """
         defaults = {
             "description": self.description,
@@ -590,8 +591,9 @@ class SponsorshipBenefit(OrderedModel):
 
         # if new, all related objects should be cloned too
         if created:
-            pkgs = [p.clone(year)[0] for p in self.packages.all()]
-            new_benefit.packages.add(*pkgs)
+            if clone_packages:
+                pkgs = [p.clone(year)[0] for p in self.packages.all()]
+                new_benefit.packages.add(*pkgs)
             clauses = [lc.clone() for lc in self.legal_clauses.all()]
             new_benefit.legal_clauses.add(*clauses)
             for cfg in self.features_config.all():

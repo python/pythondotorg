@@ -142,7 +142,7 @@ class ManageDashboardView(SponsorshipAdminRequiredMixin, TemplateView):
                         "unavailable": benefits.filter(unavailable=True).count(),
                         "new": benefits.filter(new=True).count(),
                         "total_value": benefits.aggregate(total=Sum("internal_value"))["total"] or 0,
-                        "benefits": benefits.order_by("order"),
+                        "benefits": benefits.prefetch_related("packages").order_by("order"),
                     }
                 )
 
@@ -474,6 +474,7 @@ class AssetBrowserView(SponsorshipAdminRequiredMixin, TemplateView):
     """Browse all sponsor/sponsorship assets with filters."""
 
     template_name = "sponsors/manage/asset_browser.html"
+    MAX_ASSETS = 200
 
     def _apply_queryset_filters(self, qs):
         """Apply database-level filters from query params and return filtered queryset."""
@@ -491,7 +492,10 @@ class AssetBrowserView(SponsorshipAdminRequiredMixin, TemplateView):
         return qs
 
     def _resolve_and_group(self, assets):
-        """Resolve owners, exclude expired/rejected, and group assets by company."""
+        """Resolve owners, exclude expired/rejected, cap to MAX_ASSETS, and group assets by company.
+
+        Returns the capped asset list, the grouping, and the uncapped total.
+        """
         from collections import OrderedDict
 
         today = tz.now().date()
@@ -509,6 +513,8 @@ class AssetBrowserView(SponsorshipAdminRequiredMixin, TemplateView):
             return sp and sp.status != Sponsorship.REJECTED and not (sp.end_date and sp.end_date < today)
 
         assets = [a for a in assets if a.from_sponsor or _is_active_sponsorship_asset(a)]
+        total = len(assets)
+        assets = assets[: self.MAX_ASSETS]
 
         for asset in assets:
             if asset.from_sponsor:
@@ -534,7 +540,7 @@ class AssetBrowserView(SponsorshipAdminRequiredMixin, TemplateView):
             if not grouped[name]["sponsorship_id"] and asset.owner_type == "sponsorship" and asset.resolved_owner:
                 grouped[name]["sponsorship_id"] = asset.resolved_owner.pk
 
-        return assets, grouped
+        return assets, grouped, total
 
     def get_context_data(self, **kwargs):
         """Return context with filtered assets grouped by company."""
@@ -547,14 +553,14 @@ class AssetBrowserView(SponsorshipAdminRequiredMixin, TemplateView):
         self.filter_search = self.request.GET.get("search", "")
 
         qs = self._apply_queryset_filters(GenericAsset.objects.all_assets().select_related("content_type"))
-        assets = list(qs[:200])
+        assets = list(qs)
 
         if self.filter_value == "with":
             assets = [a for a in assets if a.has_value]
         elif self.filter_value == "without":
             assets = [a for a in assets if not a.has_value]
 
-        assets, grouped = self._resolve_and_group(assets)
+        assets, grouped, total = self._resolve_and_group(assets)
 
         content_types = ContentType.objects.filter(model__in=["sponsor", "sponsorship"])
         context.update(
@@ -562,6 +568,7 @@ class AssetBrowserView(SponsorshipAdminRequiredMixin, TemplateView):
                 "grouped_assets": grouped,
                 "company_count": len(grouped),
                 "asset_count": len(assets),
+                "asset_total": total,
                 "type_choices": [(cls.__name__, cls._meta.verbose_name) for cls in GenericAsset.all_asset_types()],
                 "content_type_choices": [(ct.pk, ct.model.title()) for ct in content_types],
                 "filter_type": self.filter_type,
@@ -730,7 +737,9 @@ class PackageListView(SponsorshipAdminRequiredMixin, ListView):
 
     def get_queryset(self):
         """Return packages optionally filtered by year."""
-        qs = SponsorshipPackage.objects.order_by("-year", "-sponsorship_amount")
+        qs = SponsorshipPackage.objects.annotate(benefit_count=Count("benefits")).order_by(
+            "-year", "-sponsorship_amount"
+        )
         self.filter_year = self.request.GET.get("year", "")
         if self.filter_year:
             year = _int_or_none(self.filter_year)
@@ -851,13 +860,9 @@ class CloneYearView(SponsorshipAdminRequiredMixin, FormView):
 
         if clone_benefits:
             for benefit in SponsorshipBenefit.objects.filter(year=source_year):
-                new_benefit, created = benefit.clone(target_year)
+                _, created = benefit.clone(target_year, clone_packages=clone_packages)
                 if created:
                     cloned_benefits += 1
-                    if not clone_packages:
-                        # benefit.clone() creates packages as a side effect;
-                        # clear them when packages weren't requested
-                        new_benefit.packages.clear()
 
         messages.success(
             self.request,
@@ -1722,12 +1727,9 @@ class SponsorshipNotifyView(SponsorshipAdminRequiredMixin, View):
         if "preview" in request.POST:
             if form.is_valid():
                 notification = form.get_notification()
-                msg_kwargs = {
-                    "to_primary": True,
-                    "to_administrative": True,
-                    "to_accounting": True,
-                    "to_manager": True,
-                }
+                msg_kwargs = use_cases.SendSponsorshipNotificationUseCase.message_kwargs(
+                    form.cleaned_data["contact_types"]
+                )
                 email_preview = notification.get_email_message(sp, **msg_kwargs)
             context = {
                 "sponsorship": sp,
@@ -2136,12 +2138,9 @@ class BulkNotifyView(SponsorshipAdminRequiredMixin, View):
         if "preview" in request.POST:
             if form.is_valid():
                 notification = form.get_notification()
-                msg_kwargs = {
-                    "to_primary": True,
-                    "to_administrative": True,
-                    "to_accounting": True,
-                    "to_manager": True,
-                }
+                msg_kwargs = use_cases.SendSponsorshipNotificationUseCase.message_kwargs(
+                    form.cleaned_data["contact_types"]
+                )
                 # Preview using the first sponsorship
                 email_preview = notification.get_email_message(sponsorships[0], **msg_kwargs)
             context = {

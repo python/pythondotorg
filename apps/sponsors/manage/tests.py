@@ -18,7 +18,7 @@ from django.urls import reverse
 from django.utils import timezone
 from model_bakery import baker
 
-from apps.sponsors.manage.views import ManageDashboardView
+from apps.sponsors.manage.views import AssetBrowserView, ManageDashboardView
 from apps.sponsors.models import (
     Contract,
     ImgAsset,
@@ -331,6 +331,21 @@ class CloneYearViewTests(SponsorManageTestBase):
         self.assertEqual(response.status_code, 302)
         self.assertTrue(SponsorshipPackage.objects.filter(year=target_year, slug="visionary").exists())
         self.assertTrue(SponsorshipBenefit.objects.filter(year=target_year, name="Logo on python.org").exists())
+
+    def test_clone_benefits_only_creates_no_packages(self):
+        target_year = self.year + 1
+        response = self.client.post(
+            reverse("manage_clone_year"),
+            {
+                "source_year": str(self.year),
+                "target_year": target_year,
+                "clone_benefits": True,
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        benefit = SponsorshipBenefit.objects.get(year=target_year, name="Logo on python.org")
+        self.assertFalse(benefit.packages.exists())
+        self.assertFalse(SponsorshipPackage.objects.filter(year=target_year).exists())
 
     def test_clone_same_year_rejected(self):
         response = self.client.post(
@@ -869,6 +884,24 @@ class SponsorshipNotifyViewTests(SponsorshipReviewTestBase):
         self.assertContains(response, "Email Preview")
         self.assertContains(response, "Test Subject")
 
+    def test_notify_preview_recipients_match_selected_contact_types(self):
+        SponsorContact.objects.create(
+            sponsor=self.sponsor, name="Primary", email="primary@example.com", phone="555-0001", primary=True
+        )
+        SponsorContact.objects.create(
+            sponsor=self.sponsor, name="Billing", email="billing@example.com", phone="555-0002", accounting=True
+        )
+        response = self.client.post(
+            reverse("manage_sponsorship_notify", args=[self.sponsorship.pk]),
+            {
+                "contact_types": [SponsorContact.PRIMARY_CONTACT],
+                "subject": "Test Subject",
+                "content": "Hello",
+                "preview": "1",
+            },
+        )
+        self.assertEqual(response.context["email_preview"].to, ["primary@example.com"])
+
     def test_notify_preview_without_contacts_no_preview(self):
         """Preview returns None email_preview when no contacts match."""
         response = self.client.post(
@@ -1278,6 +1311,9 @@ class BulkNotifyViewTests(SponsorshipReviewTestBase):
         SponsorContact.objects.create(
             sponsor=self.sponsor, name="Contact", email="c@example.com", phone="555", primary=True
         )
+        SponsorContact.objects.create(
+            sponsor=self.sponsor, name="Billing", email="billing@example.com", phone="556", accounting=True
+        )
         response = self.client.post(
             reverse("manage_bulk_notify"),
             {
@@ -1289,6 +1325,7 @@ class BulkNotifyViewTests(SponsorshipReviewTestBase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Email Preview")
+        self.assertEqual(response.context["email_preview"].to, ["c@example.com"])
 
     def test_bulk_notify_confirm_sends(self):
         self._set_session_ids()
@@ -2505,6 +2542,7 @@ class DashboardExpiringSoonTests(SponsorManageTestBase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Expiring Soon")
         self.assertContains(response, "Expiring Corp")
+        self.assertContains(response, ">30d<")
 
     def test_expiring_far_future_not_shown(self):
         """Finalized sponsorship ending more than 90 days out is not in Expiring Soon."""
@@ -2894,6 +2932,17 @@ class AssetBrowserViewTests(SponsorshipReviewTestBase):
         response = self.client.get(reverse("manage_assets") + "?search=logo")
         self.assertContains(response, "logo_2025")
         self.assertNotContains(response, "bio_text")
+
+    def test_value_filter_applies_before_cap(self):
+        """Matching assets beyond the cap of unfiltered rows are still found."""
+        self._create_text_asset(self.sponsor, "empty_one", text="")
+        self._create_text_asset(self.sponsor, "empty_two", text="")
+        self._create_text_asset(self.sponsor, "filled_asset", text="Has value")
+        with mock.patch.object(AssetBrowserView, "MAX_ASSETS", 2):
+            response = self.client.get(reverse("manage_assets") + "?value=with")
+            self.assertContains(response, "filled_asset")
+            response = self.client.get(reverse("manage_assets"))
+            self.assertContains(response, "(first 2 of 3)")
 
     def test_excludes_expired_sponsorship_assets(self):
         """Assets from expired sponsorships are hidden."""

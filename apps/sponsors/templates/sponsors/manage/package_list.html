@@ -47,7 +47,7 @@
                     <td><code style="background:#f5f5f5;padding:2px 6px;border-radius:3px;font-size:12px;">{{ pkg.slug }}</code></td>
                     <td style="text-align:center;">{% if pkg.advertise %}<span class="tag tag-green">Yes</span>{% else %}<span class="tag tag-gray">No</span>{% endif %}</td>
                     <td style="text-align:center;">{% if pkg.allow_a_la_carte %}<span class="tag tag-green">Yes</span>{% else %}<span class="tag tag-gray">No</span>{% endif %}</td>
-                    <td style="text-align:center;"><span class="tag tag-blue">{{ pkg.benefits.count }}</span></td>
+                    <td style="text-align:center;"><span class="tag tag-blue">{{ pkg.benefit_count }}</span></td>
                     <td><a href="{% url 'manage_package_edit' pkg.pk %}" style="font-size:12px;color:#3776ab;text-decoration:none;">Edit</a></td>
                 </tr>
                 {% endfor %}

@@ -54,12 +54,16 @@ class ContractDeliveryRegressionTests(SponsorshipReviewTestBase):
 
     def test_redraft_clears_stale_documents_and_returns_to_draft(self):
         self.contract.set_final_version(b"old pdf", b"old docx")
+        stale = [(f.storage, f.name) for f in (self.contract.document, self.contract.document_docx)]
         self.contract.nullify()
-        self.contract.redraft()
+        with self.captureOnCommitCallbacks(execute=True):
+            self.contract.redraft()
         self.contract.refresh_from_db()
         self.assertEqual(self.contract.status, Contract.DRAFT)
         self.assertFalse(self.contract.document.name)
         self.assertFalse(self.contract.document_docx.name)
+        for storage, name in stale:
+            self.assertFalse(storage.exists(name))
 
     def test_redraft_rejects_a_contract_that_is_not_nullified(self):
         with self.assertRaises(InvalidStatusError):

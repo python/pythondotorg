@@ -203,22 +203,26 @@ class SendSponsorshipNotificationUseCase(BaseUseCaseWithNotifications):
         notifications.SendSponsorNotificationLogger(),
     ]
 
-    def execute(self, notification: SponsorEmailNotificationTemplate, sponsorships, contact_types, **kwargs):
-        """Send the notification email to each sponsorship's matching contacts."""
-        msg_kwargs = {
+    @staticmethod
+    def message_kwargs(contact_types):
+        """Map selected contact types to the ``get_email_message`` recipient flags."""
+        return {
             "to_primary": SponsorContact.PRIMARY_CONTACT in contact_types,
             "to_administrative": SponsorContact.ADMINISTRATIVE_CONTACT in contact_types,
             "to_accounting": SponsorContact.ACCOUTING_CONTACT in contact_types,
             "to_manager": SponsorContact.MANAGER_CONTACT in contact_types,
         }
+
+    def execute(self, notification: SponsorEmailNotificationTemplate, sponsorships, contact_types, **kwargs):
+        """Send the notification email to each sponsorship's matching contacts."""
+        msg_kwargs = self.message_kwargs(contact_types)
         request = kwargs.get("request")
         sent_count = 0
 
         for sponsorship in sponsorships:
             email = notification.get_email_message(sponsorship, **msg_kwargs)
-            if not email:
+            if not email or not email.send():
                 continue
-            email.send()
             sent_count += 1
 
             # Persist notification log (best-effort, don't break sending)

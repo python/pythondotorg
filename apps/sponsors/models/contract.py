@@ -3,10 +3,11 @@
 import posixpath
 import secrets
 import uuid
+from functools import partial
 from itertools import chain
 from pathlib import Path
 
-from django.db import models
+from django.db import models, transaction
 from django.urls import reverse
 from django.utils import timezone
 from markupfield.fields import MarkupField
@@ -281,13 +282,17 @@ class Contract(models.Model):
             self.save()
 
     def redraft(self, commit=True):
-        """Return a nullified contract to draft, clearing stale finalized documents."""
+        """Return a nullified contract to draft, deleting its stale finalized documents."""
         if self.DRAFT not in self.next_status:
             msg = f"Can't re-draft a {self.get_status_display()} contract."
             raise InvalidStatusError(msg)
 
+        stale_files = [(f.storage, f.name) for f in (self.document, self.document_docx) if f]
         self.status = self.DRAFT
         self.document = ""
         self.document_docx = ""
         if commit:
             self.save()
+            # Delete after commit so a rolled-back redraft never references missing files.
+            for storage, name in stale_files:
+                transaction.on_commit(partial(storage.delete, name))

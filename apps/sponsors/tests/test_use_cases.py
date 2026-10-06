@@ -16,6 +16,7 @@ from apps.sponsors.models import (
     SponsorEmailNotificationTemplate,
     Sponsorship,
     SponsorshipBenefit,
+    SponsorshipNotificationLog,
     SponsorshipPackage,
 )
 from apps.sponsors.notifications import (
@@ -369,6 +370,25 @@ class SendSponsorshipNotificationUseCaseTests(TestCase):
         self.use_case.execute(self.notification, self.sponsorships, contact_types, request="request")
 
         self.assertEqual(self.notifications[0].notify.call_count, 0)
+
+    @patch.object(SponsorEmailNotificationTemplate, "get_email_message")
+    def test_logs_only_delivered_notifications(self, mock_get_email_message):
+        delivered, undelivered = Mock(EmailMessage), Mock(EmailMessage)
+        delivered.send.return_value, undelivered.send.return_value = 1, 0
+        delivered.subject, delivered.body, delivered.to = "Subject", "Body", ["a@example.com", "b@example.com"]
+        mock_get_email_message.side_effect = [delivered, undelivered, None]
+        contact_types = ["primary", "administrative"]
+
+        sent = self.use_case.execute(self.notification, self.sponsorships, contact_types)
+
+        self.assertEqual(sent, 1)
+        self.assertEqual(self.notifications[0].notify.call_count, 1)
+        log = SponsorshipNotificationLog.objects.get()
+        self.assertEqual(log.sponsorship, self.sponsorships[0])
+        self.assertEqual(log.subject, "Subject")
+        self.assertEqual(log.content, "Body")
+        self.assertEqual(log.recipients, "a@example.com, b@example.com")
+        self.assertEqual(log.contact_types, "primary, administrative")
 
     def test_build_use_case_with_default_notificationss(self):
         uc = use_cases.SendSponsorshipNotificationUseCase.build()
