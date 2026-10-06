@@ -1,0 +1,8 @@
+{% autoescape off %}Hello {{ agreement.signer_name }},
+
+The Python Software Foundation has countersigned {{ agreement.title }} (reference {{ agreement.reference }}) with {{ agreement.counterparty_name }}. It took effect on {{ agreement.countersigned_at|date:"F j, Y" }}.
+
+The signed copy is attached. Keep it for your records.
+
+Python Software Foundation
+{% endautoescape %}

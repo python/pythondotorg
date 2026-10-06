@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load static sitetree %}
+
+{% block page_title %}{% block title %}Agreements{% endblock %} | Python Software Foundation{% endblock %}
+{% block og_title %}PSF Agreements{% endblock %}
+
+{% block body_attributes %}class="psf agreements"{% endblock %}
+
+{% block section-logo %}<a href="/psf-landing/"><img class="psf-logo" src="{{ STATIC_URL }}img/psf-logo.png" alt="Python Software Foundation"></a>{% endblock %}
+
+{% block main-nav_attributes %}psf-navigation{% endblock %}
+
+{% block main_navigation %}
+{% sitetree_menu from "main" include "psf-meta" template "sitetree/submenu.html" %}
+{% endblock %}
+
+{% block head %}<link rel="stylesheet" href="{% static 'agreements/agreements.css' %}?v=4">{% endblock %}
+
+{% block breadcrumbs %}
+<ul class="breadcrumbs menu">
+  <li><a href="/psf-landing/">PSF</a><span class="prompt">&gt;&gt;&gt;</span></li>
+  {% block crumbs %}<li>Agreements</li>{% endblock %}
+</ul>
+{% endblock breadcrumbs %}
+
+{% block content_attributes %}with-left-sidebar{% endblock %}
+
+{% block left_sidebar %}
+<aside class="left-sidebar" role="secondary">
+  {% block sidebar %}{% endblock %}
+  {% if perms.agreements.manage_agreement %}
+    <div class="section-navigation sidebar-widget">
+      <ul class="section-nav menu" role="menu">
+        <li class="{% if nav == 'queue' %}current_item selected{% endif %}" role="menuitem"><a href="{% url 'agreements:queue' %}">Agreements</a></li>
+        <li class="{% if nav == 'custom' %}current_item selected{% endif %}" role="menuitem"><a href="{% url 'agreements:custom_create' %}">New contract</a></li>
+        <li class="{% if nav == 'terms' %}current_item selected{% endif %}" role="menuitem"><a href="{% url 'agreements:terms_list' %}">Terms</a></li>
+        <li role="menuitem"><a href="{% url 'agreements:program_list' %}">Programs</a></li>
+        <li role="menuitem"><a href="{% url 'agreements:staff_orders' %}">Orders</a></li>
+      </ul>
+    </div>
+  {% endif %}
+</aside>
+{% endblock left_sidebar %}

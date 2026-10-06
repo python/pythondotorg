@@ -1,0 +1,34 @@
+{% extends "agreements/base.html" %}
+{% load agreements %}
+{% block title %}{{ contract.title }}{% endblock %}
+{% block crumbs %}
+<li><a href="{% url 'agreements:queue' %}">Agreements</a><span class="prompt">&gt;&gt;&gt;</span></li>
+<li>{{ contract.title }}</li>
+{% endblock %}
+
+{% block content %}
+<article class="text">
+  <header class="article-header">
+    <h1 class="page-title">{{ contract.title }}</h1>
+  </header>
+  <p class="agreement-meta">{% status_badge contract.status %} With {{ contract.counterparty_name }}{% if contract.terms %} · Cites {{ contract.terms.title }}, version {{ contract.terms.current_version.version }}{% endif %}</p>
+
+  <p class="actions">
+    <a class="button" href="{% url 'agreements:custom_edit' contract.pk %}">Edit</a>
+  </p>
+
+  <div class="agreement-scroll" tabindex="0" aria-label="Preview"><div class="agreement-text">{{ html|safe }}</div></div>
+
+  <p>Making it ready to sign fixes this text as revision 1. You can then send a signing link, record a signed copy, or {% if contract.counterparty_account %}let {{ contract.counterparty_account.email }} sign on python.org{% else %}name an account that signs online{% endif %}, and still edit it until it is signed.</p>
+  <div class="actions">
+    <form method="post" action="{% url 'agreements:custom_offer' contract.pk %}">
+      {% csrf_token %}
+      <button type="submit">Make ready to sign</button>
+    </form>
+    <form method="post" action="{% url 'agreements:custom_delete' contract.pk %}" class="discard-form">
+      {% csrf_token %}
+      <button type="submit">Discard draft</button>
+    </form>
+  </div>
+</article>
+{% endblock %}

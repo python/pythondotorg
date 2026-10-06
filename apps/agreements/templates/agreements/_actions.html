@@ -1,0 +1,151 @@
+{% comment %}
+Signing and staff actions for one agreement. Context comes from agreements.views.helpers.action_forms;
+pass `next` to return to the including page after each action.
+{% endcomment %}
+{% if agreement.status == "offered" %}
+  <div class="user-feedback level-notice">
+    <p>Ready to sign{% if agreement.revision > 1 %} (revision {{ agreement.revision }}, edited by the PSF){% endif %}. Nothing is binding until both parties sign.</p>
+  </div>
+{% elif agreement.status == "signed" %}
+  <div class="user-feedback level-notice"><p>Signed by {{ agreement.signer_name }} on {{ agreement.signed_at|date:"F j, Y" }}. The PSF reviews and countersigns; it takes effect on the date of the last signature.</p></div>
+{% elif agreement.status == "executed" %}
+  <div class="user-feedback level-success"><p>Both parties have signed. It took effect on {{ agreement.countersigned_at|date:"F j, Y" }}.</p></div>
+{% elif agreement.status == "declined" %}
+  <div class="user-feedback level-error"><p>The PSF declined this: {{ agreement.decline_reason }}</p></div>
+{% endif %}
+
+{% include "agreements/_record.html" %}
+
+{% if countersign_form %}
+  <section class="countersign" aria-labelledby="countersign-title">
+    <h2 id="countersign-title">Countersign for the Python Software Foundation</h2>
+    <p>Check the document, the signatory's identity and authority{% if agreement.signature_method == "offline" %}, the signed copy{% endif %}, and anything the counterparty claimed before you sign.</p>
+    <form method="post" action="{% url 'agreements:countersign' agreement.pk %}" enctype="multipart/form-data" class="sign-form">
+      {% csrf_token %}
+      {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+      <div class="field-row">
+        {% include "agreements/_field.html" with field=countersign_form.name %}
+        {% include "agreements/_field.html" with field=countersign_form.title %}
+      </div>
+      {% include "agreements/_field.html" with field=countersign_form.executed_copy %}
+      <label class="choice{% if countersign_form.accept.errors %} has-error{% endif %}">
+        {{ countersign_form.accept }}
+        <span>I am authorized to sign this on behalf of the Python Software Foundation.</span>
+      </label>
+      {{ countersign_form.accept.errors }}
+      <button type="submit">Countersign</button>
+    </form>
+    <details class="decline"{% if decline_form.errors %} open{% endif %}>
+      <summary>Decline</summary>
+      <form method="post" action="{% url 'agreements:decline' agreement.pk %}" class="deletion-form">
+        {% csrf_token %}
+        {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+        {% include "agreements/_field.html" with field=decline_form.reason %}
+        <button type="submit">Decline</button>
+      </form>
+    </details>
+  </section>
+{% endif %}
+
+{% if sign_form %}
+  <section aria-labelledby="sign-title">
+    <h2 id="sign-title">Sign on python.org</h2>
+    <form method="post" action="{% url 'agreements:sign' agreement.pk %}" class="sign-form">
+      {% csrf_token %}
+      {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+      {{ sign_form.document_sha256 }}
+      {{ sign_form.non_field_errors }}
+      <label class="choice accept{% if sign_form.accept.errors %} has-error{% endif %}">
+        {{ sign_form.accept }}
+        <span>By clicking “Sign” I, on behalf of {{ agreement.counterparty_name }}, sign {{ agreement.title }} (reference {{ agreement.reference }}, revision {{ agreement.revision }}) with the Python Software Foundation, as shown above, including any terms it cites. I represent and warrant that I am authorized to sign on behalf of, and to legally bind, {{ agreement.counterparty_name }}.</span>
+      </label>
+      {{ sign_form.accept.errors }}
+      <div class="field-row">
+        {% include "agreements/_field.html" with field=sign_form.signer_name %}
+        {% include "agreements/_field.html" with field=sign_form.signer_title %}
+      </div>
+      <div class="user-feedback level-general signing-as">
+        <p><strong>Signing as {{ user.get_full_name|default:user.get_username }}</strong> ({{ user.email }}) for {{ agreement.counterparty_name }}, {% now "F j, Y" %}.</p>
+        <p>Your identity comes from your python.org account. Your email, the time, and your IP address are recorded with your signature and the exact text you sign.</p>
+      </div>
+      <button type="submit">Sign</button>
+    </form>
+  </section>
+{% endif %}
+
+{% if copy_form %}
+  <section class="offline-signing" aria-labelledby="offline-title">
+    <h2 id="offline-title">{% if sign_form %}Or sign outside python.org{% else %}Signature outside python.org{% endif %}</h2>
+    <ol>
+      <li>Download the <a href="{% url 'agreements:document' agreement.pk 'pdf' %}">PDF</a> (or <a href="{% url 'agreements:document' agreement.pk 'docx' %}">DOCX</a>) of revision {{ agreement.revision }}.</li>
+      <li>Sign it through DocuSign, a procurement system, or on paper, without changing it. If something needs to change, the PSF edits it here first.</li>
+      <li>Upload the signed copy below. The PSF then countersigns.</li>
+    </ol>
+    <details{% if copy_form.errors %} open{% endif %}>
+      <summary>Upload the signed copy</summary>
+      <form method="post" action="{% url 'agreements:record_copy' agreement.pk %}" enctype="multipart/form-data" class="sign-form">
+        {% csrf_token %}
+        {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+        {{ copy_form.document_sha256 }}
+        {{ copy_form.non_field_errors }}
+        {% include "agreements/_field.html" with field=copy_form.signed_copy %}
+        <div class="field-row">
+          {% include "agreements/_field.html" with field=copy_form.signer_name %}
+          {% include "agreements/_field.html" with field=copy_form.signer_title %}
+        </div>
+        <div class="field-row">
+          {% include "agreements/_field.html" with field=copy_form.signer_email %}
+          {% include "agreements/_field.html" with field=copy_form.signed_on %}
+        </div>
+        <label class="choice{% if copy_form.matches.errors %} has-error{% endif %}">
+          {{ copy_form.matches }}
+          <span>The uploaded copy is revision {{ agreement.revision }} of this document (reference {{ agreement.reference }}), unchanged, signed by the person named above.</span>
+        </label>
+        {{ copy_form.matches.errors }}
+        <button type="submit">Record signed copy</button>
+      </form>
+    </details>
+  </section>
+{% endif %}
+
+{% if is_staff and agreement.status == "offered" %}
+  <section class="staff-panel" aria-labelledby="staff-title">
+    <h2 id="staff-title">PSF staff</h2>
+    <p class="actions">
+      <a class="button" href="{% url 'agreements:edit' agreement.pk %}">Edit this document</a>
+      <span class="aside-note">Changes apply to this {{ agreement.counterparty_name }} document only. To change the standing terms for everyone, <a href="{% url 'agreements:terms_list' %}">edit the terms</a>.</span>
+    </p>
+    <h3>Email a signing link</h3>
+    <p class="help">For a signatory without a python.org account. The link works once and expires after 14 days.</p>
+    <form method="post" action="{% url 'agreements:send_link' agreement.pk %}" class="sign-form">
+      {% csrf_token %}
+      {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+      <div class="field-row">
+        {% include "agreements/_field.html" with field=link_form.name %}
+        {% include "agreements/_field.html" with field=link_form.email %}
+      </div>
+      <button type="submit">Send signing link</button>
+    </form>
+    {% if links %}
+      <table class="order-table">
+        <thead><tr><th scope="col">Sent to</th><th scope="col">Sent</th><th scope="col">Status</th></tr></thead>
+        <tbody>
+          {% for link in links %}
+            <tr>
+              <td>{{ link.name }} ({{ link.email }})</td>
+              <td>{{ link.created_at|date:"M j, Y" }} by {{ link.created_by.email }}</td>
+              <td>{% if link.used_at %}Used {{ link.used_at|date:"M j, Y" }}{% elif link.is_usable %}Expires {{ link.expires_at|date:"M j, Y" }}{% else %}Expired{% endif %}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% endif %}
+  </section>
+{% endif %}
+
+{% if can_withdraw %}
+  <form method="post" action="{% url 'agreements:withdraw' agreement.pk %}" class="discard-form">
+    {% csrf_token %}
+    <button type="submit" class="secondaryAction">Withdraw to change it</button>
+  </form>
+{% endif %}

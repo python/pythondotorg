@@ -1,0 +1,26 @@
+{% extends "agreements/base.html" %}
+{% block title %}Terms{% endblock %}
+{% block crumbs %}<li><a href="{% url 'agreements:queue' %}">Agreements</a><span class="prompt">&gt;&gt;&gt;</span></li><li>Terms</li>{% endblock %}
+
+{% block content %}
+<article class="text">
+  <header class="article-header">
+    <h1 class="page-title">Terms</h1>
+  </header>
+  <p class="introduction">Standing terms that documents cite. Publishing a new version changes them for every document offered afterwards; documents already offered or signed keep the version they cite. To change one counterparty's document only, edit that agreement instead.</p>
+  <table class="order-table">
+    <thead><tr><th scope="col">Terms</th><th scope="col">Current version</th><th scope="col">Unpublished draft</th><th scope="col"></th></tr></thead>
+    <tbody>
+      {% for terms in all_terms %}
+        <tr>
+          <th scope="row"><a href="{{ terms.get_absolute_url }}">{{ terms.title }}</a>{% if terms.under_review %}<span class="ref">Draft for attorney review</span>{% endif %}</th>
+          <td>{% with current=terms.current_version %}{% if current %}{{ current.version }}, {{ current.published_at|date:"M j, Y" }}{% else %}None{% endif %}{% endwith %}</td>
+          <td>{% if terms.draft_markdown %}Saved {{ terms.draft_updated_at|date:"M j, Y" }}{% else %}None{% endif %}</td>
+          <td><a class="button" href="{% url 'agreements:terms_edit' terms.slug %}">Edit</a></td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <p class="help">To add a new set of terms, create it in the admin, then write and publish it here.</p>
+</article>
+{% endblock %}

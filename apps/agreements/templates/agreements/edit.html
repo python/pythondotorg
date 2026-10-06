@@ -1,0 +1,54 @@
+{% extends "agreements/base.html" %}
+{% block title %}Edit: {{ agreement.title }}{% endblock %}
+
+{% block crumbs %}
+<li><a href="{% url 'agreements:queue' %}">Agreements</a><span class="prompt">&gt;&gt;&gt;</span></li>
+<li><a href="{{ agreement.get_absolute_url }}">{{ agreement.counterparty_name }}</a><span class="prompt">&gt;&gt;&gt;</span></li>
+<li>Edit</li>
+{% endblock %}
+
+{% block content %}
+<article class="text">
+  <header class="article-header">
+    <h1 class="page-title">Edit {{ agreement.title }}</h1>
+  </header>
+  <p class="introduction">Changes apply to {{ agreement.counterparty_name }}'s document only, as revision {{ agreement.revision|add:1 }}. To change the terms for every future document, <a href="{% url 'agreements:terms_list' %}">edit the terms</a> instead.</p>
+  <div class="user-feedback level-notice">
+    <p>Anyone signing from now on sees the new text. If the counterparty already downloaded revision {{ agreement.revision }} to sign elsewhere, send them the new PDF: a signed copy must be the current revision.</p>
+  </div>
+
+  <form method="post" class="sign-form">
+    {% csrf_token %}
+    {{ form.base_sha256 }}
+    {{ form.non_field_errors }}
+    {% include "agreements/_field.html" with field=form.markdown %}
+    {% include "agreements/_field.html" with field=form.note %}
+    <p class="form-actions">
+      <button type="submit" name="save">Save revision {{ agreement.revision|add:1 }}</button>
+      <button type="submit" name="preview" class="secondaryAction">Preview</button>
+      <a href="{{ agreement.get_absolute_url }}">Cancel</a>
+    </p>
+  </form>
+
+  {% if preview %}
+    <h2>Preview</h2>
+    <div class="agreement-scroll" tabindex="0" aria-label="Preview"><div class="agreement-text">{{ preview|safe }}</div></div>
+  {% endif %}
+
+  <h2>Revisions</h2>
+  <ol class="history" reversed>
+    {% for item in history %}
+      <li>
+        <strong>Revision {{ item.revision.revision }}</strong>, {{ item.revision.created_at|date:"M j, Y, g:i A" }} by {{ item.revision.created_by.email }}: {{ item.revision.note }}
+        {% if item.diff %}
+          <details>
+            <summary>Changes from revision {{ item.revision.revision|add:-1 }}</summary>
+            <pre class="diff">{% for tag, line in item.diff %}<span class="{{ tag }}">{{ line }}</span>
+{% endfor %}</pre>
+          </details>
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ol>
+</article>
+{% endblock %}

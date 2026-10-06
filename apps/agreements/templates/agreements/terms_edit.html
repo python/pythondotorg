@@ -1,0 +1,58 @@
+{% extends "agreements/base.html" %}
+{% block title %}Edit: {{ terms.title }}{% endblock %}
+{% block crumbs %}
+<li><a href="{% url 'agreements:terms_list' %}">Terms</a><span class="prompt">&gt;&gt;&gt;</span></li>
+<li>{{ terms.title }}</li>
+{% endblock %}
+
+{% block content %}
+<article class="text">
+  <header class="article-header">
+    <h1 class="page-title">Edit {{ terms.title }}</h1>
+  </header>
+  <p class="introduction">Save a draft as often as you like; it stays private. Publishing makes it a new version at a permanent address, and every document offered from then on cites it. Documents already offered or signed keep citing {% if current %}version {{ current.version }}{% else %}their version{% endif %}.</p>
+
+  <form method="post" class="sign-form">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    {% include "agreements/_field.html" with field=form.markdown %}
+    <label class="choice">{{ form.under_review }} <span>{{ form.under_review.label }}: show a notice wherever these terms appear.</span></label>
+    <label class="choice">{{ form.is_public }} <span>{{ form.is_public.label }}. {{ form.is_public.help_text }}</span></label>
+
+    <p class="form-actions">
+      <button type="submit" name="action" value="save" class="secondaryAction">Save draft</button>
+      <button type="submit" name="preview" value="1" class="secondaryAction">Preview</button>
+      <a href="{% url 'agreements:terms_list' %}">Cancel</a>
+    </p>
+
+    <fieldset class="staff-panel">
+      <legend>Publish as a new version</legend>
+      <div class="field-row">
+        {% include "agreements/_field.html" with field=form.version %}
+      </div>
+      {% include "agreements/_field.html" with field=form.notes %}
+      <button type="submit" name="action" value="publish">Publish</button>
+    </fieldset>
+  </form>
+
+  {% if preview %}
+    <h2>Preview</h2>
+    <div class="agreement-scroll" tabindex="0" aria-label="Preview"><div class="agreement-text">{{ preview|safe }}</div></div>
+  {% endif %}
+
+  {% if diff %}
+    <h2>Changes from version {{ current.version }}</h2>
+    <pre class="diff">{% for tag, line in diff %}<span class="{{ tag }}">{{ line }}</span>
+{% endfor %}</pre>
+  {% endif %}
+
+  <h2>Published versions</h2>
+  <ol class="history">
+    {% for version in versions %}
+      <li><a href="{{ version.get_absolute_url }}">Version {{ version.version }}</a>, {{ version.published_at|date:"M j, Y" }}{% if version.published_by %} by {{ version.published_by.email }}{% endif %}{% if version.notes %}: {{ version.notes }}{% endif %}</li>
+    {% empty %}
+      <li>None yet.</li>
+    {% endfor %}
+  </ol>
+</article>
+{% endblock %}

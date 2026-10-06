@@ -1,0 +1,33 @@
+{% extends "agreements/base.html" %}
+{% load agreements %}
+{% block title %}{{ agreement.title }}: {{ agreement.counterparty_name }}{% endblock %}
+
+{% block crumbs %}
+{% if is_staff %}<li><a href="{% url 'agreements:queue' %}">Agreements</a><span class="prompt">&gt;&gt;&gt;</span></li>{% endif %}
+<li>{{ agreement.counterparty_name }}</li>
+{% endblock %}
+
+{% block content %}
+<article class="text">
+  <header class="article-header">
+    <h1 class="page-title">{{ agreement.title }}</h1>
+  </header>
+  <p class="agreement-meta">{% status_badge agreement.status %} {{ agreement.counterparty_name }} · Reference <code>{{ agreement.reference }}</code> · Revision {{ agreement.revision }}{% if agreement.subject and agreement.kind != "custom" %} · <a href="{{ agreement.subject_url }}">Details</a>{% endif %}</p>
+
+  <section class="agreement-block" aria-labelledby="document-title">
+    <h2 id="document-title">Document</h2>
+    <p class="agreement-meta">Download: <a href="{% url 'agreements:document' agreement.pk 'pdf' %}">PDF</a> · <a href="{% url 'agreements:document' agreement.pk 'docx' %}">DOCX</a></p>
+    {% if metadata_hidden %}<p class="agreement-meta">For the complete document, download the PDF or DOCX.</p>{% endif %}
+    {% if agreement.status == "offered" %}
+      <div class="agreement-scroll" tabindex="0" aria-label="Document text"><div class="agreement-text">{{ html|safe }}</div></div>
+    {% else %}
+      <details class="agreement-details">
+        <summary>Read the agreement</summary>
+        <div class="agreement-text">{{ html|safe }}</div>
+      </details>
+    {% endif %}
+  </section>
+
+  {% include "agreements/_actions.html" %}
+</article>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "agreements/base.html" %}
+{% load agreements %}
+{% block title %}Agreements{% endblock %}
+
+{% block content %}
+<article class="text">
+  <header class="article-header">
+    <h1 class="page-title">Agreements</h1>
+  </header>
+  <p class="actions">
+    <a class="button button-primary" href="{% url 'agreements:custom_create' %}">New contract</a>
+    <a class="button" href="{% url 'agreements:terms_list' %}">Edit terms</a>
+  </p>
+
+  <h2>To countersign ({{ to_countersign|length }})</h2>
+  {% include "agreements/_agreement_table.html" with agreements=to_countersign empty="Nothing is waiting." %}
+
+  <h2>Awaiting signature ({{ awaiting_signature|length }})</h2>
+  {% include "agreements/_agreement_table.html" with agreements=awaiting_signature empty="Nothing is out for signature." %}
+
+  {% if drafts %}
+    <h2>Contract drafts</h2>
+    <table class="order-table">
+      <thead><tr><th scope="col">Contract</th><th scope="col">Counterparty</th><th scope="col">Updated</th></tr></thead>
+      <tbody>
+        {% for contract in drafts %}
+          <tr><th scope="row"><a href="{{ contract.get_absolute_url }}">{{ contract.title }}</a></th><td>{{ contract.counterparty_name }}</td><td>{{ contract.modified|date:"M j, Y" }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+
+  <h2>Recent</h2>
+  {% include "agreements/_agreement_table.html" with agreements=recent empty="None yet." %}
+</article>
+{% endblock %}

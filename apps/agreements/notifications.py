@@ -1,0 +1,36 @@
+"""Emails to signatories: a one-time signing link, and the executed copy."""
+
+from django.conf import settings
+from django.core.mail import EmailMessage
+from django.template.loader import render_to_string
+from django.urls import reverse
+
+from apps.agreements.documents import final_markdown, render_pdf
+
+
+def _send(template, context, to, attachments=()):
+    subject = " ".join(render_to_string(f"agreements/email/{template}_subject.txt", context).split())
+    body = render_to_string(f"agreements/email/{template}.txt", context)
+    email = EmailMessage(subject=subject, body=body, from_email=settings.DEFAULT_FROM_EMAIL, to=[to])
+    for attachment in attachments:
+        email.attach(*attachment)
+    email.send()
+
+
+def send_signing_link(request, link, token):
+    """Email a signatory their one-time link; ``token`` exists only here and in the email."""
+    url = request.build_absolute_uri(reverse("agreements:sign_link", kwargs={"token": token}))
+    _send("signing_link", {"link": link, "agreement": link.agreement, "url": url}, link.email)
+
+
+def send_executed_copy(agreement):
+    """Email the counterparty's signatory the fully signed document."""
+    if not agreement.signer_email:
+        return
+    pdf = render_pdf(final_markdown(agreement))
+    _send(
+        "executed",
+        {"agreement": agreement},
+        agreement.signer_email,
+        attachments=[(f"psf-agreement-{agreement.reference}.pdf", pdf, "application/pdf")],
+    )
