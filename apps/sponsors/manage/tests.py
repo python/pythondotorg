@@ -369,7 +369,15 @@ class SponsorshipReviewTestBase(SponsorManageTestBase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-        cls.sponsor = Sponsor.objects.create(name="Acme Corp")
+        cls.sponsor = Sponsor.objects.create(
+            name="Acme Corp",
+            description="Acme is a widget maker.",
+            primary_phone="555-0100",
+            mailing_address_line_1="123 Main St",
+            city="Springfield",
+            postal_code="62701",
+            country="US",
+        )
 
     def setUp(self):
         super().setUp()
@@ -2110,7 +2118,9 @@ class ComposerStep6Tests(SponsorManageTestBase):
             name="Acme Corp",
             description="Test sponsor",
             primary_phone="555-1234",
+            mailing_address_line_1="1 Widget Way",
             city="Portland",
+            postal_code="97201",
             country="US",
             web_logo="test_logo.png",
         )
@@ -2328,6 +2338,26 @@ class ComposerStep6Tests(SponsorManageTestBase):
         from django.core.mail import outbox
 
         self.assertEqual(len(outbox), 0)
+
+    def test_step6_save_contract_rejects_bad_url_without_partial_save(self):
+        """An invalid landing_page_url must reject the whole save without touching sponsor or contract."""
+        original_description = self.sponsor.description
+        original_benefits = self.contract.benefits_list.raw
+        response = self.client.post(
+            reverse("manage_composer") + "?step=6",
+            {
+                "action": "save_contract",
+                "si_description": "Should not be saved",
+                "si_website": "not-a-valid-url",
+                "benefits_list": "- Should not be saved either",
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.sponsor.refresh_from_db()
+        self.contract.refresh_from_db()
+        self.assertEqual(self.sponsor.description, original_description)
+        self.assertEqual(self.contract.benefits_list.raw, original_benefits)
+        self.assertContains(response, "correct the errors")
 
     def test_step6_finish(self):
         response = self.client.post(

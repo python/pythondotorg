@@ -2254,6 +2254,41 @@ class BenefitConfigDeleteView(SponsorshipAdminRequiredMixin, View):
         return redirect(reverse("manage_benefit_edit", args=[benefit_pk]))
 
 
+# Maps the composer's step-6 "si_*" POST field names to the corresponding
+# SponsorEditForm/Sponsor model field name.
+_SPONSOR_EDIT_FIELD_MAP = {
+    "si_description": "description",
+    "si_website": "landing_page_url",
+    "si_phone": "primary_phone",
+    "si_address1": "mailing_address_line_1",
+    "si_address2": "mailing_address_line_2",
+    "si_city": "city",
+    "si_state": "state",
+    "si_postal": "postal_code",
+    "si_country": "country",
+}
+
+
+def _build_sponsor_edit_form(request, sponsor):
+    """Build a SponsorEditForm from the composer's ``si_*`` POST fields, preserving omitted fields."""
+    data = {
+        "name": sponsor.name,
+        "description": sponsor.description,
+        "landing_page_url": sponsor.landing_page_url or "",
+        "primary_phone": sponsor.primary_phone,
+        "mailing_address_line_1": sponsor.mailing_address_line_1,
+        "mailing_address_line_2": sponsor.mailing_address_line_2,
+        "city": sponsor.city,
+        "state": sponsor.state,
+        "postal_code": sponsor.postal_code,
+        "country": str(sponsor.country) if sponsor.country else "",
+    }
+    for post_key, field_name in _SPONSOR_EDIT_FIELD_MAP.items():
+        if post_key in request.POST:
+            data[field_name] = request.POST.get(post_key, "").strip()
+    return SponsorEditForm(data, instance=sponsor)
+
+
 class ComposerView(SponsorshipAdminRequiredMixin, View):
     """Multi-step wizard for building a custom sponsorship.
 
@@ -2714,7 +2749,7 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
 
     # ── Step 6: Contract & Send ──
 
-    def _render_step6(self, request, data):
+    def _render_step6(self, request, data, si_form=None):
         contract_id = data.get("contract_id")
         if not contract_id:
             messages.error(request, "No contract found. Please go back and create the sponsorship.")
@@ -2750,6 +2785,10 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
 
         primary_contact = sponsor.primary_contact
 
+        # Bound with posted values on a failed save, else the current sponsor data.
+        if si_form is None:
+            si_form = SponsorEditForm(instance=sponsor)
+
         context = {
             "step": 6,
             "total_steps": self.TOTAL_STEPS,
@@ -2759,6 +2798,7 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
             "contract": contract,
             "sponsor_contacts": sponsor_contacts,
             "primary_contact": primary_contact,
+            "si_form": si_form,
             "contract_sponsor_info": contract.sponsor_info,
             "contract_sponsor_contact": contract.sponsor_contact,
             "contract_benefits_list": contract.benefits_list.raw,
@@ -2818,45 +2858,25 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
 
     @transaction.atomic
     def _handle_save_contract(self, request, data, contract, sponsor):
-        """Save edited contract fields.
-
-        Rebuilds sponsor_info from structured form fields (name + description).
-        Rebuilds sponsor_contact from the sponsor's primary contact.
-        Falls back to the hidden field values if structured data is missing.
-        """
+        """Save edited contract fields; sponsor edits go through SponsorEditForm validation."""
         sponsorship = get_object_or_404(Sponsorship.objects.select_for_update(), pk=data["sponsorship_id"])
         contract = get_object_or_404(Contract.objects.select_for_update(), pk=contract.pk, sponsorship=sponsorship)
         if not sponsorship.open_for_editing or not contract.is_draft:
             messages.error(request, "This contract cannot be edited in its current state.")
             return redirect(reverse("manage_sponsorship_detail", args=[sponsorship.pk]))
+
+        sponsor_form = _build_sponsor_edit_form(request, sponsor)
+        if not sponsor_form.is_valid():
+            messages.error(request, "Please correct the errors in the sponsor information below.")
+            return self._render_step6(request, data, si_form=sponsor_form)
+        sponsor = sponsor_form.save()
+
         # Rebuild sponsor_info from structured fields
         si_description = request.POST.get("si_description", "").strip()
         if si_description:
             contract.sponsor_info = f"{sponsor.name}, {si_description}"
         else:
             contract.sponsor_info = request.POST.get("sponsor_info", contract.sponsor_info)
-
-        # Also update the sponsor model fields if provided
-        sponsor.description = si_description or sponsor.description
-        si_website = request.POST.get("si_website", "").strip()
-        sponsor.landing_page_url = si_website or sponsor.landing_page_url
-        si_phone = request.POST.get("si_phone", "").strip()
-        sponsor.primary_phone = si_phone or sponsor.primary_phone
-        si_address1 = request.POST.get("si_address1", "").strip()
-        sponsor.mailing_address_line_1 = si_address1 or sponsor.mailing_address_line_1
-        sponsor.mailing_address_line_2 = request.POST.get("si_address2", "").strip()
-        si_city = request.POST.get("si_city", "").strip()
-        if si_city:
-            sponsor.city = si_city
-        si_state = request.POST.get("si_state", "").strip()
-        sponsor.state = si_state
-        si_postal = request.POST.get("si_postal", "").strip()
-        if si_postal:
-            sponsor.postal_code = si_postal
-        si_country = request.POST.get("si_country", "").strip()
-        if si_country:
-            sponsor.country = si_country
-        sponsor.save()
 
         # Rebuild sponsor_contact from primary contact
         primary_contact = sponsor.primary_contact

@@ -1260,35 +1260,42 @@ function filterBenefits(query) {
                         </div>
                         <div style="margin-bottom:10px;">
                             <label for="si-description" style="font-size:11px;font-weight:600;color:#666;display:block;margin-bottom:2px;">Description</label>
-                            <textarea name="si_description" id="si-description" rows="2" style="width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;box-sizing:border-box;resize:vertical;">{{ sponsor.description }}</textarea>
+                            <textarea name="si_description" id="si-description" rows="2" style="width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;box-sizing:border-box;resize:vertical;">{{ si_form.description.value|default:"" }}</textarea>
+                            {% if si_form.description.errors %}<div class="field-errors">{{ si_form.description.errors.0 }}</div>{% endif %}
                         </div>
                         <div style="margin-bottom:10px;">
                             <label for="si-website" style="font-size:11px;font-weight:600;color:#666;display:block;margin-bottom:2px;">Website URL</label>
-                            <input type="url" name="si_website" id="si-website" value="{{ sponsor.landing_page_url|default_if_none:'' }}" style="width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;box-sizing:border-box;">
+                            <input type="url" name="si_website" id="si-website" value="{{ si_form.landing_page_url.value|default:'' }}" style="width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;box-sizing:border-box;">
+                            {% if si_form.landing_page_url.errors %}<div class="field-errors">{{ si_form.landing_page_url.errors.0 }}</div>{% endif %}
                         </div>
                         <div style="margin-bottom:10px;">
                             <label for="si-phone" style="font-size:11px;font-weight:600;color:#666;display:block;margin-bottom:2px;">Phone</label>
-                            <input type="text" name="si_phone" id="si-phone" value="{{ sponsor.primary_phone }}" style="width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;box-sizing:border-box;">
+                            <input type="text" name="si_phone" id="si-phone" value="{{ si_form.primary_phone.value|default:'' }}" style="width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;box-sizing:border-box;">
+                            {% if si_form.primary_phone.errors %}<div class="field-errors">{{ si_form.primary_phone.errors.0 }}</div>{% endif %}
                         </div>
                         <div style="font-size:11px;font-weight:600;color:#666;margin-bottom:4px;">Mailing Address</div>
                         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
                             <div>
-                                <input type="text" name="si_address1" id="si-address1" value="{{ sponsor.mailing_address_line_1 }}" placeholder="Address line 1" style="width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;box-sizing:border-box;">
+                                <input type="text" name="si_address1" id="si-address1" value="{{ si_form.mailing_address_line_1.value|default:'' }}" placeholder="Address line 1" style="width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;box-sizing:border-box;">
+                                {% if si_form.mailing_address_line_1.errors %}<div class="field-errors">{{ si_form.mailing_address_line_1.errors.0 }}</div>{% endif %}
                             </div>
                             <div>
-                                <input type="text" name="si_address2" id="si-address2" value="{{ sponsor.mailing_address_line_2 }}" placeholder="Address line 2" style="width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;box-sizing:border-box;">
+                                <input type="text" name="si_address2" id="si-address2" value="{{ si_form.mailing_address_line_2.value|default:'' }}" placeholder="Address line 2" style="width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;box-sizing:border-box;">
                             </div>
                             <div>
-                                <input type="text" name="si_city" id="si-city" value="{{ sponsor.city }}" placeholder="City" style="width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;box-sizing:border-box;">
+                                <input type="text" name="si_city" id="si-city" value="{{ si_form.city.value|default:'' }}" placeholder="City" style="width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;box-sizing:border-box;">
+                                {% if si_form.city.errors %}<div class="field-errors">{{ si_form.city.errors.0 }}</div>{% endif %}
                             </div>
                             <div>
-                                <input type="text" name="si_state" id="si-state" value="{{ sponsor.state }}" placeholder="State/Province" style="width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;box-sizing:border-box;">
+                                <input type="text" name="si_state" id="si-state" value="{{ si_form.state.value|default:'' }}" placeholder="State/Province" style="width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;box-sizing:border-box;">
                             </div>
                             <div>
-                                <input type="text" name="si_postal" id="si-postal" value="{{ sponsor.postal_code }}" placeholder="Postal code" style="width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;box-sizing:border-box;">
+                                <input type="text" name="si_postal" id="si-postal" value="{{ si_form.postal_code.value|default:'' }}" placeholder="Postal code" style="width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;box-sizing:border-box;">
+                                {% if si_form.postal_code.errors %}<div class="field-errors">{{ si_form.postal_code.errors.0 }}</div>{% endif %}
                             </div>
                             <div>
-                                <input type="text" name="si_country" id="si-country" value="{{ sponsor.country }}" placeholder="Country" style="width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;box-sizing:border-box;">
+                                <input type="text" name="si_country" id="si-country" value="{{ si_form.country.value|default:'' }}" placeholder="Country" style="width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;box-sizing:border-box;">
+                                {% if si_form.country.errors %}<div class="field-errors">{{ si_form.country.errors.0 }}</div>{% endif %}
                             </div>
                         </div>
                     </div>
