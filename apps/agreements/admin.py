@@ -127,6 +127,10 @@ class CustomContractAdmin(admin.ModelAdmin):
     readonly_fields = ("agreement", "created_by", "created", "modified")
     raw_id_fields = ("counterparty_account",)
 
+    def has_add_permission(self, request):
+        """Create contracts on the site, where their author is recorded."""
+        return False
+
 
 @admin.register(Program)
 class ProgramAdmin(admin.ModelAdmin):
