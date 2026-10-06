@@ -4,7 +4,7 @@ from decimal import Decimal
 from uuid import UUID
 
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import redirect_to_login
 from django.core.exceptions import ValidationError
 from django.db import transaction
@@ -16,9 +16,10 @@ from django.views.decorators.http import require_GET, require_POST
 
 from apps.agreements import documents as agreement_documents
 from apps.agreements import workflow
+from apps.agreements.auth import can_prepare, is_administrator, preparer_required
 from apps.agreements.documents import sha256
 from apps.agreements.forms.signing import SignForm
-from apps.agreements.models import MANAGE_PERMISSION, Order, OrderLine, Program
+from apps.agreements.models import Order, OrderLine, Program
 from apps.agreements.orders import documents
 from apps.agreements.orders.forms import OrderBuilder
 from apps.agreements.orders.pricing import build_quote, money
@@ -35,9 +36,12 @@ def _orders():
 
 
 def _own_orders(user):
-    return (
-        _orders().filter(Q(created_by=user) | Q(customer_account=user)) if user.is_authenticated else _orders().none()
-    )
+    if not user.is_authenticated:
+        return _orders().none()
+    owned = Q(customer_account=user)
+    if can_prepare(user):
+        owned |= Q(created_by=user)
+    return _orders().filter(owned)
 
 
 def _order_rows(orders):
@@ -57,7 +61,7 @@ def _order_rows(orders):
 
 
 def _order_or_404(request, pk, *, for_update=False):
-    orders = _orders() if request.user.has_perm(MANAGE_PERMISSION) else _own_orders(request.user)
+    orders = _orders() if can_prepare(request.user) else _own_orders(request.user)
     if for_update:
         orders = orders.select_for_update(of=("self",))
     return get_object_or_404(orders, pk=pk)
@@ -117,7 +121,7 @@ def quote(request, slug):
         program = order.program
     else:
         program = _program_or_404(request, slug)
-    builder = OrderBuilder(request.GET, program=program, order=order, staff=request.user.has_perm(MANAGE_PERMISSION))
+    builder = OrderBuilder(request.GET, program=program, order=order, staff=can_prepare(request.user))
     selections = builder.order_form.fields["agreements"]
     errors = {}
     try:
@@ -156,7 +160,7 @@ def quote(request, slug):
 
 
 def _builder(request, program, order=None):
-    staff = request.user.has_perm(MANAGE_PERMISSION)
+    staff = can_prepare(request.user)
     builder = OrderBuilder(request.POST or None, program=program, order=order, staff=staff)
     if not order:
         preselect = [slug for slug in request.GET.getlist("agreement") if slug in builder.agreements]
@@ -224,9 +228,11 @@ def order_detail(request, pk, sign_form=None, status=200):
     context = {
         "order": order,
         "is_customer": order.is_customer(user),
-        "is_staff": user.has_perm(MANAGE_PERMISSION),
+        "can_prepare": can_prepare(user),
+        "is_administrator": is_administrator(user),
+        "can_offer": order.can_offer(user),
         "can_edit": order.can_edit(user),
-        "nav": "staff" if user.has_perm(MANAGE_PERMISSION) and not order.is_customer(user) else "orders",
+        "nav": "staff" if can_prepare(user) and not order.is_customer(user) else "orders",
         "next": order.get_absolute_url(),
     }
     try:
@@ -280,7 +286,7 @@ def order_sign(request, pk):
 def order_offer(request, pk):
     """Fix the text for an account, a signing link, or an externally signed copy."""
     order = _order_or_404(request, pk, for_update=True)
-    if not order.can_edit(request.user):
+    if not order.can_offer(request.user):
         raise Http404
     try:
         workflow.offer(get_kind(KIND), order, user=request.user)
@@ -323,8 +329,7 @@ def order_document(request, pk, fmt):
 
 
 @never_cache
-@login_required
-@permission_required(MANAGE_PERMISSION, raise_exception=True)
+@preparer_required
 def staff_orders(request):
     """List all orders for agreement managers."""
     return render(request, "agreements/orders/staff_queue.html", {"orders": _order_rows(_orders()), "nav": "staff"})
