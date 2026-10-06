@@ -10,6 +10,7 @@ from django.conf import settings
 from django.contrib.staticfiles.storage import ManifestFilesMixin, StaticFilesStorage
 from django.contrib.staticfiles.utils import matches_patterns
 from django.core.files.base import ContentFile
+from django.urls import reverse
 from pipeline.storage import PipelineMixin
 from storages.backends.s3boto3 import S3Boto3Storage
 
@@ -18,6 +19,20 @@ class MediaStorage(S3Boto3Storage):
     """S3 storage backend for user-uploaded media files."""
 
     location = settings.MEDIAFILES_LOCATION
+
+
+class S3ContractStorage(S3Boto3Storage):
+    """Store contracts privately and serve them through the authorized download view."""
+
+    location = getattr(settings, "SPONSORS_CONTRACT_STORAGE_LOCATION", "contracts-private")
+    default_acl = "private"
+    file_overwrite = False
+    querystring_auth = False
+    object_parameters = {"CacheControl": "private, no-store", "ContentDisposition": "attachment"}
+
+    def url(self, name, parameters=None, expire=None, http_method=None):
+        """Return the authorized download route instead of a signed/public S3 URL."""
+        return reverse("download_contract_document", args=[name])
 
 
 class PipelineManifestStorage(PipelineMixin, ManifestFilesMixin, StaticFilesStorage):
