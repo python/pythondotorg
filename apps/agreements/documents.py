@@ -129,7 +129,7 @@ def _signature_record(agreement):
     rows.append(("Signatory", f"{agreement.signer_name}, {agreement.signer_title} ({agreement.signer_email})"))
     if agreement.signature_method == agreement.SignatureMethod.OFFLINE:
         intro = (
-            f"{agreement.counterparty_name} signed a copy of this document outside python.org. "
+            f"{md(agreement.counterparty_name)} signed a copy of this document outside python.org. "
             "The signed copy is kept with the agreement."
         )
         rows.append(("Signed", f"{date(agreement.signed_at)}, outside python.org"))
@@ -138,7 +138,7 @@ def _signature_record(agreement):
         how = (
             "an emailed signing link" if agreement.signature_method == agreement.SignatureMethod.LINK else "an account"
         )
-        intro = f"{agreement.counterparty_name} signed this document on python.org with {how}."
+        intro = f"{md(agreement.counterparty_name)} signed this document on python.org with {how}."
         rows.append(("Signed", _utc(agreement.signed_at)))
     if agreement.countersigned_at:
         rows.append(("PSF signatory", f"{agreement.countersigner_name}, {agreement.countersigner_title}"))
