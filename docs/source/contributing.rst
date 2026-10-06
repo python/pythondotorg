@@ -50,6 +50,7 @@ CI checks
 GitHub Actions runs on every push and pull request. It will:
 
 - Check for ungenerated migrations (``makemigrations --check --dry-run``)
+- Type-check the agreements app, including its tests, with mypy and Django stubs
 - Run the full test suite
 - Enforce a **75% minimum test coverage** threshold
 
@@ -61,6 +62,17 @@ Code style
 - Follow :pep:`8`
 - Use ``make lint`` (ruff) to catch issues and ``make fmt`` (ruff) to
   auto-format
+
+The agreements app requires annotated function signatures. Inside the development
+web container, run its Django-aware type check with:
+
+.. code-block:: bash
+
+   uv run python -m mypy
+
+The configuration in ``pyproject.toml`` checks ``apps/agreements`` without requiring
+a typing migration of the legacy apps. Preserve explicit types for domain objects
+and quote snapshots; keep dynamic types limited to Django and JSON boundaries.
 
 .. _GitHub: https://github.com/python/pythondotorg/issues
 .. _license: https://github.com/python/pythondotorg/blob/main/LICENSE

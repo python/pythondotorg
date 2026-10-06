@@ -90,6 +90,9 @@ jobs:
       - name: Install dependencies
         run: pip install --group dev -e .
 
+      - name: Check agreements types
+        run: python -m mypy
+
       - name: Run tests
         run: python -Wd -m coverage run manage.py test -v2
         env:

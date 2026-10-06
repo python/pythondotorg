@@ -71,9 +71,11 @@ dev = [
     "coverage",
     "ddt",
     "django-debug-toolbar==8.0.0",
+    "django-stubs==5.2.9",
     "factory-boy==3.3.3",
     "faker==40.38.0",
     "model-bakery==1.24.0",
+    "mypy==2.4.0",
     "pyproject-fmt==2.29.4",
     "responses==0.26.3",
     "ruff==0.16.7",
@@ -156,6 +158,18 @@ indent = 4
 keep_full_version = true
 generate_python_version_classifiers = false
 table_format = "long"
+
+[tool.mypy]
+files = [ "apps/agreements" ]
+ignore_missing_imports = true
+follow_imports = "silent"
+disallow_untyped_defs = true
+check_untyped_defs = true
+warn_unused_ignores = true
+plugins = [ "mypy_django_plugin.main" ]
+
+[tool.django-stubs]
+django_settings_module = "pydotorg.settings.local"
 
 [tool.coverage.run]
 source = [ "." ]
