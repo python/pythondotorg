@@ -10,6 +10,8 @@ from django.contrib.auth.models import Group, Permission
 from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
+from django.core.management import call_command
+from django.core.management.base import CommandError
 from django.test import SimpleTestCase, TestCase
 from django.urls import reverse
 from model_bakery import baker
@@ -151,3 +153,48 @@ class DownloadContractDocumentViewTests(PrivateFilesTestBase):
                 self.assertEqual(self.client.get(reverse("download_contract_document", args=[name])).status_code, 404)
         self.storage.delete(self.contract.signed_document.name)
         self.assertEqual(self.client.get(self.url).status_code, 404)
+
+
+class RemediateContractStorageCommandTests(PrivateFilesTestBase):
+    def setUp(self):
+        super().setUp()
+        self.name = default_storage.save("sponsors/contracts/legacy.pdf", ContentFile(VALID_PDF))
+        self.contract.document.name = self.name
+        self.contract.save(update_fields=["document"])
+
+    def test_dry_run_leaves_both_backends_unchanged(self):
+        call_command("remediate_contract_storage", stdout=io.StringIO())
+        self.assertFalse(self.storage.exists(self.name))
+        with default_storage.open(self.name) as original:
+            self.assertEqual(original.read(), VALID_PDF)
+
+    def test_copy_then_explicit_public_removal_is_verified_and_idempotent(self):
+        call_command("remediate_contract_storage", "--apply", stdout=io.StringIO())
+        self.assertTrue(default_storage.exists(self.name))
+        with self.storage.open(self.name) as migrated:
+            self.assertEqual(migrated.read(), VALID_PDF)
+        call_command("remediate_contract_storage", "--apply", "--delete-legacy", stdout=io.StringIO())
+        self.assertFalse(default_storage.exists(self.name))
+        call_command("remediate_contract_storage", "--apply", "--delete-legacy", stdout=io.StringIO())
+        self.contract.refresh_from_db()
+        with self.contract.document.open("rb") as migrated:
+            self.assertEqual(migrated.read(), VALID_PDF)
+
+    def test_mismatching_private_copy_prevents_public_deletion(self):
+        self.storage.save(self.name, ContentFile(b"wrong document"))
+        with self.assertRaises(CommandError):
+            call_command("remediate_contract_storage", "--apply", "--delete-legacy", stdout=io.StringIO())
+        with default_storage.open(self.name) as original:
+            self.assertEqual(original.read(), VALID_PDF)
+
+    def test_deletion_requires_explicit_apply(self):
+        with self.assertRaises(CommandError):
+            call_command("remediate_contract_storage", "--delete-legacy", stdout=io.StringIO())
+        self.assertTrue(default_storage.exists(self.name))
+
+    def test_unreferenced_public_objects_are_reported_and_preserved(self):
+        name = default_storage.save("sponsors/contracts/unreferenced.pdf", ContentFile(VALID_PDF))
+        errors = io.StringIO()
+        call_command("remediate_contract_storage", "--apply", "--delete-legacy", stdout=io.StringIO(), stderr=errors)
+        self.assertIn(name, errors.getvalue())
+        self.assertTrue(default_storage.exists(name))
