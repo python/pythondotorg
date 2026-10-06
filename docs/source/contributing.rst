@@ -53,6 +53,11 @@ GitHub Actions runs on every push and pull request. It will:
 - Run the full test suite
 - Enforce a **75% minimum test coverage** threshold
 
+Dependencies are installed with ``uv sync --locked`` using ``uv.lock``.
+After changing dependencies in ``pyproject.toml``, run ``uv lock`` and include
+both files in your pull request. Dependabot updates them together using its
+uv integration.
+
 PRs that fail CI won't be merged.
 
 Code style
@@ -61,6 +66,31 @@ Code style
 - Follow :pep:`8`
 - Use ``make lint`` (ruff) to catch issues and ``make fmt`` (ruff) to
   auto-format
+
+Documentation
+-------------
+
+The documentation uses Sphinx, MyST, and the Shibuya theme. Install
+`uv <https://docs.astral.sh/uv/getting-started/installation/>`_, then run:
+
+.. code-block:: bash
+
+   make docs
+
+Open ``docs/_build/html/index.html`` to view the result. Builds use the locked
+``docs`` dependency group and fail on Sphinx warnings, including on Read the
+Docs.
+
+For a live-reloading preview at http://127.0.0.1:8001:
+
+.. code-block:: bash
+
+   make docs-serve
+
+Use ``DOCS_PORT=8002`` to choose another preview port, or
+``DOCS_BUILDDIR=/tmp/pythondotorg-docs`` to choose another output directory.
+``make docs-clean`` removes the selected output directory.
+
 
 .. _GitHub: https://github.com/python/pythondotorg/issues
 .. _license: https://github.com/python/pythondotorg/blob/main/LICENSE
