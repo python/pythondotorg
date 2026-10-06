@@ -794,6 +794,34 @@ class ContractRegenerateViewTests(SponsorshipReviewTestBase):
             self.assertEqual(hc.status, Contract.OUTDATED)
             self.assertIsNone(hc.sponsorship)
 
+    def test_same_name_sponsor_history_not_leaked(self):
+        """A second, unrelated sponsor sharing the same name must never see the first sponsor's history."""
+        old_contract = self._approve_sponsorship()
+        self.client.post(reverse("manage_contract_regenerate", args=[self.sponsorship.pk]))
+
+        other_sponsor = Sponsor.objects.create(
+            name=self.sponsor.name,  # deliberately identical name
+            description="Unrelated",
+            primary_phone="555-0000",
+            mailing_address_line_1="Other St",
+            city="Othertown",
+            postal_code="00001",
+            country="US",
+        )
+        other_sponsorship = Sponsorship.objects.create(
+            sponsor=other_sponsor,
+            submited_by=self.staff_user,
+            package=self.package,
+            sponsorship_fee=50000,
+            year=self.year,
+            status=Sponsorship.APPLIED,
+        )
+        response = self.client.get(reverse("manage_sponsorship_detail", args=[other_sponsorship.pk]))
+        self.assertEqual(response.status_code, 200)
+        historical = response.context["historical_contracts"]
+        self.assertEqual(historical.count(), 0)
+        self.assertNotIn(old_contract.pk, historical.values_list("pk", flat=True))
+
 
 class SponsorshipNotifyViewTests(SponsorshipReviewTestBase):
     """Test notification sending from sponsorship detail."""

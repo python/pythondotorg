@@ -15,6 +15,11 @@ urlpatterns = [
         views.SelectSponsorshipApplicationBenefitsView.as_view(),
         name="select_sponsorship_application_benefits",
     ),
+    path(
+        "documents/<path:name>/",
+        views.download_contract_document,
+        name="download_contract_document",
+    ),
     # Staff-only management UI
     path("manage/", include("apps.sponsors.manage.urls")),
 ]

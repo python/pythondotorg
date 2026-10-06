@@ -955,15 +955,8 @@ class SponsorshipDetailView(SponsorshipAdminRequiredMixin, DetailView):
         # Benefit add form (only when editable)
         if sp.open_for_editing:
             context["add_benefit_form"] = AddBenefitToSponsorshipForm(sponsorship=sp)
-        # Historical (detached) contracts for this sponsor
-        if sp.sponsor:
-            context["historical_contracts"] = Contract.objects.filter(
-                sponsor_info__startswith=sp.sponsor.name + ",",
-                sponsorship__isnull=True,
-                status=Contract.OUTDATED,
-            ).order_by("-last_update")
-        else:
-            context["historical_contracts"] = Contract.objects.none()
+        # Contracts originally created for this sponsorship, later detached.
+        context["historical_contracts"] = sp.contract_history.filter(status=Contract.OUTDATED).order_by("-last_update")
         # Financial breakdown by program
         program_values = (
             sp.benefits.values("program__name").annotate(total=Sum("benefit_internal_value")).order_by("-total")
@@ -1616,10 +1609,8 @@ class ContractRegenerateView(SponsorshipAdminRequiredMixin, View):
         except Contract.DoesNotExist:
             pass
         new_contract = Contract.new(sp)
-        # Set revision to count of historical contracts for this sponsor
-        historical_count = Contract.objects.filter(
-            sponsor_info__startswith=sp.sponsor.name + ",", sponsorship__isnull=True, status=Contract.OUTDATED
-        ).count()
+        # Set revision to count of historical contracts for this sponsorship
+        historical_count = sp.contract_history.filter(status=Contract.OUTDATED).count()
         new_contract.revision = historical_count
         new_contract.save()
         messages.success(

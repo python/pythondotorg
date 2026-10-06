@@ -14,6 +14,7 @@ from ordered_model.models import OrderedModel
 
 from apps.sponsors.exceptions import InvalidStatusError
 from apps.sponsors.models.sponsorship import Sponsorship
+from apps.sponsors.storage import get_contract_storage
 from apps.sponsors.utils import file_from_storage
 
 
@@ -85,16 +86,19 @@ class Contract(models.Model):
         upload_to=FINAL_VERSION_PDF_DIR,
         blank=True,
         verbose_name="Unsigned PDF",
+        storage=get_contract_storage,
     )
     document_docx = models.FileField(
         upload_to=FINAL_VERSION_DOCX_DIR,
         blank=True,
         verbose_name="Unsigned Docx",
+        storage=get_contract_storage,
     )
     signed_document = models.FileField(
         upload_to=signed_contract_random_path,
         blank=True,
         verbose_name="Signed PDF",
+        storage=get_contract_storage,
     )
 
     # Contract information gets populated during object's creation.
@@ -105,6 +109,14 @@ class Contract(models.Model):
         null=True,
         on_delete=models.SET_NULL,
         related_name="contract",
+    )
+    # Preserve the association when a replaced contract is detached.
+    original_sponsorship = models.ForeignKey(
+        "sponsors.Sponsorship",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="contract_history",
     )
     sponsor_info = models.TextField(verbose_name="Sponsor information")
     sponsor_contact = models.TextField(verbose_name="Sponsor contact")
@@ -178,6 +190,7 @@ class Contract(models.Model):
         legal_clauses_text = "\n".join([f"[^{i}]: {c.clause}" for i, c in enumerate(legal_clauses, start=1)])
         return cls.objects.create(
             sponsorship=sponsorship,
+            original_sponsorship=sponsorship,
             sponsor_info=sponsor_info,
             sponsor_contact=sponsor_contact,
             benefits_list="\n".join(list(benefits_list)),
@@ -226,7 +239,7 @@ class Contract(models.Model):
 
         # save contract as PDF file
         pdf_filename = posixpath.join(self.FINAL_VERSION_PDF_DIR, f"SoW: {sponsor}-{token}.pdf")
-        file = file_from_storage(pdf_filename, mode="wb")
+        file = file_from_storage(pdf_filename, mode="wb", storage=self._meta.get_field("document").storage)
         file.write(pdf_file)
         file.close()
         self.document = pdf_filename
@@ -234,7 +247,7 @@ class Contract(models.Model):
         # save contract as docx file
         if docx_file:
             docx_filename = posixpath.join(self.FINAL_VERSION_DOCX_DIR, f"SoW: {sponsor}-{token}.docx")
-            file = file_from_storage(docx_filename, mode="wb")
+            file = file_from_storage(docx_filename, mode="wb", storage=self._meta.get_field("document_docx").storage)
             file.write(docx_file)
             file.close()
             self.document_docx = docx_filename

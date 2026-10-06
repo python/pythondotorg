@@ -2,11 +2,20 @@
 
 import io
 import zipfile
+from tempfile import TemporaryDirectory
+from unittest import mock
 
-from django.core.exceptions import ValidationError
+from django.conf import settings
+from django.contrib.auth.models import Group, Permission
+from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.core.files.base import ContentFile
-from django.test import SimpleTestCase
+from django.core.files.storage import default_storage
+from django.test import SimpleTestCase, TestCase
+from django.urls import reverse
+from model_bakery import baker
 
+from apps.sponsors.models import Contract
+from apps.sponsors.storage import LocalContractStorage, get_contract_storage
 from apps.sponsors.validators import validate_signed_contract
 
 VALID_PDF = b"%PDF-1.4\n%%EOF"
@@ -60,3 +69,85 @@ class ValidateSignedContractTests(SimpleTestCase):
         with self.assertRaises(ValidationError):
             validate_signed_contract(document)
         self.assertEqual(document.tell(), 2)
+
+    def test_private_storage_rejects_a_public_media_location(self):
+        with self.assertRaises(ImproperlyConfigured):
+            LocalContractStorage(location=settings.MEDIA_ROOT)
+
+
+class PrivateFilesTestBase(TestCase):
+    def setUp(self):
+        public_root = self.enterContext(TemporaryDirectory())
+        private_root = self.enterContext(TemporaryDirectory())
+        self.enterContext(self.settings(MEDIA_ROOT=public_root, SPONSORS_CONTRACT_STORAGE_ROOT=private_root))
+        self.storage = get_contract_storage()
+        for name in ("document", "document_docx", "signed_document"):
+            self.enterContext(mock.patch.object(getattr(Contract, name).field, "storage", self.storage))
+        self.contract = baker.make_recipe("apps.sponsors.tests.empty_contract")
+
+
+class DownloadContractDocumentViewTests(PrivateFilesTestBase):
+    def setUp(self):
+        super().setUp()
+        self.contract.signed_document.save("test-download.pdf", ContentFile(VALID_PDF))
+        self.url = self.contract.signed_document.url
+
+    def test_anonymous_and_inactive_users_cannot_download(self):
+        self.assertEqual(self.client.get(self.url).status_code, 302)
+        user = baker.make(settings.AUTH_USER_MODEL, is_superuser=True, is_active=False)
+        self.client.force_login(user)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(settings.LOGIN_URL, response.url)
+
+    def test_unrelated_users_and_staff_without_contract_permissions_are_denied(self):
+        for is_staff in (False, True):
+            with self.subTest(is_staff=is_staff):
+                self.client.force_login(baker.make(settings.AUTH_USER_MODEL, is_staff=is_staff))
+                self.assertEqual(self.client.get(self.url).status_code, 403)
+
+    def test_nonstaff_superuser_downloads_private_attachment(self):
+        self.client.force_login(baker.make(settings.AUTH_USER_MODEL, is_superuser=True, is_staff=False))
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(b"".join(response.streaming_content), VALID_PDF)
+        self.assertIn("private", response["Cache-Control"])
+        self.assertIn("no-store", response["Cache-Control"])
+        self.assertEqual(response["X-Content-Type-Options"], "nosniff")
+        self.assertIn("attachment", response["Content-Disposition"])
+        self.assertFalse(default_storage.exists(self.contract.signed_document.name))
+
+    def test_nonstaff_group_member_loses_access_after_revocation(self):
+        group, _ = Group.objects.get_or_create(name="Sponsorship Admin")
+        user = baker.make(settings.AUTH_USER_MODEL, is_staff=False)
+        user.groups.add(group)
+        self.client.force_login(user)
+        response = self.client.get(self.url)
+        self.assertEqual(b"".join(response.streaming_content), VALID_PDF)
+        user.groups.remove(group)
+        self.assertEqual(self.client.get(self.url).status_code, 403)
+
+    def test_django_admin_read_permissions_allow_each_stored_document_type(self):
+        for permission in ("view_contract", "change_contract"):
+            with self.subTest(permission=permission):
+                user = baker.make(settings.AUTH_USER_MODEL, is_staff=True)
+                user.user_permissions.add(
+                    Permission.objects.get(codename=permission, content_type__app_label="sponsors")
+                )
+                self.client.force_login(user)
+                for name, content in (("document", VALID_PDF), ("document_docx", _docx_bytes(valid=True))):
+                    with self.subTest(field=name):
+                        document = getattr(self.contract, name)
+                        document.save(name + ".bin", ContentFile(content))
+                        response = self.client.get(document.url)
+                        self.assertEqual(response.status_code, 200)
+                        self.assertEqual(b"".join(response.streaming_content), content)
+
+    def test_untracked_missing_and_traversal_paths_are_not_served(self):
+        self.client.force_login(baker.make(settings.AUTH_USER_MODEL, is_superuser=True))
+        self.storage.save("untracked.pdf", ContentFile(VALID_PDF))
+        for name in ("untracked.pdf", "missing.pdf", "../../outside.pdf"):
+            with self.subTest(name=name):
+                self.assertEqual(self.client.get(reverse("download_contract_document", args=[name])).status_code, 404)
+        self.storage.delete(self.contract.signed_document.name)
+        self.assertEqual(self.client.get(self.url).status_code, 404)
