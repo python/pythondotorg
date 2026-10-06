@@ -82,8 +82,8 @@ dev = [
     "tblib==1.7.0",
 ]
 docs = [
-    "furo",
     "myst-parser",
+    "shibuya",
     "sphinx",
     "sphinx-autobuild",
 ]
