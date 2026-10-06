@@ -3,6 +3,7 @@ from queue import Queue
 from time import monotonic, sleep
 from unittest import skipUnless
 
+from django.contrib.auth import get_user_model
 from django.contrib.messages.middleware import MessageMiddleware
 from django.db import connection, connections, transaction
 from django.http import Http404
@@ -10,7 +11,9 @@ from django.test import RequestFactory, TransactionTestCase
 from django.urls import resolve, reverse
 
 from apps.agreements import workflow
+from apps.agreements.documents import sha256
 from apps.agreements.models import Agreement, CustomContract
+from apps.agreements.orders.documents import compose_order_form_markdown
 from apps.agreements.registry import get_kind
 from apps.agreements.tests.catalog_data import make_program
 from apps.agreements.tests.test_agreements import make_officer
@@ -23,8 +26,8 @@ class DraftConcurrencyTests(TransactionTestCase):
         self.officer = make_officer()
         self.officer.get_all_permissions()
 
-    def mutate_while_offering(self, subject, kind, route, data):
-        """Make the request contend with an offer already holding the draft lock."""
+    def post_during_change(self, subject, route, data, change, *, user=None):
+        """Make a request contend with a transaction already holding the draft lock."""
         backend = Queue()
         url = reverse(route, args=[subject.pk])
 
@@ -34,7 +37,7 @@ class DraftConcurrencyTests(TransactionTestCase):
                     cursor.execute("SELECT pg_backend_pid()")
                     backend.put(cursor.fetchone()[0])
                 request = RequestFactory().post(url, data)
-                request.user = self.officer
+                request.user = user or self.officer
                 request.session = {}
                 MessageMiddleware(lambda _request: None).process_request(request)
                 match = resolve(url)
@@ -62,13 +65,20 @@ class DraftConcurrencyTests(TransactionTestCase):
                     sleep(0.01)
                 else:
                     self.fail("Draft mutation never reached the held row lock")
-                agreement = workflow.offer(get_kind(kind), subject, user=self.officer)
-                agreement = workflow.sign(
-                    agreement,
-                    workflow.Signature("Customer", "Director", "customer@example.com"),
-                    seen_sha256=agreement.document_sha256,
-                )
+                result = change()
             status = pending.result(timeout=10)
+        return status, result
+
+    def mutate_while_offering(self, subject, kind, route, data):
+        def offer_and_sign():
+            agreement = workflow.offer(get_kind(kind), subject, user=self.officer)
+            return workflow.sign(
+                agreement,
+                workflow.Signature("Customer", "Director", "customer@example.com"),
+                seen_sha256=agreement.document_sha256,
+            )
+
+        status, agreement = self.post_during_change(subject, route, data, offer_and_sign)
         subject.refresh_from_db()
         self.assertEqual(subject.agreement_id, agreement.pk)
         self.assertEqual(subject.agreement.status, Agreement.Status.SIGNED)
@@ -114,3 +124,41 @@ class DraftConcurrencyTests(TransactionTestCase):
         status, _ = self.mutate_while_offering(order, "order", "agreements:order_delete", {})
         self.assertEqual(status, 404)
         self.assertEqual(list(order.agreements.values_list("agreement", "tier")), [("studio", "plus")])
+
+    def test_reassigned_customer_cannot_sign_the_order(self):
+        customer = get_user_model().objects.create_user("customer", "customer@example.com")
+        replacement = get_user_model().objects.create_user("replacement", "replacement@example.com")
+        order = make_order(self.officer, program=make_program(), customer_account=customer)
+        digest = sha256(compose_order_form_markdown(order))
+
+        def reassign():
+            order.customer_account = replacement
+            order.save(update_fields=["customer_account"])
+
+        status, _ = self.post_during_change(
+            order,
+            "agreements:order_sign",
+            {"signer_name": "Customer", "signer_title": "Director", "accept": "on", "document_sha256": digest},
+            reassign,
+            user=customer,
+        )
+        self.assertEqual(status, 404)
+        order.refresh_from_db()
+        self.assertEqual(order.customer_account_id, replacement.pk)
+        self.assertIsNone(order.agreement_id)
+        self.assertFalse(Agreement.objects.exists())
+
+    def test_removed_customer_cannot_offer_the_order(self):
+        customer = get_user_model().objects.create_user("customer", "customer@example.com")
+        order = make_order(self.officer, program=make_program(), customer_account=customer)
+
+        def unlink():
+            order.customer_account = None
+            order.save(update_fields=["customer_account"])
+
+        status, _ = self.post_during_change(order, "agreements:order_offer", {}, unlink, user=customer)
+        self.assertEqual(status, 404)
+        order.refresh_from_db()
+        self.assertIsNone(order.customer_account_id)
+        self.assertIsNone(order.agreement_id)
+        self.assertFalse(Agreement.objects.exists())

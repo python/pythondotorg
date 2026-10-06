@@ -276,9 +276,10 @@ def order_sign(request, pk):
 @never_cache
 @login_required
 @require_POST
+@transaction.atomic
 def order_offer(request, pk):
     """Fix the text for an account, a signing link, or an externally signed copy."""
-    order = _order_or_404(request, pk)
+    order = _order_or_404(request, pk, for_update=True)
     if not order.can_edit(request.user):
         raise Http404
     try:
