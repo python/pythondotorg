@@ -205,6 +205,7 @@ def _link_response(request, template, context, status=200):
 
 def sign_link(request, token):
     """Review and sign with a one-time emailed link; no python.org account needed."""
+    request.disable_tracking = True
     link = workflow.find_link(token)
     if link is None or not link.is_usable:
         return _link_response(request, "agreements/sign_link.html", {"unusable": True}, status=410)
@@ -251,6 +252,7 @@ def sign_link(request, token):
 
 def sign_link_document(request, token, fmt):
     """Download the document a usable signing link points to, to review or sign elsewhere."""
+    request.disable_tracking = True
     link = workflow.find_link(token)
     if link is None or not link.is_usable or fmt not in documents.RENDERERS:
         raise Http404
@@ -264,6 +266,7 @@ def sign_link_document(request, token, fmt):
 
 def sign_link_terms(request, token, version_id, fmt=None):
     """Let an invited signer review only the terms cited by their unsigned agreement."""
+    request.disable_tracking = True
     link = workflow.find_link(token)
     if link is None or not link.is_usable:
         raise Http404

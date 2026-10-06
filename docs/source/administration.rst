@@ -148,6 +148,8 @@ countersign agreements* permission work from ``/agreements/``.
            fees, and cited terms versions. Later catalog or terms changes do not affect it.
            Withdrawing an unsigned offer returns it to draft and disables signing links;
            a new offer uses current configuration.
+           Order signing and offering check current account authorization while holding the
+           draft lock; a removed or reassigned customer cannot use a stale request.
 :Editing: Before signing, staff can edit an offered document for that counterparty only.
           Each save records a revision and note. Signing requires the exact revision the
           signatory reviewed. Signed text cannot be edited.
@@ -158,6 +160,8 @@ countersign agreements* permission work from ``/agreements/``.
           or a signed PDF collected through another signing service or on paper.
           Authorized customers and staff can upload signed copies. Copies stay in the
           database, not public media storage.
+          Signing-link pages, their cited terms, and their error responses omit analytics
+          and advertising scripts so those scripts cannot report signing credentials.
 :Countersigning: The staff queue lists documents awaiting the PSF's signature. Countersigning
                  can include a fully executed uploaded copy and emails that exact PDF,
                  including external signatures and audit pages. Without an uploaded
@@ -166,9 +170,10 @@ countersign agreements* permission work from ``/agreements/``.
                  Use **Email signed copy** on the executed agreement to retry delivery
                  without signing again. This action is available only to agreement managers.
 :Custom contracts: Write one-off contracts at ``/agreements/contracts/new/``, optionally
-                   incorporating versioned terms. Creation uses this workflow, not the
-                   Django admin. Linked customers return to their accessible agreement
-                   record after signing, uploading a copy, or withdrawing an offer.
+                   incorporating versioned terms. Creation, editing, and deletion use
+                   this workflow; the Django admin is read-only. Linked customers return
+                   to their accessible agreement record after signing, uploading a copy,
+                   or withdrawing an offer.
 :New kinds: Other applications can register an ``apps.agreements.registry.Kind`` for a
             model with an ``agreement`` field; see ``apps/agreements/orders/kinds.py``.
 
