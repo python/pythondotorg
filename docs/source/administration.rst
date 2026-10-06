@@ -120,6 +120,19 @@ countersign agreements* permission work from ``/agreements/``.
            customers start orders. Publish the cited terms separately before making a program
            public. Staff can prepare private orders for a linked customer without exposing
            the program's catalog to everyone.
+:Packages: Customers move through Services, Extras, Term, Organization, and Contacts & billing
+           before reviewing the saved Order Form. Service comparisons expand beneath the tier
+           cards; optional extras are visible on their own step. Back, Next, and browser history
+           preserve entries, and validation reveals the field that needs attention.
+           Staff account linkage and contract adjustments are in a collapsed, staff-only section
+           of Contacts & billing.
+           New packages start empty unless a service is explicitly preselected. Choosing a
+           tier includes its service; extras included at that tier are not charged again.
+           The live summary separates recurring and one-time fees, and shows prepaid totals
+           for multi-year terms. Review identifies the terms required by the selections.
+           Without JavaScript, all sections appear together: use each service's inclusion
+           checkbox and review fees on the next page. Existing private-order access
+           restrictions still apply.
 :Terms: Create a set of terms in the admin, then edit its text at ``/agreements/terms/``.
         Save a private draft or publish an immutable version with a label and change note.
         Publishing a version does not make it public: the separate *Make published versions
