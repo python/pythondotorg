@@ -189,6 +189,9 @@ records are read-only in the Django admin; use the site workflow to change their
           or a signed PDF collected through another signing service or on paper.
           Linked customers and Agreements Administrators can upload signed copies. Copies stay in the
           database, not public media storage.
+          If an invitation email fails, the page reports the failure and removes the
+          undelivered, unused link. Existing invitations remain valid; send a new link
+          to retry delivery.
           Signing-link pages, their cited terms, and their error responses omit analytics
           and advertising scripts so those scripts cannot report signing credentials.
           If the document changes during link signing, the refreshed form keeps the

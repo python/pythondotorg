@@ -13,7 +13,7 @@ from django.views.decorators.http import require_POST
 from apps.agreements import documents, notifications, workflow
 from apps.agreements.auth import administrator_required, can_prepare, is_administrator
 from apps.agreements.forms.signing import CountersignForm, DeclineForm, SignedCopyForm, SignForm, SigningLinkForm
-from apps.agreements.models import Agreement
+from apps.agreements.models import Agreement, SigningLink
 from apps.agreements.views.agreements import detail
 from apps.agreements.views.helpers import _agreement_or_404, file_response, signature_of
 
@@ -125,8 +125,14 @@ def send_link(request, pk):
     except workflow.InvalidTransitionError as exc:
         messages.error(request, str(exc))
     else:
-        notifications.send_signing_link(request, link, token)
-        messages.success(request, f"Signing link sent to {link.email}. It expires on {link.expires_at:%B %-d, %Y}.")
+        try:
+            notifications.send_signing_link(request, link, token)
+        except (OSError, RuntimeError):
+            SigningLink.objects.filter(pk=link.pk, used_at__isnull=True).delete()
+            logger.exception("Could not email signing invitation for agreement %s", agreement.pk)
+            messages.error(request, "The signing link could not be emailed. Please send a new link to try again.")
+        else:
+            messages.success(request, f"Signing link sent to {link.email}. It expires on {link.expires_at:%B %-d, %Y}.")
     return _back(request, agreement)
 
 

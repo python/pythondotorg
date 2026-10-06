@@ -66,6 +66,30 @@ class SigningRecoveryTests(TestCase):
         response = self.client.post(reverse("agreements:withdraw", args=[self.agreement.pk]))
         self.assertRedirects(response, contract.get_absolute_url())
 
+    def test_failed_invitation_does_not_leave_a_pending_link_and_can_be_retried(self):
+        self.client.force_login(self.officer)
+        previous, previous_token = workflow.create_signing_link(
+            self.agreement, name="Previous Signer", email="previous@example.com", user=self.officer
+        )
+        url = reverse("agreements:send_link", args=[self.agreement.pk])
+        data = {"name": "Invited Signer", "email": "invited@example.com"}
+        with patch("apps.agreements.notifications.EmailMessage.send", side_effect=SMTPException("mail unavailable")):
+            response = self.client.post(url, data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(mail.outbox, [])
+        self.assertIn(ERROR, [message.level for message in get_messages(response.wsgi_request)])
+        self.assertEqual(list(self.agreement.signing_links.values_list("pk", flat=True)), [previous.pk])
+        self.assertTrue(workflow.find_link(previous_token).is_usable)
+        self.agreement.refresh_from_db()
+        self.assertEqual(self.agreement.status, Agreement.Status.OFFERED)
+
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, 302)
+        sent = self.agreement.signing_links.exclude(pk=previous.pk).get()
+        self.assertTrue(sent.is_usable)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].to, [data["email"]])
+
     def test_delivery_can_be_retried_without_changing_the_countersignature(self):
         self.client.force_login(self.officer)
         for target, error in (
