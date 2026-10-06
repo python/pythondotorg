@@ -7,7 +7,7 @@ from zipfile import ZipFile
 
 from defusedxml.ElementTree import fromstring
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import Permission
+from django.contrib.auth.models import Group
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from django.urls import reverse
@@ -15,6 +15,7 @@ from django.utils import timezone
 
 from apps.agreements import documents as agreement_documents
 from apps.agreements import workflow
+from apps.agreements.auth import ADMINISTRATORS
 from apps.agreements.models import Agreement, Order, OrderLine, Program, Terms, TermsVersion
 from apps.agreements.orders import documents
 from apps.agreements.registry import get_kind
@@ -49,7 +50,7 @@ def make_order(user, agreements=None, *, program, **overrides):
 
 def make_officer(username="pat"):
     officer = User.objects.create_user(username, f"{username}@example.org", "password")
-    officer.user_permissions.add(Permission.objects.get(codename="manage_agreement"))
+    officer.groups.add(Group.objects.get_or_create(name=ADMINISTRATORS)[0])
     return officer
 
 
@@ -332,7 +333,7 @@ class StaffHandlingTests(TestCase):
         self.program = make_program()
         self.client.force_login(self.officer)
 
-    def test_staff_queue_requires_login_and_manager_permission(self):
+    def test_staff_queue_requires_login_and_agreement_group(self):
         url = reverse("agreements:staff_orders")
         self.assertEqual(self.client.get(url).status_code, 200)
         self.client.force_login(self.customer)

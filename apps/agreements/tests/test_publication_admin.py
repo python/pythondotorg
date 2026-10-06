@@ -1,9 +1,11 @@
 from django.contrib import admin
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from django.test import RequestFactory, TestCase
 from django.urls import resolve, reverse
 
 from apps.agreements.admin import TermsAdmin
+from apps.agreements.auth import ADMINISTRATORS
 from apps.agreements.models import CustomContract, Terms, TermsVersion
 from apps.agreements.tests.test_agreements import make_officer, offer_contract
 
@@ -51,6 +53,7 @@ class TermsAdminTests(TestCase):
 class CustomContractAdminTests(TestCase):
     def setUp(self):
         self.superuser = get_user_model().objects.create_superuser("admin", "admin@example.org", "password")
+        self.superuser.groups.add(Group.objects.get_or_create(name=ADMINISTRATORS)[0])
         self.client.force_login(self.superuser)
 
     def test_even_superusers_cannot_add_contracts_through_admin(self):

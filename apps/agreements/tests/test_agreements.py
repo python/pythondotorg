@@ -2,7 +2,7 @@ import datetime
 import re
 
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import Permission
+from django.contrib.auth.models import Group
 from django.core import mail
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client, TestCase
@@ -10,6 +10,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from apps.agreements import documents, workflow
+from apps.agreements.auth import ADMINISTRATORS
 from apps.agreements.documents import SIGNATURES
 from apps.agreements.kinds import CustomContractKind
 from apps.agreements.models import Agreement, AgreementRevision, CustomContract, SigningLink, Terms, TermsVersion
@@ -20,7 +21,7 @@ PDF = b"%PDF-1.4 signed copy"
 
 def make_officer(username="pat"):
     officer = User.objects.create_user(username, f"{username}@example.org", "password")
-    officer.user_permissions.add(Permission.objects.get(codename="manage_agreement"))
+    officer.groups.add(Group.objects.get_or_create(name=ADMINISTRATORS)[0])
     return officer
 
 

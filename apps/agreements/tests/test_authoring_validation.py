@@ -1,7 +1,9 @@
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from django.test import TestCase
 from django.urls import reverse
 
+from apps.agreements.auth import ADMINISTRATORS
 from apps.agreements.models import Agreement, CustomContract, Terms
 from apps.agreements.tests.catalog_data import make_program
 from apps.agreements.tests.test_agreements import make_officer, offer_contract
@@ -62,8 +64,9 @@ class AuthoringValidationTests(TestCase):
         self.assertContains(response, f'href="{reverse("agreements:terms_edit", args=[terms.slug])}">Unpublished</a>')
         self.assertNotContains(response, reverse("admin:agreements_terms_add"))
 
-    def test_superuser_gets_terms_creation_link(self):
+    def test_staff_administrator_gets_terms_creation_link(self):
         admin = get_user_model().objects.create_superuser("admin", "admin@example.com", "password")
+        admin.groups.add(Group.objects.get_or_create(name=ADMINISTRATORS)[0])
         self.client.force_login(admin)
         response = self.client.get(reverse("agreements:terms_list"))
         self.assertContains(response, reverse("admin:agreements_terms_add"))
@@ -99,6 +102,7 @@ class AuthoringValidationTests(TestCase):
         agreement = offer_contract(self.officer)
         order = make_order(self.officer, program=make_program())
         user = get_user_model().objects.create_superuser("admin", "admin@example.com", "password")
+        user.groups.add(Group.objects.get_or_create(name=ADMINISTRATORS)[0])
         self.client.force_login(user)
         for instance in (agreement, order):
             with self.subTest(model=type(instance).__name__):
