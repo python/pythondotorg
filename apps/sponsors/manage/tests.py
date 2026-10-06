@@ -2408,6 +2408,37 @@ class ComposerNavigationTests(SponsorManageTestBase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Select a Sponsor")
 
+    def test_cannot_post_directly_to_step5_without_terms(self):
+        """POSTing straight to step 5 without ever completing step 4 must not create a sponsorship."""
+        sponsor = Sponsor.objects.create(
+            name="Bypass Corp",
+            description="x",
+            primary_phone="555",
+            mailing_address_line_1="1 St",
+            city="City",
+            postal_code="00000",
+            country="US",
+        )
+        session = self.client.session
+        session["composer"] = {"sponsor_id": sponsor.pk, "package_id": self.package.pk, "benefit_ids": []}
+        session.save()
+        response = self.client.post(reverse("manage_composer") + "?step=5")
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("step=4", response.url)
+        self.assertFalse(Sponsorship.objects.filter(sponsor=sponsor).exists())
+
+    def test_cannot_post_directly_to_step6_without_prerequisites(self):
+        """POSTing to step 6 with no session data must not be processed as a send."""
+        response = self.client.post(
+            reverse("manage_composer") + "?step=6",
+            {"action": "send_internal", "internal_email": "reviewer@python.org"},
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("step=1", response.url)
+        from django.core.mail import outbox
+
+        self.assertEqual(len(outbox), 0)
+
 
 class DashboardExpiringSoonTests(SponsorManageTestBase):
     """Test dashboard expiring/expired sponsorship sections."""

@@ -2322,6 +2322,8 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
 
     def _max_allowed_step(self, data):
         """Return the highest step the user can navigate to based on completed data."""
+        if data.get("sponsorship_id"):
+            return 6
         if not data.get("sponsor_id") and not data.get("new_sponsor"):
             return 1
         if "package_id" not in data and "custom_package" not in data:
@@ -2330,9 +2332,7 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
             return 3
         if "fee" not in data:
             return 4
-        if not data.get("sponsorship_id"):
-            return 5
-        return 6
+        return 5
 
     def get(self, request):
         """Render the current wizard step."""
@@ -2373,8 +2373,13 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
         return handler(request, data)
 
     def post(self, request):
-        """Process the current step's form data and advance."""
+        """Process the current step's form data and advance, gated by prerequisite completion."""
         step = self._get_step(request)
+        data = self._get_composer_data(request)
+        max_step = self._max_allowed_step(data)
+        if step > max_step:
+            messages.error(request, "Please complete the previous steps first.")
+            return redirect(reverse("manage_composer") + f"?step={max_step}")
         handler = {
             1: self._process_step1,
             2: self._process_step2,
@@ -2671,6 +2676,20 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
         if not sponsor:
             messages.error(request, "Sponsor not found. Please start over.")
             return redirect(reverse("manage_composer") + "?step=1")
+
+        # Re-validate stored terms so a tampered/incomplete session can't bypass step 4.
+        terms_form = ComposerTermsForm(
+            data={
+                "fee": data.get("fee"),
+                "start_date": data.get("start_date"),
+                "end_date": data.get("end_date"),
+                "renewal": data.get("renewal", False),
+                "notes": data.get("notes", ""),
+            }
+        )
+        if not terms_form.is_valid():
+            messages.error(request, "Sponsorship terms are incomplete or invalid. Please set them again.")
+            return redirect(reverse("manage_composer") + "?step=4")
 
         # Resolve benefits
         benefit_ids = data.get("benefit_ids", [])
