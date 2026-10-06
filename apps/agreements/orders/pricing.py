@@ -1,21 +1,68 @@
 """Exact fee calculations from validated, declarative catalog rules."""
 
+from __future__ import annotations
+
 from dataclasses import dataclass
 from decimal import Decimal, localcontext
+from typing import Any, Literal, NoReturn, TypedDict, cast
 
 from django.core.exceptions import ValidationError
 
-from apps.agreements.orders.catalog import MONTHS_PER_YEAR, PERCENT_SCALE
+from apps.agreements.orders.catalog import MONTHS_PER_YEAR, PERCENT_SCALE, AddOn, Agreement, Param
 
 CENTS = Decimal("0.01")
 
+ParamValue = str | int | list[str]
+type FeeKey = Literal[
+    "tier_fee", "subtotal", "discount_amount", "total_annual", "term_total", "discount_percent", "term_months"
+]
 
-def _precision(*amounts):
+
+class LineItemSnapshot(TypedDict):
+    """Serialized charge retained in an offered order."""
+
+    name: str
+    detail: str
+    amount: str | None
+    display: str
+    recurring: bool
+    basis: str
+
+
+class QuoteDisplay(TypedDict):
+    """Formatted monetary fields for order presentation."""
+
+    tier_fee: str
+    subtotal: str
+    discount_amount: str
+    total_annual: str
+    term_total: str
+
+
+class QuoteSnapshot(TypedDict):
+    """Frozen quote schema stored with each order line."""
+
+    tier_name: str
+    tier_fee: str
+    items: list[LineItemSnapshot]
+    subtotal: str
+    discount_name: str
+    discount_percent: int
+    discount_amount: str
+    total_annual: str
+    term_months: int
+    term_total: str
+    display: QuoteDisplay
+
+
+def _precision(*amounts: Decimal) -> int:
     """Allow exact sums, products, and cent rounding beyond the default context."""
-    return max(28, sum(len(amount.as_tuple().digits) + abs(amount.as_tuple().exponent) for amount in amounts) + 4)
+    return max(
+        28, sum(len(amount.as_tuple().digits) + abs(cast("int", amount.as_tuple().exponent)) for amount in amounts) + 4
+    )
 
 
-def money(amount):
+def money(amount: Decimal | str | float) -> str:
     """Format a decimal amount as dollars, omitting whole-dollar cents."""
     amount = Decimal(amount)
     with localcontext() as context:
@@ -26,7 +73,7 @@ def money(amount):
     return f"${amount:,.2f}"
 
 
-def fee_totals(pricing):
+def fee_totals(pricing: QuoteSnapshot) -> dict[str, Decimal]:
     """Separate recurring and one-time fees without changing stored first-year totals."""
     first_year = Decimal(pricing["total_annual"])
     amounts = [
@@ -62,7 +109,7 @@ class Quote:
     term_months: int
 
     @property
-    def subtotal(self):
+    def subtotal(self) -> Decimal:
         """Return the tier fee plus every priced additional service."""
         amounts = [self.tier_fee, *(item.amount for item in self.items if item.amount is not None)]
         with localcontext() as context:
@@ -70,7 +117,7 @@ class Quote:
             return sum(amounts, Decimal(0))
 
     @property
-    def total_annual(self):
+    def total_annual(self) -> Decimal:
         """Return the first year's fees after the tier discount."""
         subtotal = self.subtotal
         with localcontext() as context:
@@ -78,29 +125,32 @@ class Quote:
             return subtotal - self.discount_amount
 
     @property
-    def term_years(self):
+    def term_years(self) -> int:
         """Return the number of whole years in the initial term."""
         return self.term_months // MONTHS_PER_YEAR
 
     @property
-    def term_total(self):
+    def term_total(self) -> Decimal:
         """Repeat recurring charges across the term and charge other items once."""
         priced = [item for item in self.items if item.amount is not None]
         with localcontext() as context:
             context.prec = _precision(
-                self.tier_fee, self.discount_amount, Decimal(self.term_years), *(item.amount for item in priced)
+                self.tier_fee,
+                self.discount_amount,
+                Decimal(self.term_years),
+                *(cast("Decimal", item.amount) for item in priced),
             )
             recurring = self.tier_fee - self.discount_amount
-            recurring += sum((item.amount for item in priced if item.recurring), Decimal(0))
-            one_time = sum((item.amount for item in priced if not item.recurring), Decimal(0))
+            recurring += sum((cast("Decimal", item.amount) for item in priced if item.recurring), Decimal(0))
+            one_time = sum((cast("Decimal", item.amount) for item in priced if not item.recurring), Decimal(0))
             return recurring * self.term_years + one_time
 
     @property
-    def unpriced_items(self):
+    def unpriced_items(self) -> list[LineItem]:
         """Return selected services whose fees are not determined in advance."""
         return [item for item in self.items if item.amount is None]
 
-    def as_dict(self):
+    def as_dict(self) -> QuoteSnapshot:
         """Return a JSON-safe fee snapshot for storage and the order builder."""
         return {
             "tier_name": self.tier_name,
@@ -133,16 +183,16 @@ class Quote:
         }
 
 
-def _invalid(message):
+def _invalid(message: str) -> NoReturn:
     raise ValidationError(message)
 
 
-def _quantity(params, key):
+def _quantity(params: dict[str, ParamValue], key: str) -> int:
     value = params[key]
-    return len(value) if isinstance(value, list) else value
+    return len(value) if isinstance(value, list) else cast("int", value)
 
 
-def _validate_sum_quantities(rule, params):
+def _validate_sum_quantities(rule: dict[str, Any], params: dict[str, ParamValue]) -> list[int]:
     """Require a positive quantity in each sum, even when its price is zero."""
     kind = rule["type"]
     if kind in {"quantity", "brackets"}:
@@ -157,7 +207,7 @@ def _validate_sum_quantities(rule, params):
     return []
 
 
-def _clean_count(value, param, addon):
+def _clean_count(value: object, param: Param, addon: AddOn) -> int:
     if value is None or value == "":
         if param.minimum == 0:
             return 0
@@ -175,7 +225,7 @@ def _clean_count(value, param, addon):
     return value
 
 
-def _clean_lines(value, param, addon):
+def _clean_lines(value: object, param: Param, addon: AddOn) -> list[str]:
     if isinstance(value, str):
         value = value.splitlines()
     if not isinstance(value, list) or any(not isinstance(line, str) for line in value):
@@ -186,7 +236,7 @@ def _clean_lines(value, param, addon):
     return value
 
 
-def _clean_value(value, param, addon):
+def _clean_value(value: object, param: Param, addon: AddOn) -> ParamValue:
     if param.kind == "count":
         return _clean_count(value, param, addon)
     if param.kind == "lines":
@@ -200,7 +250,7 @@ def _clean_value(value, param, addon):
     return value.strip()
 
 
-def normalize_params(addon, params):
+def normalize_params(addon: AddOn, params: object) -> dict[str, ParamValue]:
     """Validate selected parameters and omit those whose conditions do not apply."""
     if not isinstance(params, dict):
         _invalid(f"{addon.name}: parameters must be an object.")
@@ -208,10 +258,10 @@ def normalize_params(addon, params):
     unknown = params.keys() - by_key.keys()
     if unknown:
         _invalid(f"{addon.name}: unknown parameter(s): {', '.join(sorted(map(str, unknown)))}.")
-    cleaned = {}
-    visited = set()
+    cleaned: dict[str, ParamValue] = {}
+    visited: set[str] = set()
 
-    def clean(key):
+    def clean(key: str) -> None:
         if key in visited:
             return
         param = by_key[key]
@@ -228,13 +278,15 @@ def normalize_params(addon, params):
     return cleaned
 
 
-def _price_rule(rule, params):
+def _price_rule(rule: dict[str, Any], params: dict[str, ParamValue]) -> tuple[Decimal | None, bool, str, str]:
     kind = rule["type"]
     if kind == "choice":
         return _price_rule(rule["options"][params[rule["parameter"]]], params)
     recurring = rule.get("recurring", True)
     basis = rule.get("basis") or ("per year" if recurring else "one-time")
     detail = rule.get("detail", "")
+    amount: Decimal | None
+    count: Decimal | int
     if kind == "fixed":
         amount = Decimal(rule["amount"])
     elif kind == "quantity":
@@ -256,8 +308,8 @@ def _price_rule(rule, params):
             amount = None
         else:
             with localcontext() as context:
-                context.prec = _precision(*amounts)
-                amount = sum(amounts, Decimal(0))
+                context.prec = _precision(*cast("list[Decimal]", amounts))
+                amount = sum(cast("list[Decimal]", amounts), Decimal(0))
         if not detail:
             detail = "; ".join(component[3] for component in components if component[3])
     else:
@@ -266,7 +318,7 @@ def _price_rule(rule, params):
     return amount, recurring, basis, detail
 
 
-def _price_addon(addon, params, tier_key):
+def _price_addon(addon: AddOn, params: object, tier_key: str) -> LineItem:
     params = normalize_params(addon, params)
     amount, recurring, basis, detail = _price_rule(addon.pricing, params)
     selections = []
@@ -275,9 +327,9 @@ def _price_addon(addon, params, tier_key):
             continue
         value = params[param.key]
         if param.kind == "choice":
-            value = dict(param.choices)[value]
+            value = dict(param.choices)[cast("str", value)]
         elif param.kind == "lines":
-            value = ", ".join(value)
+            value = ", ".join(cast("list[str]", value))
         selections.append(f"{param.label}: {value}")
     if tier_key in addon.included_in_tiers:
         amount, basis, detail = Decimal(0), "included", "Included at this service tier"
@@ -285,7 +337,7 @@ def _price_addon(addon, params, tier_key):
     return LineItem(addon.name, detail, amount, recurring, basis)
 
 
-def build_quote(agreement, tier_key, discount_key, addons=None):
+def build_quote(agreement: Agreement, tier_key: str, discount_key: str, addons: object = None) -> Quote:
     """Price all selections in catalog order; discounts affect only the tier fee."""
     tier = agreement.tier(tier_key)
     discount = agreement.discount(discount_key)

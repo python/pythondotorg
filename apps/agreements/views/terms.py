@@ -1,5 +1,9 @@
 """Published terms and staff editing."""
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, cast
+
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
@@ -11,8 +15,15 @@ from apps.agreements.forms.terms import TermsForm
 from apps.agreements.models import Terms
 from apps.agreements.views.helpers import _diff, file_response
 
+if TYPE_CHECKING:
+    from django.contrib.auth.models import AnonymousUser
+    from django.http import HttpRequest, HttpResponse
 
-def _version_or_404(terms, version):
+    from apps.agreements.models import TermsVersion
+    from apps.users.models import User
+
+
+def _version_or_404(terms: Terms, version: str | None) -> TermsVersion:
     if version is None:
         current = terms.current_version
         if current is None:
@@ -21,7 +32,7 @@ def _version_or_404(terms, version):
     return get_object_or_404(terms.versions, version=version)
 
 
-def _can_read_terms(user, shown):
+def _can_read_terms(user: User | AnonymousUser, shown: TermsVersion) -> bool:
     if shown.terms.is_public or can_prepare(user):
         return True
     if not user.is_authenticated:
@@ -38,12 +49,12 @@ def _can_read_terms(user, shown):
     return any(
         line.agreement in line.order.catalog.agreements
         and line.agreement_obj.terms_slug == shown.terms.slug
-        and shown.pk == shown.terms.current_version.pk
+        and shown.pk == cast("TermsVersion", shown.terms.current_version).pk
         for line in lines
     )
 
 
-def _readable_terms(request, slug, version):
+def _readable_terms(request: HttpRequest, slug: str, version: str | None) -> tuple[Terms, TermsVersion]:
     terms = get_object_or_404(Terms, slug=slug)
     shown = _version_or_404(terms, version)
     if not _can_read_terms(request.user, shown):
@@ -51,7 +62,7 @@ def _readable_terms(request, slug, version):
     return terms, shown
 
 
-def _terms_cache(request, response, terms):
+def _terms_cache(request: HttpRequest, response: HttpResponse, terms: Terms) -> HttpResponse:
     public = terms.is_public and not request.user.is_authenticated
     response["Cache-Control"] = "public, max-age=3600" if public else "private, no-store"
     if not terms.is_public:
@@ -59,7 +70,7 @@ def _terms_cache(request, response, terms):
     return response
 
 
-def terms(request, slug, version=None):
+def terms(request: HttpRequest, slug: str, version: str | None = None) -> HttpResponse:
     """Read one published version of terms; without a version, the current one."""
     terms, shown = _readable_terms(request, slug, version)
     html, toc = documents.render_html(shown.markdown)
@@ -79,7 +90,7 @@ def terms(request, slug, version=None):
     return _terms_cache(request, response, terms)
 
 
-def terms_download(request, slug, fmt, version=None):
+def terms_download(request: HttpRequest, slug: str, fmt: str, version: str | None = None) -> HttpResponse:
     """Download one published version of terms as PDF or DOCX."""
     terms, shown = _readable_terms(request, slug, version)
     if fmt not in documents.RENDERERS:
@@ -90,7 +101,7 @@ def terms_download(request, slug, fmt, version=None):
 
 
 @preparer_required
-def terms_list(request):
+def terms_list(request: HttpRequest) -> HttpResponse:
     """Every set of terms, for staff to edit."""
     return render(
         request, "agreements/terms_list.html", {"all_terms": Terms.objects.prefetch_related("versions"), "nav": "terms"}
@@ -98,7 +109,7 @@ def terms_list(request):
 
 
 @preparer_required
-def terms_edit(request, slug):
+def terms_edit(request: HttpRequest, slug: str) -> HttpResponse:
     """Prepare draft text; only administrators configure or publish terms."""
     terms = get_object_or_404(Terms, slug=slug)
     current = terms.current_version
@@ -112,7 +123,7 @@ def terms_edit(request, slug):
         )
     ):
         raise PermissionDenied
-    initial = {
+    initial: dict[str, Any] = {
         "markdown": terms.draft_markdown or (current.markdown if current else ""),
         "under_review": terms.under_review,
         "is_public": terms.is_public,
@@ -128,7 +139,11 @@ def terms_edit(request, slug):
             terms.is_public = data["is_public"]
             terms.save(update_fields=["under_review", "is_public"])
             published = workflow.publish_terms(
-                terms, version=data["version"], markdown=data["markdown"], notes=data["notes"], user=request.user
+                terms,
+                version=data["version"],
+                markdown=data["markdown"],
+                notes=data["notes"],
+                user=cast("User", request.user),
             )
             messages.success(request, f"Published version {published.version}. New documents cite it from now on.")
             return redirect(published)
@@ -137,7 +152,7 @@ def terms_edit(request, slug):
                 terms.under_review = data["under_review"]
                 terms.is_public = data["is_public"]
                 terms.save(update_fields=["under_review", "is_public"])
-            workflow.save_terms_draft(terms, markdown=data["markdown"], user=request.user)
+            workflow.save_terms_draft(terms, markdown=data["markdown"], user=cast("User", request.user))
             messages.success(request, "Draft saved. Draft text stays private.")
             return redirect("agreements:terms_edit", slug=terms.slug)
     working = (

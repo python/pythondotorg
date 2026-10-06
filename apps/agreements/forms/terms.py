@@ -1,9 +1,16 @@
 """Forms for editing and publishing terms."""
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, cast
+
 from django import forms
 
 from apps.agreements.forms.validation import _check_markdown, _check_placeholders
 from apps.agreements.models import TermsVersion
+
+if TYPE_CHECKING:
+    from apps.agreements.models import Terms
 
 
 class TermsForm(forms.Form):
@@ -34,31 +41,31 @@ class TermsForm(forms.Form):
     )
     action = forms.ChoiceField(choices=((SAVE, "Save draft"), (PUBLISH, "Publish")), required=False)
 
-    def __init__(self, *args, terms, can_publish, **kwargs):
+    def __init__(self, *args: Any, terms: Terms, can_publish: bool, **kwargs: Any) -> None:
         """Bind terms and expose publication fields only to administrators."""
         super().__init__(*args, **kwargs)
         self.terms = terms
         if not can_publish:
             for field in ("under_review", "is_public", "version", "notes"):
                 del self.fields[field]
-            self.fields["action"].choices = ((self.SAVE, "Save draft"),)
+            cast("forms.ChoiceField", self.fields["action"]).choices = ((self.SAVE, "Save draft"),)
 
-    def clean_markdown(self):
+    def clean_markdown(self) -> str:
         """Normalize line endings; terms don't carry signature placeholders."""
-        markdown = self.cleaned_data["markdown"].replace("\r\n", "\n")
+        markdown: str = self.cleaned_data["markdown"].replace("\r\n", "\n")
         _check_placeholders(markdown, required=False)
         _check_markdown(markdown)
         return markdown
 
-    def clean_is_public(self):
+    def clean_is_public(self) -> bool:
         """Check visibility without changing the terms before the form is valid."""
-        is_public = self.cleaned_data["is_public"]
+        is_public: bool = self.cleaned_data["is_public"]
         self.terms.validate_is_public(is_public)
         return is_public
 
-    def clean(self):
+    def clean(self) -> dict[str, Any]:
         """Require a new version label, notes, and a change before publishing."""
-        cleaned = super().clean()
+        cleaned = cast("dict[str, Any]", super().clean())
         if cleaned.get("action") != self.PUBLISH:
             return cleaned
         version = cleaned.get("version")

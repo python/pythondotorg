@@ -6,6 +6,8 @@ SHA-256 identifies it. User input must go through ``md()``. Documents may be wri
 staff, so pandoc runs sandboxed with raw output disabled and a filter that rejects images.
 """
 
+from __future__ import annotations
+
 import hashlib
 import re
 import string
@@ -13,6 +15,7 @@ import tempfile
 from datetime import UTC
 from functools import lru_cache
 from pathlib import Path
+from typing import TYPE_CHECKING, cast
 
 import pypandoc
 from django.utils import timezone
@@ -20,6 +23,12 @@ from django.utils.dateformat import format as date_format
 from unidecode import unidecode
 
 from pydotorg.markup import sanitize
+
+if TYPE_CHECKING:
+    from collections.abc import Callable, Iterable, Sequence
+    from datetime import datetime
+
+    from apps.agreements.models import Agreement, TermsVersion
 
 FILTER = str(Path(__file__).parent / "pandoc_filters" / "agreement.lua")
 PANDOC_ARGS = ("--sandbox",)
@@ -50,26 +59,32 @@ _LEGACY_TERMS_FINGERPRINT = re.compile(
 _LEGACY_FINGERPRINT_DESCRIPTION = re.compile(r"(?<=identified by its permanent address) and SHA\\?-256 hash(?=\.)")
 
 
-def md(value):
+def md(value: object) -> str:
     """Escape user-supplied text so pandoc renders it literally, on a single line."""
     return _PUNCTUATION.sub(r"\\\1", " ".join(str(value).split()))
 
 
-def sha256(text):
+def sha256(text: str) -> str:
     """Hash ``text`` with SHA-256 and return the hex digest."""
     return hashlib.sha256(text.encode()).hexdigest()
 
 
-def date(value):
+def date(value: datetime | None) -> str:
     """Format a datetime as a long local date."""
     return date_format(timezone.localtime(value), "F j, Y")
 
 
-def _utc(value):
+def _utc(value: datetime) -> str:
     return f"{value.astimezone(UTC):%Y-%m-%d %H:%M:%S} UTC"
 
 
-def table(header, rows, *, widths=(28, 52), amounts=False):
+def table(
+    header: tuple[str, str],
+    rows: Iterable[tuple[str, str]],
+    *,
+    widths: tuple[int, int] = (28, 52),
+    amounts: bool = False,
+) -> list[str]:
     """Return a two-column pipe table; cells are already escaped markdown.
 
     Pandoc sets a table full width, in the proportions of the separator row, only when a source
@@ -81,7 +96,7 @@ def table(header, rows, *, widths=(28, 52), amounts=False):
     return [*out, *(f"| {label} | {value} |" for label, value in rows), ""]
 
 
-def amounts_table(header, rows):
+def amounts_table(header: tuple[str, str], rows: Iterable[tuple[str, str]]) -> list[str]:
     """Return a table whose second column holds right-aligned amounts."""
     return table(header, rows, widths=(56, 24), amounts=True)
 
@@ -89,7 +104,7 @@ def amounts_table(header, rows):
 # ---------- Signatures ----------
 
 
-def _signature_column(name, title, when, *, on_file=False):
+def _signature_column(name: str, title: str, when: datetime | None, *, on_file: bool = False) -> list[str]:
     blank = "\\_" * 18
     if not when:
         return [f"By: {blank}", "Name:", "Title:", "Date:"]
@@ -97,7 +112,9 @@ def _signature_column(name, title, when, *, on_file=False):
     return [f"By: {by}", f"Name: {md(name)}", f"Title: {md(title)}", f"Date: {date(when)}"]
 
 
-def signature_table(counterparty_name, psf=None, counterparty=None):
+def signature_table(
+    counterparty_name: str, psf: Sequence[str] | None = None, counterparty: Sequence[str] | None = None
+) -> str:
     """Two signature columns; ``psf`` and ``counterparty`` are ``_signature_column`` rows, or blank."""
     psf = psf or _signature_column("", "", None)
     counterparty = counterparty or _signature_column("", "", None)
@@ -109,14 +126,14 @@ def signature_table(counterparty_name, psf=None, counterparty=None):
     return "\n".join(rows)
 
 
-def preview_markdown(markdown, counterparty_name):
+def preview_markdown(markdown: str, counterparty_name: str) -> str:
     """Fill a draft's placeholders with blank signature lines."""
     return markdown.replace(SIGNATURES, signature_table(counterparty_name)).replace(
         EFFECTIVE_DATE, "The date of the last signature below."
     )
 
 
-def _signature_record(agreement):
+def _signature_record(agreement: Agreement) -> list[str]:
     copies = set(agreement.signed_copies.values_list("kind", flat=True))
     rows = [
         ("Reference", agreement.reference),
@@ -139,7 +156,7 @@ def _signature_record(agreement):
             "an emailed signing link" if agreement.signature_method == agreement.SignatureMethod.LINK else "an account"
         )
         intro = f"{md(agreement.counterparty_name)} signed this document on python.org with {how}."
-        rows.append(("Signed", _utc(agreement.signed_at)))
+        rows.append(("Signed", _utc(cast("datetime", agreement.signed_at))))
     if agreement.countersigned_at:
         rows.append(("PSF signatory", f"{agreement.countersigner_name}, {agreement.countersigner_title}"))
         rows.append(("PSF signed", _utc(agreement.countersigned_at)))
@@ -149,7 +166,7 @@ def _signature_record(agreement):
     return [PAGEBREAK, "", "## Signature Record", "", intro, "", *record]
 
 
-def final_markdown(agreement):
+def final_markdown(agreement: Agreement) -> str:
     """Return an offered agreement's document with its signatures and signature record filled in."""
     on_file = agreement.signature_method == agreement.SignatureMethod.OFFLINE
     psf = counterparty = None
@@ -170,7 +187,7 @@ def final_markdown(agreement):
     return text
 
 
-def terms_download_markdown(version):
+def terms_download_markdown(version: TermsVersion) -> str:
     """Return a published terms version with a title block, for PDF and DOCX downloads."""
     terms = version.terms
     header = [f"# {terms.title}", ""]
@@ -183,7 +200,7 @@ def terms_download_markdown(version):
 # ---------- Rendering ----------
 
 
-def _convert(markdown, to, outputfile=None, extra_args=()):
+def _convert(markdown: str | bytes, to: str, outputfile: str | None = None, extra_args: Iterable[str] = ()) -> str:
     return pypandoc.convert_text(
         markdown,
         to,
@@ -195,11 +212,11 @@ def _convert(markdown, to, outputfile=None, extra_args=()):
 
 
 @lru_cache(maxsize=32)
-def _html(markdown):
+def _html(markdown: str | bytes) -> str:
     return sanitize(_convert(markdown, "html5"))
 
 
-def _toc_title(title):
+def _toc_title(title: str) -> str:
     """Lower-case exhibit headings, which the terms set in capitals, for the contents list."""
     if not title.isupper():
         return title
@@ -207,14 +224,14 @@ def _toc_title(title):
     return f"{label.title()} — {rest.capitalize()}" if rest else title.title()
 
 
-def render_html(markdown):
+def render_html(markdown: str | bytes) -> tuple[str, list[tuple[str, str]]]:
     """Render markdown to sanitized HTML plus a table of contents of its sections."""
     html = _html(markdown)
     toc = [(anchor, _toc_title(" ".join(_TAGS.sub("", title).split()))) for anchor, title in _H2.findall(html)]
     return html, toc
 
 
-def render_agreement_preview(markdown):
+def render_agreement_preview(markdown: str) -> tuple[str, bool]:
     """Hide generated legacy fingerprint metadata in HTML, never in stored text or downloads."""
     preview = _LEGACY_TERMS_FINGERPRINT.sub(r"\g<citation>", markdown)
     preview = _LEGACY_FINGERPRINT_DESCRIPTION.sub("", preview)
@@ -222,7 +239,7 @@ def render_agreement_preview(markdown):
     return html, preview != markdown
 
 
-def _convert_file(markdown, to, suffix, extra_args=()):
+def _convert_file(markdown: str | bytes, to: str, suffix: str, extra_args: Iterable[str] = ()) -> bytes:
     with tempfile.NamedTemporaryFile(suffix=suffix) as out:
         _convert(markdown, to, outputfile=out.name, extra_args=extra_args)
         return Path(out.name).read_bytes()
@@ -233,13 +250,13 @@ _PDFLATEX_LAST_NATIVE = 0x17F
 _PDFLATEX_EXTRA = frozenset("‘’‚“”„–—…•€×·§¶†‡‰")  # noqa: RUF001 - typographic characters pdflatex can set
 
 
-def _pdflatex_safe(markdown):
+def _pdflatex_safe(markdown: str) -> str:
     """Transliterate characters pdflatex can't set, so a counterparty's name never breaks the PDF.
 
     Only the PDF rendering changes; HTML, DOCX, and the signed snapshot keep the exact text.
     """
 
-    def replace(char):
+    def replace(char: str) -> str:
         if ord(char) <= _PDFLATEX_LAST_NATIVE or char in _PDFLATEX_EXTRA:
             return char
         return _PUNCTUATION.sub(r"\\\1", unidecode(char)) or "?"
@@ -248,7 +265,7 @@ def _pdflatex_safe(markdown):
 
 
 @lru_cache(maxsize=16)
-def render_pdf(markdown):
+def render_pdf(markdown: str) -> bytes:
     """Render markdown to PDF bytes."""
     return _convert_file(
         _pdflatex_safe(markdown),
@@ -259,12 +276,12 @@ def render_pdf(markdown):
 
 
 @lru_cache(maxsize=16)
-def render_docx(markdown):
+def render_docx(markdown: str | bytes) -> bytes:
     """Render markdown to DOCX bytes."""
     return _convert_file(markdown, "docx", ".docx")
 
 
-RENDERERS = {"pdf": render_pdf, "docx": render_docx}
+RENDERERS: dict[str, Callable[[str], bytes]] = {"pdf": render_pdf, "docx": render_docx}
 CONTENT_TYPES = {
     "pdf": "application/pdf",
     "docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",

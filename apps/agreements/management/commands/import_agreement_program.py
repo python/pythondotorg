@@ -1,8 +1,11 @@
 """Import privately supplied program configuration without committing commercial content."""
 
+from __future__ import annotations
+
 import json
 import sys
 from pathlib import Path
+from typing import TYPE_CHECKING, Any
 
 from django.core.exceptions import ValidationError
 from django.core.management.base import BaseCommand, CommandError
@@ -10,17 +13,20 @@ from django.db import transaction
 
 from apps.agreements.models import Program, Terms, TermsVersion
 
+if TYPE_CHECKING:
+    from django.core.management.base import CommandParser
+
 
 class Command(BaseCommand):
     """Load a program and optional immutable terms versions from an operator-supplied JSON file."""
 
     help = "Import an agreement program from private JSON. Use '-' to read stdin. Existing terms versions never change."
 
-    def add_arguments(self, parser):
+    def add_arguments(self, parser: CommandParser) -> None:
         """Accept a private file path or stdin."""
         parser.add_argument("path")
 
-    def handle(self, *args, **options):
+    def handle(self, *args: Any, **options: Any) -> None:
         """Validate and apply the import atomically without printing its private content."""
         try:
             text = sys.stdin.read() if options["path"] == "-" else Path(options["path"]).read_text(encoding="utf-8")
@@ -32,7 +38,7 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS("Program configuration imported."))
 
     @staticmethod
-    def _import(data):
+    def _import(data: object) -> None:
         if not isinstance(data, dict) or set(data) - {"program", "terms"}:
             msg = "Expected an object with 'program' and optional 'terms'."
             raise ValueError(msg)

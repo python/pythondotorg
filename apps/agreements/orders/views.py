@@ -1,6 +1,9 @@
 """Program browsing, order selection, and shared agreement signing entry points."""
 
+from __future__ import annotations
+
 from decimal import Decimal
+from typing import TYPE_CHECKING, Any, cast
 from uuid import UUID
 
 from django.contrib import messages
@@ -26,16 +29,25 @@ from apps.agreements.orders.pricing import build_quote, money
 from apps.agreements.registry import get_kind
 from apps.agreements.views.helpers import action_forms, file_response, signature_of
 
+if TYPE_CHECKING:
+    from collections.abc import Iterable
+
+    from django.contrib.auth.models import AnonymousUser
+    from django.db.models import QuerySet
+    from django.http import HttpRequest, HttpResponse
+
+    from apps.users.models import User
+
 KIND = "order"
 
 
-def _orders():
+def _orders() -> QuerySet[Order]:
     return Order.objects.select_related("program", "created_by", "customer_account", "agreement").prefetch_related(
         Prefetch("agreements", queryset=OrderLine.objects.all())
     )
 
 
-def _own_orders(user):
+def _own_orders(user: User | AnonymousUser) -> QuerySet[Order]:
     if not user.is_authenticated:
         return _orders().none()
     owned = Q(customer_account=user)
@@ -44,11 +56,11 @@ def _own_orders(user):
     return _orders().filter(owned)
 
 
-def _order_rows(orders):
+def _order_rows(orders: Iterable[Order]) -> list[dict[str, Any]]:
     """Keep stale drafts reachable without presenting an invented price."""
-    rows = []
+    rows: list[dict[str, Any]] = []
     for order in orders:
-        row = {"order": order}
+        row: dict[str, Any] = {"order": order}
         try:
             row["selections"] = [(line.agreement_obj.short_name, line.tier_name) for line in order.agreement_list]
             row["fees"] = order.fee_totals
@@ -60,20 +72,20 @@ def _order_rows(orders):
     return rows
 
 
-def _order_or_404(request, pk, *, for_update=False):
+def _order_or_404(request: HttpRequest, pk: UUID, *, for_update: bool = False) -> Order:
     orders = _orders() if can_prepare(request.user) else _own_orders(request.user)
     if for_update:
         orders = orders.select_for_update(of=("self",))
     return get_object_or_404(orders, pk=pk)
 
 
-def _program_or_404(request, slug):
+def _program_or_404(request: HttpRequest, slug: str) -> Program:
     return get_object_or_404(Program.visible_to(request.user), slug=slug)
 
 
 @never_cache
 @require_GET
-def program_list(request):
+def program_list(request: HttpRequest) -> HttpResponse:
     """List only programs the visitor may browse."""
     return render(
         request,
@@ -87,7 +99,7 @@ def program_list(request):
 
 @never_cache
 @require_GET
-def program_detail(request, slug):
+def program_detail(request: HttpRequest, slug: str) -> HttpResponse:
     """Compare a program's configured agreements and the visitor's recent orders."""
     program = _program_or_404(request, slug)
     agreements = list(program.catalog.agreements.values())
@@ -107,7 +119,7 @@ def program_detail(request, slug):
 
 @never_cache
 @require_GET
-def quote(request, slug):
+def quote(request: HttpRequest, slug: str) -> JsonResponse:
     """Price valid selections without exposing a private program to unrelated visitors."""
     order = None
     if request.GET.get("order"):
@@ -129,14 +141,14 @@ def quote(request, slug):
         can_link_accounts=is_administrator(request.user),
     )
     selections = builder.order_form.fields["agreements"]
-    errors = {}
+    errors: dict[str, dict[str, list[dict[str, str]]] | list[str]] = {}
     try:
         # No selection is a useful empty quote, not a submitted order.
         chosen = selections.clean(request.GET.getlist("agreements")) if request.GET.getlist("agreements") else []
         discount = builder.order_form.fields["discount"].clean(request.GET.get("discount"))
     except ValidationError as exc:
         return JsonResponse({"errors": {"selections": exc.messages}}, status=400)
-    quotes = []
+    quotes: list[dict[str, Any]] = []
     for key in builder.agreements:
         if key not in chosen:
             continue
@@ -165,7 +177,7 @@ def quote(request, slug):
     )
 
 
-def _builder(request, program, order=None):
+def _builder(request: HttpRequest, program: Program, order: Order | None = None) -> HttpResponse:
     staff = can_prepare(request.user)
     builder = OrderBuilder(
         request.POST or None,
@@ -178,7 +190,7 @@ def _builder(request, program, order=None):
         preselect = [slug for slug in request.GET.getlist("agreement") if slug in builder.agreements]
         builder.order_form.initial["agreements"] = preselect
     if request.method == "POST" and builder.is_valid():
-        return redirect(builder.save(request.user))
+        return redirect(builder.save(cast("User", request.user)))
     return render(
         request,
         "agreements/orders/order_form.html",
@@ -197,7 +209,7 @@ def _builder(request, program, order=None):
 
 
 @never_cache
-def order_create(request, slug):
+def order_create(request: HttpRequest, slug: str) -> HttpResponse:
     """Start a public order, or a staff-prepared private order."""
     program = _program_or_404(request, slug)
     if not request.user.is_authenticated:
@@ -208,7 +220,7 @@ def order_create(request, slug):
 @never_cache
 @login_required
 @transaction.atomic
-def order_edit(request, pk):
+def order_edit(request: HttpRequest, pk: UUID) -> HttpResponse:
     """Change selections until the Order Form is offered for signature."""
     order = _order_or_404(request, pk, for_update=request.method == "POST")
     if not order.can_edit(request.user):
@@ -219,7 +231,7 @@ def order_edit(request, pk):
 
 @never_cache
 @login_required
-def order_list(request):
+def order_list(request: HttpRequest) -> HttpResponse:
     """List the customer's orders, including drafts needing revised selections."""
     return render(
         request,
@@ -233,11 +245,11 @@ def order_list(request):
 
 @never_cache
 @login_required
-def order_detail(request, pk, sign_form=None, status=200):
+def order_detail(request: HttpRequest, pk: UUID, sign_form: SignForm | None = None, status: int = 200) -> HttpResponse:
     """Review the order and use the common account, link, or signed-copy actions."""
     order = _order_or_404(request, pk)
     user = request.user
-    context = {
+    context: dict[str, Any] = {
         "order": order,
         "is_customer": order.is_customer(user),
         "can_prepare": can_prepare(user),
@@ -262,7 +274,7 @@ def order_detail(request, pk, sign_form=None, status=200):
             context["draft_sign_form"] = sign_form or SignForm(
                 initial={
                     "document_sha256": sha256(documents.compose_order_form_markdown(order)),
-                    "signer_name": user.get_full_name(),
+                    "signer_name": cast("User", user).get_full_name(),
                 }
             )
     return render(request, "agreements/orders/order_detail.html", context, status=status)
@@ -272,7 +284,7 @@ def order_detail(request, pk, sign_form=None, status=200):
 @login_required
 @require_POST
 @transaction.atomic
-def order_sign(request, pk):
+def order_sign(request: HttpRequest, pk: UUID) -> HttpResponse:
     """Freeze and sign the reviewed draft in one atomic transition."""
     order = _order_or_404(request, pk, for_update=True)
     if not order.is_customer(request.user) or not order.is_editable:
@@ -282,7 +294,7 @@ def order_sign(request, pk):
         return order_detail(request, pk, sign_form=form, status=400)
     try:
         with transaction.atomic():
-            agreement = workflow.offer(get_kind(KIND), order, user=request.user)
+            agreement = workflow.offer(get_kind(KIND), order, user=cast("User", request.user))
             workflow.sign(agreement, signature_of(request, form), seen_sha256=form.cleaned_data["document_sha256"])
     except (workflow.InvalidTransitionError, ValidationError) as exc:
         messages.error(request, "; ".join(exc.messages) if isinstance(exc, ValidationError) else str(exc))
@@ -295,13 +307,13 @@ def order_sign(request, pk):
 @login_required
 @require_POST
 @transaction.atomic
-def order_offer(request, pk):
+def order_offer(request: HttpRequest, pk: UUID) -> HttpResponse:
     """Fix the text for an account, a signing link, or an externally signed copy."""
     order = _order_or_404(request, pk, for_update=True)
     if not order.can_offer(request.user):
         raise Http404
     try:
-        workflow.offer(get_kind(KIND), order, user=request.user)
+        workflow.offer(get_kind(KIND), order, user=cast("User", request.user))
     except (workflow.InvalidTransitionError, ValidationError) as exc:
         messages.error(request, "; ".join(exc.messages) if isinstance(exc, ValidationError) else str(exc))
     else:
@@ -312,7 +324,7 @@ def order_offer(request, pk):
 @login_required
 @require_POST
 @transaction.atomic
-def order_delete(request, pk):
+def order_delete(request: HttpRequest, pk: UUID) -> HttpResponse:
     """Discard an authorized draft without touching offered agreements."""
     order = _order_or_404(request, pk, for_update=True)
     if not order.can_edit(request.user):
@@ -323,7 +335,7 @@ def order_delete(request, pk):
 
 
 @login_required
-def order_document(request, pk, fmt):
+def order_document(request: HttpRequest, pk: UUID, fmt: str) -> HttpResponse:
     """Download the authorized order's draft or frozen document."""
     order = _order_or_404(request, pk)
     if fmt not in agreement_documents.RENDERERS:
@@ -342,6 +354,6 @@ def order_document(request, pk, fmt):
 
 @never_cache
 @preparer_required
-def staff_orders(request):
+def staff_orders(request: HttpRequest) -> HttpResponse:
     """List all orders for agreement managers."""
     return render(request, "agreements/orders/staff_queue.html", {"orders": _order_rows(_orders()), "nav": "staff"})

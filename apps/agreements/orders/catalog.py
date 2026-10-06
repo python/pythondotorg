@@ -1,10 +1,19 @@
 """Validated, database-configured agreement catalogs and pricing definitions."""
 
+from __future__ import annotations
+
 import re
 from dataclasses import dataclass, field
 from decimal import Decimal, InvalidOperation
+from typing import TYPE_CHECKING, Any, NoReturn, cast
 
 from django.core.exceptions import ValidationError
+
+if TYPE_CHECKING:
+    from collections.abc import Collection, Iterator
+
+    from apps.agreements.models import Terms
+
 
 MONTHS_PER_YEAR = 12
 PERCENT_SCALE = 100
@@ -45,7 +54,7 @@ class Service:
     description: str
     tiers: tuple[str, ...] = ()
 
-    def included_at(self, tier_key):
+    def included_at(self, tier_key: str) -> bool:
         """Return whether this service is included at the selected tier."""
         return not self.tiers or tier_key in self.tiers
 
@@ -60,7 +69,7 @@ class Param:
     choices: tuple[tuple[str, str], ...] = ()
     help_text: str = ""
     minimum: int = 1
-    required_when: dict = field(default_factory=dict)
+    required_when: dict[str, str | int | list[str]] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -71,7 +80,7 @@ class AddOn:
     name: str
     description: str
     price_summary: str
-    pricing: dict
+    pricing: dict[str, Any]
     params: tuple[Param, ...] = ()
     included_in_tiers: tuple[str, ...] = ()
 
@@ -103,31 +112,31 @@ class Agreement:
     addons: tuple[AddOn, ...] = ()
 
     @property
-    def terms(self):
+    def terms(self) -> Terms:
         """Return the published terms identified by this agreement."""
         from apps.agreements.models import Terms
 
         return Terms.objects.get(slug=self.terms_slug)
 
-    def tier(self, key):
+    def tier(self, key: str) -> Tier:
         """Return the named tier or raise a selection validation error."""
         return _lookup(self.tiers, key, "tier")
 
-    def discount(self, key):
+    def discount(self, key: str) -> Discount:
         """Return the named discount or raise a selection validation error."""
         return _lookup(self.discounts, key, "discount")
 
-    def addon(self, key):
+    def addon(self, key: str) -> AddOn:
         """Return the named add-on or raise a selection validation error."""
         return _lookup(self.addons, key, "add-on")
 
-    def services_at(self, tier_key):
+    def services_at(self, tier_key: str) -> list[Service]:
         """Return services included at a valid tier."""
         self.tier(tier_key)
         return [service for service in self.services if service.included_at(tier_key)]
 
     @property
-    def service_rows(self):
+    def service_rows(self) -> list[tuple[Service, str]]:
         """Pair each service with its restricted tier names for display."""
         return [
             (service, " and ".join(t.name for t in self.tiers if t.key in service.tiers) if service.tiers else "")
@@ -135,7 +144,7 @@ class Agreement:
         ]
 
 
-def _lookup(items, key, label):
+def _lookup[CatalogItem: (Tier, Discount, AddOn)](items: tuple[CatalogItem, ...], key: str, label: str) -> CatalogItem:
     for item in items:
         if item.key == key:
             return item
@@ -143,12 +152,12 @@ def _lookup(items, key, label):
     raise ValidationError(message)
 
 
-def _error(path, message):
+def _error(path: str, message: str) -> NoReturn:
     message = f"{path}: {message}"
     raise ValidationError(message)
 
 
-def _object(value, path, allowed, required=()):
+def _object(value: object, path: str, allowed: Collection[str], required: Collection[str] = ()) -> dict[str, Any]:
     if not isinstance(value, dict):
         _error(path, "must be an object.")
     unknown = value.keys() - allowed
@@ -160,38 +169,38 @@ def _object(value, path, allowed, required=()):
     return value
 
 
-def _list(value, path, nonempty=False):
+def _list(value: object, path: str, nonempty: bool = False) -> list[Any]:
     if not isinstance(value, list) or (nonempty and not value):
         _error(path, "must be a nonempty list." if nonempty else "must be a list.")
     return value
 
 
-def _text(value, path, blank=False):
+def _text(value: object, path: str, blank: bool = False) -> str:
     if not isinstance(value, str) or (not blank and not value.strip()):
         _error(path, "must be text." if blank else "must be nonempty text.")
     return value
 
 
-def _key(value, path):
+def _key(value: Any, path: str) -> str:
     _text(value, path)
     if not re.fullmatch(r"[-a-zA-Z0-9_]+", value):
         _error(path, "must contain only letters, numbers, hyphens, and underscores.")
     return value
 
 
-def _integer(value, path, minimum=0):
+def _integer(value: object, path: str, minimum: int = 0) -> int:
     if not isinstance(value, int) or isinstance(value, bool) or value < minimum:
         _error(path, f"must be an integer of at least {minimum}.")
     return value
 
 
-def _boolean(value, path):
+def _boolean(value: object, path: str) -> bool:
     if not isinstance(value, bool):
         _error(path, "must be true or false.")
     return value
 
 
-def _decimal(value, path):
+def _decimal(value: object, path: str) -> Decimal:
     if not isinstance(value, str):
         _error(path, "must be a decimal string.")
     try:
@@ -201,12 +210,14 @@ def _decimal(value, path):
     if not amount.is_finite() or amount < 0:
         _error(path, "must be a finite, nonnegative decimal amount.")
     # Monetary arithmetic and cent rounding must remain exact in Decimal's context.
-    if amount.adjusted() >= CURRENCY_WHOLE_DIGITS or amount.as_tuple().exponent < -CURRENCY_DECIMAL_PLACES:
+    if amount.adjusted() >= CURRENCY_WHOLE_DIGITS or cast("int", amount.as_tuple().exponent) < -CURRENCY_DECIMAL_PLACES:
         _error(path, "must have at most 16 whole-number digits and two decimal places.")
     return amount
 
 
-def _unique(records, path, key="key", nonempty=False):
+def _unique(
+    records: object, path: str, key: str = "key", nonempty: bool = False
+) -> Iterator[tuple[dict[str, Any], str]]:
     seen = set()
     for index, record in enumerate(_list(records, path, nonempty)):
         here = f"{path}[{index}]"
@@ -219,7 +230,7 @@ def _unique(records, path, key="key", nonempty=False):
         yield record, here
 
 
-def _tier_refs(value, path, tier_keys):
+def _tier_refs(value: object, path: str, tier_keys: set[str]) -> tuple[str, ...]:
     refs = _list(value, path)
     seen = set()
     for ref in refs:
@@ -232,7 +243,7 @@ def _tier_refs(value, path, tier_keys):
     return tuple(refs)
 
 
-def _param(row, path):
+def _param(row: dict[str, Any], path: str) -> Param:
     _object(
         row,
         path,
@@ -242,7 +253,7 @@ def _param(row, path):
     kind = _text(row["kind"], f"{path}.kind")
     if kind not in {"choice", "count", "text", "lines"}:
         _error(f"{path}.kind", "must be choice, count, text, or lines.")
-    choices = []
+    choices: list[tuple[str, str]] = []
     for choice in _list(row.get("choices", []), f"{path}.choices", nonempty=kind == "choice"):
         if not isinstance(choice, list) or len(choice) != CHOICE_PAIR_SIZE:
             _error(f"{path}.choices", "each choice must be a [value, label] pair.")
@@ -267,7 +278,7 @@ def _param(row, path):
     )
 
 
-def _param_conditions(param, params, path):
+def _param_conditions(param: Param, params: dict[str, Param], path: str) -> None:
     for key, value in param.required_when.items():
         if not isinstance(key, str) or key not in params:
             _error(path, f"unknown parameter: {key!r}.")
@@ -284,14 +295,14 @@ def _param_conditions(param, params, path):
                 _text(line, path)
 
 
-def _params(records, path):
+def _params(records: object, path: str) -> tuple[Param, ...]:
     result = tuple(_param(row, here) for row, here in _unique(records, path))
     by_key = {param.key: param for param in result}
     for param in result:
         _param_conditions(param, by_key, f"{path}.{param.key}.required_when")
-    visited = set()
+    visited: set[str] = set()
 
-    def visit(key, pending):
+    def visit(key: str, pending: set[str]) -> None:
         if key in pending:
             _error(path, "required_when dependencies must not form a cycle.")
         if len(pending) > MAX_NESTING:
@@ -306,7 +317,7 @@ def _params(records, path):
     return result
 
 
-def _rule_shape(rule, path, depth):
+def _rule_shape(rule: object, path: str, depth: int) -> str:
     if depth > MAX_NESTING:
         _error(path, f"pricing rules may nest at most {MAX_NESTING} levels.")
     if not isinstance(rule, dict):
@@ -320,7 +331,7 @@ def _rule_shape(rule, path, depth):
     return kind
 
 
-def _rule_parameter(rule, params, path, conditions):
+def _rule_parameter(rule: dict[str, Any], params: dict[str, Param], path: str, conditions: dict[str, str]) -> None:
     parameter = _key(rule["parameter"], f"{path}.parameter")
     if parameter not in params:
         _error(path, f"unknown parameter: {parameter}.")
@@ -332,7 +343,7 @@ def _rule_parameter(rule, params, path, conditions):
         _error(path, f"parameter {parameter} is not guaranteed to be active in this pricing branch.")
 
 
-def _leaf_rule(rule, path):
+def _leaf_rule(rule: dict[str, Any], path: str) -> None:
     kind = rule["type"]
     if kind == "fixed":
         _decimal(rule["amount"], f"{path}.amount")
@@ -353,12 +364,14 @@ def _leaf_rule(rule, path):
         _text(rule["overflow_basis"], f"{path}.overflow_basis")
 
 
-def _choice_rule(rule, params, path, conditions, depth):
+def _choice_rule(
+    rule: dict[str, Any], params: dict[str, Param], path: str, conditions: dict[str, str], depth: int
+) -> set[bool]:
     parameter = rule["parameter"]
     options = rule["options"]
     if not isinstance(options, dict) or options.keys() != dict(params[parameter].choices).keys():
         _error(f"{path}.options", "must contain exactly the parameter's choice values.")
-    recurrences = set()
+    recurrences: set[bool] = set()
     for value, branch in options.items():
         recurrences.update(
             _rule(branch, params, f"{path}.options.{value}", {**conditions, parameter: value}, depth + 1)
@@ -366,7 +379,13 @@ def _choice_rule(rule, params, path, conditions, depth):
     return recurrences
 
 
-def _rule(rule, params, path, conditions=None, depth=0):
+def _rule(
+    rule: dict[str, Any],
+    params: dict[str, Param],
+    path: str,
+    conditions: dict[str, str] | None = None,
+    depth: int = 0,
+) -> set[bool]:
     kind = _rule_shape(rule, path, depth)
     conditions = conditions or {}
     if kind in {"quantity", "brackets", "choice"}:
@@ -386,7 +405,7 @@ def _rule(rule, params, path, conditions=None, depth=0):
     return {recurring}
 
 
-def _discount(row, path):
+def _discount(row: dict[str, Any], path: str) -> Discount:
     _object(
         row,
         path,
@@ -408,7 +427,7 @@ def _discount(row, path):
     )
 
 
-def _tier(row, path):
+def _tier(row: dict[str, Any], path: str) -> Tier:
     _object(
         row,
         path,
@@ -422,13 +441,15 @@ def _tier(row, path):
         key=row["key"],
         name=_text(row["name"], f"{path}.name"),
         annual_fee=_decimal(row["annual_fee"], f"{path}.annual_fee"),
-        response_targets=tuple(_text(target, f"{path}.response_targets") for target in targets),
+        response_targets=cast(
+            "tuple[str, str, str, str]", tuple(_text(target, f"{path}.response_targets") for target in targets)
+        ),
         fair_use=_integer(row["fair_use"], f"{path}.fair_use"),
         includes=_text(row.get("includes", ""), f"{path}.includes", blank=True),
     )
 
 
-def _service(row, path, tier_keys):
+def _service(row: dict[str, Any], path: str, tier_keys: set[str]) -> Service:
     _object(row, path, {"key", "name", "description", "tiers"}, {"key", "name", "description"})
     return Service(
         key=row["key"],
@@ -438,7 +459,7 @@ def _service(row, path, tier_keys):
     )
 
 
-def _addon(row, path, tier_keys):
+def _addon(row: dict[str, Any], path: str, tier_keys: set[str]) -> AddOn:
     _object(
         row,
         path,
@@ -458,7 +479,7 @@ def _addon(row, path, tier_keys):
     )
 
 
-def _agreement(row, path, discounts):
+def _agreement(row: dict[str, Any], path: str, discounts: tuple[Discount, ...]) -> Agreement:
     _object(
         row,
         path,
@@ -492,6 +513,13 @@ def _agreement(row, path, discounts):
 class Catalog:
     """Parse a definition once, preserving its agreement, tier, and add-on ordering."""
 
+    order_title: str
+    order_intro: str
+    covered_entities_label: str
+    covered_entities_help: str
+    attestation_label: str
+    attestation_help: str
+
     METADATA = {
         "order_title": "Service order",
         "order_intro": "Select the services for this order.",
@@ -507,9 +535,9 @@ class Catalog:
         "other_charges": "Other charges are payable under the applicable agreement terms.",
     }
 
-    def __init__(self, definition):
+    def __init__(self, definition: object) -> None:
         """Validate and parse a JSON-compatible program definition."""
-        _object(
+        definition = _object(
             definition,
             "catalog",
             {"agreements", "discounts", "payment"} | self.METADATA.keys(),
@@ -530,11 +558,11 @@ class Catalog:
             for row, path in _unique(definition["agreements"], "catalog.agreements", "slug", nonempty=True)
         }
 
-    def discount(self, key):
+    def discount(self, key: str) -> Discount:
         """Return the named shared discount or raise a validation error."""
         return _lookup(self.discounts, key, "discount")
 
 
-def validate_catalog(value):
+def validate_catalog(value: object) -> None:
     """Validate a Django JSONField value and report malformed definitions."""
     Catalog(value)

@@ -1,7 +1,20 @@
 """Database-configured programs and the orders prepared from them."""
 
+from __future__ import annotations
+
 import uuid
 from decimal import Decimal
+from typing import TYPE_CHECKING, Any, cast
+
+if TYPE_CHECKING:
+    from django.contrib.auth.models import AnonymousUser
+    from django.db.models import QuerySet
+
+    from apps.agreements.models.agreements import Agreement
+    from apps.agreements.models.terms import TermsVersion
+    from apps.agreements.orders.catalog import Agreement as CatalogAgreement
+    from apps.agreements.orders.pricing import FeeKey, Quote, QuoteSnapshot
+    from apps.users.models import User
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
@@ -33,25 +46,25 @@ class Program(models.Model):
 
         ordering = ("title",)
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Return the staff-managed program title."""
         return self.title
 
-    def get_absolute_url(self):
+    def get_absolute_url(self) -> str:
         """Return the access-controlled program page."""
         return reverse("agreements:program_detail", kwargs={"slug": self.slug})
 
     @classmethod
-    def visible_to(cls, user):
+    def visible_to(cls, user: User | AnonymousUser) -> QuerySet[Program]:
         """Return programs the visitor can browse, never implicitly exposing private catalogs."""
         return cls.objects.all() if can_prepare(user) else cls.objects.filter(is_public=True)
 
     @cached_property
-    def catalog(self):
+    def catalog(self) -> Catalog:
         """Parse the validated definition once per loaded program."""
         return Catalog(self.definition)
 
-    def clean(self):
+    def clean(self) -> None:
         """Require a valid catalog and existing, versioned terms before accepting configuration."""
         super().clean()
         try:
@@ -104,41 +117,41 @@ class Order(models.Model):
 
         ordering = ("-created",)
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Return the customer for listings."""
         return self.legal_name
 
-    def get_absolute_url(self):
+    def get_absolute_url(self) -> str:
         """Return the customer's order page."""
         return reverse("agreements:order_detail", kwargs={"pk": self.pk})
 
     @property
-    def configuration(self):
+    def configuration(self) -> dict[str, Any]:
         """Read offered configuration from the snapshot, not a later catalog revision."""
         return self.catalog_snapshot or self.program.definition
 
     @cached_property
-    def catalog(self):
+    def catalog(self) -> Catalog:
         """Parse the configuration used by this order."""
         return Catalog(self.configuration)
 
     @property
-    def program_title(self):
+    def program_title(self) -> str:
         """Keep the program's name stable once offered."""
         return self.program_title_snapshot or self.program.title
 
     @property
-    def reference(self):
+    def reference(self) -> str:
         """Return a short reference suitable for quoting."""
         return str(self.pk).split("-")[0].upper()
 
     @property
-    def status(self):
+    def status(self) -> str:
         """Use the agreement status after offering; otherwise the order is a draft."""
         return self.agreement.status if self.agreement else "draft"
 
     @cached_property
-    def agreement_list(self):
+    def agreement_list(self) -> list[OrderLine]:
         """Return selections in configured order, independent of database JSON ordering."""
         positions = {slug: index for index, slug in enumerate(self.catalog.agreements)}
         lines = list(self.agreements.all())
@@ -147,42 +160,42 @@ class Order(models.Model):
         return sorted(lines, key=lambda line: positions.get(line.agreement, len(positions)))
 
     @property
-    def is_editable(self):
+    def is_editable(self) -> bool:
         """Allow selection changes only while the order is a draft."""
         return self.agreement_id is None
 
-    def is_customer(self, user):
+    def is_customer(self, user: User | AnonymousUser) -> bool:
         """Check whether the visitor is the linked customer account."""
         return self.customer_account_id is not None and self.customer_account_id == user.pk
 
-    def can_view(self, user):
+    def can_view(self, user: User | AnonymousUser) -> bool:
         """Restrict orders to agreement preparers and their linked customer."""
         return user.is_authenticated and (can_prepare(user) or self.is_customer(user))
 
-    def can_edit(self, user):
+    def can_edit(self, user: User | AnonymousUser) -> bool:
         """Allow an authorized viewer to change a draft."""
         return self.is_editable and self.can_view(user)
 
-    def can_offer(self, user):
+    def can_offer(self, user: User | AnonymousUser) -> bool:
         """Allow only administrators or the linked customer to offer a draft."""
         return self.is_editable and user.is_authenticated and (is_administrator(user) or self.is_customer(user))
 
     @property
-    def organization_list(self):
+    def organization_list(self) -> list[str]:
         """Return the covered entity names."""
         return [line.strip() for line in self.covered_entities.splitlines() if line.strip()]
 
     @property
-    def term_months(self):
+    def term_months(self) -> int:
         """Return the selected term from the order's configuration."""
         return self.catalog.discount(self.discount).term_months
 
-    def total(self, key):
+    def total(self, key: FeeKey) -> Decimal:
         """Sum annual or term totals across the selected agreements."""
         return sum((line.pricing_value(key) for line in self.agreement_list), Decimal(0))
 
     @cached_property
-    def fee_totals(self):
+    def fee_totals(self) -> dict[str, Decimal]:
         """Separate annual and one-time fees across current or frozen selections."""
         totals = {"annual": Decimal(0), "one_time": Decimal(0)}
         for line in self.agreement_list:
@@ -191,7 +204,7 @@ class Order(models.Model):
         return totals
 
     @property
-    def term_total_display(self):
+    def term_total_display(self) -> str:
         """Format the combined initial-term fees."""
         return money(self.total("term_total"))
 
@@ -211,43 +224,45 @@ class OrderLine(models.Model):
 
         constraints = (models.UniqueConstraint(fields=("order", "agreement"), name="one_order_line_per_agreement"),)
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Return the customer and selection."""
         return f"{self.order.legal_name}: {self.agreement}"
 
     @cached_property
-    def agreement_obj(self):
+    def agreement_obj(self) -> CatalogAgreement:
         """Return this agreement's configured definition."""
         return self.order.catalog.agreements[self.agreement]
 
     @property
-    def tier_name(self):
+    def tier_name(self) -> str:
         """Return the selected tier's name."""
         return self.agreement_obj.tier(self.tier).name
 
     @cached_property
-    def cited_terms(self):
+    def cited_terms(self) -> TermsVersion | None:
         """Return the fixed version after offering or the current draft candidate."""
         if self.order.agreement_id:
-            return self.order.agreement.terms_versions.select_related("terms").get(
-                terms__slug=self.agreement_obj.terms_slug
+            return (
+                cast("Agreement", self.order.agreement)
+                .terms_versions.select_related("terms")
+                .get(terms__slug=self.agreement_obj.terms_slug)
             )
         return self.agreement_obj.terms.current_version
 
-    def quote(self):
+    def quote(self) -> Quote:
         """Calculate fees from this order's catalog."""
         return build_quote(self.agreement_obj, self.tier, self.order.discount, self.addons)
 
     @property
-    def pricing_snapshot(self):
+    def pricing_snapshot(self) -> QuoteSnapshot:
         """Return frozen fees after offering or the current draft's quote."""
         return self.pricing or self.quote().as_dict()
 
     @cached_property
-    def fee_totals(self):
+    def fee_totals(self) -> dict[str, Decimal]:
         """Read recurring fees separately from one-time charges in any snapshot."""
         return fee_totals(self.pricing_snapshot)
 
-    def pricing_value(self, key):
+    def pricing_value(self, key: FeeKey) -> Decimal:
         """Read a numeric fee total."""
         return Decimal(self.pricing_snapshot[key])

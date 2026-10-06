@@ -1,5 +1,9 @@
 """Agreement review, downloads, and document editing."""
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, cast
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import Http404, HttpResponse
@@ -11,11 +15,19 @@ from apps.agreements.forms.contracts import EditDocumentForm
 from apps.agreements.models import Agreement, CustomContract, SignedCopy
 from apps.agreements.views.helpers import _agreement_or_404, _diff, action_forms, file_response
 
+if TYPE_CHECKING:
+    from uuid import UUID
+
+    from django.forms import BaseForm
+    from django.http import HttpRequest
+
+    from apps.users.models import User
+
 RECENT = 25
 
 
 @preparer_required
-def queue(request):
+def queue(request: HttpRequest) -> HttpResponse:
     """Every agreement that needs the PSF or the counterparty, then recent ones and custom drafts."""
     agreements = Agreement.objects.select_related("counterparty_account")
     return render(
@@ -32,7 +44,7 @@ def queue(request):
 
 
 @login_required
-def detail(request, pk, status=200, **bound):
+def detail(request: HttpRequest, pk: UUID, status: int = 200, **bound: BaseForm | None) -> HttpResponse:
     """Review an agreement and act on it."""
     agreement = _agreement_or_404(request, pk)
     html, metadata_hidden = documents.render_agreement_preview(documents.final_markdown(agreement))
@@ -46,7 +58,7 @@ def detail(request, pk, status=200, **bound):
 
 
 @login_required
-def document(request, pk, fmt):
+def document(request: HttpRequest, pk: UUID, fmt: str) -> HttpResponse:
     """Download the agreement as PDF or DOCX, with any signatures so far."""
     agreement = _agreement_or_404(request, pk)
     if fmt not in documents.RENDERERS:
@@ -56,7 +68,7 @@ def document(request, pk, fmt):
 
 
 @login_required
-def copy_download(request, pk, kind):
+def copy_download(request: HttpRequest, pk: UUID, kind: str) -> HttpResponse:
     """Download a signed copy kept with the agreement."""
     agreement = _agreement_or_404(request, pk)
     copy = get_object_or_404(SignedCopy, agreement=agreement, kind=kind)
@@ -68,7 +80,7 @@ def copy_download(request, pk, kind):
 
 
 @administrator_required
-def edit(request, pk):
+def edit(request: HttpRequest, pk: UUID) -> HttpResponse:
     """Edit one agreement's text before it is signed; every saved edit is a new revision."""
     agreement = _agreement_or_404(request, pk)
     if not agreement.is_editable:
@@ -90,7 +102,7 @@ def edit(request, pk):
                     agreement,
                     markdown=data["markdown"],
                     note=data["note"],
-                    user=request.user,
+                    user=cast("User", request.user),
                     base_sha256=data["base_sha256"],
                 )
             except workflow.DocumentChangedError:

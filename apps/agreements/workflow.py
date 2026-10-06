@@ -5,10 +5,18 @@ edit the text (each edit is a new revision) or withdraw it, which makes the draf
 again. A signature is accepted only for the exact revision the signer was shown.
 """
 
+from __future__ import annotations
+
 import hashlib
 import secrets
 from dataclasses import dataclass
 from datetime import date, datetime, time, timedelta
+from typing import TYPE_CHECKING, cast
+
+if TYPE_CHECKING:
+    from apps.agreements.models import CustomContract, Order, Terms
+    from apps.agreements.registry import Kind
+    from apps.users.models import User
 
 from django.db import transaction
 from django.utils import timezone
@@ -53,7 +61,7 @@ class Upload:
     content: bytes
 
 
-def _locked(agreement, expected):
+def _locked(agreement: Agreement, expected: str) -> Agreement:
     locked = Agreement.objects.select_for_update().get(pk=agreement.pk)
     if locked.status != expected:
         msg = f"This agreement is {locked.get_status_display().lower()}."
@@ -61,13 +69,13 @@ def _locked(agreement, expected):
     return locked
 
 
-def _check_placeholders(markdown):
+def _check_placeholders(markdown: str) -> None:
     if markdown.count(SIGNATURES) != 1:
         msg = f"The document must contain {SIGNATURES} exactly once, where the signatures go."
         raise ValueError(msg)
 
 
-def offer(kind, subject, *, user):
+def offer[Subject: (CustomContract, Order)](kind: Kind[Subject], subject: Subject, *, user: User) -> Agreement:
     """Freeze a draft into an agreement that awaits signature."""
     with transaction.atomic():
         subject = kind.model.objects.select_for_update().get(pk=subject.pk)
@@ -98,7 +106,7 @@ def offer(kind, subject, *, user):
     return agreement
 
 
-def edit(agreement, *, markdown, note, user, base_sha256):
+def edit(agreement: Agreement, *, markdown: str, note: str, user: User, base_sha256: str) -> Agreement:
     """Replace the text of an agreement that awaits signature, keeping the old text as a revision.
 
     ``base_sha256`` is the text the editor started from, so concurrent edits are not lost.
@@ -126,7 +134,7 @@ def edit(agreement, *, markdown, note, user, base_sha256):
     return agreement
 
 
-def _apply_signature(agreement, signature, method, seen_sha256):
+def _apply_signature(agreement: Agreement, signature: Signature, method: str, seen_sha256: str) -> None:
     if seen_sha256 != agreement.document_sha256:
         msg = "The document changed after you opened it. Review the current version and sign again."
         raise DocumentChangedError(msg)
@@ -140,7 +148,7 @@ def _apply_signature(agreement, signature, method, seen_sha256):
     agreement.status = Agreement.Status.SIGNED
 
 
-def sign(agreement, signature, *, seen_sha256):
+def sign(agreement: Agreement, signature: Signature, *, seen_sha256: str) -> Agreement:
     """Sign on python.org as the counterparty's account."""
     with transaction.atomic():
         agreement = _locked(agreement, Agreement.Status.OFFERED)
@@ -149,12 +157,12 @@ def sign(agreement, signature, *, seen_sha256):
     return agreement
 
 
-def find_link(token):
+def find_link(token: str) -> SigningLink | None:
     """Return the signing link for a token, or ``None``."""
     return SigningLink.objects.select_related("agreement").filter(token_sha256=SigningLink.hash_token(token)).first()
 
 
-def sign_with_link(link, signature, *, seen_sha256):
+def sign_with_link(link: SigningLink, signature: Signature, *, seen_sha256: str) -> Agreement:
     """Sign on python.org with a one-time link; the email is the one the link was sent to."""
     with transaction.atomic():
         link = SigningLink.objects.select_for_update().get(pk=link.pk)
@@ -176,7 +184,7 @@ def sign_with_link(link, signature, *, seen_sha256):
     return agreement
 
 
-def create_signing_link(agreement, *, name, email, user):
+def create_signing_link(agreement: Agreement, *, name: str, email: str, user: User) -> tuple[SigningLink, str]:
     """Create a one-time signing link and return its token, which is not stored."""
     token = secrets.token_urlsafe(32)
     with transaction.atomic():
@@ -192,7 +200,7 @@ def create_signing_link(agreement, *, name, email, user):
     return link, token
 
 
-def _store_copy(agreement, kind, upload, user):
+def _store_copy(agreement: Agreement, kind: str, upload: Upload, user: User) -> None:
     SignedCopy.objects.create(
         agreement=agreement,
         kind=kind,
@@ -203,19 +211,21 @@ def _store_copy(agreement, kind, upload, user):
     )
 
 
-def record_signed_copy(agreement, signature, *, upload, user, seen_sha256):
+def record_signed_copy(
+    agreement: Agreement, signature: Signature, *, upload: Upload, user: User, seen_sha256: str
+) -> Agreement:
     """Record a signature made outside python.org, keeping the signed copy."""
     with transaction.atomic():
         agreement = _locked(agreement, Agreement.Status.OFFERED)
         _apply_signature(agreement, signature, Agreement.SignatureMethod.OFFLINE, seen_sha256)
-        agreement.signed_at = timezone.make_aware(datetime.combine(signature.signed_on, time(12)))
+        agreement.signed_at = timezone.make_aware(datetime.combine(cast("date", signature.signed_on), time(12)))
         agreement.signature_recorded_by = user
         agreement.save()
         _store_copy(agreement, SignedCopy.Kind.CUSTOMER, upload, user)
     return agreement
 
 
-def countersign(agreement, *, user, name, title, upload=None):
+def countersign(agreement: Agreement, *, user: User, name: str, title: str, upload: Upload | None = None) -> Agreement:
     """Countersign for the PSF; the last signature makes the agreement effective."""
     with transaction.atomic():
         agreement = _locked(agreement, Agreement.Status.SIGNED)
@@ -231,7 +241,7 @@ def countersign(agreement, *, user, name, title, upload=None):
     return agreement
 
 
-def decline(agreement, *, user, reason):
+def decline(agreement: Agreement, *, user: User, reason: str) -> Agreement:
     """Decline a signed agreement, for example when a discount claim doesn't hold."""
     with transaction.atomic():
         agreement = _locked(agreement, Agreement.Status.SIGNED)
@@ -243,7 +253,7 @@ def decline(agreement, *, user, reason):
     return agreement
 
 
-def withdraw(agreement, *, user):
+def withdraw(agreement: Agreement, *, user: User) -> Agreement:
     """Withdraw an unsigned offer; its draft becomes editable again and unused links stop working."""
     with transaction.atomic():
         agreement = _locked(agreement, Agreement.Status.OFFERED)
@@ -261,7 +271,7 @@ def withdraw(agreement, *, user):
     return agreement
 
 
-def save_terms_draft(terms, *, markdown, user):
+def save_terms_draft(terms: Terms, *, markdown: str, user: User) -> None:
     """Save the working copy of terms without publishing it."""
     terms.draft_markdown = markdown
     terms.draft_updated_by = user
@@ -269,7 +279,7 @@ def save_terms_draft(terms, *, markdown, user):
     terms.save(update_fields=["draft_markdown", "draft_updated_by", "draft_updated_at"])
 
 
-def publish_terms(terms, *, version, markdown, notes, user):
+def publish_terms(terms: Terms, *, version: str, markdown: str, notes: str, user: User) -> TermsVersion:
     """Publish a new version of terms; documents offered from now on cite it."""
     with transaction.atomic():
         published = TermsVersion.objects.create(

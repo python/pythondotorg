@@ -1,5 +1,9 @@
 """Published terms and their immutable versions."""
 
+from __future__ import annotations
+
+from typing import Any
+
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -38,15 +42,15 @@ class Terms(models.Model):
         ordering = ("title",)
         verbose_name_plural = "terms"
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Return the title."""
         return self.title
 
-    def get_absolute_url(self):
+    def get_absolute_url(self) -> str:
         """Return the public page for the current version."""
         return reverse("agreements:terms", kwargs={"slug": self.slug})
 
-    def validate_is_public(self, is_public):
+    def validate_is_public(self, is_public: bool) -> None:
         """Keep terms readable while any public program cites their slug."""
         if is_public or self.pk is None:
             return
@@ -58,7 +62,7 @@ class Terms(models.Model):
                 message = "Make every program that cites these terms private before making the terms private."
                 raise ValidationError(message)
 
-    def clean(self):
+    def clean(self) -> None:
         """Validate publication settings in model forms, including the admin."""
         super().clean()
         try:
@@ -67,7 +71,7 @@ class Terms(models.Model):
             raise ValidationError({"is_public": exc.messages}) from exc
 
     @cached_property
-    def current_version(self):
+    def current_version(self) -> TermsVersion | None:
         """Return the version documents offered now cite."""
         return self.versions.order_by("-published_at", "-pk").first()
 
@@ -91,11 +95,11 @@ class TermsVersion(models.Model):
         ordering = ("-published_at", "-pk")
         constraints = (models.UniqueConstraint(fields=("terms", "version"), name="one_terms_version_per_label"),)
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Return the terms and version."""
         return f"{self.terms.title}, version {self.version}"
 
-    def save(self, *args, **kwargs):
+    def save(self, *args: Any, **kwargs: Any) -> None:
         """Hash the text on publication and refuse any later change."""
         if self.pk:
             msg = "A published terms version never changes; publish a new version instead."
@@ -103,11 +107,11 @@ class TermsVersion(models.Model):
         self.sha256 = sha256(self.markdown)
         super().save(*args, **kwargs)
 
-    def get_absolute_url(self):
+    def get_absolute_url(self) -> str:
         """Return the permanent page for this version."""
         return reverse("agreements:terms_version", kwargs={"slug": self.terms.slug, "version": self.version})
 
     @property
-    def permanent_url(self):
+    def permanent_url(self) -> str:
         """Absolute, permanent address that documents cite."""
         return CANONICAL_ORIGIN + self.get_absolute_url()

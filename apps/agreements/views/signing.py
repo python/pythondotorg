@@ -1,6 +1,9 @@
 """Signing actions and one-time invitation links."""
 
+from __future__ import annotations
+
 import logging
+from typing import TYPE_CHECKING, Any, cast
 
 from allauth.account.adapter import get_adapter
 from django.contrib import messages
@@ -17,23 +20,35 @@ from apps.agreements.models import Agreement, SigningLink
 from apps.agreements.views.agreements import detail
 from apps.agreements.views.helpers import _agreement_or_404, file_response, signature_of
 
+if TYPE_CHECKING:
+    from collections.abc import Callable
+    from uuid import UUID
+
+    from django.http import HttpRequest, HttpResponse
+
+    from apps.users.models import User
+
+    class _TrackingRequest(HttpRequest):
+        disable_tracking: bool
+
+
 logger = logging.getLogger(__name__)
 
 
-def _subject_url(request, agreement):
+def _subject_url(request: HttpRequest, agreement: Agreement) -> str:
     if agreement.kind == "custom" and not can_prepare(request.user):
         return agreement.get_absolute_url()
     return agreement.subject_url
 
 
-def _back(request, agreement):
+def _back(request: HttpRequest, agreement: Agreement) -> HttpResponse:
     target = request.POST.get("next", "")
     if url_has_allowed_host_and_scheme(target, allowed_hosts={request.get_host()}, require_https=request.is_secure()):
         return redirect(target)
     return redirect(_subject_url(request, agreement))
 
 
-def _run(request, agreement, action, success):
+def _run(request: HttpRequest, agreement: Agreement, action: Callable[[], object], success: str) -> bool:
     """Run a workflow action, turning a refused transition into a message."""
     try:
         action()
@@ -46,7 +61,7 @@ def _run(request, agreement, action, success):
 
 @login_required
 @require_POST
-def sign(request, pk):
+def sign(request: HttpRequest, pk: UUID) -> HttpResponse:
     """Sign on python.org as the counterparty's account."""
     agreement = _agreement_or_404(request, pk)
     if not agreement.is_counterparty(request.user):
@@ -65,7 +80,7 @@ def sign(request, pk):
 
 @login_required
 @require_POST
-def record_copy(request, pk):
+def record_copy(request: HttpRequest, pk: UUID) -> HttpResponse:
     """Record a signature made outside python.org by uploading the signed copy."""
     agreement = _agreement_or_404(request, pk)
     if not (agreement.is_counterparty(request.user) or is_administrator(request.user)):
@@ -84,7 +99,7 @@ def record_copy(request, pk):
             agreement,
             signature,
             upload=data["signed_copy"],
-            user=request.user,
+            user=cast("User", request.user),
             seen_sha256=data["document_sha256"],
         ),
         "Signed copy recorded. The PSF will now countersign.",
@@ -94,7 +109,7 @@ def record_copy(request, pk):
 
 @login_required
 @require_POST
-def withdraw(request, pk):
+def withdraw(request: HttpRequest, pk: UUID) -> HttpResponse:
     """Withdraw an unsigned offer so its draft can be changed."""
     agreement = _agreement_or_404(request, pk)
     if not (agreement.is_counterparty(request.user) or is_administrator(request.user)):
@@ -103,7 +118,7 @@ def withdraw(request, pk):
     if _run(
         request,
         agreement,
-        lambda: workflow.withdraw(agreement, user=request.user),
+        lambda: workflow.withdraw(agreement, user=cast("User", request.user)),
         "Offer withdrawn.",
     ):
         return redirect(subject_url)
@@ -112,7 +127,7 @@ def withdraw(request, pk):
 
 @administrator_required
 @require_POST
-def send_link(request, pk):
+def send_link(request: HttpRequest, pk: UUID) -> HttpResponse:
     """Email a named signatory a one-time signing link."""
     agreement = _agreement_or_404(request, pk)
     form = SigningLinkForm(request.POST)
@@ -120,7 +135,7 @@ def send_link(request, pk):
         return detail(request, pk, status=400, link_form=form)
     try:
         link, token = workflow.create_signing_link(
-            agreement, name=form.cleaned_data["name"], email=form.cleaned_data["email"], user=request.user
+            agreement, name=form.cleaned_data["name"], email=form.cleaned_data["email"], user=cast("User", request.user)
         )
     except workflow.InvalidTransitionError as exc:
         messages.error(request, str(exc))
@@ -136,7 +151,7 @@ def send_link(request, pk):
     return _back(request, agreement)
 
 
-def _deliver_executed_copy(request, agreement):
+def _deliver_executed_copy(request: HttpRequest, agreement: Agreement) -> bool:
     if not agreement.signer_email:
         messages.warning(
             request,
@@ -159,7 +174,7 @@ def _deliver_executed_copy(request, agreement):
 
 @administrator_required
 @require_POST
-def countersign(request, pk):
+def countersign(request: HttpRequest, pk: UUID) -> HttpResponse:
     """Countersign for the PSF, then email the signatory the executed copy."""
     agreement = _agreement_or_404(request, pk)
     form = CountersignForm(request.POST, request.FILES)
@@ -168,7 +183,11 @@ def countersign(request, pk):
     data = form.cleaned_data
     try:
         agreement = workflow.countersign(
-            agreement, user=request.user, name=data["name"], title=data["title"], upload=data["executed_copy"]
+            agreement,
+            user=cast("User", request.user),
+            name=data["name"],
+            title=data["title"],
+            upload=data["executed_copy"],
         )
     except workflow.InvalidTransitionError as exc:
         messages.error(request, str(exc))
@@ -180,7 +199,7 @@ def countersign(request, pk):
 
 @administrator_required
 @require_POST
-def resend_executed_copy(request, pk):
+def resend_executed_copy(request: HttpRequest, pk: UUID) -> HttpResponse:
     """Retry delivery without applying the PSF signature again."""
     agreement = _agreement_or_404(request, pk)
     if agreement.status != Agreement.Status.EXECUTED:
@@ -192,7 +211,7 @@ def resend_executed_copy(request, pk):
 
 @administrator_required
 @require_POST
-def decline(request, pk):
+def decline(request: HttpRequest, pk: UUID) -> HttpResponse:
     """Decline a signed agreement."""
     agreement = _agreement_or_404(request, pk)
     form = DeclineForm(request.POST)
@@ -201,13 +220,13 @@ def decline(request, pk):
     _run(
         request,
         agreement,
-        lambda: workflow.decline(agreement, user=request.user, reason=form.cleaned_data["reason"]),
+        lambda: workflow.decline(agreement, user=cast("User", request.user), reason=form.cleaned_data["reason"]),
         "Declined.",
     )
     return _back(request, agreement)
 
 
-def _link_response(request, template, context, status=200):
+def _link_response(request: HttpRequest, template: str, context: dict[str, Any], status: int = 200) -> HttpResponse:
     response = render(request, template, context, status=status)
     # Keeps the token out of Referer headers to other sites. "no-referrer" would also make
     # browsers send "Origin: null" on this page's own form, which CSRF protection rejects.
@@ -217,9 +236,9 @@ def _link_response(request, template, context, status=200):
     return response
 
 
-def sign_link(request, token):
+def sign_link(request: HttpRequest, token: str) -> HttpResponse:
     """Review and sign with a one-time emailed link; no python.org account needed."""
-    request.disable_tracking = True
+    cast("_TrackingRequest", request).disable_tracking = True
     link = workflow.find_link(token)
     if link is None or not link.is_usable:
         return _link_response(request, "agreements/sign_link.html", {"unusable": True}, status=410)
@@ -270,9 +289,9 @@ def sign_link(request, token):
     )
 
 
-def sign_link_document(request, token, fmt):
+def sign_link_document(request: HttpRequest, token: str, fmt: str) -> HttpResponse:
     """Download the document a usable signing link points to, to review or sign elsewhere."""
-    request.disable_tracking = True
+    cast("_TrackingRequest", request).disable_tracking = True
     link = workflow.find_link(token)
     if link is None or not link.is_usable or fmt not in documents.RENDERERS:
         raise Http404
@@ -284,9 +303,9 @@ def sign_link_document(request, token, fmt):
     return response
 
 
-def sign_link_terms(request, token, version_id, fmt=None):
+def sign_link_terms(request: HttpRequest, token: str, version_id: int, fmt: str | None = None) -> HttpResponse:
     """Let an invited signer review only the terms cited by their unsigned agreement."""
-    request.disable_tracking = True
+    cast("_TrackingRequest", request).disable_tracking = True
     link = workflow.find_link(token)
     if link is None or not link.is_usable:
         raise Http404

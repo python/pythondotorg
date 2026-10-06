@@ -1,11 +1,20 @@
 """Forms for signing and countersigning agreements."""
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, cast
+
 from django import forms
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 
 from apps.agreements.models import SignedCopy
 from apps.agreements.workflow import Upload
+
+if TYPE_CHECKING:
+    from datetime import date
+
+    from django.core.files.uploadedfile import UploadedFile
 
 
 class _SeenDocument(forms.Form):
@@ -24,18 +33,18 @@ class SignForm(_SeenDocument):
     )
 
 
-def _pdf_upload(file):
+def _pdf_upload(file: UploadedFile | None) -> Upload | None:
     """Return an ``Upload`` for a PDF of at most ``SignedCopy.MAX_BYTES``, or raise ``ValidationError``."""
     if not file:
         return None
-    if file.size > SignedCopy.MAX_BYTES:
+    if cast("int", file.size) > SignedCopy.MAX_BYTES:
         msg = f"Upload at most {SignedCopy.MAX_BYTES // (1024 * 1024)} MB."
         raise ValidationError(msg)
     content = file.read()
     if not content.startswith(b"%PDF-"):
         msg = "Upload the signed copy as a PDF."
         raise ValidationError(msg)
-    return Upload(filename=file.name, content=content)
+    return Upload(filename=cast("str", file.name), content=content)
 
 
 class SignedCopyForm(_SeenDocument):
@@ -50,18 +59,18 @@ class SignedCopyForm(_SeenDocument):
         error_messages={"required": "Confirm that the signed copy is this document, unchanged."}
     )
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         """Keep upload labels distinct from the on-page account-signing form."""
         kwargs.setdefault("auto_id", "id_copy_%s")
         super().__init__(*args, **kwargs)
 
-    def clean_signed_copy(self):
+    def clean_signed_copy(self) -> Upload | None:
         """Accept a PDF only."""
         return _pdf_upload(self.cleaned_data.get("signed_copy"))
 
-    def clean_signed_on(self):
+    def clean_signed_on(self) -> date:
         """Reject signature dates in the future."""
-        signed_on = self.cleaned_data["signed_on"]
+        signed_on: date = self.cleaned_data["signed_on"]
         if signed_on > timezone.localdate():
             msg = "Enter the date the copy was signed; it can't be in the future."
             raise ValidationError(msg)
@@ -89,7 +98,7 @@ class CountersignForm(forms.Form):
         error_messages={"required": "Confirm that you are authorized to sign for the Python Software Foundation."}
     )
 
-    def clean_executed_copy(self):
+    def clean_executed_copy(self) -> Upload | None:
         """Accept a PDF only."""
         return _pdf_upload(self.cleaned_data.get("executed_copy"))
 

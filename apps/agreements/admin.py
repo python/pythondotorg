@@ -1,5 +1,9 @@
 """Manage program configuration and browse immutable signing records."""
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from django.contrib import admin
 from django.contrib.auth.admin import GroupAdmin as BaseGroupAdmin
 from django.contrib.auth.models import Group
@@ -18,6 +22,10 @@ from apps.agreements.models import (
     TermsVersion,
 )
 
+if TYPE_CHECKING:
+    from django.db.models import Model, QuerySet
+    from django.http import HttpRequest
+
 admin.site.unregister(Group)
 
 
@@ -25,15 +33,15 @@ admin.site.unregister(Group)
 class GroupAdmin(BaseGroupAdmin):
     """Reserve role and permission administration for trusted identity admins."""
 
-    def has_add_permission(self, request):
+    def has_add_permission(self, request: HttpRequest) -> bool:
         """Prevent staff from creating groups that confer privileged roles."""
         return request.user.is_superuser and super().has_add_permission(request)
 
-    def has_change_permission(self, request, obj=None):
+    def has_change_permission(self, request: HttpRequest, obj: Group | None = None) -> bool:
         """Protect role names and permissions from delegated group editors."""
         return request.user.is_superuser and super().has_change_permission(request, obj)
 
-    def has_delete_permission(self, request, obj=None):
+    def has_delete_permission(self, request: HttpRequest, obj: Group | None = None) -> bool:
         """Keep delegated staff from deleting roles and the memberships they confer."""
         return request.user.is_superuser and super().has_delete_permission(request, obj)
 
@@ -41,23 +49,23 @@ class GroupAdmin(BaseGroupAdmin):
 class _AgreementAdmin(admin.ModelAdmin):
     """Use agreement groups, never Django's model or superuser permissions."""
 
-    def has_module_permission(self, request):
+    def has_module_permission(self, request: HttpRequest) -> bool:
         return can_prepare(request.user)
 
-    def has_view_permission(self, request, obj=None):
+    def has_view_permission(self, request: HttpRequest, obj: Model | None = None) -> bool:
         return can_prepare(request.user)
 
 
 class _ConfigurationAdmin(_AgreementAdmin):
     """Allow only administrators to create and change configuration."""
 
-    def has_add_permission(self, request):
+    def has_add_permission(self, request: HttpRequest) -> bool:
         return is_administrator(request.user)
 
-    def has_change_permission(self, request, obj=None):
+    def has_change_permission(self, request: HttpRequest, obj: Model | None = None) -> bool:
         return is_administrator(request.user)
 
-    def has_delete_permission(self, request, obj=None):
+    def has_delete_permission(self, request: HttpRequest, obj: Model | None = None) -> bool:
         return False
 
 
@@ -65,17 +73,17 @@ class _ReadOnlyInline(admin.TabularInline):
     extra = 0
     can_delete = False
 
-    def has_view_permission(self, request, obj=None):
+    def has_view_permission(self, request: HttpRequest, obj: Model | None = None) -> bool:
         return can_prepare(request.user)
 
-    def has_delete_permission(self, request, obj=None):
+    def has_delete_permission(self, request: HttpRequest, obj: Model | None = None) -> bool:
         return False
 
-    def has_add_permission(self, request, obj=None):
+    def has_add_permission(self, request: HttpRequest, obj: Model | None = None) -> bool:
         """Leave creating records to the workflow, which checks them."""
         return False
 
-    def has_change_permission(self, request, obj=None):
+    def has_change_permission(self, request: HttpRequest, obj: Model | None = None) -> bool:
         """Keep records unchanged."""
         return False
 
@@ -96,7 +104,7 @@ class TermsAdmin(_ConfigurationAdmin):
     fields = ("slug", "title", "is_public", "under_review")
     inlines = (TermsVersionInline,)
 
-    def get_readonly_fields(self, request, obj=None):
+    def get_readonly_fields(self, request: HttpRequest, obj: Terms | None = None) -> tuple[str, ...]:
         """Keep published addresses and catalog references stable."""
         if obj is not None and obj.versions.exists():
             return ("slug",)
@@ -118,7 +126,7 @@ class SignedCopyInline(_ReadOnlyInline):
     fields = ("kind", "filename", "sha256", "uploaded_by", "uploaded_at")
     readonly_fields = fields
 
-    def get_queryset(self, request):
+    def get_queryset(self, request: HttpRequest) -> QuerySet[SignedCopy]:
         """Leave the file contents in the database."""
         return super().get_queryset(request).defer("content")
 
@@ -140,19 +148,19 @@ class AgreementAdmin(_AgreementAdmin):
     search_fields = ("title", "counterparty_name", "signer_email", "counterparty_account__email")
     inlines = (RevisionInline, SignedCopyInline, SigningLinkInline)
 
-    def get_readonly_fields(self, request, obj=None):
+    def get_readonly_fields(self, request: HttpRequest, obj: Agreement | None = None) -> list[str]:
         """Show everything, change nothing."""
         return [field.name for field in self.model._meta.get_fields() if field.concrete]  # noqa: SLF001 - Django admin pattern requires _meta access
 
-    def has_add_permission(self, request):
+    def has_add_permission(self, request: HttpRequest) -> bool:
         """Agreements are offered from their draft."""
         return False
 
-    def has_change_permission(self, request, obj=None):
+    def has_change_permission(self, request: HttpRequest, obj: Model | None = None) -> bool:
         """Keep immutable records behind the signing workflow."""
         return False
 
-    def has_delete_permission(self, request, obj=None):
+    def has_delete_permission(self, request: HttpRequest, obj: Model | None = None) -> bool:
         """Agreements are records."""
         return False
 
@@ -166,15 +174,15 @@ class CustomContractAdmin(_AgreementAdmin):
     readonly_fields = ("agreement", "created_by", "created", "modified")
     raw_id_fields = ("counterparty_account",)
 
-    def has_add_permission(self, request):
+    def has_add_permission(self, request: HttpRequest) -> bool:
         """Create contracts on the site, where their author is recorded."""
         return False
 
-    def has_change_permission(self, request, obj=None):
+    def has_change_permission(self, request: HttpRequest, obj: Model | None = None) -> bool:
         """Keep edits behind the locked, draft-only site workflow."""
         return False
 
-    def has_delete_permission(self, request, obj=None):
+    def has_delete_permission(self, request: HttpRequest, obj: Model | None = None) -> bool:
         """Discard drafts through the locked site workflow."""
         return False
 
@@ -205,18 +213,18 @@ class OrderAdmin(_AgreementAdmin):
     search_fields = ("legal_name", "customer_account__email")
     inlines = (OrderLineInline,)
 
-    def get_readonly_fields(self, request, obj=None):
+    def get_readonly_fields(self, request: HttpRequest, obj: Order | None = None) -> list[str]:
         """Keep selections and snapshots behind the workflow."""
         return [field.name for field in self.model._meta.fields]  # noqa: SLF001 - Django admin field metadata
 
-    def has_add_permission(self, request):
+    def has_add_permission(self, request: HttpRequest) -> bool:
         """Create orders through the validated builder."""
         return False
 
-    def has_change_permission(self, request, obj=None):
+    def has_change_permission(self, request: HttpRequest, obj: Model | None = None) -> bool:
         """Keep order mutations behind the validated site workflow."""
         return False
 
-    def has_delete_permission(self, request, obj=None):
+    def has_delete_permission(self, request: HttpRequest, obj: Model | None = None) -> bool:
         """Discard drafts through the authorized order page."""
         return False

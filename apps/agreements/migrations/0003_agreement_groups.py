@@ -1,7 +1,15 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from django.db import migrations
 
+if TYPE_CHECKING:
+    from django.apps.registry import Apps
+    from django.db.backends.base.schema import BaseDatabaseSchemaEditor
 
-def create_agreement_groups(apps, schema_editor):
+
+def create_agreement_groups(apps: Apps, schema_editor: BaseDatabaseSchemaEditor) -> None:
     groups = apps.get_model("auth", "Group").objects.using(schema_editor.connection.alias)
     for name in ("Agreements Editors", "Agreements Administrators"):
         groups.get_or_create(name=name)

@@ -11,9 +11,19 @@ documents offered afterwards; a published version never changes, because signed 
 cite it by address and SHA-256.
 """
 
+from __future__ import annotations
+
 import hashlib
 import re
 import uuid
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from django.contrib.auth.models import AnonymousUser
+
+    from apps.agreements.models.orders import Order
+    from apps.agreements.registry import Kind
+    from apps.users.models import User
 
 from django.conf import settings
 from django.db import models
@@ -102,45 +112,45 @@ class Agreement(models.Model):
 
         ordering = ("-offered_at",)
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Return the title and counterparty."""
         return f"{self.title}: {self.counterparty_name}"
 
-    def get_absolute_url(self):
+    def get_absolute_url(self) -> str:
         """Return the agreement page."""
         return reverse("agreements:detail", kwargs={"pk": self.pk})
 
     @property
-    def reference(self):
+    def reference(self) -> str:
         """Use the reference printed in the frozen document, when it has one."""
         match = _DOCUMENT_REFERENCE.search(self.document_markdown)
         return match[1] if match else str(self.pk).split("-")[0].upper()
 
     @cached_property
-    def kind_obj(self):
+    def kind_obj(self) -> Kind[Any]:
         """Return the registered kind."""
         return get_kind(self.kind)
 
     @cached_property
-    def subject(self):
+    def subject(self) -> CustomContract | Order | None:
         """Return the domain object this agreement was offered for, while it still points here."""
         return self.kind_obj.subject(self)
 
     @property
-    def subject_url(self):
+    def subject_url(self) -> str:
         """Where the counterparty and staff follow this agreement: the domain page if there is one."""
         return self.subject.get_absolute_url() if self.subject else self.get_absolute_url()
 
     @property
-    def is_editable(self):
+    def is_editable(self) -> bool:
         """The text can change, and the agreement be signed, only while it awaits signature."""
         return self.status == self.Status.OFFERED
 
-    def is_counterparty(self, user):
+    def is_counterparty(self, user: User | AnonymousUser) -> bool:
         """Whether ``user`` is the account that may sign online."""
         return self.counterparty_account_id is not None and self.counterparty_account_id == user.pk
 
-    def can_view(self, user):
+    def can_view(self, user: User | AnonymousUser) -> bool:
         """Allow agreement groups, the counterparty, and the subject's customer."""
         return can_prepare(user) or self.is_counterparty(user) or self.kind_obj.can_view(user, self)
 
@@ -162,7 +172,7 @@ class AgreementRevision(models.Model):
         ordering = ("-revision",)
         constraints = (models.UniqueConstraint(fields=("agreement", "revision"), name="one_row_per_revision"),)
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Return the agreement and revision."""
         return f"{self.agreement}, revision {self.revision}"
 
@@ -195,7 +205,7 @@ class SignedCopy(models.Model):
         verbose_name_plural = "signed copies"
         constraints = (models.UniqueConstraint(fields=("agreement", "kind"), name="one_signed_copy_of_each_kind"),)
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Return the agreement and kind."""
         return f"{self.agreement}: {self.get_kind_display()}"
 
@@ -220,17 +230,17 @@ class SigningLink(models.Model):
 
         ordering = ("-created_at",)
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Return the recipient."""
         return f"{self.name} <{self.email}>"
 
     @staticmethod
-    def hash_token(token):
+    def hash_token(token: str) -> str:
         """Return the stored form of a token."""
         return hashlib.sha256(token.encode()).hexdigest()
 
     @property
-    def is_usable(self):
+    def is_usable(self) -> bool:
         """Unused, unexpired, and its agreement still awaits signature."""
         return (
             self.used_at is None
@@ -268,15 +278,15 @@ class CustomContract(models.Model):
 
         ordering = ("-created",)
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Return the title and counterparty."""
         return f"{self.title}: {self.counterparty_name}"
 
-    def get_absolute_url(self):
+    def get_absolute_url(self) -> str:
         """Return the draft page, which links to the agreement once offered."""
         return reverse("agreements:custom_detail", kwargs={"pk": self.pk})
 
     @property
-    def status(self):
+    def status(self) -> str:
         """Draft until offered, then the agreement's status."""
         return self.agreement.status if self.agreement else "draft"

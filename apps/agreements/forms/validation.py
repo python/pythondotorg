@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from apps.agreements.documents import EFFECTIVE_DATE, SIGNATURES, render_html
 
 
-def _check_placeholders(markdown, *, required):
+def _check_placeholders(markdown: str, *, required: bool) -> None:
     """Documents carry the signature placeholder exactly once; staff text written elsewhere, never."""
     count = markdown.count(SIGNATURES)
     if required and count != 1:
@@ -16,7 +16,7 @@ def _check_placeholders(markdown, *, required):
         raise ValidationError(msg)
 
 
-def _check_markdown(markdown):
+def _check_markdown(markdown: str) -> None:
     """Report unsupported document content without hiding renderer failures."""
     try:
         render_html(markdown)

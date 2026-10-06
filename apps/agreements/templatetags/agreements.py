@@ -10,7 +10,7 @@ register.filter("money", money)
 register.filter("can_prepare_agreements", can_prepare)
 register.filter("is_agreements_administrator", is_administrator)
 
-STATUSES = {
+STATUSES: dict[str, tuple[str, str]] = {
     "draft": ("neutral", "Draft"),
     "offered": ("notice", "Awaiting signature"),
     "signed": ("notice", "Awaiting countersignature"),
@@ -21,7 +21,7 @@ STATUSES = {
 
 
 @register.inclusion_tag("agreements/_status.html")
-def status_badge(status):
+def status_badge(status: str) -> dict[str, str]:
     """Status pill for an agreement or a draft; an executed agreement reads as Active."""
     tone, label = STATUSES[status]
     return {"tone": tone, "label": label}

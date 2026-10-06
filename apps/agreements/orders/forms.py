@@ -1,5 +1,9 @@
 """Catalog-driven order forms; signature forms are shared with all agreements."""
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, cast
+
 from django import forms
 from django.core.exceptions import ValidationError
 from django.db import transaction
@@ -8,17 +12,30 @@ from apps.agreements.forms.accounts import account_for_email
 from apps.agreements.models import Order, OrderLine
 from apps.agreements.orders.pricing import normalize_params
 
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
+    from django.forms import BoundField
+    from django.http import QueryDict
+
+    from apps.agreements.models import Program
+    from apps.agreements.orders.catalog import Agreement, Catalog, Param
+    from apps.agreements.orders.pricing import ParamValue
+    from apps.users.models import User
+
 MAX_CONTACTS = 5
 MAX_ENTITIES = 50
 MAX_NAME_LENGTH = 100
 
 
-def _lines(value):
+def _lines(value: str | None) -> list[str]:
     return [line.strip() for line in (value or "").splitlines() if line.strip()]
 
 
 class OrderForm(forms.ModelForm):
     """Customer details, contacts, discount eligibility, and selected agreements."""
+
+    instance: Order
 
     agreements = forms.MultipleChoiceField(
         widget=forms.CheckboxSelectMultiple,
@@ -48,12 +65,21 @@ class OrderForm(forms.ModelForm):
             "notices_contact": forms.Textarea(attrs={"rows": 2}),
         }
 
-    def __init__(self, *args, catalog, agreements, can_link_accounts=False, **kwargs):
+    def __init__(
+        self,
+        *args: Any,
+        catalog: Catalog,
+        agreements: dict[str, Agreement],
+        can_link_accounts: bool = False,
+        **kwargs: Any,
+    ) -> None:
         """Configure available selections, account linkage and contact rows."""
         super().__init__(*args, **kwargs)
         self.catalog = catalog
-        self.fields["agreements"].choices = [(a.slug, a.short_name) for a in agreements.values()]
-        self.fields["discount"].choices = [(d.key, d.name) for d in catalog.discounts]
+        cast("forms.MultipleChoiceField", self.fields["agreements"]).choices = [
+            (a.slug, a.short_name) for a in agreements.values()
+        ]
+        cast("forms.ChoiceField", self.fields["discount"]).choices = [(d.key, d.name) for d in catalog.discounts]
         self.fields["covered_entities"].label = catalog.covered_entities_label
         self.fields["covered_entities"].help_text = catalog.covered_entities_help
         self.fields["discount_attestation"].label = catalog.attestation_label
@@ -88,11 +114,11 @@ class OrderForm(forms.ModelForm):
                 required=False, label="Email", initial=contact.get("email")
             )
 
-    def contact_rows(self):
+    def contact_rows(self) -> list[tuple[BoundField, BoundField]]:
         """Pair each contact's fields for the template."""
         return [(self[f"contact_{i}_name"], self[f"contact_{i}_email"]) for i in range(1, MAX_CONTACTS + 1)]
 
-    def clean_covered_entities(self):
+    def clean_covered_entities(self) -> str:
         """Require a bounded list of covered entities."""
         entities = _lines(self.cleaned_data["covered_entities"])
         if not entities:
@@ -106,8 +132,9 @@ class OrderForm(forms.ModelForm):
             raise ValidationError(msg)
         return "\n".join(entities)
 
-    def _clean_contacts(self):
-        contacts, incomplete = [], False
+    def _clean_contacts(self) -> list[dict[str, str]]:
+        contacts: list[dict[str, str]] = []
+        incomplete = False
         for i in range(1, MAX_CONTACTS + 1):
             name = (self.cleaned_data.get(f"contact_{i}_name") or "").strip()
             email = self.cleaned_data.get(f"contact_{i}_email") or ""
@@ -121,14 +148,14 @@ class OrderForm(forms.ModelForm):
             self.add_error("contact_1_name", "Add at least one authorized contact.")
         return contacts
 
-    def clean_customer_account_email(self):
+    def clean_customer_account_email(self) -> User | None:
         """Resolve the supplied address to one customer account."""
         email = self.cleaned_data["customer_account_email"]
         return account_for_email(email) if email else None
 
-    def clean(self):
+    def clean(self) -> dict[str, Any]:
         """Validate discount eligibility and authorized contacts."""
-        cleaned = super().clean()
+        cleaned = cast("dict[str, Any]", super().clean())
         discount = cleaned.get("discount")
         if (
             discount
@@ -145,11 +172,18 @@ class AgreementForm(forms.Form):
 
     tier = forms.ChoiceField(widget=forms.RadioSelect)
 
-    def __init__(self, *args, agreement, line=None, staff=False, **kwargs):
+    def __init__(
+        self,
+        *args: Any,
+        agreement: Agreement,
+        line: OrderLine | None = None,
+        staff: bool = False,
+        **kwargs: Any,
+    ) -> None:
         """Create configured fields and identify inactive conditional parameters."""
-        super().__init__(*args, prefix=agreement.slug, **kwargs)
+        cast("Callable[..., None]", super().__init__)(*args, prefix=agreement.slug, **kwargs)
         self.agreement = agreement
-        self.fields["tier"].choices = [(t.key, t.name) for t in agreement.tiers]
+        cast("forms.ChoiceField", self.fields["tier"]).choices = [(t.key, t.name) for t in agreement.tiers]
         self.initial["tier"] = line.tier if line else agreement.default_tier
         if staff:
             self.fields["special_terms"] = forms.CharField(
@@ -161,7 +195,7 @@ class AgreementForm(forms.Form):
             )
         selected = line.addons if line else {}
         tier = self.data.get(self.add_prefix("tier")) if self.is_bound else self.initial["tier"]
-        self._inactive_parameters = []
+        self._inactive_parameters: list[forms.Field] = []
         for addon in agreement.addons:
             chosen = selected.get(addon.key)
             name = f"addon_{addon.key}"
@@ -179,7 +213,7 @@ class AgreementForm(forms.Form):
                     self._inactive_parameters.append(field)
                 self.fields[f"{name}_{param.key}"] = field
 
-    def full_clean(self):
+    def full_clean(self) -> None:
         """Ignore inactive values when validating, but keep rendered inputs editable."""
         for field in self._inactive_parameters:
             field.disabled = True
@@ -190,14 +224,17 @@ class AgreementForm(forms.Form):
                 field.disabled = False
 
     @staticmethod
-    def _param_field(param, initial):
+    def _param_field(param: Param, initial: ParamValue | None) -> forms.Field:
+        field: forms.Field
         if param.kind == "choice":
             field = forms.ChoiceField(choices=param.choices, required=False, initial=initial or param.choices[0][0])
         elif param.kind == "count":
             field = forms.IntegerField(required=False, min_value=param.minimum, initial=initial)
         elif param.kind == "lines":
             field = forms.CharField(
-                required=False, widget=forms.Textarea(attrs={"rows": 3}), initial="\n".join(initial or [])
+                required=False,
+                widget=forms.Textarea(attrs={"rows": 3}),
+                initial="\n".join(cast("list[str]", initial) or []),
             )
         else:
             field = forms.CharField(required=False, max_length=200, initial=initial)
@@ -205,7 +242,7 @@ class AgreementForm(forms.Form):
         field.widget.attrs["data-param-key"] = param.key
         return field
 
-    def tier_options(self):
+    def tier_options(self) -> list[dict[str, Any]]:
         """Pair every tier with the services and extras its fee includes."""
         return [
             {
@@ -216,13 +253,13 @@ class AgreementForm(forms.Form):
             for tier in self.agreement.tiers
         ]
 
-    def has_included_extras(self):
+    def has_included_extras(self) -> bool:
         """Show the comparison row only when a tier includes something extra."""
         return any(tier.includes for tier in self.agreement.tiers) or any(
             addon.included_in_tiers for addon in self.agreement.addons
         )
 
-    def addon_fields(self):
+    def addon_fields(self) -> list[dict[str, Any]]:
         """Pair each add-on with its checkbox and parameter fields."""
         return [
             {
@@ -233,11 +270,11 @@ class AgreementForm(forms.Form):
             for addon in self.agreement.addons
         ]
 
-    def clean(self):
+    def clean(self) -> dict[str, Any]:
         """Reject unknown selections and normalize active add-on parameters."""
-        cleaned = super().clean()
+        cleaned = cast("dict[str, Any]", super().clean())
         tier = cleaned.get("tier")
-        addons = {}
+        addons: dict[str, dict[str, ParamValue]] = {}
         known = {self.add_prefix(name) for name in self.fields}
         for name in self.data:
             if name.startswith(self.add_prefix("addon_")) and name not in known:
@@ -264,7 +301,15 @@ class AgreementForm(forms.Form):
 class OrderBuilder:
     """An order form and one form for each available agreement."""
 
-    def __init__(self, data=None, *, program, order=None, staff=False, can_link_accounts=False):
+    def __init__(
+        self,
+        data: QueryDict | None = None,
+        *,
+        program: Program,
+        order: Order | None = None,
+        staff: bool = False,
+        can_link_accounts: bool = False,
+    ) -> None:
         """Restrict the builder to the program and any private-order scope."""
         self.order, self.program, self.staff = order, program, staff
         self.can_link_accounts = can_link_accounts
@@ -288,14 +333,18 @@ class OrderBuilder:
         }
 
     @property
-    def chosen(self):
+    def chosen(self) -> list[str]:
         """Return only available, selected agreement slugs."""
         if self.order_form.is_bound:
-            return [slug for slug in self.agreements if slug in self.order_form.data.getlist("agreements")]
+            return [
+                slug
+                for slug in self.agreements
+                if slug in cast("QueryDict", self.order_form.data).getlist("agreements")
+            ]
         return list(self.order_form.initial.get("agreements", []))
 
     @property
-    def parameter_conditions(self):
+    def parameter_conditions(self) -> dict[str, dict[str, dict[str, dict[str, ParamValue]]]]:
         """Declarative field visibility rules for the live builder."""
         return {
             slug: {
@@ -305,20 +354,20 @@ class OrderBuilder:
             for slug, agreement in self.agreements.items()
         }
 
-    def is_valid(self):
+    def is_valid(self) -> bool:
         """Validate customer details and every selected agreement."""
         forms_to_check = [self.order_form, *(self.agreement_forms[slug] for slug in self.chosen)]
         return all([form.is_valid() for form in forms_to_check])  # noqa: C419 - collect every form's errors
 
     @property
-    def has_errors(self):
+    def has_errors(self) -> bool:
         """Report errors from customer details or selected agreements."""
         return bool(self.order_form.errors) or any(self.agreement_forms[slug].errors for slug in self.chosen)
 
     @transaction.atomic
-    def save(self, user):
+    def save(self, user: User) -> Order:
         """Persist the draft and selected lines atomically."""
-        order = self.order_form.save(commit=False)
+        order = cast("Order", self.order_form.save(commit=False))
         order.program = self.program
         if order.created_by_id is None:
             order.created_by = user
