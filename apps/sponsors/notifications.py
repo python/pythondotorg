@@ -39,6 +39,10 @@ class BaseEmailSponsorshipNotification:
 
     def notify(self, **kwargs):
         """Build and send the notification email, returning the delivery count."""
+        return self.get_email(**kwargs).send()
+
+    def get_email(self, **kwargs):
+        """Build the message and its attachments."""
         context = self.get_email_context(**kwargs)
 
         email = EmailMessage(
@@ -50,7 +54,7 @@ class BaseEmailSponsorshipNotification:
         for attachment in self.get_attachments(context):
             email.attach(*attachment)
 
-        return email.send()
+        return email
 
 
 class AppliedSponsorshipNotificationToPSF(BaseEmailSponsorshipNotification):
