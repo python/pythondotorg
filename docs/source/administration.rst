@@ -129,6 +129,12 @@ model permissions, ``is_staff``, and superuser status do not grant agreement-man
 access. Even superusers must join an agreement group. Django admin access additionally
 requires an active staff account; the site workflow does not require ``is_staff``.
 
+Creating or changing Django groups is restricted to superusers, including group names
+and permission assignments. Delegated ``auth.add_group`` and ``auth.change_group``
+permissions do not authorize those writes. Superusers are trusted identity administrators
+who can provision agreement roles; they still need group membership to use the agreements
+workflow themselves.
+
 Authenticated accounts outside both groups receive a permission-denied page for management
 views; anonymous visitors are directed to sign in. Linked customers retain their own
 order and signing rights independently of group membership, as do valid one-time

@@ -1,6 +1,8 @@
 """Manage program configuration and browse immutable signing records."""
 
 from django.contrib import admin
+from django.contrib.auth.admin import GroupAdmin as BaseGroupAdmin
+from django.contrib.auth.models import Group
 
 from apps.agreements.auth import can_prepare, is_administrator
 from apps.agreements.models import (
@@ -15,6 +17,21 @@ from apps.agreements.models import (
     Terms,
     TermsVersion,
 )
+
+admin.site.unregister(Group)
+
+
+@admin.register(Group)
+class GroupAdmin(BaseGroupAdmin):
+    """Reserve role and permission administration for trusted identity admins."""
+
+    def has_add_permission(self, request):
+        """Prevent staff from creating groups that confer privileged roles."""
+        return request.user.is_superuser and super().has_add_permission(request)
+
+    def has_change_permission(self, request, obj=None):
+        """Protect role names and permissions from delegated group editors."""
+        return request.user.is_superuser and super().has_change_permission(request, obj)
 
 
 class _AgreementAdmin(admin.ModelAdmin):
