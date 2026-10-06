@@ -72,9 +72,10 @@ def custom_offer(request, pk):
 
 @permission_required(MANAGE_PERMISSION)
 @require_POST
+@transaction.atomic
 def custom_delete(request, pk):
     """Discard a draft that was never offered."""
-    contract = _custom_or_404(pk)
+    contract = _custom_or_404(pk, for_update=True)
     if contract.agreement_id is not None:
         raise Http404
     contract.delete()
