@@ -2,6 +2,7 @@
 
 import json
 from io import StringIO
+from typing import Any, cast
 from unittest.mock import patch
 
 from django.core.management import call_command
@@ -13,14 +14,14 @@ from apps.agreements.tests.catalog_data import make_program
 
 
 class ProgramImportTests(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.program = make_program(is_public=False)
 
-    def run_import(self, data):
+    def run_import(self, data: dict[str, Any]) -> None:
         with patch("sys.stdin", StringIO(json.dumps(data))):
             call_command("import_agreement_program", "-", stdout=StringIO())
 
-    def test_import_updates_configuration_without_publishing_it(self):
+    def test_import_updates_configuration_without_publishing_it(self) -> None:
         payload = {
             "program": {
                 "slug": self.program.slug,
@@ -33,9 +34,9 @@ class ProgramImportTests(TestCase):
         self.assertEqual(self.program.title, "Updated private offering")
         self.assertFalse(self.program.is_public)
 
-    def test_conflicting_version_rolls_back_metadata_and_program_changes(self):
+    def test_conflicting_version_rolls_back_metadata_and_program_changes(self) -> None:
         terms = Terms.objects.get(slug=next(iter(self.program.catalog.agreements.values())).terms_slug)
-        version = terms.current_version
+        version = cast("TermsVersion", terms.current_version)
         original_title = terms.title
         payload = {
             "terms": [
@@ -53,7 +54,7 @@ class ProgramImportTests(TestCase):
         self.assertEqual(terms.title, original_title)
         self.assertEqual(TermsVersion.objects.get(pk=version.pk).markdown, version.markdown)
 
-    def test_invalid_catalog_does_not_leave_imported_terms_behind(self):
+    def test_invalid_catalog_does_not_leave_imported_terms_behind(self) -> None:
         payload = {
             "terms": [
                 {

@@ -1,6 +1,9 @@
 """Terms visibility remains consistent with public program catalogs."""
 
+from __future__ import annotations
+
 from copy import deepcopy
+from typing import TYPE_CHECKING, cast
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
@@ -11,10 +14,20 @@ from apps.agreements.auth import ADMINISTRATORS, EDITORS
 from apps.agreements.models import Program, Terms, TermsVersion
 from apps.agreements.tests.catalog_data import make_program
 
+if TYPE_CHECKING:
+    from collections.abc import Mapping
+
+    from apps.users.models import User
+
 
 class TermsVisibilityTests(TestCase):
+    administrator: User
+    editor: User
+    program: Program
+    terms: Terms
+
     @classmethod
-    def setUpTestData(cls):
+    def setUpTestData(cls) -> None:
         cls.administrator = get_user_model().objects.create_user(
             "administrator", "administrator@example.org", is_staff=True
         )
@@ -26,13 +39,13 @@ class TermsVisibilityTests(TestCase):
         cls.terms.draft_markdown = "Original working copy."
         cls.terms.save(update_fields=["draft_markdown"])
 
-    def setUp(self):
+    def setUp(self) -> None:
         self.client.force_login(self.administrator)
 
-    def editor_url(self, terms=None):
+    def editor_url(self, terms: Terms | None = None) -> str:
         return reverse("agreements:terms_edit", args=[(terms or self.terms).slug])
 
-    def admin_data(self, terms):
+    def admin_data(self, terms: Terms) -> dict[str, str]:
         versions = list(terms.versions.all())
         data = {
             "title": "Changed title",
@@ -48,7 +61,7 @@ class TermsVisibilityTests(TestCase):
             data[f"versions-{index}-terms"] = str(terms.pk)
         return data
 
-    def site_data(self, action="save"):
+    def site_data(self, action: str = "save") -> dict[str, str]:
         return {
             "markdown": "Changed working copy.",
             "under_review": "on",
@@ -57,21 +70,24 @@ class TermsVisibilityTests(TestCase):
             "action": action,
         }
 
-    def snapshot(self):
+    def snapshot(self) -> dict[str, list[Mapping[str, object]]]:
         return {
             "terms": list(Terms.objects.order_by("pk").values()),
             "versions": list(TermsVersion.objects.order_by("pk").values()),
             "programs": list(Program.objects.order_by("pk").values()),
         }
 
-    def assert_publicly_readable(self, terms=None):
+    def assert_publicly_readable(self, terms: Terms | None = None) -> None:
         terms = terms or self.terms
         anonymous = Client()
         self.assertContains(anonymous.get(self.program.get_absolute_url()), self.program.title)
         self.assertContains(anonymous.get(terms.get_absolute_url()), "These are fictional test terms.")
-        self.assertContains(anonymous.get(terms.current_version.get_absolute_url()), "These are fictional test terms.")
+        self.assertContains(
+            anonymous.get(cast("TermsVersion", terms.current_version).get_absolute_url()),
+            "These are fictional test terms.",
+        )
 
-    def test_admin_rejects_hiding_each_cited_terms_without_saving_changes(self):
+    def test_admin_rejects_hiding_each_cited_terms_without_saving_changes(self) -> None:
         before = self.snapshot()
         for slug in ("studio-terms", "workshop-terms"):
             with self.subTest(slug=slug):
@@ -84,7 +100,7 @@ class TermsVisibilityTests(TestCase):
                 self.assertEqual(self.snapshot(), before)
                 self.assert_publicly_readable(terms)
 
-    def test_site_save_and_publish_reject_hiding_cited_terms_without_saving_changes(self):
+    def test_site_save_and_publish_reject_hiding_cited_terms_without_saving_changes(self) -> None:
         before = self.snapshot()
         for action in ("save", "publish"):
             with self.subTest(action=action):
@@ -99,7 +115,7 @@ class TermsVisibilityTests(TestCase):
                 self.assertEqual(self.snapshot(), before)
                 self.assert_publicly_readable()
 
-    def test_admin_can_create_private_terms_without_references(self):
+    def test_admin_can_create_private_terms_without_references(self) -> None:
         response = self.client.post(
             reverse("admin:agreements_terms_add"),
             {
@@ -115,7 +131,7 @@ class TermsVisibilityTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertFalse(Terms.objects.get(slug="new-terms").is_public)
 
-    def test_admin_can_hide_unreferenced_published_terms(self):
+    def test_admin_can_hide_unreferenced_published_terms(self) -> None:
         terms = Terms.objects.create(slug="unreferenced", title="Unreferenced terms", is_public=True)
         version = TermsVersion.objects.create(terms=terms, version="original", markdown="Original terms.")
         response = self.client.post(reverse("admin:agreements_terms_change", args=[terms.pk]), self.admin_data(terms))
@@ -126,7 +142,7 @@ class TermsVisibilityTests(TestCase):
         self.assertEqual(terms.versions.get(), version)
         self.assertEqual(Client().get(terms.get_absolute_url()).status_code, 404)
 
-    def test_site_can_hide_terms_cited_only_by_private_program_on_save_or_publish(self):
+    def test_site_can_hide_terms_cited_only_by_private_program_on_save_or_publish(self) -> None:
         self.program.is_public = False
         self.program.save(update_fields=["is_public"])
         for action in ("save", "publish"):
@@ -143,7 +159,7 @@ class TermsVisibilityTests(TestCase):
                 if action == "publish":
                     self.assertEqual(self.terms.versions.get(version="changed").markdown, "Changed working copy.")
 
-    def test_every_referencing_program_must_be_private_before_hiding_terms(self):
+    def test_every_referencing_program_must_be_private_before_hiding_terms(self) -> None:
         definition = deepcopy(self.program.definition)
         definition["agreements"][1]["terms_slug"] = self.terms.slug
         other = Program.objects.create(
@@ -163,7 +179,7 @@ class TermsVisibilityTests(TestCase):
         self.terms.refresh_from_db()
         self.assertFalse(self.terms.is_public)
 
-    def test_editor_can_save_draft_without_visibility_field(self):
+    def test_editor_can_save_draft_without_visibility_field(self) -> None:
         self.client.force_login(self.editor)
         page = self.client.get(self.editor_url())
         self.assertNotIn("is_public", page.context["form"].fields)

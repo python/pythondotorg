@@ -1,7 +1,10 @@
 """Order behavior against an entirely fictional, database-configured program."""
 
+from __future__ import annotations
+
 from copy import deepcopy
 from io import BytesIO
+from typing import TYPE_CHECKING, Any, cast
 from urllib.parse import urlsplit
 from zipfile import ZipFile
 
@@ -21,12 +24,26 @@ from apps.agreements.orders import documents
 from apps.agreements.registry import get_kind
 from apps.agreements.tests.catalog_data import make_program
 
+if TYPE_CHECKING:
+    from collections.abc import Iterable
+
+    from django.http import HttpResponseRedirect
+    from django.test.client import _MonkeyPatchedWSGIResponse
+
+    from apps.users.models import User as UserModel
+
 User = get_user_model()
-STUDIO = {"tier": "plus"}
-WORKSHOP = {"tier": "basic", "addons": {"kit": {}}}
+STUDIO: dict[str, Any] = {"tier": "plus"}
+WORKSHOP: dict[str, Any] = {"tier": "basic", "addons": {"kit": {}}}
 
 
-def make_order(user, agreements=None, *, program, **overrides):
+def make_order(
+    user: UserModel,
+    agreements: dict[str, dict[str, Any]] | None = None,
+    *,
+    program: Program,
+    **overrides: Any,
+) -> Order:
     order = Order.objects.create(
         **{
             "program": program,
@@ -48,17 +65,17 @@ def make_order(user, agreements=None, *, program, **overrides):
     return order
 
 
-def make_officer(username="pat"):
+def make_officer(username: str = "pat") -> UserModel:
     officer = User.objects.create_user(username, f"{username}@example.org", "password")
     officer.groups.add(Group.objects.get_or_create(name=ADMINISTRATORS)[0])
     return officer
 
 
-def reload(order):
+def reload(order: Order) -> Order:
     return Order.objects.select_related("agreement", "program").get(pk=order.pk)
 
 
-def payload(agreements=("studio", "workshop"), **overrides):
+def payload(agreements: Iterable[str] = ("studio", "workshop"), **overrides: Any) -> dict[str, Any]:
     return {
         "agreements": list(agreements),
         "legal_name": "Example Workshops, Inc.",
@@ -78,11 +95,11 @@ def payload(agreements=("studio", "workshop"), **overrides):
 
 
 class OrderFormDocumentTests(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.user = User.objects.create_user("ada", "ada@example.com", "password")
         self.program = make_program()
 
-    def test_recurring_and_one_time_fees_are_separate_without_repricing_snapshots(self):
+    def test_recurring_and_one_time_fees_are_separate_without_repricing_snapshots(self) -> None:
         order = make_order(
             self.user,
             {
@@ -116,9 +133,9 @@ class OrderFormDocumentTests(TestCase):
         self.assertEqual(frozen.fee_totals, {"annual": 7527, "one_time": 75})
         self.assertEqual(documents.order_form_markdown(reload(order)), original)
         self.assertEqual(list(frozen.agreements.values_list("pricing", flat=True)), snapshots)
-        self.assertEqual(reload(order).agreement.document_markdown, agreement.document_markdown)
+        self.assertEqual(cast("Agreement", reload(order).agreement).document_markdown, agreement.document_markdown)
 
-    def test_order_reference_stays_consistent_across_offers_and_withdrawal(self):
+    def test_order_reference_stays_consistent_across_offers_and_withdrawal(self) -> None:
         order = make_order(self.user, program=self.program)
         agreement = workflow.offer(get_kind("order"), order, user=self.user)
         self.assertEqual(agreement.reference, order.reference)
@@ -131,7 +148,7 @@ class OrderFormDocumentTests(TestCase):
         self.assertNotEqual(agreement.pk, replacement.pk)
         self.assertEqual(replacement.reference, order.reference)
 
-    def test_legacy_fingerprints_are_hidden_without_changing_the_signed_document(self):
+    def test_legacy_fingerprints_are_hidden_without_changing_the_signed_document(self) -> None:
         order = make_order(self.user, {"studio": STUDIO, "workshop": WORKSHOP}, program=self.program)
         agreement = workflow.offer(get_kind("order"), order, user=self.user)
         versions = list(agreement.terms_versions.all())
@@ -176,7 +193,7 @@ class OrderFormDocumentTests(TestCase):
         self.assertEqual(agreement.document_sha256, stored_hash)
         self.assertEqual(agreement.revisions.get(revision=agreement.revision).markdown, legacy)
 
-    def test_customer_input_renders_as_literal_text(self):
+    def test_customer_input_renders_as_literal_text(self) -> None:
         order = make_order(
             self.user,
             program=self.program,
@@ -191,22 +208,22 @@ class OrderFormDocumentTests(TestCase):
         self.assertIn("$x$", html)
         self.assertIn("*BOLD* | PIPE</strong></th>", html)
 
-    def test_pdf_renders_names_outside_pdflatex_coverage(self):
+    def test_pdf_renders_names_outside_pdflatex_coverage(self) -> None:
         order = make_order(self.user, program=self.program, legal_name="株式会社テスト − Ωmega")  # noqa: RUF001
         pdf = agreement_documents.render_pdf(documents.order_form_markdown(order))
         self.assertTrue(pdf.startswith(b"%PDF"))
 
-    def test_order_form_cites_terms_instead_of_repeating_them(self):
+    def test_order_form_cites_terms_instead_of_repeating_them(self) -> None:
         order = make_order(self.user, {"studio": STUDIO, "workshop": WORKSHOP}, program=self.program)
         text = documents.order_form_markdown(order)
         for line in order.agreement_list:
-            version = line.cited_terms
+            version = cast("TermsVersion", line.cited_terms)
             with self.subTest(agreement=line.agreement):
                 self.assertIn(f"<{version.permanent_url}>", text)
                 self.assertNotIn(version.markdown.strip(), text)
                 self.assertEqual(self.client.get(urlsplit(version.permanent_url).path).status_code, 200)
 
-    def test_order_form_lists_only_services_the_tier_includes(self):
+    def test_order_form_lists_only_services_the_tier_includes(self) -> None:
         for tier, planning in (("basic", False), ("plus", True)):
             with self.subTest(tier=tier):
                 order = make_order(self.user, {"studio": {"tier": tier}}, program=self.program)
@@ -214,7 +231,7 @@ class OrderFormDocumentTests(TestCase):
                 self.assertIn("Studio access", text)
                 self.assertEqual("Studio planning" in text, planning)
 
-    def test_document_uses_configured_copy_and_all_parameter_kinds(self):
+    def test_document_uses_configured_copy_and_all_parameter_kinds(self) -> None:
         order = make_order(
             self.user,
             {
@@ -236,17 +253,17 @@ class OrderFormDocumentTests(TestCase):
 
 
 class OnlineSigningTests(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.customer = User.objects.create_user("ada", "ada@example.com", "password")
         self.other = User.objects.create_user("eve", "eve@example.com", "password")
         self.officer = make_officer()
         self.program = make_program()
         self.order = make_order(self.customer, {"studio": STUDIO, "workshop": WORKSHOP}, program=self.program)
 
-    def preview_sha256(self):
+    def preview_sha256(self) -> str:
         return agreement_documents.sha256(documents.compose_order_form_markdown(reload(self.order)))
 
-    def sign(self, **data):
+    def sign(self, **data: Any) -> _MonkeyPatchedWSGIResponse:
         self.client.force_login(self.customer)
         return self.client.post(
             reverse("agreements:order_sign", args=[self.order.pk]),
@@ -259,10 +276,10 @@ class OnlineSigningTests(TestCase):
             },
         )
 
-    def countersign(self, user):
+    def countersign(self, user: UserModel) -> _MonkeyPatchedWSGIResponse:
         self.client.force_login(user)
         return self.client.post(
-            reverse("agreements:countersign", args=[reload(self.order).agreement.pk]),
+            reverse("agreements:countersign", args=[cast("Agreement", reload(self.order).agreement).pk]),
             {
                 "name": "Pat Officer",
                 "title": "Executive Director",
@@ -270,14 +287,14 @@ class OnlineSigningTests(TestCase):
             },
         )
 
-    def test_signing_freezes_document_catalog_terms_and_fees(self):
+    def test_signing_freezes_document_catalog_terms_and_fees(self) -> None:
         self.sign()
         order = reload(self.order)
         original = documents.order_form_markdown(order)
         self.assertEqual(order.status, Agreement.Status.SIGNED)
-        self.assertEqual(order.agreement.signature_method, Agreement.SignatureMethod.ACCOUNT)
-        self.assertEqual(order.agreement.signer_email, "ada@example.com")
-        self.assertEqual(order.agreement.terms_versions.count(), 2)
+        self.assertEqual(cast("Agreement", order.agreement).signature_method, Agreement.SignatureMethod.ACCOUNT)
+        self.assertEqual(cast("Agreement", order.agreement).signer_email, "ada@example.com")
+        self.assertEqual(cast("Agreement", order.agreement).terms_versions.count(), 2)
         old_total = order.fee_totals
         definition = deepcopy(self.program.definition)
         definition["agreements"][0]["title"] = "Changed service"
@@ -291,30 +308,30 @@ class OnlineSigningTests(TestCase):
         self.assertEqual(frozen.program_title, "Example Services")
         self.assertEqual(frozen.agreement_list[0].agreement_obj.title, "Example Studio Services")
 
-    def test_signing_refuses_a_changed_preview_without_leaving_an_offer(self):
+    def test_signing_refuses_a_changed_preview_without_leaving_an_offer(self) -> None:
         seen = self.preview_sha256()
         OrderLine.objects.filter(order=self.order, agreement="studio").update(tier="max")
         self.sign(document_sha256=seen)
         self.assertIsNone(reload(self.order).agreement)
 
-    def test_signing_requires_acceptance(self):
+    def test_signing_requires_acceptance(self) -> None:
         self.assertEqual(self.sign(accept="").status_code, 400)
         self.assertIsNone(reload(self.order).agreement)
 
-    def test_signed_orders_cannot_be_edited(self):
+    def test_signed_orders_cannot_be_edited(self) -> None:
         self.sign()
         response = self.client.post(reverse("agreements:order_edit", args=[self.order.pk]), {"legal_name": "X"})
         self.assertRedirects(response, self.order.get_absolute_url())
         self.assertEqual(reload(self.order).legal_name, "Example Workshops, Inc.")
 
-    def test_orders_and_documents_are_private(self):
+    def test_orders_and_documents_are_private(self) -> None:
         self.client.force_login(self.other)
         self.assertEqual(self.client.get(self.order.get_absolute_url()).status_code, 404)
         self.assertEqual(
             self.client.get(reverse("agreements:order_document", args=[self.order.pk, "pdf"])).status_code, 404
         )
 
-    def test_only_the_psf_countersigns(self):
+    def test_only_the_psf_countersigns(self) -> None:
         self.sign()
         self.countersign(self.customer)
         self.assertEqual(reload(self.order).status, Agreement.Status.SIGNED)
@@ -327,13 +344,13 @@ class OnlineSigningTests(TestCase):
 
 
 class StaffHandlingTests(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.officer = make_officer()
         self.customer = User.objects.create_user("ada", "ada@example.com", "password")
         self.program = make_program()
         self.client.force_login(self.officer)
 
-    def test_staff_queue_requires_login_and_agreement_group(self):
+    def test_staff_queue_requires_login_and_agreement_group(self) -> None:
         url = reverse("agreements:staff_orders")
         self.assertEqual(self.client.get(url).status_code, 200)
         self.client.force_login(self.customer)
@@ -341,14 +358,14 @@ class StaffHandlingTests(TestCase):
         self.client.logout()
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
-        self.assertIn("next=" + url, response.url)
+        self.assertIn("next=" + url, cast("HttpResponseRedirect", response).url)
 
-    def post(self, **overrides):
+    def post(self, **overrides: Any) -> _MonkeyPatchedWSGIResponse:
         return self.client.post(
             reverse("agreements:order_create", args=[self.program.slug]), payload(["studio"], **overrides)
         )
 
-    def test_staff_order_assigned_to_an_account_can_be_signed_by_that_customer(self):
+    def test_staff_order_assigned_to_an_account_can_be_signed_by_that_customer(self) -> None:
         self.post(customer_account_email="ADA@example.com", **{"studio-special_terms": "Net 45 payment."})
         order = Order.objects.get()
         self.assertEqual(order.created_by, self.officer)
@@ -368,18 +385,18 @@ class StaffHandlingTests(TestCase):
         )
         self.assertEqual(reload(order).status, Agreement.Status.SIGNED)
 
-    def test_unknown_customer_account_is_rejected(self):
+    def test_unknown_customer_account_is_rejected(self) -> None:
         self.assertEqual(self.post(customer_account_email="nobody@example.com").status_code, 200)
         self.assertFalse(Order.objects.exists())
 
-    def test_order_without_an_account_can_be_signed_offline(self):
+    def test_order_without_an_account_can_be_signed_offline(self) -> None:
         self.post()
         order = Order.objects.get()
         self.assertIsNone(order.customer_account)
         self.client.post(reverse("agreements:order_offer", args=[order.pk]))
         offered = reload(order)
         self.client.post(
-            reverse("agreements:record_copy", args=[offered.agreement.pk]),
+            reverse("agreements:record_copy", args=[cast("Agreement", offered.agreement).pk]),
             {
                 "signed_copy": SimpleUploadedFile(
                     "signed.pdf", b"%PDF-1.4 signed copy", content_type="application/pdf"
@@ -389,15 +406,15 @@ class StaffHandlingTests(TestCase):
                 "signer_email": "ada@example.com",
                 "signed_on": timezone.localdate(),
                 "matches": "on",
-                "document_sha256": offered.agreement.document_sha256,
+                "document_sha256": cast("Agreement", offered.agreement).document_sha256,
             },
         )
         signed = reload(order)
         self.assertEqual(signed.status, Agreement.Status.SIGNED)
-        self.assertEqual(signed.agreement.signature_method, Agreement.SignatureMethod.OFFLINE)
-        self.assertEqual(signed.agreement.signer_email, "ada@example.com")
+        self.assertEqual(cast("Agreement", signed.agreement).signature_method, Agreement.SignatureMethod.OFFLINE)
+        self.assertEqual(cast("Agreement", signed.agreement).signer_email, "ada@example.com")
 
-    def test_staff_document_edit_is_the_version_the_customer_signs(self):
+    def test_staff_document_edit_is_the_version_the_customer_signs(self) -> None:
         order = make_order(self.customer, program=self.program)
         agreement = workflow.offer(get_kind("order"), order, user=self.officer)
         edited = agreement.document_markdown.replace(
@@ -427,7 +444,7 @@ class StaffHandlingTests(TestCase):
         self.assertEqual(agreement.status, Agreement.Status.SIGNED)
         self.assertIn("forty-five (45) days", agreement.document_markdown)
 
-    def test_withdrawing_reopens_the_order_at_current_prices(self):
+    def test_withdrawing_reopens_the_order_at_current_prices(self) -> None:
         order = make_order(self.customer, program=self.program)
         agreement = workflow.offer(get_kind("order"), order, user=self.officer)
         definition = deepcopy(self.program.definition)
@@ -439,12 +456,12 @@ class StaffHandlingTests(TestCase):
         self.assertTrue(reopened.is_editable)
         self.assertEqual(reopened.fee_totals["annual"], 2600)
 
-    def test_published_terms_apply_only_to_orders_offered_afterwards(self):
+    def test_published_terms_apply_only_to_orders_offered_afterwards(self) -> None:
         terms = Terms.objects.get(slug="studio-terms")
         before = make_order(self.customer, program=self.program)
         workflow.offer(get_kind("order"), before, user=self.officer)
         TermsVersion.objects.create(
-            terms=terms, version="example-2", markdown=terms.current_version.markdown + "\nNew."
+            terms=terms, version="example-2", markdown=cast("TermsVersion", terms.current_version).markdown + "\nNew."
         )
         later = make_order(self.customer, program=self.program)
         self.assertIn("/example-2/", documents.order_form_markdown(later))
@@ -452,30 +469,30 @@ class StaffHandlingTests(TestCase):
 
 
 class OrderBuilderTests(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.user = User.objects.create_user("ada", "ada@example.com", "password")
         self.program = make_program()
         self.client.force_login(self.user)
         self.url = reverse("agreements:order_create", args=[self.program.slug])
 
-    def test_one_order_combines_agreements_in_catalog_order(self):
+    def test_one_order_combines_agreements_in_catalog_order(self) -> None:
         self.client.post(self.url, payload(["workshop", "studio"]))
         order = Order.objects.get()
         self.assertEqual([line.agreement for line in order.agreement_list], ["studio", "workshop"])
         self.assertEqual(order.agreements.get(agreement="workshop").tier, "max")
         self.assertEqual(order.customer_account, self.user)
 
-    def test_customers_cannot_set_special_terms(self):
+    def test_customers_cannot_set_special_terms(self) -> None:
         self.client.post(self.url, payload(**{"studio-special_terms": "Free forever"}))
         self.assertEqual(Order.objects.get().agreements.get(agreement="studio").special_terms, "")
 
-    def test_unticking_an_agreement_removes_it_from_the_draft(self):
+    def test_unticking_an_agreement_removes_it_from_the_draft(self) -> None:
         self.client.post(self.url, payload())
         order = Order.objects.get()
         self.client.post(reverse("agreements:order_edit", args=[order.pk]), payload(["studio"]))
         self.assertEqual(list(order.agreements.values_list("agreement", flat=True)), ["studio"])
 
-    def test_unchosen_agreements_and_inactive_parameters_are_not_validated(self):
+    def test_unchosen_agreements_and_inactive_parameters_are_not_validated(self) -> None:
         self.client.post(
             self.url,
             payload(
@@ -492,17 +509,17 @@ class OrderBuilderTests(TestCase):
         self.assertEqual(line.agreement, "workshop")
         self.assertEqual(line.addons, {"reports": {"mode": "periodic"}})
 
-    def test_at_least_one_agreement_is_required(self):
+    def test_at_least_one_agreement_is_required(self) -> None:
         self.client.post(self.url, payload([]))
         self.assertFalse(Order.objects.exists())
 
-    def test_discount_attestation_comes_from_configuration(self):
+    def test_discount_attestation_comes_from_configuration(self) -> None:
         self.client.post(self.url, payload(discount="eligible"))
         self.assertFalse(Order.objects.exists())
         self.client.post(self.url, payload(discount="eligible", discount_attestation="on"))
         self.assertEqual(Order.objects.get().fee_totals["annual"], 6300)
 
-    def test_selected_parameters_are_required(self):
+    def test_selected_parameters_are_required(self) -> None:
         self.client.post(self.url, payload(**{"workshop-addon_schedule": "on"}))
         self.assertFalse(Order.objects.exists())
         self.client.post(
@@ -512,11 +529,11 @@ class OrderBuilderTests(TestCase):
             Order.objects.get().agreements.get(agreement="workshop").addons, {"schedule": {"window": "Weekends"}}
         )
 
-    def test_included_addons_do_not_charge_twice(self):
+    def test_included_addons_do_not_charge_twice(self) -> None:
         self.client.post(self.url, payload(["workshop"], **{"workshop-addon_advisor": "on"}))
         self.assertEqual(Order.objects.get().fee_totals["annual"], 7200)
 
-    def test_quote_totals_combined_agreements_and_one_time_charges(self):
+    def test_quote_totals_combined_agreements_and_one_time_charges(self) -> None:
         response = self.client.get(
             reverse("agreements:quote", args=[self.program.slug]),
             {
@@ -534,7 +551,7 @@ class OrderBuilderTests(TestCase):
         self.assertEqual(quote["display"]["total_annual"], "$7,602")
         self.assertEqual(quote["display"]["term_total"], "$22,656")
 
-    def test_quote_expands_exponent_fees_for_client_cent_arithmetic(self):
+    def test_quote_expands_exponent_fees_for_client_cent_arithmetic(self) -> None:
         definition = deepcopy(self.program.definition)
         workshop = definition["agreements"][1]
         workshop["tiers"][0]["annual_fee"] = "1E+4"
@@ -559,7 +576,7 @@ class OrderBuilderTests(TestCase):
         self.assertEqual(line["items"][0]["amount"], "1000")
         self.assertEqual(quote["display"]["total_annual"], "$11,000")
 
-    def test_quote_rejects_invalid_counts_instead_of_silently_pricing_zero(self):
+    def test_quote_rejects_invalid_counts_instead_of_silently_pricing_zero(self) -> None:
         response = self.client.get(
             reverse("agreements:quote", args=[self.program.slug]),
             {
@@ -573,7 +590,7 @@ class OrderBuilderTests(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertNotIn("display", response.json())
 
-    def test_builder_accepts_another_agreement_and_configured_default(self):
+    def test_builder_accepts_another_agreement_and_configured_default(self) -> None:
         definition = deepcopy(self.program.definition)
         third = deepcopy(definition["agreements"][0])
         third.update(slug="atelier", title="Example Atelier Services", short_name="Atelier", default_tier="max")
@@ -586,7 +603,7 @@ class OrderBuilderTests(TestCase):
         self.assertEqual(order.agreements.get().agreement, "atelier")
         self.assertEqual(order.fee_totals["annual"], 4800)
 
-    def test_removed_catalog_selection_can_be_corrected_before_signing(self):
+    def test_removed_catalog_selection_can_be_corrected_before_signing(self) -> None:
         order = make_order(self.user, program=self.program)
         definition = deepcopy(self.program.definition)
         definition["agreements"] = definition["agreements"][1:]
@@ -601,7 +618,7 @@ class OrderBuilderTests(TestCase):
         self.client.post(reverse("agreements:order_edit", args=[order.pk]), payload(["workshop"]))
         self.assertEqual(reload(order).agreements.get().agreement, "workshop")
 
-    def test_removed_tier_requires_draft_review_but_leaves_offered_order_intact(self):
+    def test_removed_tier_requires_draft_review_but_leaves_offered_order_intact(self) -> None:
         draft = make_order(self.user, program=self.program)
         offered = make_order(self.user, program=self.program)
         workflow.offer(get_kind("order"), offered, user=self.user)
@@ -623,7 +640,7 @@ class OrderBuilderTests(TestCase):
 
 
 class PrivateProgramTests(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.program = make_program(is_public=False)
         self.customer = User.objects.create_user("ada", "ada@example.com", "password")
         self.other = User.objects.create_user("eve", "eve@example.com", "password")
@@ -632,7 +649,7 @@ class PrivateProgramTests(TestCase):
         self.create_url = reverse("agreements:order_create", args=[self.program.slug])
         self.quote_url = reverse("agreements:quote", args=[self.program.slug])
 
-    def test_catalog_paths_are_hidden_even_from_assigned_customers(self):
+    def test_catalog_paths_are_hidden_even_from_assigned_customers(self) -> None:
         for user in (None, self.other, self.customer):
             with self.subTest(user=user):
                 if user:
@@ -645,7 +662,7 @@ class PrivateProgramTests(TestCase):
                 self.assertEqual(self.client.post(self.create_url, payload()).status_code, 404)
         self.assertEqual(Order.objects.count(), 1)
 
-    def test_staff_can_browse_and_prepare_private_orders(self):
+    def test_staff_can_browse_and_prepare_private_orders(self) -> None:
         self.client.force_login(self.officer)
         self.assertContains(self.client.get(self.program.get_absolute_url()), "Example Workshop Services")
         self.assertEqual(
@@ -653,7 +670,7 @@ class PrivateProgramTests(TestCase):
         )
         self.assertEqual(Order.objects.filter(customer_account=self.customer).count(), 2)
 
-    def test_assigned_customer_can_edit_quote_and_sign_existing_order_only(self):
+    def test_assigned_customer_can_edit_quote_and_sign_existing_order_only(self) -> None:
         self.client.force_login(self.customer)
         self.assertEqual(self.client.get(self.order.get_absolute_url()).status_code, 200)
         page = self.client.get(reverse("agreements:order_edit", args=[self.order.pk]))
@@ -661,12 +678,15 @@ class PrivateProgramTests(TestCase):
         self.assertEqual(set(page.context["builder"].agreement_forms), {"studio"})
         quote = self.client.get(
             self.quote_url,
-            {
-                "order": self.order.pk,
-                "agreements": ["studio"],
-                "discount": "none",
-                "studio-tier": "max",
-            },
+            cast(
+                "dict[str, Any]",
+                {
+                    "order": self.order.pk,
+                    "agreements": ["studio"],
+                    "discount": "none",
+                    "studio-tier": "max",
+                },
+            ),
         )
         self.assertEqual(quote.json()["display"]["total_annual"], "$4,800")
         self.client.post(
@@ -685,7 +705,7 @@ class PrivateProgramTests(TestCase):
         )
         self.assertEqual(reload(self.order).status, Agreement.Status.SIGNED)
 
-    def test_customer_cannot_add_an_unselected_private_agreement(self):
+    def test_customer_cannot_add_an_unselected_private_agreement(self) -> None:
         self.client.force_login(self.customer)
         self.client.post(reverse("agreements:order_edit", args=[self.order.pk]), payload())
         self.assertEqual(list(self.order.agreements.values_list("agreement", flat=True)), ["studio"])
@@ -693,7 +713,7 @@ class PrivateProgramTests(TestCase):
         self.assertEqual(quote.status_code, 400)
         self.assertNotContains(quote, "Workshop", status_code=400)
 
-    def test_order_query_parameter_cannot_bypass_authorization(self):
+    def test_order_query_parameter_cannot_bypass_authorization(self) -> None:
         for user in (None, self.other):
             with self.subTest(user=user):
                 if user:
@@ -705,7 +725,7 @@ class PrivateProgramTests(TestCase):
         self.client.force_login(self.customer)
         self.assertEqual(self.client.get(self.quote_url, {"order": "not-an-order"}).status_code, 404)
 
-    def test_private_customer_reads_only_terms_selected_for_their_order(self):
+    def test_private_customer_reads_only_terms_selected_for_their_order(self) -> None:
         self.client.force_login(self.customer)
         self.assertEqual(self.client.get(reverse("agreements:terms", args=["studio-terms"])).status_code, 200)
         self.assertEqual(self.client.get(reverse("agreements:terms", args=["workshop-terms"])).status_code, 404)

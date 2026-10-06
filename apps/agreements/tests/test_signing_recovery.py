@@ -1,4 +1,5 @@
 from smtplib import SMTPException
+from typing import cast
 from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
@@ -9,18 +10,18 @@ from django.test import TestCase
 from django.urls import reverse
 
 from apps.agreements import workflow
-from apps.agreements.models import Agreement, SigningLink
+from apps.agreements.models import Agreement, CustomContract, SigningLink
 from apps.agreements.tests.test_agreements import PDF, make_officer, offer_contract
 
 
 class SigningRecoveryTests(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.officer = make_officer()
         self.customer = get_user_model().objects.create_user("customer", "customer@example.com", "password")
         self.agreement = offer_contract(self.officer, counterparty_account=self.customer)
         self.client.force_login(self.customer)
 
-    def signature_data(self):
+    def signature_data(self) -> dict[str, str]:
         return {
             "accept": "on",
             "signer_name": "Customer",
@@ -28,13 +29,13 @@ class SigningRecoveryTests(TestCase):
             "document_sha256": self.agreement.document_sha256,
         }
 
-    def test_custom_customer_sign_returns_to_accessible_agreement(self):
+    def test_custom_customer_sign_returns_to_accessible_agreement(self) -> None:
         response = self.client.post(reverse("agreements:sign", args=[self.agreement.pk]), self.signature_data())
         self.assertRedirects(response, self.agreement.get_absolute_url())
         self.agreement.refresh_from_db()
         self.assertEqual(self.agreement.status, Agreement.Status.SIGNED)
 
-    def test_custom_customer_upload_returns_to_accessible_agreement(self):
+    def test_custom_customer_upload_returns_to_accessible_agreement(self) -> None:
         response = self.client.post(
             reverse("agreements:record_copy", args=[self.agreement.pk]),
             {
@@ -51,8 +52,8 @@ class SigningRecoveryTests(TestCase):
         self.agreement.refresh_from_db()
         self.assertEqual(self.agreement.signature_method, Agreement.SignatureMethod.OFFLINE)
 
-    def test_custom_customer_withdrawal_keeps_the_record_accessible(self):
-        contract = self.agreement.subject
+    def test_custom_customer_withdrawal_keeps_the_record_accessible(self) -> None:
+        contract = cast("CustomContract", self.agreement.subject)
         response = self.client.post(reverse("agreements:withdraw", args=[self.agreement.pk]))
         self.assertRedirects(response, self.agreement.get_absolute_url())
         self.agreement.refresh_from_db()
@@ -60,13 +61,13 @@ class SigningRecoveryTests(TestCase):
         self.assertEqual(self.agreement.status, Agreement.Status.WITHDRAWN)
         self.assertIsNone(contract.agreement_id)
 
-    def test_custom_staff_withdrawal_returns_to_the_editable_draft(self):
-        contract = self.agreement.subject
+    def test_custom_staff_withdrawal_returns_to_the_editable_draft(self) -> None:
+        contract = cast("CustomContract", self.agreement.subject)
         self.client.force_login(self.officer)
         response = self.client.post(reverse("agreements:withdraw", args=[self.agreement.pk]))
         self.assertRedirects(response, contract.get_absolute_url())
 
-    def test_failed_invitation_does_not_leave_a_pending_link_and_can_be_retried(self):
+    def test_failed_invitation_does_not_leave_a_pending_link_and_can_be_retried(self) -> None:
         self.client.force_login(self.officer)
         previous, previous_token = workflow.create_signing_link(
             self.agreement, name="Previous Signer", email="previous@example.com", user=self.officer
@@ -79,7 +80,7 @@ class SigningRecoveryTests(TestCase):
         self.assertEqual(mail.outbox, [])
         self.assertIn(ERROR, [message.level for message in get_messages(response.wsgi_request)])
         self.assertEqual(list(self.agreement.signing_links.values_list("pk", flat=True)), [previous.pk])
-        self.assertTrue(workflow.find_link(previous_token).is_usable)
+        self.assertTrue(cast("SigningLink", workflow.find_link(previous_token)).is_usable)
         self.agreement.refresh_from_db()
         self.assertEqual(self.agreement.status, Agreement.Status.OFFERED)
 
@@ -90,7 +91,7 @@ class SigningRecoveryTests(TestCase):
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].to, [data["email"]])
 
-    def test_empty_recipient_execution_and_resend_do_not_claim_email_delivery(self):
+    def test_empty_recipient_execution_and_resend_do_not_claim_email_delivery(self) -> None:
         self.customer.email = ""
         self.customer.save(update_fields=["email"])
         response = self.client.post(reverse("agreements:sign", args=[self.agreement.pk]), self.signature_data())
@@ -121,7 +122,7 @@ class SigningRecoveryTests(TestCase):
         self.agreement.refresh_from_db()
         self.assertEqual(self.agreement.countersigned_at, signed_at)
 
-    def test_delivery_can_be_retried_without_changing_the_countersignature(self):
+    def test_delivery_can_be_retried_without_changing_the_countersignature(self) -> None:
         self.client.force_login(self.officer)
         for target, error in (
             ("apps.agreements.notifications.render_pdf", RuntimeError("renderer unavailable")),
@@ -157,7 +158,7 @@ class SigningRecoveryTests(TestCase):
                 self.assertEqual(mail.outbox[0].to, [self.customer.email])
                 self.assertEqual(mail.outbox[0].attachments[0].mimetype, "application/pdf")
 
-    def test_resending_requires_staff_an_executed_agreement_and_post(self):
+    def test_resending_requires_staff_an_executed_agreement_and_post(self) -> None:
         agreement = workflow.sign(
             self.agreement,
             workflow.Signature("Customer", "Director", self.customer.email),
@@ -175,13 +176,13 @@ class SigningRecoveryTests(TestCase):
         self.assertEqual(self.client.post(url).status_code, 302)
         self.assertEqual(mail.outbox, [])
 
-    def test_edit_during_link_submission_refreshes_the_document_and_digest_together(self):
+    def test_edit_during_link_submission_refreshes_the_document_and_digest_together(self) -> None:
         link, token = workflow.create_signing_link(
             self.agreement, name="Customer", email=self.customer.email, user=self.officer
         )
         find_link = workflow.find_link
 
-        def edit_after_loading_link(value):
+        def edit_after_loading_link(value: str) -> SigningLink | None:
             loaded = find_link(value)
             workflow.edit(
                 self.agreement,

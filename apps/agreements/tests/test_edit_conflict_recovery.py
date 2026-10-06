@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 from unittest.mock import patch
 
 from django.contrib.messages import ERROR, get_messages
@@ -10,9 +13,16 @@ from apps.agreements.models import Agreement
 from apps.agreements.tests.test_agreements import make_officer, offer_contract
 from apps.agreements.views.helpers import _agreement_or_404
 
+if TYPE_CHECKING:
+    from collections.abc import Mapping
+    from uuid import UUID
+
+    from django.http import HttpRequest
+    from django.test.client import _MonkeyPatchedWSGIResponse
+
 
 class EditConflictRecoveryTests(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.officer = make_officer()
         self.client.force_login(self.officer)
         self.agreement = offer_contract(self.officer)
@@ -23,7 +33,7 @@ class EditConflictRecoveryTests(TestCase):
         self.proposed = self.agreement.document_markdown + "\nProposed <replacement> & additions.\n"
         self.note = "Preserve my <note> & reason"
 
-    def save_concurrent_edit(self, markdown):
+    def save_concurrent_edit(self, markdown: str) -> None:
         self.agreement = workflow.edit(
             self.agreement,
             markdown=markdown,
@@ -32,16 +42,16 @@ class EditConflictRecoveryTests(TestCase):
             base_sha256=self.agreement.document_sha256,
         )
 
-    def post_edit(self, markdown, base_sha256):
+    def post_edit(self, markdown: str, base_sha256: str) -> _MonkeyPatchedWSGIResponse:
         return self.client.post(
             self.url,
             {"markdown": markdown, "note": self.note, "base_sha256": base_sha256, "save": ""},
         )
 
-    def history(self):
+    def history(self) -> list[Mapping[str, object]]:
         return list(self.agreement.revisions.values())
 
-    def conflict_response(self):
+    def conflict_response(self) -> _MonkeyPatchedWSGIResponse:
         self.save_concurrent_edit(self.current)
         history = self.history()
         response = self.post_edit(self.proposed, self.base_sha256)
@@ -53,7 +63,7 @@ class EditConflictRecoveryTests(TestCase):
         self.assertEqual(self.history(), history)
         return response
 
-    def test_reviewed_replacement_can_be_saved_without_losing_submitted_work(self):
+    def test_reviewed_replacement_can_be_saved_without_losing_submitted_work(self) -> None:
         response = self.conflict_response()
         form = response.context["form"]
         self.assertEqual(form["markdown"].value(), self.proposed)
@@ -78,7 +88,7 @@ class EditConflictRecoveryTests(TestCase):
         self.assertEqual(self.agreement.revisions.get(revision=2).markdown, self.current)
         self.assertEqual(self.agreement.revisions.count(), 3)
 
-    def test_another_edit_after_review_conflicts_again(self):
+    def test_another_edit_after_review_conflicts_again(self) -> None:
         response = self.conflict_response()
         reviewed_sha256 = response.context["form"]["base_sha256"].value()
         newest = self.current + "\nAnother concurrent change.\n"
@@ -98,8 +108,8 @@ class EditConflictRecoveryTests(TestCase):
         self.assertEqual(response.context["form"]["base_sha256"].value(), self.agreement.document_sha256)
         self.assertContains(response, escape(newest), status_code=409)
 
-    def test_conflict_reloads_changes_committed_after_view_loaded_agreement(self):
-        def load_then_edit(request, pk):
+    def test_conflict_reloads_changes_committed_after_view_loaded_agreement(self) -> None:
+        def load_then_edit(request: HttpRequest, pk: UUID) -> Agreement:
             loaded = _agreement_or_404(request, pk)
             self.save_concurrent_edit(self.current)
             return loaded
@@ -113,14 +123,14 @@ class EditConflictRecoveryTests(TestCase):
         self.assertContains(response, escape(self.current), status_code=409)
         self.assertEqual(self.agreement.revisions.count(), 2)
 
-    def sign(self):
+    def sign(self) -> None:
         workflow.sign(
             self.agreement,
             workflow.Signature("Grace Hopper", "CTO", "grace@example.com"),
             seen_sha256=self.agreement.document_sha256,
         )
 
-    def assert_signed_document_unchanged(self, history):
+    def assert_signed_document_unchanged(self, history: list[Mapping[str, object]]) -> None:
         self.agreement.refresh_from_db()
         self.assertEqual(self.agreement.status, Agreement.Status.SIGNED)
         self.assertEqual(self.agreement.document_markdown, self.current)
@@ -128,7 +138,7 @@ class EditConflictRecoveryTests(TestCase):
         self.assertEqual(self.agreement.revision, 2)
         self.assertEqual(self.history(), history)
 
-    def test_signing_after_review_prevents_replacement(self):
+    def test_signing_after_review_prevents_replacement(self) -> None:
         response = self.conflict_response()
         reviewed_sha256 = response.context["form"]["base_sha256"].value()
         history = self.history()
@@ -139,12 +149,12 @@ class EditConflictRecoveryTests(TestCase):
         self.assertRedirects(response, self.agreement.get_absolute_url())
         self.assert_signed_document_unchanged(history)
 
-    def test_signing_after_view_loaded_agreement_prevents_replacement(self):
+    def test_signing_after_view_loaded_agreement_prevents_replacement(self) -> None:
         response = self.conflict_response()
         reviewed_sha256 = response.context["form"]["base_sha256"].value()
         history = self.history()
 
-        def load_then_sign(request, pk):
+        def load_then_sign(request: HttpRequest, pk: UUID) -> Agreement:
             loaded = _agreement_or_404(request, pk)
             self.sign()
             return loaded

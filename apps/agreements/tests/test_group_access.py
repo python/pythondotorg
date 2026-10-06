@@ -15,7 +15,7 @@ from apps.agreements.tests.test_agreements import PDF, make_officer, offer_contr
 
 
 class SigningGroupAccessTests(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.administrator = make_officer()
         users = get_user_model().objects
         self.customer = users.create_user("customer", "customer@example.com", "password")
@@ -32,7 +32,7 @@ class SigningGroupAccessTests(TestCase):
         self.permissions_only.user_permissions.set(Permission.objects.filter(content_type__app_label="agreements"))
         self.agreement = offer_contract(self.administrator, counterparty_account=self.customer)
 
-    def test_staff_superuser_and_direct_permissions_do_not_grant_record_access(self):
+    def test_staff_superuser_and_direct_permissions_do_not_grant_record_access(self) -> None:
         copy = SignedCopy.objects.create(
             agreement=self.agreement,
             kind=SignedCopy.Kind.CUSTOMER,
@@ -56,7 +56,7 @@ class SigningGroupAccessTests(TestCase):
                     404,
                 )
 
-    def test_editor_can_read_but_cannot_modify_or_send_an_offer(self):
+    def test_editor_can_read_but_cannot_modify_or_send_an_offer(self) -> None:
         self.client.force_login(self.editor)
         page = self.client.get(self.agreement.get_absolute_url())
         self.assertContains(page, self.agreement.counterparty_name)
@@ -100,7 +100,7 @@ class SigningGroupAccessTests(TestCase):
         self.assertFalse(self.agreement.signed_copies.exists())
         self.assertEqual(mail.outbox, [])
 
-    def test_only_administrators_can_countersign_decline_or_resend(self):
+    def test_only_administrators_can_countersign_decline_or_resend(self) -> None:
         signed = workflow.sign(
             self.agreement,
             workflow.Signature("Customer", "Director", self.customer.email),
@@ -141,7 +141,7 @@ class SigningGroupAccessTests(TestCase):
                 )
         self.assertEqual(len(mail.outbox), 1)
 
-    def test_role_removal_revokes_access_even_for_the_offer_creator(self):
+    def test_role_removal_revokes_access_even_for_the_offer_creator(self) -> None:
         self.client.force_login(self.administrator)
         self.assertContains(self.client.get(self.agreement.get_absolute_url()), self.agreement.counterparty_name)
         self.administrator.groups.clear()
@@ -159,7 +159,7 @@ class SigningGroupAccessTests(TestCase):
         )
         self.assertFalse(self.agreement.signing_links.exists())
 
-    def test_customer_and_anonymous_link_rights_do_not_require_group_membership(self):
+    def test_customer_and_anonymous_link_rights_do_not_require_group_membership(self) -> None:
         self.client.force_login(self.customer)
         self.assertContains(self.client.get(self.agreement.get_absolute_url()), self.agreement.counterparty_name)
         self.assertEqual(self.client.get(reverse("agreements:queue")).status_code, 403)
@@ -188,7 +188,7 @@ class SigningGroupAccessTests(TestCase):
         self.assertIsNotNone(link.used_at)
         self.assertEqual(self.client.get(url).status_code, 410)
 
-    def test_inactive_group_member_cannot_use_management_views(self):
+    def test_inactive_group_member_cannot_use_management_views(self) -> None:
         self.administrator.is_active = False
         self.administrator.save(update_fields=["is_active"])
         self.client.force_login(self.administrator)

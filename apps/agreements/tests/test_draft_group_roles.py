@@ -1,6 +1,9 @@
 """Group-only authorization for draft authoring and read-only record administration."""
 
+from __future__ import annotations
+
 import json
+from typing import TYPE_CHECKING, cast
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group, Permission
@@ -13,10 +16,26 @@ from apps.agreements.tests.catalog_data import make_program
 from apps.agreements.tests.test_agreements import offer_contract
 from apps.agreements.tests.test_orders import make_order
 
+if TYPE_CHECKING:
+    from apps.users.models import User
+
 
 class DraftGroupRoleTests(TestCase):
+    administrator: User
+    editor: User
+    staff: User
+    superuser: User
+    permission_only: User
+    customer: User
+    terms: Terms
+    version: TermsVersion
+    contract: CustomContract
+    program: Program
+    order: Order
+    agreement: Agreement
+
     @classmethod
-    def setUpTestData(cls):
+    def setUpTestData(cls) -> None:
         users = get_user_model().objects
         cls.administrator = users.create_user("administrator", "administrator@example.org", is_staff=True)
         cls.administrator.groups.add(Group.objects.get_or_create(name=ADMINISTRATORS)[0])
@@ -43,20 +62,20 @@ class DraftGroupRoleTests(TestCase):
             cls.administrator, title="Example offered contract", terms=cls.terms, counterparty_account=cls.customer
         )
 
-    def terms_url(self):
+    def terms_url(self) -> str:
         return reverse("agreements:terms_edit", args=[self.terms.slug])
 
-    def contract_data(self):
+    def contract_data(self) -> dict[str, str]:
         return {"title": "Updated example", "counterparty_name": "Example Company", "body_markdown": "Updated draft"}
 
-    def assert_terms_unchanged(self):
+    def assert_terms_unchanged(self) -> None:
         self.terms.refresh_from_db()
         self.assertEqual(self.terms.draft_markdown, "Original draft")
         self.assertFalse(self.terms.is_public)
         self.assertTrue(self.terms.under_review)
         self.assertEqual(self.terms.versions.count(), 1)
 
-    def test_editor_saves_and_previews_only_draft_text(self):
+    def test_editor_saves_and_previews_only_draft_text(self) -> None:
         self.client.force_login(self.editor)
         response = self.client.get(self.terms_url())
         self.assertContains(response, 'value="save"')
@@ -78,7 +97,7 @@ class DraftGroupRoleTests(TestCase):
         self.assertTrue(self.terms.under_review)
         self.assertEqual(self.terms.versions.count(), 1)
 
-    def test_editor_forged_publication_and_configuration_posts_are_forbidden(self):
+    def test_editor_forged_publication_and_configuration_posts_are_forbidden(self) -> None:
         self.client.force_login(self.editor)
         for payload in (
             {"action": "publish", "version": "v2", "notes": "Changed"},
@@ -94,7 +113,7 @@ class DraftGroupRoleTests(TestCase):
                 self.assertEqual(response.status_code, 403)
                 self.assert_terms_unchanged()
 
-    def test_administrator_can_publish_and_configure_terms(self):
+    def test_administrator_can_publish_and_configure_terms(self) -> None:
         self.client.force_login(self.administrator)
         response = self.client.get(self.terms_url())
         self.assertContains(response, 'value="publish"')
@@ -116,7 +135,7 @@ class DraftGroupRoleTests(TestCase):
         self.assertFalse(self.terms.under_review)
         self.assertEqual(published.published_by, self.administrator)
 
-    def test_editor_can_create_edit_and_discard_custom_drafts_without_staff_status(self):
+    def test_editor_can_create_edit_and_discard_custom_drafts_without_staff_status(self) -> None:
         self.editor.is_staff = False
         self.editor.save(update_fields=["is_staff"])
         self.client.force_login(self.editor)
@@ -139,7 +158,7 @@ class DraftGroupRoleTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertFalse(CustomContract.objects.filter(pk=self.contract.pk).exists())
 
-    def test_only_administrator_can_offer_custom_draft(self):
+    def test_only_administrator_can_offer_custom_draft(self) -> None:
         url = reverse("agreements:custom_offer", args=[self.contract.pk])
         for user in (self.editor, self.staff, self.superuser, self.permission_only):
             with self.subTest(user=user.username):
@@ -153,11 +172,11 @@ class DraftGroupRoleTests(TestCase):
         response = self.client.post(url)
         self.contract.refresh_from_db()
         self.assertIsNotNone(self.contract.agreement_id)
-        self.assertRedirects(response, self.contract.agreement.get_absolute_url())
+        self.assertRedirects(response, cast("Agreement", self.contract.agreement).get_absolute_url())
 
-    def test_offered_custom_edit_redirects_editor_to_readable_record_without_mutation(self):
+    def test_offered_custom_edit_redirects_editor_to_readable_record_without_mutation(self) -> None:
         self.client.force_login(self.editor)
-        contract = self.agreement.subject
+        contract = cast("CustomContract", self.agreement.subject)
         url = reverse("agreements:custom_edit", args=[contract.pk])
         for method in (self.client.get, self.client.post):
             response = method(url, self.contract_data())
@@ -167,7 +186,7 @@ class DraftGroupRoleTests(TestCase):
         self.assertEqual(contract.title, "Example offered contract")
         self.assertEqual(self.agreement.revision, 1)
 
-    def test_ungrouped_staff_superuser_and_permission_holder_cannot_author(self):
+    def test_ungrouped_staff_superuser_and_permission_holder_cannot_author(self) -> None:
         for user in (self.staff, self.superuser, self.permission_only):
             self.client.force_login(user)
             urls = (
@@ -201,11 +220,13 @@ class DraftGroupRoleTests(TestCase):
             self.assertEqual(self.contract.body_markdown, "Original draft")
             self.assertEqual(CustomContract.objects.count(), 2)
 
-    def test_revoked_authors_and_offerers_cannot_read_private_terms(self):
+    def test_revoked_authors_and_offerers_cannot_read_private_terms(self) -> None:
         self.administrator.groups.clear()
         self.client.force_login(self.administrator)
         for terms in (self.terms, Terms.objects.get(slug="studio-terms")):
-            self.assertEqual(self.client.get(terms.current_version.get_absolute_url()).status_code, 404)
+            self.assertEqual(
+                self.client.get(cast("TermsVersion", terms.current_version).get_absolute_url()).status_code, 404
+            )
         self.assertEqual(self.client.get(self.terms_url()).status_code, 403)
         self.editor.groups.clear()
         self.client.force_login(self.editor)
@@ -218,7 +239,7 @@ class DraftGroupRoleTests(TestCase):
         self.assertContains(self.client.get(self.version.get_absolute_url()), "Original published text.")
         self.assertEqual(self.client.get(Terms.objects.get(slug="studio-terms").get_absolute_url()).status_code, 200)
 
-    def test_admin_module_and_view_permissions_use_only_groups(self):
+    def test_admin_module_and_view_permissions_use_only_groups(self) -> None:
         instances = (self.terms, self.program, self.contract, self.agreement, self.order)
         for user in (self.editor, self.administrator, self.staff, self.superuser, self.permission_only):
             allowed = user in (self.editor, self.administrator)
@@ -237,7 +258,7 @@ class DraftGroupRoleTests(TestCase):
                     response = self.client.get(reverse(f"admin:agreements_{name}_change", args=[instance.pk]))
                     self.assertEqual(response.status_code, 200 if allowed else 403)
 
-    def test_group_members_can_view_record_inlines_without_model_permissions(self):
+    def test_group_members_can_view_record_inlines_without_model_permissions(self) -> None:
         for user in (self.editor, self.administrator):
             self.client.force_login(user)
             self.assertFalse(user.user_permissions.exists())
@@ -254,7 +275,7 @@ class DraftGroupRoleTests(TestCase):
                     ]
                     self.assertIn(expected, shown)
 
-    def test_admin_configuration_rejects_forged_writes_without_administrator_group(self):
+    def test_admin_configuration_rejects_forged_writes_without_administrator_group(self) -> None:
         original_definition = self.program.definition
         forged_definition = {**original_definition, "order_title": "Unauthorized"}
         for user in (self.editor, self.staff, self.superuser, self.permission_only):
@@ -290,7 +311,7 @@ class DraftGroupRoleTests(TestCase):
             self.assert_terms_unchanged()
             self.assertEqual(self.program.definition, original_definition)
 
-    def test_administrator_can_create_terms_and_change_program_configuration(self):
+    def test_administrator_can_create_terms_and_change_program_configuration(self) -> None:
         self.client.force_login(self.administrator)
         response = self.client.post(
             reverse("admin:agreements_terms_add"),
@@ -323,7 +344,7 @@ class DraftGroupRoleTests(TestCase):
         self.assertEqual(self.program.title, "Updated example program")
         self.assertTrue(self.program.is_public)
 
-    def test_all_groups_and_superusers_cannot_mutate_admin_records(self):
+    def test_all_groups_and_superusers_cannot_mutate_admin_records(self) -> None:
         for user in (self.editor, self.administrator, self.staff, self.superuser, self.permission_only):
             self.client.force_login(user)
             for instance in (self.agreement, self.contract, self.order):

@@ -1,9 +1,15 @@
 """Fictional catalog data shared by agreement and order behavior tests."""
 
+from __future__ import annotations
+
 from copy import deepcopy
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from apps.agreements.models import Program
 
 
-def _tier(key, name, fee, fair_use):
+def _tier(key: str, name: str, fee: str, fair_use: int) -> dict[str, Any]:
     return {
         "key": key,
         "name": name,
@@ -13,15 +19,17 @@ def _tier(key, name, fee, fair_use):
     }
 
 
-def _fixed(amount, recurring=True):
+def _fixed(amount: str, recurring: bool = True) -> dict[str, Any]:
     return {"type": "fixed", "amount": amount, "recurring": recurring}
 
 
-def _quantity(parameter, amount, **kwargs):
+def _quantity(parameter: str, amount: str, **kwargs: Any) -> dict[str, Any]:
     return {"type": "quantity", "parameter": parameter, "unit_amount": amount, "recurring": False, **kwargs}
 
 
-def _addon(key, name, pricing, params=None, **kwargs):
+def _addon(
+    key: str, name: str, pricing: dict[str, Any], params: list[dict[str, Any]] | None = None, **kwargs: Any
+) -> dict[str, Any]:
     return {
         "key": key,
         "name": name,
@@ -33,7 +41,7 @@ def _addon(key, name, pricing, params=None, **kwargs):
     }
 
 
-CATALOG_DATA = {
+CATALOG_DATA: dict[str, Any] = {
     "order_title": "Example service order",
     "order_intro": "Select the example services for your organization.",
     "covered_entities_label": "Covered workspaces",
@@ -185,7 +193,7 @@ CATALOG_DATA = {
 }
 
 
-def make_program(*, is_public=True):
+def make_program(*, is_public: bool = True) -> Program:
     """Create a program and published terms; each caller gets independent JSON data."""
     from apps.agreements.models import Program, Terms, TermsVersion
 

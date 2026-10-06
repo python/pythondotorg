@@ -1,5 +1,7 @@
 """Order management is granted by named groups, independently of customer rights."""
 
+from typing import cast
+
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
@@ -19,7 +21,7 @@ User = get_user_model()
 
 
 class OrderGroupRoleTests(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.editor = User.objects.create_user("editor", "editor@example.org", "password")
         self.editors = Group.objects.get_or_create(name=EDITORS)[0]
         self.editor.groups.add(self.editors)
@@ -31,7 +33,7 @@ class OrderGroupRoleTests(TestCase):
         self.quote_url = reverse("agreements:quote", args=[self.program.slug])
         self.create_url = reverse("agreements:order_create", args=[self.program.slug])
 
-    def test_both_groups_can_read_private_catalogs_and_all_order_queues(self):
+    def test_both_groups_can_read_private_catalogs_and_all_order_queues(self) -> None:
         for user in (self.editor, self.administrator):
             with self.subTest(user=user.username):
                 self.client.force_login(user)
@@ -43,7 +45,7 @@ class OrderGroupRoleTests(TestCase):
                 self.assertEqual(self.client.get(self.quote_url, payload(["studio"])).status_code, 200)
                 self.assertContains(self.client.get(self.order.get_absolute_url()), "All orders")
 
-    def test_editor_can_create_edit_and_discard_unoffered_orders(self):
+    def test_editor_can_create_edit_and_discard_unoffered_orders(self) -> None:
         self.client.force_login(self.editor)
         response = self.client.post(
             self.create_url,
@@ -70,7 +72,7 @@ class OrderGroupRoleTests(TestCase):
         self.assertEqual(self.client.post(reverse("agreements:order_delete", args=[created.pk])).status_code, 302)
         self.assertFalse(Order.objects.filter(pk=created.pk).exists())
 
-    def test_editor_cannot_offer_or_sign_for_the_linked_customer(self):
+    def test_editor_cannot_offer_or_sign_for_the_linked_customer(self) -> None:
         self.client.force_login(self.editor)
         self.assertTrue(self.order.can_edit(self.editor))
         self.assertFalse(self.order.can_offer(self.editor))
@@ -82,16 +84,16 @@ class OrderGroupRoleTests(TestCase):
         self.assertEqual(self.client.post(reverse("agreements:order_sign", args=[self.order.pk])).status_code, 404)
         self.assertIsNone(reload(self.order).agreement)
 
-    def test_administrator_can_offer_for_another_customer(self):
+    def test_administrator_can_offer_for_another_customer(self) -> None:
         self.client.force_login(self.administrator)
         self.assertTrue(self.order.can_offer(self.administrator))
         self.assertContains(self.client.get(self.order.get_absolute_url()), "Make ready to sign")
         self.assertEqual(self.client.post(self.offer_url).status_code, 302)
         order = reload(self.order)
         self.assertEqual(order.status, Agreement.Status.OFFERED)
-        self.assertEqual(order.agreement.counterparty_account, self.customer)
+        self.assertEqual(cast("Agreement", order.agreement).counterparty_account, self.customer)
 
-    def test_editor_cannot_revise_offered_documents_or_use_staff_signing_controls(self):
+    def test_editor_cannot_revise_offered_documents_or_use_staff_signing_controls(self) -> None:
         agreement = workflow.offer(get_kind("order"), self.order, user=self.administrator)
         self.client.force_login(self.editor)
         page = self.client.get(self.order.get_absolute_url())
@@ -110,9 +112,9 @@ class OrderGroupRoleTests(TestCase):
                 self.assertEqual(response.status_code, 403)
         self.assertEqual(self.client.post(self.offer_url).status_code, 404)
         self.assertEqual(self.client.post(reverse("agreements:order_delete", args=[self.order.pk])).status_code, 404)
-        self.assertEqual(reload(self.order).agreement.document_sha256, agreement.document_sha256)
+        self.assertEqual(cast("Agreement", reload(self.order).agreement).document_sha256, agreement.document_sha256)
 
-    def test_staff_superuser_and_direct_permissions_do_not_grant_management_access(self):
+    def test_staff_superuser_and_direct_permissions_do_not_grant_management_access(self) -> None:
         staff = User.objects.create_user("staff", "staff@example.org", "password", is_staff=True)
         superuser = User.objects.create_superuser("root", "root@example.org", "password")
         permitted = User.objects.create_user("permitted", "permitted@example.org", "password")
@@ -137,7 +139,7 @@ class OrderGroupRoleTests(TestCase):
                 self.assertEqual(self.client.post(self.offer_url).status_code, 404)
                 self.assertNotContains(self.client.get(reverse("agreements:program_list")), "All orders")
 
-    def test_revoked_creator_loses_draft_and_offered_order_access(self):
+    def test_revoked_creator_loses_draft_and_offered_order_access(self) -> None:
         self.editor.groups.add(Group.objects.get(name=ADMINISTRATORS))
         offered = make_order(self.editor, program=self.program, customer_account=self.customer)
         agreement = workflow.offer(get_kind("order"), offered, user=self.editor)
@@ -163,7 +165,7 @@ class OrderGroupRoleTests(TestCase):
         self.assertEqual(self.client.get(self.program.get_absolute_url()).status_code, 404)
         self.assertEqual(self.client.get(self.quote_url, payload(["studio"])).status_code, 404)
 
-    def test_editor_linked_to_the_order_keeps_customer_offer_rights(self):
+    def test_editor_linked_to_the_order_keeps_customer_offer_rights(self) -> None:
         own = make_order(self.editor, program=self.program)
         self.client.force_login(self.editor)
         self.assertTrue(own.can_offer(self.editor))
@@ -171,12 +173,12 @@ class OrderGroupRoleTests(TestCase):
         self.assertEqual(self.client.post(reverse("agreements:order_offer", args=[own.pk])).status_code, 302)
         self.assertEqual(reload(own).status, Agreement.Status.OFFERED)
 
-    def test_linked_customer_can_offer_and_sign_without_any_group(self):
+    def test_linked_customer_can_offer_and_sign_without_any_group(self) -> None:
         self.client.force_login(self.customer)
         self.assertTrue(self.order.can_offer(self.customer))
         self.assertContains(self.client.get(self.order.get_absolute_url()), "Make ready to sign")
         self.assertEqual(self.client.post(self.offer_url).status_code, 302)
-        agreement = reload(self.order).agreement
+        agreement = cast("Agreement", reload(self.order).agreement)
         page = self.client.get(self.order.get_absolute_url())
         self.assertContains(page, "Sign on python.org")
         self.assertNotContains(page, "Send signing link")
@@ -194,7 +196,7 @@ class OrderGroupRoleTests(TestCase):
         )
         self.assertEqual(reload(self.order).status, Agreement.Status.SIGNED)
 
-    def test_revoked_group_member_keeps_linked_customer_draft_rights(self):
+    def test_revoked_group_member_keeps_linked_customer_draft_rights(self) -> None:
         own = make_order(self.editor, program=self.program)
         self.editor.groups.remove(self.editors)
         self.client.force_login(self.editor)

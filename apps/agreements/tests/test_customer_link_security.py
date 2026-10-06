@@ -1,5 +1,9 @@
 """Account linkage is administered separately from draft preparation."""
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, cast
+
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.test import TestCase
@@ -12,10 +16,24 @@ from apps.agreements.orders import documents
 from apps.agreements.tests.catalog_data import make_program
 from apps.agreements.tests.test_orders import make_order, payload, reload
 
+if TYPE_CHECKING:
+    from django.test.client import _MonkeyPatchedWSGIResponse
+
+    from apps.agreements.models import Program
+    from apps.users.models import User
+
 
 class CustomerLinkSecurityTests(TestCase):
+    administrator: User
+    editor: User
+    customer: User
+    accomplice: User
+    program: Program
+    order: Order
+    contract: CustomContract
+
     @classmethod
-    def setUpTestData(cls):
+    def setUpTestData(cls) -> None:
         users = get_user_model().objects
         cls.administrator = users.create_user("administrator", "administrator@example.org")
         cls.administrator.groups.add(Group.objects.get_or_create(name=ADMINISTRATORS)[0])
@@ -33,14 +51,14 @@ class CustomerLinkSecurityTests(TestCase):
             created_by=cls.administrator,
         )
 
-    def assert_link_field(self, url, name, *, shown):
+    def assert_link_field(self, url: str, name: str, *, shown: bool) -> _MonkeyPatchedWSGIResponse:
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertIs(name in response.context["form"].fields, shown)
         (self.assertContains if shown else self.assertNotContains)(response, f'name="{name}"')
         return response
 
-    def assert_order_actions_denied(self, order):
+    def assert_order_actions_denied(self, order: Order) -> None:
         for user in (self.editor, self.accomplice):
             with self.subTest(actor=user.username):
                 self.client.force_login(user)
@@ -51,7 +69,7 @@ class CustomerLinkSecurityTests(TestCase):
                     self.assertEqual(response.status_code, 404)
         self.assertIsNone(reload(order).agreement)
 
-    def contract_data(self, **overrides):
+    def contract_data(self, **overrides: Any) -> dict[str, Any]:
         return {
             "title": "Updated example contract",
             "counterparty_name": "Updated Example Company",
@@ -59,7 +77,7 @@ class CustomerLinkSecurityTests(TestCase):
             **overrides,
         }
 
-    def test_editor_created_orders_stay_unlinked_with_or_without_forged_accounts(self):
+    def test_editor_created_orders_stay_unlinked_with_or_without_forged_accounts(self) -> None:
         url = reverse("agreements:order_create", args=[self.program.slug])
         for public in (False, True):
             self.program.is_public = public
@@ -80,7 +98,7 @@ class CustomerLinkSecurityTests(TestCase):
                     self.assertEqual(created.agreements.get().special_terms, "Example payment terms.")
                     self.assert_order_actions_denied(created)
 
-    def test_editor_cannot_assign_reassign_or_remove_customer_on_edit(self):
+    def test_editor_cannot_assign_reassign_or_remove_customer_on_edit(self) -> None:
         for original in (None, self.customer):
             order = make_order(self.administrator, program=self.program, customer_account=original)
             url = reverse("agreements:order_edit", args=[order.pk])
@@ -106,7 +124,7 @@ class CustomerLinkSecurityTests(TestCase):
                         self.assertTrue(order.is_customer(original))
                         self.assertTrue(order.can_offer(original))
 
-    def test_administrator_can_assign_reassign_and_remove_order_linkage(self):
+    def test_administrator_can_assign_reassign_and_remove_order_linkage(self) -> None:
         self.client.force_login(self.administrator)
         create_url = reverse("agreements:order_create", args=[self.program.slug])
         self.assert_link_field(create_url, "customer_account_email", shown=True)
@@ -126,7 +144,7 @@ class CustomerLinkSecurityTests(TestCase):
                 order = reload(order)
                 self.assertEqual(order.customer_account, customer)
 
-    def test_public_customer_self_service_ignores_forged_account_assignment(self):
+    def test_public_customer_self_service_ignores_forged_account_assignment(self) -> None:
         self.program.is_public = True
         self.program.save(update_fields=["is_public"])
         self.client.force_login(self.customer)
@@ -142,9 +160,9 @@ class CustomerLinkSecurityTests(TestCase):
         self.assertEqual(order.customer_account, self.customer)
         self.assertTrue(order.can_offer(self.customer))
         self.assertEqual(self.client.post(reverse("agreements:order_offer", args=[order.pk])).status_code, 302)
-        self.assertEqual(reload(order).agreement.counterparty_account, self.customer)
+        self.assertEqual(cast("Agreement", reload(order).agreement).counterparty_account, self.customer)
 
-    def test_administrator_linked_editor_retains_customer_signing_after_edit(self):
+    def test_administrator_linked_editor_retains_customer_signing_after_edit(self) -> None:
         url = reverse("agreements:order_edit", args=[self.order.pk])
         self.client.force_login(self.administrator)
         self.assertEqual(
@@ -168,7 +186,7 @@ class CustomerLinkSecurityTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(reload(order).status, Agreement.Status.SIGNED)
 
-    def test_editor_created_custom_contracts_stay_unlinked(self):
+    def test_editor_created_custom_contracts_stay_unlinked(self) -> None:
         self.client.force_login(self.editor)
         url = reverse("agreements:custom_create")
         self.assert_link_field(url, "counterparty_account_email", shown=False)
@@ -184,7 +202,7 @@ class CustomerLinkSecurityTests(TestCase):
                 self.assertEqual(contract.created_by, self.editor)
                 self.assertEqual(contract.body_markdown, "Updated draft.")
 
-    def test_editor_cannot_assign_reassign_or_remove_custom_contract_linkage(self):
+    def test_editor_cannot_assign_reassign_or_remove_custom_contract_linkage(self) -> None:
         self.client.force_login(self.editor)
         url = reverse("agreements:custom_edit", args=[self.contract.pk])
         for original in (None, self.customer):
@@ -204,7 +222,7 @@ class CustomerLinkSecurityTests(TestCase):
                     self.assertEqual(self.contract.counterparty_name, data["counterparty_name"])
                     self.assertEqual(self.contract.body_markdown, data["body_markdown"])
 
-    def test_administrator_can_assign_reassign_and_remove_custom_contract_linkage(self):
+    def test_administrator_can_assign_reassign_and_remove_custom_contract_linkage(self) -> None:
         self.client.force_login(self.administrator)
         url = reverse("agreements:custom_create")
         self.assert_link_field(url, "counterparty_account_email", shown=True)

@@ -1,6 +1,9 @@
+from __future__ import annotations
+
 from concurrent.futures import ThreadPoolExecutor
 from queue import Queue
 from time import monotonic, sleep
+from typing import TYPE_CHECKING, Any, cast
 from unittest import skipUnless
 
 from django.contrib.auth import get_user_model
@@ -12,34 +15,52 @@ from django.urls import resolve, reverse
 
 from apps.agreements import workflow
 from apps.agreements.documents import sha256
-from apps.agreements.models import Agreement, CustomContract
+from apps.agreements.models import Agreement, CustomContract, Order
 from apps.agreements.orders.documents import compose_order_form_markdown
 from apps.agreements.registry import get_kind
 from apps.agreements.tests.catalog_data import make_program
 from apps.agreements.tests.test_agreements import make_officer
 from apps.agreements.tests.test_orders import make_order, payload
 
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
+    from django.contrib.sessions.backends.base import SessionBase
+    from django.http import HttpRequest, HttpResponse
+
+    from apps.users.models import User
+
 
 @skipUnless(connection.vendor == "postgresql", "Exercises PostgreSQL row-lock contention")
 class DraftConcurrencyTests(TransactionTestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.officer = make_officer()
         self.officer.get_all_permissions()
 
-    def post_during_change(self, subject, route, data, change, *, user=None):
+    def post_during_change[ChangeResult](
+        self,
+        subject: CustomContract | Order,
+        route: str,
+        data: dict[str, Any],
+        change: Callable[[], ChangeResult],
+        *,
+        user: User | None = None,
+    ) -> tuple[int, ChangeResult]:
         """Make a request contend with a transaction already holding the draft lock."""
-        backend = Queue()
+        backend: Queue[int] = Queue()
         url = reverse(route, args=[subject.pk])
 
-        def submit():
+        def submit() -> int:
             try:
                 with connection.cursor() as cursor:
                     cursor.execute("SELECT pg_backend_pid()")
                     backend.put(cursor.fetchone()[0])
                 request = RequestFactory().post(url, data)
                 request.user = user or self.officer
-                request.session = {}
-                MessageMiddleware(lambda _request: None).process_request(request)
+                request.session = cast("SessionBase", {})
+                MessageMiddleware(cast("Callable[[HttpRequest], HttpResponse]", lambda _request: None)).process_request(
+                    request
+                )
                 match = resolve(url)
                 try:
                     return match.func(request, **match.kwargs).status_code
@@ -69,8 +90,10 @@ class DraftConcurrencyTests(TransactionTestCase):
             status = pending.result(timeout=10)
         return status, result
 
-    def mutate_while_offering(self, subject, kind, route, data):
-        def offer_and_sign():
+    def mutate_while_offering(
+        self, subject: CustomContract | Order, kind: str, route: str, data: dict[str, Any]
+    ) -> tuple[int, Agreement]:
+        def offer_and_sign() -> Agreement:
             agreement = workflow.offer(get_kind(kind), subject, user=self.officer)
             return workflow.sign(
                 agreement,
@@ -81,10 +104,10 @@ class DraftConcurrencyTests(TransactionTestCase):
         status, agreement = self.post_during_change(subject, route, data, offer_and_sign)
         subject.refresh_from_db()
         self.assertEqual(subject.agreement_id, agreement.pk)
-        self.assertEqual(subject.agreement.status, Agreement.Status.SIGNED)
+        self.assertEqual(cast("Agreement", subject.agreement).status, Agreement.Status.SIGNED)
         return status, agreement
 
-    def contract(self):
+    def contract(self) -> CustomContract:
         return CustomContract.objects.create(
             title="Original contract",
             counterparty_name="Example Company",
@@ -92,7 +115,7 @@ class DraftConcurrencyTests(TransactionTestCase):
             created_by=self.officer,
         )
 
-    def test_contract_edit_cannot_detach_a_concurrent_signed_offer(self):
+    def test_contract_edit_cannot_detach_a_concurrent_signed_offer(self) -> None:
         contract = self.contract()
         status, _ = self.mutate_while_offering(
             contract,
@@ -104,11 +127,11 @@ class DraftConcurrencyTests(TransactionTestCase):
         self.assertEqual(contract.title, "Original contract")
         self.assertEqual(contract.body_markdown, "Original terms.")
 
-    def test_contract_delete_cannot_remove_a_concurrent_signed_offer(self):
+    def test_contract_delete_cannot_remove_a_concurrent_signed_offer(self) -> None:
         status, _ = self.mutate_while_offering(self.contract(), "custom", "agreements:custom_delete", {})
         self.assertEqual(status, 404)
 
-    def test_order_edit_preserves_a_concurrent_signed_offer_and_frozen_selections(self):
+    def test_order_edit_preserves_a_concurrent_signed_offer_and_frozen_selections(self) -> None:
         program = make_program()
         order = make_order(self.officer, program=program)
         status, _ = self.mutate_while_offering(
@@ -119,19 +142,19 @@ class DraftConcurrencyTests(TransactionTestCase):
         self.assertEqual(order.catalog_snapshot, program.definition)
         self.assertEqual(list(order.agreements.values_list("agreement", "tier")), [("studio", "plus")])
 
-    def test_order_delete_preserves_a_concurrent_signed_offer_and_its_lines(self):
+    def test_order_delete_preserves_a_concurrent_signed_offer_and_its_lines(self) -> None:
         order = make_order(self.officer, program=make_program())
         status, _ = self.mutate_while_offering(order, "order", "agreements:order_delete", {})
         self.assertEqual(status, 404)
         self.assertEqual(list(order.agreements.values_list("agreement", "tier")), [("studio", "plus")])
 
-    def test_reassigned_customer_cannot_sign_the_order(self):
+    def test_reassigned_customer_cannot_sign_the_order(self) -> None:
         customer = get_user_model().objects.create_user("customer", "customer@example.com")
         replacement = get_user_model().objects.create_user("replacement", "replacement@example.com")
         order = make_order(self.officer, program=make_program(), customer_account=customer)
         digest = sha256(compose_order_form_markdown(order))
 
-        def reassign():
+        def reassign() -> None:
             order.customer_account = replacement
             order.save(update_fields=["customer_account"])
 
@@ -148,11 +171,11 @@ class DraftConcurrencyTests(TransactionTestCase):
         self.assertIsNone(order.agreement_id)
         self.assertFalse(Agreement.objects.exists())
 
-    def test_removed_customer_cannot_offer_the_order(self):
+    def test_removed_customer_cannot_offer_the_order(self) -> None:
         customer = get_user_model().objects.create_user("customer", "customer@example.com")
         order = make_order(self.officer, program=make_program(), customer_account=customer)
 
-        def unlink():
+        def unlink() -> None:
             order.customer_account = None
             order.save(update_fields=["customer_account"])
 

@@ -11,11 +11,11 @@ from apps.agreements.tests.test_orders import make_order
 
 
 class AuthoringValidationTests(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.officer = make_officer()
         self.client.force_login(self.officer)
 
-    def test_terms_images_are_rejected_before_save_preview_or_publish(self):
+    def test_terms_images_are_rejected_before_save_preview_or_publish(self) -> None:
         terms = Terms.objects.create(slug="example", title="Example", draft_markdown="Original draft")
         url = reverse("agreements:terms_edit", args=[terms.slug])
         for action in ({"action": "save"}, {"preview": "1"}, {"action": "publish", "version": "v1", "notes": "First"}):
@@ -27,7 +27,7 @@ class AuthoringValidationTests(TestCase):
                 self.assertEqual(terms.draft_markdown, "Original draft")
                 self.assertFalse(terms.versions.exists())
 
-    def test_custom_contract_images_are_rejected_before_create_or_edit(self):
+    def test_custom_contract_images_are_rejected_before_create_or_edit(self) -> None:
         data = {"title": "Example", "counterparty_name": "Example company", "body_markdown": "![image](/etc/passwd)"}
         response = self.client.post(reverse("agreements:custom_create"), data)
         self.assertIn("body_markdown", response.context["form"].errors)
@@ -43,7 +43,7 @@ class AuthoringValidationTests(TestCase):
         contract.refresh_from_db()
         self.assertEqual(contract.body_markdown, "Original draft")
 
-    def test_document_images_are_rejected_without_a_revision(self):
+    def test_document_images_are_rejected_without_a_revision(self) -> None:
         agreement = offer_contract(self.officer)
         response = self.client.post(
             reverse("agreements:edit", args=[agreement.pk]),
@@ -58,20 +58,20 @@ class AuthoringValidationTests(TestCase):
         agreement.refresh_from_db()
         self.assertEqual(agreement.revision, 1)
 
-    def test_unpublished_terms_link_to_editor_and_non_admin_guidance(self):
+    def test_unpublished_terms_link_to_editor_and_non_admin_guidance(self) -> None:
         terms = Terms.objects.create(slug="unpublished", title="Unpublished")
         response = self.client.get(reverse("agreements:terms_list"))
         self.assertContains(response, f'href="{reverse("agreements:terms_edit", args=[terms.slug])}">Unpublished</a>')
         self.assertNotContains(response, reverse("admin:agreements_terms_add"))
 
-    def test_staff_administrator_gets_terms_creation_link(self):
+    def test_staff_administrator_gets_terms_creation_link(self) -> None:
         admin = get_user_model().objects.create_superuser("admin", "admin@example.com", "password")
         admin.groups.add(Group.objects.get_or_create(name=ADMINISTRATORS)[0])
         self.client.force_login(admin)
         response = self.client.get(reverse("agreements:terms_list"))
         self.assertContains(response, reverse("admin:agreements_terms_add"))
 
-    def test_staff_authoring_routes_deny_customers_without_a_login_loop(self):
+    def test_staff_authoring_routes_deny_customers_without_a_login_loop(self) -> None:
         terms = Terms.objects.create(slug="private", title="Private")
         contract = CustomContract.objects.create(
             title="Example", counterparty_name="Example company", body_markdown="Draft", created_by=self.officer
@@ -98,7 +98,7 @@ class AuthoringValidationTests(TestCase):
                 self.assertEqual(response.status_code, 302)
                 self.assertIn("/accounts/login/?next=", response["Location"])
 
-    def test_record_admin_rejects_changes_even_for_superusers(self):
+    def test_record_admin_rejects_changes_even_for_superusers(self) -> None:
         agreement = offer_contract(self.officer)
         order = make_order(self.officer, program=make_program())
         user = get_user_model().objects.create_superuser("admin", "admin@example.com", "password")

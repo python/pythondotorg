@@ -9,7 +9,7 @@ from apps.agreements.auth import ADMINISTRATORS, EDITORS, is_administrator
 
 
 class GroupAdministrationSecurityTests(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         users = get_user_model().objects
         self.staff = users.create_user("group-editor", is_staff=True)
         self.staff.user_permissions.set(
@@ -23,7 +23,7 @@ class GroupAdministrationSecurityTests(TestCase):
         self.administrator.groups.add(self.administrators)
         self.client.force_login(self.staff)
 
-    def test_group_editor_cannot_rename_roles_or_take_their_names(self):
+    def test_group_editor_cannot_rename_roles_or_take_their_names(self) -> None:
         for group in (self.administrators, self.editors):
             with self.subTest(role=group.name):
                 original_name = group.name
@@ -45,7 +45,7 @@ class GroupAdministrationSecurityTests(TestCase):
         self.assertTrue(is_administrator(self.administrator))
         self.assertEqual(self.client.get(reverse("agreements:queue")).status_code, 403)
 
-    def test_group_editor_cannot_grant_user_administration_to_own_group(self):
+    def test_group_editor_cannot_grant_user_administration_to_own_group(self) -> None:
         permission = Permission.objects.get(content_type__app_label="users", codename="change_user")
         response = self.client.post(
             reverse("admin:auth_group_change", args=[self.own_group.pk]),
@@ -54,7 +54,7 @@ class GroupAdministrationSecurityTests(TestCase):
         self.assertEqual(response.status_code, 403)
         self.assertFalse(self.own_group.permissions.exists())
 
-    def test_group_creator_cannot_create_a_privileged_group(self):
+    def test_group_creator_cannot_create_a_privileged_group(self) -> None:
         permission = Permission.objects.get(content_type__app_label="users", codename="change_user")
         response = self.client.post(
             reverse("admin:auth_group_add"),
@@ -63,12 +63,12 @@ class GroupAdministrationSecurityTests(TestCase):
         self.assertEqual(response.status_code, 403)
         self.assertFalse(Group.objects.filter(name="New privileged group").exists())
 
-    def test_delegated_group_editor_can_still_inspect_groups(self):
+    def test_delegated_group_editor_can_still_inspect_groups(self) -> None:
         response = self.client.get(reverse("admin:auth_group_change", args=[self.own_group.pk]))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.own_group.name)
 
-    def test_superuser_can_create_and_manage_group_permissions(self):
+    def test_superuser_can_create_and_manage_group_permissions(self) -> None:
         root = get_user_model().objects.create_superuser("identity-admin", "root@example.com", "password")
         self.client.force_login(root)
         permission = Permission.objects.get(content_type__app_label="users", codename="change_user")

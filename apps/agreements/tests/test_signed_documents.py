@@ -10,7 +10,7 @@ from apps.agreements.tests.test_agreements import make_officer, offer_contract
 
 
 class SignedDocumentTests(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.officer = make_officer()
         self.agreement = offer_contract(
             self.officer,
@@ -27,7 +27,7 @@ class SignedDocumentTests(TestCase):
         self.agreement.signature_method = Agreement.SignatureMethod.ACCOUNT
         self.agreement.save()
 
-    def store_copy(self, kind, content):
+    def store_copy(self, kind: SignedCopy.Kind, content: bytes) -> SignedCopy:
         return SignedCopy.objects.create(
             agreement=self.agreement,
             kind=kind,
@@ -36,7 +36,7 @@ class SignedDocumentTests(TestCase):
             uploaded_by=self.officer,
         )
 
-    def test_signature_record_renders_counterparty_name_literally_for_all_methods(self):
+    def test_signature_record_renders_counterparty_name_literally_for_all_methods(self) -> None:
         for method in Agreement.SignatureMethod.values:
             with self.subTest(method=method):
                 self.agreement.signature_method = method
@@ -47,7 +47,7 @@ class SignedDocumentTests(TestCase):
                 self.assertNotIn("<img", html)
                 self.assertNotIn("<strong>LLC</strong>", html)
 
-    def test_email_attaches_stored_executed_copy_without_rendering(self):
+    def test_email_attaches_stored_executed_copy_without_rendering(self) -> None:
         self.store_copy(SignedCopy.Kind.CUSTOMER, b"%PDF-1.4 customer signature only")
         executed = b"%PDF-1.4 both external signatures and audit pages"
         self.store_copy(SignedCopy.Kind.EXECUTED, executed)
@@ -67,7 +67,7 @@ class SignedDocumentTests(TestCase):
             [(f"psf-agreement-{self.agreement.reference}.pdf", executed, "application/pdf")],
         )
 
-    def test_email_generates_executed_pdf_when_only_a_customer_copy_exists(self):
+    def test_email_generates_executed_pdf_when_only_a_customer_copy_exists(self) -> None:
         customer_copy = b"%PDF-1.4 customer signature only"
         self.store_copy(SignedCopy.Kind.CUSTOMER, customer_copy)
 
@@ -78,7 +78,7 @@ class SignedDocumentTests(TestCase):
         self.assertNotEqual(attachment[1], customer_copy)
         self.assertEqual(attachment[2], "application/pdf")
 
-    def test_email_retains_every_cited_version_not_the_latest_terms(self):
+    def test_email_retains_every_cited_version_not_the_latest_terms(self) -> None:
         private = Terms.objects.create(slug="private-terms", title="Fictional private terms")
         public = Terms.objects.create(slug="public-terms", title="Fictional public terms", is_public=True)
         cited = [
@@ -104,7 +104,7 @@ class SignedDocumentTests(TestCase):
             self.assertEqual(attachment.content, documents.render_pdf(documents.terms_download_markdown(version)))
             self.assertEqual(attachment.mimetype, "application/pdf")
 
-    def test_terms_render_failure_does_not_send_an_incomplete_executed_bundle(self):
+    def test_terms_render_failure_does_not_send_an_incomplete_executed_bundle(self) -> None:
         terms = Terms.objects.create(slug="private-terms", title="Fictional private terms")
         version = TermsVersion.objects.create(terms=terms, version="v1", markdown="Fictional obligations.")
         self.agreement.terms_versions.add(version)
