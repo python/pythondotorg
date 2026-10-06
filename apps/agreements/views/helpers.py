@@ -7,8 +7,9 @@ from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404
 
 from apps.agreements import documents, workflow
+from apps.agreements.auth import can_prepare, is_administrator
 from apps.agreements.forms.signing import CountersignForm, DeclineForm, SignedCopyForm, SignForm, SigningLinkForm
-from apps.agreements.models import MANAGE_PERMISSION, Agreement
+from apps.agreements.models import Agreement
 
 
 def signature_of(request, form):
@@ -25,27 +26,29 @@ def signature_of(request, form):
 def action_forms(request, agreement, **bound):
     """Return the forms ``agreements/_actions.html`` shows to this user, bound ones taking precedence."""
     user = request.user
-    staff = user.has_perm(MANAGE_PERMISSION)
+    administrator = is_administrator(user)
     seen = {"document_sha256": agreement.document_sha256}
     forms = {}
     if agreement.status == Agreement.Status.OFFERED:
         if agreement.is_counterparty(user):
             forms["sign_form"] = SignForm(initial={**seen, "signer_name": user.get_full_name()})
-        if staff or agreement.is_counterparty(user):
+        if administrator or agreement.is_counterparty(user):
             forms["copy_form"] = SignedCopyForm(initial=seen)
-        if staff:
+        if administrator:
             forms["link_form"] = SigningLinkForm()
-    elif agreement.status == Agreement.Status.SIGNED and staff:
+    elif agreement.status == Agreement.Status.SIGNED and administrator:
         forms["countersign_form"] = CountersignForm(initial={"name": user.get_full_name()})
         forms["decline_form"] = DeclineForm()
     forms.update({name: form for name, form in bound.items() if form is not None})
     return {
         **forms,
         "agreement": agreement,
-        "is_staff": staff,
-        "can_withdraw": agreement.status == Agreement.Status.OFFERED and (staff or agreement.is_counterparty(user)),
+        "can_prepare": can_prepare(user),
+        "is_administrator": administrator,
+        "can_withdraw": agreement.status == Agreement.Status.OFFERED
+        and (administrator or agreement.is_counterparty(user)),
         "copies": agreement.signed_copies.defer("content").select_related("uploaded_by"),
-        "links": agreement.signing_links.all() if staff else (),
+        "links": agreement.signing_links.all() if administrator else (),
     }
 
 

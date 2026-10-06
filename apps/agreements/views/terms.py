@@ -1,14 +1,14 @@
 """Published terms and staff editing."""
 
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required, permission_required
-from django.db.models import Q
+from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 
 from apps.agreements import documents, workflow
+from apps.agreements.auth import can_prepare, is_administrator, preparer_required
 from apps.agreements.forms.terms import TermsForm
-from apps.agreements.models import MANAGE_PERMISSION, Terms
+from apps.agreements.models import Terms
 from apps.agreements.views.helpers import _diff, file_response
 
 
@@ -22,17 +22,17 @@ def _version_or_404(terms, version):
 
 
 def _can_read_terms(user, shown):
-    if shown.terms.is_public or user.has_perm(MANAGE_PERMISSION):
+    if shown.terms.is_public or can_prepare(user):
         return True
     if not user.is_authenticated:
         return False
-    if shown.agreements.filter(Q(counterparty_account=user) | Q(offered_by=user) | Q(order__created_by=user)).exists():
+    if shown.agreements.filter(counterparty_account=user).exists():
         return True
     # Customers reviewing a staff-prepared draft need its current terms before it is offered.
     from apps.agreements.models import OrderLine
 
     lines = OrderLine.objects.filter(
-        Q(order__customer_account=user) | Q(order__created_by=user),
+        order__customer_account=user,
         order__agreement__isnull=True,
     ).select_related("order__program")
     return any(
@@ -71,8 +71,8 @@ def terms(request, slug, version=None):
             "is_current": shown == terms.current_version,
             "html": html,
             "toc": toc,
-            "can_edit": request.user.has_perm(MANAGE_PERMISSION),
-            "can_read_current": terms.is_public or request.user.has_perm(MANAGE_PERMISSION),
+            "can_edit": can_prepare(request.user),
+            "can_read_current": terms.is_public or can_prepare(request.user),
         },
     )
     return _terms_cache(response, terms)
@@ -88,8 +88,7 @@ def terms_download(request, slug, fmt, version=None):
     return _terms_cache(response, terms)
 
 
-@login_required
-@permission_required(MANAGE_PERMISSION, raise_exception=True)
+@preparer_required
 def terms_list(request):
     """Every set of terms, for staff to edit."""
     return render(
@@ -97,18 +96,27 @@ def terms_list(request):
     )
 
 
-@login_required
-@permission_required(MANAGE_PERMISSION, raise_exception=True)
+@preparer_required
 def terms_edit(request, slug):
-    """Edit terms and publish them as a new version for documents offered from now on."""
+    """Prepare draft text; only administrators configure or publish terms."""
     terms = get_object_or_404(Terms, slug=slug)
     current = terms.current_version
+    administrator = is_administrator(request.user)
+    if (
+        request.method == "POST"
+        and not administrator
+        and (
+            request.POST.get("action") == TermsForm.PUBLISH
+            or any(field in request.POST for field in ("under_review", "is_public", "version", "notes"))
+        )
+    ):
+        raise PermissionDenied
     initial = {
         "markdown": terms.draft_markdown or (current.markdown if current else ""),
         "under_review": terms.under_review,
         "is_public": terms.is_public,
     }
-    form = TermsForm(request.POST or None, initial=initial, terms=terms)
+    form = TermsForm(request.POST or None, initial=initial, terms=terms, can_publish=administrator)
     preview = diff = None
     if request.method == "POST" and form.is_valid():
         data = form.cleaned_data
@@ -124,13 +132,12 @@ def terms_edit(request, slug):
             messages.success(request, f"Published version {published.version}. New documents cite it from now on.")
             return redirect(published)
         else:
-            terms.under_review = data["under_review"]
-            terms.is_public = data["is_public"]
-            terms.save(update_fields=["under_review", "is_public"])
+            if administrator:
+                terms.under_review = data["under_review"]
+                terms.is_public = data["is_public"]
+                terms.save(update_fields=["under_review", "is_public"])
             workflow.save_terms_draft(terms, markdown=data["markdown"], user=request.user)
-            messages.success(
-                request, "Draft saved. Draft text stays private; version access follows your visibility setting."
-            )
+            messages.success(request, "Draft saved. Draft text stays private.")
             return redirect("agreements:terms_edit", slug=terms.slug)
     working = (
         form.data.get("markdown", initial["markdown"]).replace("\r\n", "\n") if form.is_bound else initial["markdown"]

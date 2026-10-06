@@ -4,15 +4,16 @@ import logging
 
 from allauth.account.adapter import get_adapter
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.decorators import login_required
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_POST
 
 from apps.agreements import documents, notifications, workflow
+from apps.agreements.auth import administrator_required, can_prepare, is_administrator
 from apps.agreements.forms.signing import CountersignForm, DeclineForm, SignedCopyForm, SignForm, SigningLinkForm
-from apps.agreements.models import MANAGE_PERMISSION, Agreement
+from apps.agreements.models import Agreement
 from apps.agreements.views.agreements import detail
 from apps.agreements.views.helpers import _agreement_or_404, file_response, signature_of
 
@@ -20,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 
 def _subject_url(request, agreement):
-    if agreement.kind == "custom" and not request.user.has_perm(MANAGE_PERMISSION):
+    if agreement.kind == "custom" and not can_prepare(request.user):
         return agreement.get_absolute_url()
     return agreement.subject_url
 
@@ -67,7 +68,7 @@ def sign(request, pk):
 def record_copy(request, pk):
     """Record a signature made outside python.org by uploading the signed copy."""
     agreement = _agreement_or_404(request, pk)
-    if not (agreement.is_counterparty(request.user) or request.user.has_perm(MANAGE_PERMISSION)):
+    if not (agreement.is_counterparty(request.user) or is_administrator(request.user)):
         raise Http404
     form = SignedCopyForm(request.POST, request.FILES)
     if not form.is_valid():
@@ -96,7 +97,7 @@ def record_copy(request, pk):
 def withdraw(request, pk):
     """Withdraw an unsigned offer so its draft can be changed."""
     agreement = _agreement_or_404(request, pk)
-    if not (agreement.is_counterparty(request.user) or request.user.has_perm(MANAGE_PERMISSION)):
+    if not (agreement.is_counterparty(request.user) or is_administrator(request.user)):
         raise Http404
     subject_url = _subject_url(request, agreement)
     if _run(
@@ -109,8 +110,7 @@ def withdraw(request, pk):
     return _back(request, agreement)
 
 
-@login_required
-@permission_required(MANAGE_PERMISSION, raise_exception=True)
+@administrator_required
 @require_POST
 def send_link(request, pk):
     """Email a named signatory a one-time signing link."""
@@ -144,8 +144,7 @@ def _deliver_executed_copy(request, agreement):
     return True
 
 
-@login_required
-@permission_required(MANAGE_PERMISSION, raise_exception=True)
+@administrator_required
 @require_POST
 def countersign(request, pk):
     """Countersign for the PSF, then email the signatory the executed copy."""
@@ -166,8 +165,7 @@ def countersign(request, pk):
     return _back(request, agreement)
 
 
-@login_required
-@permission_required(MANAGE_PERMISSION, raise_exception=True)
+@administrator_required
 @require_POST
 def resend_executed_copy(request, pk):
     """Retry delivery without applying the PSF signature again."""
@@ -179,8 +177,7 @@ def resend_executed_copy(request, pk):
     return _back(request, agreement)
 
 
-@login_required
-@permission_required(MANAGE_PERMISSION, raise_exception=True)
+@administrator_required
 @require_POST
 def decline(request, pk):
     """Decline a signed agreement."""

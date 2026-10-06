@@ -1,20 +1,20 @@
 """Agreement review, downloads, and document editing."""
 
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.decorators import login_required
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
 from apps.agreements import documents, workflow
+from apps.agreements.auth import administrator_required, preparer_required
 from apps.agreements.forms.contracts import EditDocumentForm
-from apps.agreements.models import MANAGE_PERMISSION, Agreement, CustomContract, SignedCopy
+from apps.agreements.models import Agreement, CustomContract, SignedCopy
 from apps.agreements.views.helpers import _agreement_or_404, _diff, action_forms, file_response
 
 RECENT = 25
 
 
-@login_required
-@permission_required(MANAGE_PERMISSION, raise_exception=True)
+@preparer_required
 def queue(request):
     """Every agreement that needs the PSF or the counterparty, then recent ones and custom drafts."""
     agreements = Agreement.objects.select_related("counterparty_account")
@@ -67,8 +67,7 @@ def copy_download(request, pk, kind):
     return response
 
 
-@login_required
-@permission_required(MANAGE_PERMISSION, raise_exception=True)
+@administrator_required
 def edit(request, pk):
     """Edit one agreement's text before it is signed; every saved edit is a new revision."""
     agreement = _agreement_or_404(request, pk)

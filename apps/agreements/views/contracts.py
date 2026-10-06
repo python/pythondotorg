@@ -1,16 +1,16 @@
 """Custom contract drafting and offers."""
 
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required, permission_required
 from django.db import transaction
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 
 from apps.agreements import documents, workflow
+from apps.agreements.auth import administrator_required, is_administrator, preparer_required
 from apps.agreements.forms.contracts import CustomContractForm
 from apps.agreements.kinds import CustomContractKind
-from apps.agreements.models import MANAGE_PERMISSION, CustomContract
+from apps.agreements.models import CustomContract
 
 
 def _custom_or_404(pk, *, for_update=False):
@@ -20,8 +20,7 @@ def _custom_or_404(pk, *, for_update=False):
     return get_object_or_404(contracts, pk=pk)
 
 
-@login_required
-@permission_required(MANAGE_PERMISSION, raise_exception=True)
+@preparer_required
 def custom_create(request):
     """Write a new one-off contract."""
     form = CustomContractForm(request.POST or None)
@@ -32,13 +31,14 @@ def custom_create(request):
     return render(request, "agreements/custom_form.html", {"form": form, "nav": "custom"})
 
 
-@login_required
-@permission_required(MANAGE_PERMISSION, raise_exception=True)
+@preparer_required
 @transaction.atomic
 def custom_edit(request, pk):
     """Change a contract that hasn't been offered; once offered, edit the agreement instead."""
     contract = _custom_or_404(pk, for_update=request.method == "POST")
     if contract.agreement_id is not None:
+        if not is_administrator(request.user):
+            return redirect(contract.agreement)
         return redirect("agreements:edit", pk=contract.agreement_id)
     form = CustomContractForm(request.POST or None, instance=contract)
     if request.method == "POST" and form.is_valid():
@@ -47,8 +47,7 @@ def custom_edit(request, pk):
     return render(request, "agreements/custom_form.html", {"form": form, "contract": contract, "nav": "custom"})
 
 
-@login_required
-@permission_required(MANAGE_PERMISSION, raise_exception=True)
+@preparer_required
 def custom_detail(request, pk):
     """Preview a draft contract; once offered, the agreement page takes over."""
     contract = _custom_or_404(pk)
@@ -59,8 +58,7 @@ def custom_detail(request, pk):
     return render(request, "agreements/custom_detail.html", {"contract": contract, "html": html, "nav": "custom"})
 
 
-@login_required
-@permission_required(MANAGE_PERMISSION, raise_exception=True)
+@administrator_required
 @require_POST
 def custom_offer(request, pk):
     """Freeze the draft and make it ready to sign."""
@@ -74,8 +72,7 @@ def custom_offer(request, pk):
     return redirect(agreement)
 
 
-@login_required
-@permission_required(MANAGE_PERMISSION, raise_exception=True)
+@preparer_required
 @require_POST
 @transaction.atomic
 def custom_delete(request, pk):
