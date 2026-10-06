@@ -50,7 +50,6 @@ CI checks
 GitHub Actions runs on every push and pull request. It will:
 
 - Check for ungenerated migrations (``makemigrations --check --dry-run``)
-- Type-check the agreements app, including its tests, with mypy and Django stubs
 - Run the full test suite
 - Enforce a **75% minimum test coverage** threshold
 
