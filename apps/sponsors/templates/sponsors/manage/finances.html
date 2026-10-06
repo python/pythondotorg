@@ -1,5 +1,5 @@
 {% extends "sponsors/manage/_base.html" %}
-{% load humanize %}
+{% load humanize static %}
 
 {% block page_title %}Finances | Sponsor Management{% endblock %}
 
@@ -29,7 +29,7 @@
     .chart-box.wide { grid-column:1 / -1; }
 </style>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<script src="{% static 'js/libs/chart-4.5.1.umd.min.js' %}"></script>
 
 <!-- Year selector -->
 {% if years %}
