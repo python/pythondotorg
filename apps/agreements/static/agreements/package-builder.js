@@ -134,8 +134,11 @@
       const allowedTiers = row.dataset.serviceTiers.split(" ").filter(Boolean);
       const available = !allowedTiers.length || allowedTiers.includes(serviceTierKey);
       const box = serviceBox(row);
-      row.hidden = !available;
-      box.disabled = !tier || !available;
+      row.hidden = !available && !box.checked;
+      box.disabled = !tier || (!available && !box.checked);
+      box.setCustomValidity(tier && !available && box.checked
+        ? "Deselect this base service or choose a tier that offers it."
+        : "");
       if (available) availableCount += 1;
       else if (box.checked) unavailable.push(row.dataset.serviceName);
     });
@@ -144,7 +147,7 @@
     const changedServices = family.el.querySelector(".pb-services-changed");
     changedServices.hidden = !tier || !unavailable.length;
     changedServices.textContent = unavailable.length
-      ? `Not selected at this tier: ${unavailable.join(", ")}. Your earlier choices are kept if you switch back to an eligible tier.`
+      ? `Not available at this tier: ${unavailable.join(", ")}. Deselect these base services or choose a tier that offers them before continuing.`
       : "";
     family.extras.forEach((row) => {
       const box = extraBox(row);
