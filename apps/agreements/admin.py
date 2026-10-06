@@ -131,6 +131,14 @@ class CustomContractAdmin(admin.ModelAdmin):
         """Create contracts on the site, where their author is recorded."""
         return False
 
+    def has_change_permission(self, request, obj=None):
+        """Keep edits behind the locked, draft-only site workflow."""
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        """Discard drafts through the locked site workflow."""
+        return False
+
 
 @admin.register(Program)
 class ProgramAdmin(admin.ModelAdmin):

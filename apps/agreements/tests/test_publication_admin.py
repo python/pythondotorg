@@ -5,7 +5,7 @@ from django.urls import resolve, reverse
 
 from apps.agreements.admin import TermsAdmin
 from apps.agreements.models import CustomContract, Terms, TermsVersion
-from apps.agreements.tests.test_agreements import make_officer
+from apps.agreements.tests.test_agreements import make_officer, offer_contract
 
 
 class TermsAdminTests(TestCase):
@@ -61,6 +61,33 @@ class CustomContractAdminTests(TestCase):
         )
         self.assertEqual(response.status_code, 403)
         self.assertFalse(CustomContract.objects.exists())
+
+    def test_contract_admin_is_view_only_before_and_after_offer(self):
+        agreement = offer_contract(self.superuser)
+        offered = agreement.subject
+        draft = CustomContract.objects.create(
+            title="Draft", counterparty_name="Customer", body_markdown="Terms.", created_by=self.superuser
+        )
+        for contract in (draft, offered):
+            with self.subTest(status=contract.status):
+                change_url = reverse("admin:agreements_customcontract_change", args=[contract.pk])
+                self.assertEqual(self.client.get(change_url).status_code, 200)
+                response = self.client.post(
+                    change_url,
+                    {"title": "Changed", "counterparty_name": "Customer", "body_markdown": "Changed terms."},
+                )
+                self.assertEqual(response.status_code, 403)
+                delete_url = reverse("admin:agreements_customcontract_delete", args=[contract.pk])
+                self.assertEqual(self.client.get(delete_url).status_code, 403)
+                self.assertEqual(self.client.post(delete_url, {"post": "yes"}).status_code, 403)
+                contract.refresh_from_db()
+                self.assertNotEqual(contract.title, "Changed")
+        self.client.post(
+            reverse("admin:agreements_customcontract_changelist"),
+            {"action": "delete_selected", "_selected_action": [draft.pk, offered.pk], "post": "yes"},
+        )
+        self.assertEqual(CustomContract.objects.count(), 2)
+        self.assertEqual(CustomContract.objects.get(pk=offered.pk).agreement_id, agreement.pk)
 
 
 class TermsEditorRouteTests(TestCase):
