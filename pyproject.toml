@@ -79,7 +79,7 @@ dev = [
     "pyproject-fmt==2.29.4",
     "responses==0.26.3",
     "ruff==0.16.9",
-    "tblib==1.7.0",
+    "tblib==3.2.2",
 ]
 docs = [
     "furo",
