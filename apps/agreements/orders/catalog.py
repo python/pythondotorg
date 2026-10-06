@@ -131,7 +131,7 @@ class Agreement:
         return _lookup(self.addons, key, "add-on")
 
     def services_at(self, tier_key: str) -> list[Service]:
-        """Return services included at a valid tier."""
+        """Return services available for selection at a valid tier."""
         self.tier(tier_key)
         return [service for service in self.services if service.included_at(tier_key)]
 
