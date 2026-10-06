@@ -354,11 +354,8 @@ class Sponsorship(models.Model):
 
     @property
     def verified_emails(self):
-        """Return verified email addresses for the submitter and sponsor contacts."""
-        emails = [self.submited_by.email]
-        if self.sponsor:
-            emails = self.sponsor.verified_emails(initial_emails=emails)
-        return emails
+        """Return verified sponsor contact addresses."""
+        return self.sponsor.verified_emails() if self.sponsor else []
 
     @property
     def admin_url(self):

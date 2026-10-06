@@ -91,12 +91,13 @@ class Sponsor(ContentManageable):
         verbose_name = "sponsor"
         verbose_name_plural = "sponsors"
 
-    def verified_emails(self, initial_emails=None):
+    def verified_emails(self):
         """Return a deduplicated list of verified email addresses for sponsor contacts."""
-        emails = initial_emails if initial_emails is not None else []
-        for contact in self.contacts.all():
-            if EmailAddress.objects.filter(email__iexact=contact.email, verified=True).exists():
-                emails.append(contact.email)
+        emails = [
+            contact.email
+            for contact in self.contacts.all()
+            if EmailAddress.objects.filter(email__iexact=contact.email, verified=True).exists()
+        ]
         return list(set({e.casefold(): e for e in emails}.values()))
 
     def __str__(self):

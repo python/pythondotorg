@@ -5,13 +5,15 @@ from smtplib import SMTPException
 from tempfile import TemporaryDirectory
 from unittest import mock
 
+from allauth.account.models import EmailAddress
+from django.contrib.auth import get_user_model
 from django.core import mail
 from django.test import override_settings
 from django.urls import reverse
 
 from apps.sponsors.exceptions import InvalidStatusError
 from apps.sponsors.manage.tests import SponsorshipReviewTestBase
-from apps.sponsors.models import Contract
+from apps.sponsors.models import Contract, SponsorContact, SponsorshipNotificationLog
 
 
 class ContractDeliveryRegressionTests(SponsorshipReviewTestBase):
@@ -19,6 +21,12 @@ class ContractDeliveryRegressionTests(SponsorshipReviewTestBase):
         super().setUp()
         media_root = self.enterContext(TemporaryDirectory())
         self.enterContext(override_settings(MEDIA_ROOT=media_root))
+        self.contact = SponsorContact.objects.create(
+            sponsor=self.sponsor, name="Sponsor contact", email="contact@example.com", primary=True
+        )
+        self.verified_contact = EmailAddress.objects.create(
+            user=self.staff_user, email=self.contact.email, verified=True
+        )
         self.sponsorship.approve(datetime.date(2024, 1, 1), datetime.date(2024, 12, 31))
         self.sponsorship.save()
         self.contract = Contract.new(self.sponsorship)
@@ -59,6 +67,37 @@ class ContractDeliveryRegressionTests(SponsorshipReviewTestBase):
         self.contract.refresh_from_db()
         self.assertEqual(self.contract.status, Contract.DRAFT)
 
+    def test_sponsor_send_records_delivery(self):
+        response = self.client.post(self.send_url, {"action": "send_sponsor"})
+        self.assertEqual(response.status_code, 302)
+        email = mail.outbox[0]
+        self.assertEqual(email.to, [self.contact.email])
+        log = SponsorshipNotificationLog.objects.get(sponsorship=self.sponsorship)
+        self.assertEqual(log.sent_by, self.staff_user)
+        self.assertEqual(log.recipients, self.contact.email)
+        self.assertEqual(log.subject, email.subject)
+        self.assertEqual(log.content, email.body)
+
+    def test_submitter_alone_cannot_receive_the_contract(self):
+        self.verified_contact.delete()
+        EmailAddress.objects.create(user=self.staff_user, email=self.staff_user.email, verified=True)
+        response = self.client.post(self.send_url, {"action": "send_sponsor"})
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(mail.outbox, [])
+        self.assertFalse(SponsorshipNotificationLog.objects.filter(sponsorship=self.sponsorship).exists())
+        self.contract.refresh_from_db()
+        self.assertEqual(self.contract.status, Contract.DRAFT)
+
+    def test_deleted_submitter_does_not_prevent_contact_delivery(self):
+        applicant = get_user_model().objects.create_user("deleted-applicant", email="deleted@example.com")
+        self.sponsorship.submited_by = applicant
+        self.sponsorship.save()
+        applicant.delete()
+        self.assertEqual(self.client.get(self.send_url).status_code, 200)
+        response = self.client.post(self.send_url, {"action": "send_sponsor"})
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(mail.outbox[0].to, [self.contact.email])
+
     def test_redraft_then_edit_sends_current_terms_and_finalizes(self):
         self.client.post(self.send_url, {"action": "send_sponsor"})
         self.contract.refresh_from_db()
@@ -98,6 +137,7 @@ class ContractDeliveryRegressionTests(SponsorshipReviewTestBase):
         self.assertEqual(self.contract.status, Contract.DRAFT)
         self.assertFalse(self.contract.document.name)
         self.assertEqual(mail.outbox, [])
+        self.assertFalse(SponsorshipNotificationLog.objects.filter(sponsorship=self.sponsorship).exists())
 
     def test_partial_render_preserves_existing_documents_without_sending(self):
         self.contract.set_final_version(b"obsolete pdf", b"obsolete docx")
@@ -120,12 +160,14 @@ class ContractDeliveryRegressionTests(SponsorshipReviewTestBase):
         self.assertFalse(self.contract.document.name)
         self.assertFalse(self.contract.document_docx.name)
         self.assertEqual(mail.outbox, [])
+        self.assertFalse(SponsorshipNotificationLog.objects.filter(sponsorship=self.sponsorship).exists())
 
         response = self.client.post(self.send_url, {"action": "send_sponsor"})
         self.assertEqual(response.status_code, 302)
         self.assertEqual(len(mail.outbox), 1)
         self.contract.refresh_from_db()
         self.assertEqual(self.contract.status, Contract.AWAITING_SIGNATURE)
+        self.assertEqual(SponsorshipNotificationLog.objects.filter(sponsorship=self.sponsorship).count(), 1)
 
     def test_smtp_failure_rolls_back_finalization_and_allows_retry(self):
         self._assert_failed_send_is_retryable(side_effect=SMTPException("smtp down"))

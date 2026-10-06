@@ -7,6 +7,7 @@ import zipfile
 from tempfile import TemporaryDirectory
 from unittest import mock
 
+from allauth.account.models import EmailAddress
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group, Permission
 from django.core.exceptions import PermissionDenied
@@ -2120,6 +2121,7 @@ class ComposerStep6Tests(SponsorManageTestBase):
             phone="555-0000",
             primary=True,
         )
+        EmailAddress.objects.create(user=self.staff_user, email="jane@acme.com", verified=True)
         # Create sponsorship and contract directly
         self.sponsorship = Sponsorship.objects.create(
             submited_by=self.staff_user,
@@ -2254,7 +2256,9 @@ class ComposerStep6Tests(SponsorManageTestBase):
         self.assertEqual(response.status_code, 302)
         self.assertIn("step=6", response.url)
 
-    def test_step6_send_internal(self):
+    @mock.patch("apps.sponsors.contracts.render_contract_to_docx_file", return_value=b"docx-bytes")
+    @mock.patch("apps.sponsors.contracts.render_contract_to_pdf_file", return_value=b"pdf-bytes")
+    def test_step6_send_internal(self, mock_pdf, mock_docx):
         response = self.client.post(
             reverse("manage_composer") + "?step=6",
             {"action": "send_internal", "internal_email": "reviewer@python.org"},
@@ -2274,6 +2278,56 @@ class ComposerStep6Tests(SponsorManageTestBase):
         )
         self.assertEqual(response.status_code, 302)
         self.assertIn("step=6", response.url)
+
+    def test_step6_send_internal_rejects_non_psf_domain(self):
+        response = self.client.post(
+            reverse("manage_composer") + "?step=6",
+            {"action": "send_internal", "internal_email": "reviewer@example.com"},
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("step=6", response.url)
+        from django.core.mail import outbox
+
+        self.assertEqual(len(outbox), 0)
+
+    def test_step6_send_internal_rejects_lookalike_domain(self):
+        response = self.client.post(
+            reverse("manage_composer") + "?step=6",
+            {"action": "send_internal", "internal_email": "reviewer@python.org.evil.com"},
+        )
+        self.assertEqual(response.status_code, 302)
+        from django.core.mail import outbox
+
+        self.assertEqual(len(outbox), 0)
+
+    @mock.patch("apps.sponsors.contracts.render_contract_to_docx_file", return_value=b"docx-bytes")
+    @mock.patch("apps.sponsors.contracts.render_contract_to_pdf_file", return_value=b"pdf-bytes")
+    def test_step6_send_proposal_rejects_non_psf_extra_to(self, mock_pdf, mock_docx):
+        """A non-PSF extra_to must reject the whole send, not silently drop it."""
+        response = self.client.post(
+            reverse("manage_composer") + "?step=6",
+            {"action": "send_proposal", "extra_to": "attacker@example.com"},
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("step=6", response.url)
+        from django.core.mail import outbox
+
+        self.assertEqual(len(outbox), 0)
+        self.contract.refresh_from_db()
+        self.assertEqual(self.contract.status, Contract.DRAFT)
+
+    def test_step6_send_proposal_extras_alone_cannot_send(self):
+        """Internal PSF-domain extras alone (no verified sponsor contact) must not send a proposal."""
+        SponsorContact.objects.filter(sponsor=self.sponsor).delete()
+        response = self.client.post(
+            reverse("manage_composer") + "?step=6",
+            {"action": "send_proposal", "extra_to": "staffer@python.org"},
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("step=6", response.url)
+        from django.core.mail import outbox
+
+        self.assertEqual(len(outbox), 0)
 
     def test_step6_finish(self):
         response = self.client.post(

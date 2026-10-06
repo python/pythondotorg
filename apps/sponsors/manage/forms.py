@@ -1,8 +1,10 @@
 """Forms for the sponsor management UI."""
 
 import contextlib
+import re
 
 from django import forms
+from django.core.validators import EmailValidator
 from django.utils import timezone
 
 from apps.sponsors.models import (
@@ -26,6 +28,34 @@ from apps.sponsors.models import (
     TieredBenefitConfiguration,
 )
 from apps.sponsors.validators import validate_signed_contract
+
+PSF_EMAIL_DOMAINS = ("python.org", "pyfound.org")
+
+_psf_email_validator = EmailValidator()
+
+
+def validate_psf_staff_email(value):
+    """Require a python.org or pyfound.org email address."""
+    value = (value or "").strip()
+    if not value:
+        message = "Enter an email address."
+        raise forms.ValidationError(message)
+    if re.search(r"[\r\n]", value) or "," in value or ";" in value:
+        message = "Enter a single, valid email address."
+        raise forms.ValidationError(message)
+    _psf_email_validator(value)
+    domain = value.rsplit("@", 1)[-1].casefold()
+    if domain not in PSF_EMAIL_DOMAINS:
+        message = "Email address must be an @python.org or @pyfound.org address."
+        raise forms.ValidationError(message)
+    return value
+
+
+def _validate_optional_psf_email(value):
+    value = (value or "").strip()
+    if not value:
+        return ""
+    return validate_psf_staff_email(value)
 
 
 def year_choices():
@@ -455,6 +485,40 @@ class ExecuteContractForm(forms.Form):
         widget=forms.ClearableFileInput(attrs={"style": INPUT_STYLE, "accept": ".pdf,.docx"}),
         validators=[validate_signed_contract],
     )
+
+
+class InternalReviewEmailForm(forms.Form):
+    """Shared internal-review recipient form: a single exact PSF-domain address."""
+
+    internal_email = forms.CharField(
+        label="Reviewer email",
+        max_length=254,
+        error_messages={"required": "Please enter an email address."},
+    )
+
+    def clean_internal_email(self):
+        """Validate the reviewer email is a single exact PSF-domain address."""
+        return validate_psf_staff_email(self.cleaned_data["internal_email"])
+
+
+class ComposerRecipientsForm(forms.Form):
+    """Optional extra recipients for a sponsor proposal send; each must be an exact PSF-domain address."""
+
+    extra_to = forms.CharField(required=False, max_length=254)
+    cc_email = forms.CharField(required=False, max_length=254)
+    bcc_email = forms.CharField(required=False, max_length=254)
+
+    def clean_extra_to(self):
+        """Validate the optional extra "to" address."""
+        return _validate_optional_psf_email(self.cleaned_data.get("extra_to"))
+
+    def clean_cc_email(self):
+        """Validate the optional CC address."""
+        return _validate_optional_psf_email(self.cleaned_data.get("cc_email"))
+
+    def clean_bcc_email(self):
+        """Validate the optional BCC address."""
+        return _validate_optional_psf_email(self.cleaned_data.get("bcc_email"))
 
 
 class SendSponsorshipNotificationManageForm(forms.Form):

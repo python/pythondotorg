@@ -7,6 +7,7 @@ import contextlib
 import csv
 import datetime
 import io
+import logging
 import zipfile
 from pathlib import Path
 from shutil import copyfileobj
@@ -14,6 +15,7 @@ from smtplib import SMTPException
 
 from django.conf import settings
 from django.contrib import messages
+from django.core.mail import EmailMessage
 from django.db import transaction
 from django.db.models import Count, Q, Sum
 from django.http import HttpResponse
@@ -31,10 +33,12 @@ from apps.sponsors.manage.forms import (
     AddBenefitToSponsorshipForm,
     BenefitFilterForm,
     CloneYearForm,
+    ComposerRecipientsForm,
     ComposerSponsorForm,
     ComposerTermsForm,
     CurrentYearForm,
     ExecuteContractForm,
+    InternalReviewEmailForm,
     LegalClauseForm,
     NotificationTemplateForm,
     SendSponsorshipNotificationManageForm,
@@ -66,6 +70,8 @@ from apps.sponsors.models import (
 )
 from apps.sponsors.models.enums import AssetsRelatedTo
 from pydotorg.mixins import GroupRequiredMixin, LoginRequiredMixin
+
+logger = logging.getLogger(__name__)
 
 
 class SponsorshipAdminRequiredMixin(LoginRequiredMixin, GroupRequiredMixin):
@@ -1324,6 +1330,85 @@ class SponsorshipRemoveBenefitView(SponsorshipAdminRequiredMixin, View):
 # ── Contract management ───────────────────────────────────────────────
 
 
+def _internal_review_attachments(contract):
+    """Load review attachments, returning (None, None) on failure."""
+    if contract.is_draft:
+        from apps.sponsors.contracts import render_contract_to_docx_file, render_contract_to_pdf_file
+
+        try:
+            pdf_bytes = render_contract_to_pdf_file(contract)
+            docx_bytes = render_contract_to_docx_file(contract)
+        except (OSError, RuntimeError, ImportError):
+            return None, None
+        if not pdf_bytes or not docx_bytes:
+            return None, None
+        return pdf_bytes, docx_bytes
+
+    if not contract.document:
+        return None, None
+    try:
+        with contract.document.open("rb") as f:
+            pdf_bytes = f.read()
+        docx_bytes = None
+        if contract.document_docx:
+            with contract.document_docx.open("rb") as f:
+                docx_bytes = f.read()
+    except (OSError, FileNotFoundError):
+        return None, None
+    return pdf_bytes, docx_bytes
+
+
+def _log_email_notification(request, sponsorship, email, tag):
+    """Record a successful send."""
+    sent_by = request.user if getattr(request.user, "is_authenticated", False) else None
+    recipients = [*email.to, *(getattr(email, "cc", None) or []), *(getattr(email, "bcc", None) or [])]
+    try:
+        SponsorshipNotificationLog.objects.create(
+            sponsorship=sponsorship,
+            subject=email.subject,
+            content=email.body,
+            recipients=", ".join(recipients),
+            contact_types=tag,
+            sent_by=sent_by,
+        )
+    except Exception:
+        logger.exception("Failed to persist notification log for sponsorship %s", sponsorship.pk)
+
+
+def _send_internal_review_email(request, sponsor, contract, internal_email):
+    """Send attachments to the reviewer and record delivery."""
+    pdf_bytes, docx_bytes = _internal_review_attachments(contract)
+    if not pdf_bytes:
+        return False
+
+    email = EmailMessage(
+        subject=f"[Internal Review] Contract for {sponsor.name}",
+        body=(
+            f"Contract for {sponsor.name} ({contract.sponsorship.level_name}, "
+            f"${contract.sponsorship.sponsorship_fee}) attached for review."
+        ),
+        from_email=settings.SPONSORSHIP_NOTIFICATION_FROM_EMAIL,
+        to=[internal_email],
+    )
+    email.attach("Contract.pdf", pdf_bytes, "application/pdf")
+    if docx_bytes:
+        email.attach(
+            "Contract.docx",
+            docx_bytes,
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        )
+
+    try:
+        sent = email.send()
+    except (SMTPException, OSError):
+        sent = 0
+    if sent != 1:
+        return False
+
+    _log_email_notification(request, contract.sponsorship, email, tag="internal_review")
+    return True
+
+
 class ContractPreviewView(SponsorshipAdminRequiredMixin, View):
     """Preview/download a contract as PDF or DOCX."""
 
@@ -1455,62 +1540,23 @@ class ContractSendView(SponsorshipAdminRequiredMixin, View):
             msg = "Generate the contract first before sending to sponsor."
             raise InvalidStatusError(msg)
 
-        sent_count = ContractNotificationToSponsors().notify(contract=contract, request=request)
+        email = ContractNotificationToSponsors().get_email(contract=contract, request=request)
+        sent_count = email.send()
         if sent_count != 1:
             msg = "The email backend did not send the contract."
             raise SMTPException(msg)
+        _log_email_notification(request, contract.sponsorship, email, tag="contract")
 
     @staticmethod
     def _handle_send_internal(request, sp, contract):
-        from django.core.mail import EmailMessage
-
-        internal_email = request.POST.get("internal_email", "").strip()
-        if not internal_email:
-            messages.error(request, "Please enter an email address.")
+        form = InternalReviewEmailForm(request.POST)
+        if not form.is_valid():
+            error = next(iter(form.errors.get("internal_email", [])), "Please enter a valid email address.")
+            messages.error(request, error)
             return redirect(reverse("manage_contract_send", args=[sp.pk]))
 
-        if contract.is_draft:
-            # Draft terms can change any time, so always render fresh.
-            pdf_content, docx_content = ContractSendView._render_current_terms(contract)
-            if not pdf_content:
-                messages.error(request, "Failed to generate the contract documents. Nothing was sent.")
-                return redirect(reverse("manage_contract_send", args=[sp.pk]))
-        elif not contract.document:
-            messages.error(request, "No contract document available to send.")
-            return redirect(reverse("manage_contract_send", args=[sp.pk]))
-        else:
-            # Finalized contracts are immutable: reuse the stored snapshot
-            # instead of gratuitously re-rendering it.
-            try:
-                with contract.document.open("rb") as f:
-                    pdf_content = f.read()
-                docx_content = None
-                if contract.document_docx:
-                    with contract.document_docx.open("rb") as f:
-                        docx_content = f.read()
-            except FileNotFoundError:
-                messages.error(request, "The stored contract document is missing.")
-                return redirect(reverse("manage_contract_send", args=[sp.pk]))
-
-        email = EmailMessage(
-            subject=f"[Internal Review] Contract for {sp.sponsor.name}",
-            body=f"Contract for {sp.sponsor.name} ({sp.level_name}, ${sp.sponsorship_fee}) attached for review.",
-            from_email=settings.SPONSORSHIP_NOTIFICATION_FROM_EMAIL,
-            to=[internal_email],
-        )
-        email.attach("Contract.pdf", pdf_content, "application/pdf")
-        if docx_content:
-            email.attach(
-                "Contract.docx",
-                docx_content,
-                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            )
-
-        try:
-            sent = email.send()
-        except (SMTPException, OSError):
-            sent = 0
-        if sent != 1:
+        internal_email = form.cleaned_data["internal_email"]
+        if not _send_internal_review_email(request, sp.sponsor, contract, internal_email):
             messages.error(request, "The contract could not be sent. Please try again.")
             return redirect(reverse("manage_contract_send", args=[sp.pk]))
 
@@ -2868,18 +2914,11 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
             docx_bytes = render_contract_to_docx_file(contract)
         return pdf_bytes, docx_bytes
 
-    def _collect_recipients(self, request, sponsor):
-        """Collect email recipients from sponsor contacts and form data.
-
-        Returns:
-            List of email addresses, possibly empty.
-
-        """
-        contacts = SponsorContact.objects.filter(sponsor=sponsor)
-        emails = [c.email for c in contacts if c.email]
-        extra_to = request.POST.get("extra_to", "").strip()
-        if extra_to and extra_to.endswith(("@python.org", "@pyfound.org")):
-            emails.append(extra_to)
+    def _collect_recipients(self, sponsor, extra_to):
+        """Collect verified contacts and an optional PSF recipient."""
+        emails = sponsor.verified_emails()
+        if extra_to:
+            emails = list(dict.fromkeys([*emails, extra_to]))
         return emails
 
     def _attach_contract_files(self, email, sponsor, pdf_bytes, docx_bytes):
@@ -2917,12 +2956,20 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
 
     def _handle_send_proposal_with_contract(self, request, data, contract, sponsor):
         """Finalize and send together so a delivery failure leaves a retryable draft."""
-        from django.core.mail import EmailMessage
-
-        emails = self._collect_recipients(request, sponsor)
-        if not emails:
-            messages.error(request, "No recipients specified.")
+        recipients_form = ComposerRecipientsForm(request.POST)
+        if not recipients_form.is_valid():
+            for field in ("extra_to", "cc_email", "bcc_email"):
+                for error in recipients_form.errors.get(field, []):
+                    messages.error(request, error)
             return redirect(reverse("manage_composer") + "?step=6")
+
+        verified_emails = sponsor.verified_emails()
+        if not verified_emails:
+            # Extras alone can never be the sole recipient of a sponsor proposal.
+            messages.error(request, "No verified sponsor emails to send to.")
+            return redirect(reverse("manage_composer") + "?step=6")
+
+        emails = self._collect_recipients(sponsor, recipients_form.cleaned_data["extra_to"])
 
         subject = (
             request.POST.get("email_subject", "").strip() or "Sponsorship Proposal from the Python Software Foundation"
@@ -2937,8 +2984,8 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
             from_email=settings.SPONSORSHIP_NOTIFICATION_FROM_EMAIL,
             to=emails,
         )
-        cc = request.POST.get("cc_email", "").strip()
-        bcc = request.POST.get("bcc_email", "").strip()
+        cc = recipients_form.cleaned_data["cc_email"]
+        bcc = recipients_form.cleaned_data["bcc_email"]
         if cc:
             email.cc = [cc]
         if bcc:
@@ -2955,31 +3002,25 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
             messages.error(request, "PDF generation failed. The contract was not sent.")
             return redirect(reverse("manage_composer") + "?step=6")
 
+        _log_email_notification(request, contract.sponsorship, email, tag="composer_proposal")
         request.session.pop("composer", None)
         messages.success(request, f"Contract sent to {', '.join(emails)}.")
         return redirect(reverse("manage_sponsorship_detail", args=[data["sponsorship_id"]]))
 
     def _handle_send_internal_with_contract(self, request, data, contract, sponsor):
-        """Send the contract to an internal address for review."""
-        from django.core.mail import EmailMessage
-
-        email_addr = request.POST.get("internal_email", "").strip()
-        if not email_addr:
-            messages.error(request, "Please enter an email address for internal review.")
+        """Send the contract to a single PSF-domain address for internal review."""
+        form = InternalReviewEmailForm(request.POST)
+        if not form.is_valid():
+            error = next(iter(form.errors.get("internal_email", [])), "Please enter a valid email address.")
+            messages.error(request, error)
             return redirect(reverse("manage_composer") + "?step=6")
 
-        email = EmailMessage(
-            subject=f"[Internal Review] Sponsorship Contract for {sponsor.name}",
-            body=f"Please review the attached draft contract for {sponsor.name}.",
-            from_email=settings.SPONSORSHIP_NOTIFICATION_FROM_EMAIL,
-            to=[email_addr],
-        )
+        internal_email = form.cleaned_data["internal_email"]
+        if not _send_internal_review_email(request, sponsor, contract, internal_email):
+            messages.error(request, "The contract could not be sent. Please try again.")
+            return redirect(reverse("manage_composer") + "?step=6")
 
-        pdf_bytes, docx_bytes = self._render_contract_files(contract)
-        self._attach_contract_files(email, sponsor, pdf_bytes, docx_bytes)
-
-        email.send()
-        messages.success(request, f"Contract sent to {email_addr} for internal review.")
+        messages.success(request, f"Contract sent to {internal_email} for internal review.")
         return redirect(reverse("manage_composer") + "?step=6")
 
 

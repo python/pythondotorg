@@ -5,6 +5,7 @@ from smtplib import SMTPException
 from tempfile import TemporaryDirectory
 from unittest import mock
 
+from allauth.account.models import EmailAddress
 from django.core import mail
 from django.core.files.storage import FileSystemStorage
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -180,6 +181,7 @@ class ManageContractRegressionTests(SponsorshipReviewTestBase):
 
     def _open_composer(self):
         SponsorContact.objects.create(sponsor=self.sponsor, name="Jane Doe", email="jane@acme.com", primary=True)
+        EmailAddress.objects.create(user=self.staff_user, email="jane@acme.com", verified=True)
         session = self.client.session
         session["composer"] = {"sponsorship_id": self.sponsorship.pk, "contract_id": self.contract.pk}
         session.save()
