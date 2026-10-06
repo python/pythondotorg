@@ -219,6 +219,11 @@
   .package-builder .pb-tier-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75em; margin-top: 0.65em; }
   .package-builder .pb-tier-facts dt { margin-top: 0; }
 }
+.package-builder .pb-base-services { margin-top: 1.25em; }
+.package-builder .pb-base-service input { width: 1.1em; height: 1.1em; accent-color: var(--pb-blue); }
+.package-builder .pb-base-service .choice-help { display: block; }
+.package-builder .pb-base-service:has(input:disabled) { color: var(--pb-muted); cursor: default; }
+.package-builder .pb-base-services .pb-services-changed { margin-top: 1em; }
 .package-builder .pb-staff-details { margin-top: 1.5em; border-bottom: 1px solid var(--pb-line); }
 .package-builder .pb-staff-details > summary { padding: 0.7em 0; color: var(--pb-blue-dark); font-size: 0.9375em; font-family: SourceSansProBold, Arial, sans-serif; cursor: pointer; }
 .package-builder .pb-staff-details[open] { padding-bottom: 1em; }
