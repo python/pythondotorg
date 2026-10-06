@@ -2,7 +2,7 @@ from smtplib import SMTPException
 from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
-from django.contrib.messages import ERROR, get_messages
+from django.contrib.messages import ERROR, SUCCESS, WARNING, get_messages
 from django.core import mail
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
@@ -89,6 +89,37 @@ class SigningRecoveryTests(TestCase):
         self.assertTrue(sent.is_usable)
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].to, [data["email"]])
+
+    def test_empty_recipient_execution_and_resend_do_not_claim_email_delivery(self):
+        self.customer.email = ""
+        self.customer.save(update_fields=["email"])
+        response = self.client.post(reverse("agreements:sign", args=[self.agreement.pk]), self.signature_data())
+        self.assertRedirects(response, self.agreement.get_absolute_url())
+        self.client.force_login(self.officer)
+        response = self.client.post(
+            reverse("agreements:countersign", args=[self.agreement.pk]),
+            {"name": "Officer", "title": "Director", "accept": "on"},
+        )
+        self.assertEqual(response.status_code, 302)
+        self.agreement.refresh_from_db()
+        self.assertEqual(self.agreement.status, Agreement.Status.EXECUTED)
+        self.assertEqual(self.agreement.signer_email, "")
+        self.assertEqual(mail.outbox, [])
+        levels = [message.level for message in get_messages(response.wsgi_request)]
+        self.assertIn(WARNING, levels)
+        self.assertNotIn(SUCCESS, levels)
+        signed_at = self.agreement.countersigned_at
+
+        resend_url = reverse("agreements:resend_executed_copy", args=[self.agreement.pk])
+        self.assertNotContains(self.client.get(self.agreement.get_absolute_url()), resend_url)
+        response = self.client.post(resend_url)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(mail.outbox, [])
+        levels = [message.level for message in get_messages(response.wsgi_request)]
+        self.assertIn(WARNING, levels)
+        self.assertNotIn(SUCCESS, levels)
+        self.agreement.refresh_from_db()
+        self.assertEqual(self.agreement.countersigned_at, signed_at)
 
     def test_delivery_can_be_retried_without_changing_the_countersignature(self):
         self.client.force_login(self.officer)

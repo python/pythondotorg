@@ -212,6 +212,9 @@ records are read-only in the Django admin; use the site workflow to change their
                  If rendering or email delivery fails, the countersignature still stands.
                  Use **Email signed copy** on the executed agreement to retry delivery
                  without signing again. This action is available only to Agreements Administrators.
+                 If the recorded signatory has no email address, execution still succeeds,
+                 but the page explicitly warns that nothing was emailed and hides the resend
+                 control. Download and deliver the signed PDF and cited terms separately.
 :Custom contracts: Write one-off contracts at ``/agreements/contracts/new/``, optionally
                    incorporating versioned terms. Creation, editing, and deletion use
                    this workflow; the Django admin is read-only. Linked customers return

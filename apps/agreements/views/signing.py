@@ -137,6 +137,13 @@ def send_link(request, pk):
 
 
 def _deliver_executed_copy(request, agreement):
+    if not agreement.signer_email:
+        messages.warning(
+            request,
+            "The agreement is executed, but no copy was emailed because the signatory has no email address. "
+            "Download the signed PDF and cited terms and deliver them outside python.org.",
+        )
+        return False
     try:
         notifications.send_executed_copy(agreement)
     except (OSError, RuntimeError):

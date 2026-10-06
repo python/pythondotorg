@@ -16,7 +16,7 @@ pass `next` to return to the including page after each action.
 
 {% include "agreements/_record.html" %}
 
-{% if is_administrator and agreement.status == "executed" %}
+{% if is_administrator and agreement.status == "executed" and agreement.signer_email %}
   <form method="post" action="{% url 'agreements:resend_executed_copy' agreement.pk %}" class="sign-form">
     {% csrf_token %}
     {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
