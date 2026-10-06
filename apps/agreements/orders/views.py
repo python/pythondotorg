@@ -253,9 +253,10 @@ def order_detail(request, pk, sign_form=None, status=200):
 @never_cache
 @login_required
 @require_POST
+@transaction.atomic
 def order_sign(request, pk):
     """Freeze and sign the reviewed draft in one atomic transition."""
-    order = _order_or_404(request, pk)
+    order = _order_or_404(request, pk, for_update=True)
     if not order.is_customer(request.user) or not order.is_editable:
         raise Http404
     form = SignForm(request.POST)
