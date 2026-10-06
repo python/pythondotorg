@@ -141,6 +141,13 @@ permissions do not authorize those writes. Superusers are trusted identity admin
 who can provision agreement roles; they still need group membership to use the agreements
 workflow themselves.
 
+Only superusers can grant or remove staff status, superuser status, groups (including
+both agreement roles), or direct permissions on user accounts. Staff with delegated
+user-administration permissions can edit, deactivate, reset passwords for, and delete
+ordinary accounts only. Accounts that hold any authority (superuser, staff, direct or
+group permissions, or either agreement role, even when inactive) are view-only to them,
+including password changes, the changelist active toggle, bulk deletion, and API key inlines.
+
 Authenticated accounts outside both groups receive a permission-denied page for management
 views; anonymous visitors are directed to sign in. Linked customers retain their own
 order and signing rights independently of group membership, as do valid one-time
