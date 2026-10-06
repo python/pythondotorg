@@ -113,6 +113,10 @@ class AgreementAdmin(admin.ModelAdmin):
         """Agreements are offered from their draft."""
         return False
 
+    def has_change_permission(self, request, obj=None):
+        """Keep immutable records behind the signing workflow."""
+        return False
+
     def has_delete_permission(self, request, obj=None):
         """Agreements are records."""
         return False
@@ -188,6 +192,10 @@ class OrderAdmin(admin.ModelAdmin):
 
     def has_add_permission(self, request):
         """Create orders through the validated builder."""
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        """Keep order mutations behind the validated site workflow."""
         return False
 
     def has_delete_permission(self, request, obj=None):

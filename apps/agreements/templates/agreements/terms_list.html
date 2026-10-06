@@ -8,12 +8,13 @@
     <h1 class="page-title">Terms</h1>
   </header>
   <p class="introduction">Standing terms that documents cite. Publishing a new version changes them for every document offered afterwards; documents already offered or signed keep the version they cite. To change one counterparty's document only, edit that agreement instead.</p>
+  <div class="table-scroll" role="region" aria-label="Terms and published versions" tabindex="0">
   <table class="order-table">
     <thead><tr><th scope="col">Terms</th><th scope="col">Current version</th><th scope="col">Unpublished draft</th><th scope="col"></th></tr></thead>
     <tbody>
       {% for terms in all_terms %}
         <tr>
-          <th scope="row"><a href="{{ terms.get_absolute_url }}">{{ terms.title }}</a>{% if terms.under_review %}<span class="ref">Draft for attorney review</span>{% endif %}</th>
+          <th scope="row"><a href="{% if terms.current_version %}{{ terms.get_absolute_url }}{% else %}{% url 'agreements:terms_edit' terms.slug %}{% endif %}">{{ terms.title }}</a>{% if terms.under_review %}<span class="ref">Draft for attorney review</span>{% endif %}</th>
           <td>{% with current=terms.current_version %}{% if current %}{{ current.version }}, {{ current.published_at|date:"M j, Y" }}{% else %}None{% endif %}{% endwith %}</td>
           <td>{% if terms.draft_markdown %}Saved {{ terms.draft_updated_at|date:"M j, Y" }}{% else %}None{% endif %}</td>
           <td><a class="button" href="{% url 'agreements:terms_edit' terms.slug %}">Edit</a></td>
@@ -21,6 +22,11 @@
       {% endfor %}
     </tbody>
   </table>
-  <p class="help">To add a new set of terms, create it in the admin, then write and publish it here.</p>
+  </div>
+  {% if user.is_staff and perms.agreements.manage_agreement %}
+    <p class="help"><a href="{% url 'admin:agreements_terms_add' %}">Add a new set of terms in the admin</a>, then write and publish it here.</p>
+  {% else %}
+    <p class="help">Ask an administrator to create a new set of terms, then write and publish it here.</p>
+  {% endif %}
 </article>
 {% endblock %}

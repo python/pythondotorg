@@ -11,7 +11,7 @@
     <p>It has expired, has already been used, or the document was withdrawn. Ask your contact at the Python Software Foundation for a new link.</p>
   {% elif signed %}
     <header class="article-header"><h1 class="page-title">Signed. Thank you.</h1></header>
-    <p>{{ link.name }} signed {{ agreement.title }} for {{ agreement.counterparty_name }} (reference {{ agreement.reference }}). The PSF will countersign and email the fully signed copy to {{ link.email }}.</p>
+    <p>{{ agreement.signer_name }} signed {{ agreement.title }} for {{ agreement.counterparty_name }} (reference {{ agreement.reference }}). The PSF will countersign and email the fully signed copy to {{ agreement.signer_email }}.</p>
   {% else %}
     <header class="article-header"><h1 class="page-title">{{ agreement.title }}</h1></header>
     <p class="agreement-meta">For {{ agreement.counterparty_name }} · Reference <code>{{ agreement.reference }}</code> · Revision {{ agreement.revision }} · Download: <a href="{% url 'agreements:sign_link_document' token 'pdf' %}">PDF</a> · <a href="{% url 'agreements:sign_link_document' token 'docx' %}">DOCX</a></p>

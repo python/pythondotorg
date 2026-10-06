@@ -14,7 +14,7 @@
 {% sitetree_menu from "main" include "psf-meta" template "sitetree/submenu.html" %}
 {% endblock %}
 
-{% block head %}<link rel="stylesheet" href="{% static 'agreements/agreements.css' %}?v=4">{% endblock %}
+{% block head %}<link rel="stylesheet" href="{% static 'agreements/agreements.css' %}?v=5">{% endblock %}
 
 {% block breadcrumbs %}
 <ul class="breadcrumbs menu">
@@ -26,7 +26,7 @@
 {% block content_attributes %}with-left-sidebar{% endblock %}
 
 {% block left_sidebar %}
-<aside class="left-sidebar" role="secondary">
+<aside class="left-sidebar">
   {% block sidebar %}{% endblock %}
   {% if perms.agreements.manage_agreement %}
     <div class="section-navigation sidebar-widget">

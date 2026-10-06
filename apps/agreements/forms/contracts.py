@@ -4,7 +4,7 @@ from django import forms
 
 from apps.agreements.documents import EFFECTIVE_DATE, SIGNATURES
 from apps.agreements.forms.accounts import account_for_email
-from apps.agreements.forms.validation import _check_placeholders
+from apps.agreements.forms.validation import _check_markdown, _check_placeholders
 from apps.agreements.models import CustomContract, Terms
 
 MAX_NOTE_LENGTH = 255
@@ -30,6 +30,7 @@ class EditDocumentForm(forms.Form):
         """Normalize line endings and keep the signature placeholder."""
         markdown = self.cleaned_data["markdown"].replace("\r\n", "\n")
         _check_placeholders(markdown, required=True)
+        _check_markdown(markdown)
         return markdown
 
 
@@ -70,6 +71,7 @@ class CustomContractForm(forms.ModelForm):
         """Normalize line endings; placeholders are added automatically."""
         markdown = self.cleaned_data["body_markdown"].replace("\r\n", "\n")
         _check_placeholders(markdown, required=False)
+        _check_markdown(markdown)
         return markdown
 
     def save(self, commit=True):

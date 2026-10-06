@@ -13,13 +13,14 @@
   </p>
 
   <h2>To countersign ({{ to_countersign|length }})</h2>
-  {% include "agreements/_agreement_table.html" with agreements=to_countersign empty="Nothing is waiting." %}
+  {% include "agreements/_agreement_table.html" with agreements=to_countersign label="To countersign" empty="Nothing is waiting." %}
 
   <h2>Awaiting signature ({{ awaiting_signature|length }})</h2>
-  {% include "agreements/_agreement_table.html" with agreements=awaiting_signature empty="Nothing is out for signature." %}
+  {% include "agreements/_agreement_table.html" with agreements=awaiting_signature label="Awaiting signature" empty="Nothing is out for signature." %}
 
   {% if drafts %}
     <h2>Contract drafts</h2>
+    <div class="table-scroll" role="region" aria-label="Contract drafts" tabindex="0">
     <table class="order-table">
       <thead><tr><th scope="col">Contract</th><th scope="col">Counterparty</th><th scope="col">Updated</th></tr></thead>
       <tbody>
@@ -28,9 +29,10 @@
         {% endfor %}
       </tbody>
     </table>
+    </div>
   {% endif %}
 
   <h2>Recent</h2>
-  {% include "agreements/_agreement_table.html" with agreements=recent empty="None yet." %}
+  {% include "agreements/_agreement_table.html" with agreements=recent label="Recent agreements" empty="None yet." %}
 </article>
 {% endblock %}

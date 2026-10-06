@@ -13,6 +13,7 @@ from apps.agreements.documents import (
     preview_markdown,
     table,
 )
+from apps.agreements.orders.pricing import fee_totals, money
 
 ONE_YEAR = 12
 
@@ -73,7 +74,10 @@ def _fee_rows(pricing):
         rows.append((f"Additional service: {label}", amount))
     if pricing["discount_percent"]:
         rows.append((md(pricing["discount_name"]), f"less {md(pricing['display']['discount_amount'])}"))
-    rows.append(("**Annual fees**", f"**{md(pricing['display']['total_annual'])}**"))
+    totals = fee_totals(pricing)
+    rows.append(("**Annual fees**", f"**{money(totals['annual'])}**"))
+    if totals["one_time"]:
+        rows.append(("One-time fees", money(totals["one_time"])))
     if pricing["term_months"] > ONE_YEAR or any(not item["recurring"] for item in pricing["items"]):
         rows.append((f"Initial Term total ({pricing['term_months']} months)", md(pricing["display"]["term_total"])))
     return rows
@@ -123,16 +127,15 @@ def _agreement_section(line):
 
 
 def _total_section(order):
-    rows = [
-        (md(line.agreement_obj.short_name), md(line.pricing_snapshot["display"]["total_annual"]))
-        for line in order.agreement_list
-    ]
-    rows.append(("**Total annual fees**", f"**{md(order.total_annual_display)}**"))
+    rows = [(md(line.agreement_obj.short_name), money(line.fee_totals["annual"])) for line in order.agreement_list]
+    rows.append(("**Total annual fees**", f"**{money(order.fee_totals['annual'])}**"))
+    if order.fee_totals["one_time"]:
+        rows.append(("Total one-time fees", money(order.fee_totals["one_time"])))
     if order.term_months > ONE_YEAR or any(
         not item["recurring"] for line in order.agreement_list for item in line.pricing_snapshot["items"]
     ):
         rows.append((f"Total for the Initial Term ({order.term_months} months)", md(order.term_total_display)))
-    return ["## Order total", "", *amounts_table(("Agreement", "Annual fees"), rows)]
+    return ["## Order total", "", *amounts_table(("Agreement", "Fees"), rows)]
 
 
 def compose_order_form_markdown(order):

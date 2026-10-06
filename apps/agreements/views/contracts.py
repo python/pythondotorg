@@ -1,7 +1,7 @@
 """Custom contract drafting and offers."""
 
 from django.contrib import messages
-from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.db import transaction
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
@@ -20,7 +20,8 @@ def _custom_or_404(pk, *, for_update=False):
     return get_object_or_404(contracts, pk=pk)
 
 
-@permission_required(MANAGE_PERMISSION)
+@login_required
+@permission_required(MANAGE_PERMISSION, raise_exception=True)
 def custom_create(request):
     """Write a new one-off contract."""
     form = CustomContractForm(request.POST or None)
@@ -31,7 +32,8 @@ def custom_create(request):
     return render(request, "agreements/custom_form.html", {"form": form, "nav": "custom"})
 
 
-@permission_required(MANAGE_PERMISSION)
+@login_required
+@permission_required(MANAGE_PERMISSION, raise_exception=True)
 @transaction.atomic
 def custom_edit(request, pk):
     """Change a contract that hasn't been offered; once offered, edit the agreement instead."""
@@ -45,7 +47,8 @@ def custom_edit(request, pk):
     return render(request, "agreements/custom_form.html", {"form": form, "contract": contract, "nav": "custom"})
 
 
-@permission_required(MANAGE_PERMISSION)
+@login_required
+@permission_required(MANAGE_PERMISSION, raise_exception=True)
 def custom_detail(request, pk):
     """Preview a draft contract; once offered, the agreement page takes over."""
     contract = _custom_or_404(pk)
@@ -56,7 +59,8 @@ def custom_detail(request, pk):
     return render(request, "agreements/custom_detail.html", {"contract": contract, "html": html, "nav": "custom"})
 
 
-@permission_required(MANAGE_PERMISSION)
+@login_required
+@permission_required(MANAGE_PERMISSION, raise_exception=True)
 @require_POST
 def custom_offer(request, pk):
     """Freeze the draft and make it ready to sign."""
@@ -70,7 +74,8 @@ def custom_offer(request, pk):
     return redirect(agreement)
 
 
-@permission_required(MANAGE_PERMISSION)
+@login_required
+@permission_required(MANAGE_PERMISSION, raise_exception=True)
 @require_POST
 @transaction.atomic
 def custom_delete(request, pk):

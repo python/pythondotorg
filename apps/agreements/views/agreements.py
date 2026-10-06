@@ -13,7 +13,8 @@ from apps.agreements.views.helpers import _agreement_or_404, _diff, action_forms
 RECENT = 25
 
 
-@permission_required(MANAGE_PERMISSION)
+@login_required
+@permission_required(MANAGE_PERMISSION, raise_exception=True)
 def queue(request):
     """Every agreement that needs the PSF or the counterparty, then recent ones and custom drafts."""
     agreements = Agreement.objects.select_related("counterparty_account")
@@ -66,7 +67,8 @@ def copy_download(request, pk, kind):
     return response
 
 
-@permission_required(MANAGE_PERMISSION)
+@login_required
+@permission_required(MANAGE_PERMISSION, raise_exception=True)
 def edit(request, pk):
     """Edit one agreement's text before it is signed; every saved edit is a new revision."""
     agreement = _agreement_or_404(request, pk)

@@ -10,7 +10,7 @@
   <header class="article-header">
     <h1 class="page-title">Edit {{ terms.title }}</h1>
   </header>
-  <p class="introduction">Save a draft as often as you like; it stays private. Publishing makes it a new version at a permanent address, and every document offered from then on cites it. Documents already offered or signed keep citing {% if current %}version {{ current.version }}{% else %}their version{% endif %}.</p>
+  <p class="introduction">Save a draft as often as you like; it stays private. Publishing makes it a new version at a permanent address, and every document offered from then on cites it. Documents already offered or signed keep citing their version.</p>
 
   <form method="post" class="sign-form">
     {% csrf_token %}

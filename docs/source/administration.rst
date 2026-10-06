@@ -112,6 +112,9 @@ Agreements
 The ``agreements`` app handles configurable order forms and custom contracts: preparation,
 revisions, signatures, and countersignatures. Staff with the *Can prepare, edit, send, and
 countersign agreements* permission work from ``/agreements/``.
+Authenticated accounts without that permission receive a permission-denied page; anonymous
+visitors are directed to sign in. Agreement and order records are read-only in the Django
+admin; use the agreement workflow to change their state.
 
 :Programs: Create and edit programs in the Django admin. A program's name, catalog, prices,
            service descriptions, discounts, and document copy are database configuration,
@@ -128,13 +131,17 @@ countersign agreements* permission work from ``/agreements/``.
            of Contacts & billing.
            New packages start empty unless a service is explicitly preselected. Choosing a
            tier includes its service; extras included at that tier are not charged again.
-           The live summary separates recurring and one-time fees, and shows prepaid totals
-           for multi-year terms. Review identifies the terms required by the selections.
+           The live summary, saved order, and newly generated Order Form separate recurring
+           and one-time fees, and show prepaid totals for multi-year terms. Existing frozen
+           documents and fee snapshots are not rewritten. Review identifies the terms
+           required by the selections.
            Without JavaScript, all sections appear together: use each service's inclusion
            checkbox and review fees on the next page. Existing private-order access
            restrictions still apply.
 :Terms: Create a set of terms in the admin, then edit its text at ``/agreements/terms/``.
         Save a private draft or publish an immutable version with a label and change note.
+        Unpublished sets open in the draft editor. Creating a set requires separate admin
+        access; agreement managers without it should ask an administrator.
         Once a version is published, its terms slug is read-only in the admin so cited
         addresses remain permanent. The draft editor is at
         ``/agreements/terms/<slug>/edit/draft/``; ``edit`` is also a valid version label.
@@ -153,6 +160,8 @@ countersign agreements* permission work from ``/agreements/``.
 :Editing: Before signing, staff can edit an offered document for that counterparty only.
           Each save records a revision and note. Signing requires the exact revision the
           signatory reviewed. Signed text cannot be edited.
+          Embedded images are not supported; editors report them as field errors before
+          saving or previewing rather than leaving an unrenderable document.
 :Document display: Pages and emails use the reference printed in the document when present.
                    Browser views omit generated fingerprint metadata from older documents;
                    their stored text and complete PDF/DOCX downloads remain intact.
@@ -162,6 +171,9 @@ countersign agreements* permission work from ``/agreements/``.
           database, not public media storage.
           Signing-link pages, their cited terms, and their error responses omit analytics
           and advertising scripts so those scripts cannot report signing credentials.
+          If the document changes during link signing, the refreshed form keeps the
+          signatory's entered name and title but requires acceptance of the new text.
+          Confirmation shows the recorded signatory, even if different from the invitation.
 :Countersigning: The staff queue lists documents awaiting the PSF's signature. Countersigning
                  can include a fully executed uploaded copy and emails that exact PDF,
                  including external signatures and audit pages. Without an uploaded

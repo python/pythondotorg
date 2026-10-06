@@ -1,7 +1,7 @@
 """Published terms and staff editing."""
 
 from django.contrib import messages
-from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.db.models import Q
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
@@ -88,7 +88,8 @@ def terms_download(request, slug, fmt, version=None):
     return _terms_cache(response, terms)
 
 
-@permission_required(MANAGE_PERMISSION)
+@login_required
+@permission_required(MANAGE_PERMISSION, raise_exception=True)
 def terms_list(request):
     """Every set of terms, for staff to edit."""
     return render(
@@ -96,7 +97,8 @@ def terms_list(request):
     )
 
 
-@permission_required(MANAGE_PERMISSION)
+@login_required
+@permission_required(MANAGE_PERMISSION, raise_exception=True)
 def terms_edit(request, slug):
     """Edit terms and publish them as a new version for documents offered from now on."""
     terms = get_object_or_404(Terms, slug=slug)

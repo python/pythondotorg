@@ -47,7 +47,7 @@ def _order_rows(orders):
         row = {"order": order}
         try:
             row["selections"] = [(line.agreement_obj.short_name, line.tier_name) for line in order.agreement_list]
-            row["total_annual"] = order.total_annual_display
+            row["fees"] = order.fee_totals
         except (ValidationError, KeyError):
             if not order.is_editable:
                 raise
@@ -323,7 +323,8 @@ def order_document(request, pk, fmt):
 
 
 @never_cache
-@permission_required(MANAGE_PERMISSION)
+@login_required
+@permission_required(MANAGE_PERMISSION, raise_exception=True)
 def staff_orders(request):
     """List all orders for agreement managers."""
     return render(request, "agreements/orders/staff_queue.html", {"orders": _order_rows(_orders()), "nav": "staff"})

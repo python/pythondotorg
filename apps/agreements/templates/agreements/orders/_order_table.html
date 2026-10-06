@@ -1,10 +1,11 @@
 {% load agreements %}
+<div class="table-scroll" role="region" aria-label="Orders" tabindex="0">
 <table class="order-table">
   <thead>
     <tr>
       <th scope="col">Customer</th>
       <th scope="col">Agreements</th>
-      <th scope="col" class="num">Annual fees</th>
+      <th scope="col" class="num">Fees</th>
       <th scope="col">Status</th>
       <th scope="col">{% if show_owner %}Customer account{% else %}Updated{% endif %}</th>
     </tr>
@@ -18,7 +19,7 @@
           <td colspan="2"><a href="{% url 'agreements:order_edit' order.pk %}">Review selections</a></td>
         {% else %}
           <td>{% for name, tier in row.selections %}{{ name }} ({{ tier }}){% if not forloop.last %}<br>{% endif %}{% endfor %}</td>
-          <td class="num">{{ row.total_annual }}</td>
+          <td class="num">{{ row.fees.annual|money }} a year{% if row.fees.one_time %}<br>{{ row.fees.one_time|money }} one-time{% endif %}</td>
         {% endif %}
         <td>{% status_badge order.status %}</td>
         <td>{% if show_owner %}{{ order.customer_account.email|default:"Signs outside python.org" }}{% else %}{{ order.modified|date:"M j, Y" }}{% endif %}</td>
@@ -27,3 +28,4 @@
     {% endfor %}
   </tbody>
 </table>
+</div>

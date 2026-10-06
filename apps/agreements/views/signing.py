@@ -109,7 +109,8 @@ def withdraw(request, pk):
     return _back(request, agreement)
 
 
-@permission_required(MANAGE_PERMISSION)
+@login_required
+@permission_required(MANAGE_PERMISSION, raise_exception=True)
 @require_POST
 def send_link(request, pk):
     """Email a named signatory a one-time signing link."""
@@ -143,7 +144,8 @@ def _deliver_executed_copy(request, agreement):
     return True
 
 
-@permission_required(MANAGE_PERMISSION)
+@login_required
+@permission_required(MANAGE_PERMISSION, raise_exception=True)
 @require_POST
 def countersign(request, pk):
     """Countersign for the PSF, then email the signatory the executed copy."""
@@ -164,7 +166,8 @@ def countersign(request, pk):
     return _back(request, agreement)
 
 
-@permission_required(MANAGE_PERMISSION)
+@login_required
+@permission_required(MANAGE_PERMISSION, raise_exception=True)
 @require_POST
 def resend_executed_copy(request, pk):
     """Retry delivery without applying the PSF signature again."""
@@ -176,7 +179,8 @@ def resend_executed_copy(request, pk):
     return _back(request, agreement)
 
 
-@permission_required(MANAGE_PERMISSION)
+@login_required
+@permission_required(MANAGE_PERMISSION, raise_exception=True)
 @require_POST
 def decline(request, pk):
     """Decline a signed agreement."""
@@ -223,10 +227,16 @@ def sign_link(request, token):
             user_agent=request.headers.get("user-agent", ""),
         )
         try:
-            workflow.sign_with_link(link, signature, seen_sha256=form.cleaned_data["document_sha256"])
+            agreement = workflow.sign_with_link(link, signature, seen_sha256=form.cleaned_data["document_sha256"])
         except workflow.DocumentChangedError as exc:
             agreement.refresh_from_db()
-            form = SignForm(initial={"document_sha256": agreement.document_sha256, "signer_name": link.name})
+            form = SignForm(
+                initial={
+                    "document_sha256": agreement.document_sha256,
+                    "signer_name": form.cleaned_data["signer_name"],
+                    "signer_title": form.cleaned_data["signer_title"],
+                }
+            )
             messages.error(request, str(exc))
         except workflow.InvalidTransitionError:
             return _link_response(request, "agreements/sign_link.html", {"unusable": True}, status=410)

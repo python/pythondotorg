@@ -2,7 +2,7 @@
 
 from django import forms
 
-from apps.agreements.forms.validation import _check_placeholders
+from apps.agreements.forms.validation import _check_markdown, _check_placeholders
 from apps.agreements.models import TermsVersion
 
 
@@ -43,6 +43,7 @@ class TermsForm(forms.Form):
         """Normalize line endings; terms don't carry signature placeholders."""
         markdown = self.cleaned_data["markdown"].replace("\r\n", "\n")
         _check_placeholders(markdown, required=False)
+        _check_markdown(markdown)
         return markdown
 
     def clean(self):

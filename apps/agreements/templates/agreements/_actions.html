@@ -136,6 +136,7 @@ pass `next` to return to the including page after each action.
       <button type="submit">Send signing link</button>
     </form>
     {% if links %}
+      <div class="table-scroll" role="region" aria-label="Signing invitations" tabindex="0">
       <table class="order-table">
         <thead><tr><th scope="col">Sent to</th><th scope="col">Sent</th><th scope="col">Status</th></tr></thead>
         <tbody>
@@ -148,6 +149,7 @@ pass `next` to return to the including page after each action.
           {% endfor %}
         </tbody>
       </table>
+      </div>
     {% endif %}
   </section>
 {% endif %}

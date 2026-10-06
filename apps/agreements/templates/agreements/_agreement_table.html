@@ -1,5 +1,6 @@
 {% load agreements %}
 {% if agreements %}
+  <div class="table-scroll" role="region" aria-label="{{ label|default:'Agreements' }}" tabindex="0">
   <table class="order-table">
     <thead>
       <tr><th scope="col">Counterparty</th><th scope="col">Document</th><th scope="col">Status</th><th scope="col">Since</th></tr>
@@ -15,6 +16,7 @@
       {% endfor %}
     </tbody>
   </table>
+  </div>
 {% else %}
   <p>{{ empty }}</p>
 {% endif %}

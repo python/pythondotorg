@@ -12,7 +12,7 @@ from django.utils.functional import cached_property
 from apps.agreements.models.agreements import MANAGE_PERMISSION
 from apps.agreements.models.terms import Terms
 from apps.agreements.orders.catalog import Catalog, validate_catalog
-from apps.agreements.orders.pricing import build_quote, money
+from apps.agreements.orders.pricing import build_quote, fee_totals, money
 
 
 class Program(models.Model):
@@ -179,10 +179,14 @@ class Order(models.Model):
         """Sum annual or term totals across the selected agreements."""
         return sum((line.pricing_value(key) for line in self.agreement_list), Decimal(0))
 
-    @property
-    def total_annual_display(self):
-        """Format the combined annual fees."""
-        return money(self.total("total_annual"))
+    @cached_property
+    def fee_totals(self):
+        """Separate annual and one-time fees across current or frozen selections."""
+        totals = {"annual": Decimal(0), "one_time": Decimal(0)}
+        for line in self.agreement_list:
+            for key, amount in line.fee_totals.items():
+                totals[key] += amount
+        return totals
 
     @property
     def term_total_display(self):
@@ -236,6 +240,11 @@ class OrderLine(models.Model):
     def pricing_snapshot(self):
         """Return frozen fees after offering or the current draft's quote."""
         return self.pricing or self.quote().as_dict()
+
+    @cached_property
+    def fee_totals(self):
+        """Read recurring fees separately from one-time charges in any snapshot."""
+        return fee_totals(self.pricing_snapshot)
 
     def pricing_value(self, key):
         """Read a numeric fee total."""

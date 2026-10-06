@@ -26,6 +26,18 @@ def money(amount):
     return f"${amount:,.2f}"
 
 
+def fee_totals(pricing):
+    """Separate recurring and one-time fees without changing stored first-year totals."""
+    first_year = Decimal(pricing["total_annual"])
+    amounts = [
+        Decimal(item["amount"]) for item in pricing["items"] if item["amount"] is not None and not item["recurring"]
+    ]
+    with localcontext() as context:
+        context.prec = _precision(first_year, *amounts)
+        one_time = sum(amounts, Decimal(0))
+        return {"annual": first_year - one_time, "one_time": one_time}
+
+
 @dataclass(frozen=True)
 class LineItem:
     """One additional-service charge, or an explicit separately quoted item."""

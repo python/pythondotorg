@@ -23,9 +23,10 @@
     <div class="user-feedback level-error"><p>{{ configuration_error }}</p></div>
     {% if can_edit %}<p><a class="button" href="{% url 'agreements:order_edit' order.pk %}">Edit selections</a></p>{% endif %}
   {% else %}
+  <div class="table-scroll" role="region" aria-label="Package fees" tabindex="0">
   <table class="facts">
     <thead>
-      <tr><th scope="col">Agreement</th><th scope="col">Service Tier</th><th scope="col">Terms</th><th scope="col" class="num">Annual fees</th></tr>
+      <tr><th scope="col">Agreement</th><th scope="col">Service Tier</th><th scope="col">Terms</th><th scope="col" class="num">Fees</th></tr>
     </thead>
     <tbody>
       {% for line in lines %}
@@ -34,18 +35,31 @@
           <th scope="row">{{ line.agreement_obj.short_name }}</th>
           <td>{{ line.tier_name }}</td>
           <td><a href="{{ terms.get_absolute_url }}">Version {{ terms.version }}</a></td>
-          <td class="num">{{ line.pricing_snapshot.display.total_annual }}</td>
+          <td class="num">{{ line.fee_totals.annual|money }} a year{% if line.fee_totals.one_time %}<br>{{ line.fee_totals.one_time|money }} one-time{% endif %}</td>
         </tr>
         {% endwith %}
       {% endfor %}
     </tbody>
     <tfoot>
       <tr>
-        <th scope="row" colspan="3">Total annual fees{% if order.term_months > 12 %} ({{ order.term_months }}-month prepaid Initial Term: {{ order.term_total_display }}){% endif %}</th>
-        <td class="num">{{ order.total_annual_display }}</td>
+        <th scope="row" colspan="3">Total annual fees</th>
+        <td class="num">{{ order.fee_totals.annual|money }}</td>
       </tr>
+      {% if order.fee_totals.one_time %}
+      <tr>
+        <th scope="row" colspan="3">Total one-time fees</th>
+        <td class="num">{{ order.fee_totals.one_time|money }}</td>
+      </tr>
+      {% endif %}
+      {% if order.term_months > 12 or order.fee_totals.one_time %}
+      <tr>
+        <th scope="row" colspan="3">{{ order.term_months }}-month Initial Term{% if order.term_months > 12 %}, prepaid{% endif %}</th>
+        <td class="num">{{ order.term_total_display }}</td>
+      </tr>
+      {% endif %}
     </tfoot>
   </table>
+  </div>
   <p class="order-orgs">{{ order.catalog.covered_entities_label }}: {{ order.organization_list|join:", " }}</p>
 
   {% if not order.agreement %}

@@ -81,6 +81,42 @@ class OrderFormDocumentTests(TestCase):
         self.user = User.objects.create_user("ada", "ada@example.com", "password")
         self.program = make_program()
 
+    def test_recurring_and_one_time_fees_are_separate_without_repricing_snapshots(self):
+        order = make_order(
+            self.user,
+            {
+                "studio": {"tier": "basic"},
+                "workshop": {"tier": "max", "addons": {"kit": {}, "sessions": {"hours": 2}}},
+            },
+            program=self.program,
+            discount="prepaid",
+        )
+        self.client.force_login(self.user)
+        self.assertEqual(order.term_total_display, "$22,656")
+        markdown = documents.compose_order_form_markdown(order)
+        self.assertIn("**Total annual fees** | **$7,527**", markdown)
+        self.assertIn("Total one-time fees | $75", markdown)
+        self.assertNotIn("**Total annual fees** | **$7,602**", markdown)
+        detail = self.client.get(order.get_absolute_url())
+        self.assertContains(detail, "$6,471 a year")
+        self.assertContains(detail, "$75 one-time")
+        listing = self.client.get(reverse("agreements:order_list"))
+        self.assertContains(listing, "$7,527 a year")
+        self.assertContains(listing, "$75 one-time")
+
+        agreement = workflow.offer(get_kind("order"), order, user=self.user)
+        frozen = reload(order)
+        snapshots = list(frozen.agreements.values_list("pricing", flat=True))
+        original = documents.order_form_markdown(frozen)
+        definition = deepcopy(self.program.definition)
+        definition["agreements"][0]["tiers"][0]["annual_fee"] = "9999"
+        Program.objects.filter(pk=self.program.pk).update(definition=definition)
+        frozen = reload(order)
+        self.assertEqual(frozen.fee_totals, {"annual": 7527, "one_time": 75})
+        self.assertEqual(documents.order_form_markdown(reload(order)), original)
+        self.assertEqual(list(frozen.agreements.values_list("pricing", flat=True)), snapshots)
+        self.assertEqual(reload(order).agreement.document_markdown, agreement.document_markdown)
+
     def test_order_reference_stays_consistent_across_offers_and_withdrawal(self):
         order = make_order(self.user, program=self.program)
         agreement = workflow.offer(get_kind("order"), order, user=self.user)
@@ -241,7 +277,7 @@ class OnlineSigningTests(TestCase):
         self.assertEqual(order.agreement.signature_method, Agreement.SignatureMethod.ACCOUNT)
         self.assertEqual(order.agreement.signer_email, "ada@example.com")
         self.assertEqual(order.agreement.terms_versions.count(), 2)
-        old_total = order.total_annual_display
+        old_total = order.fee_totals
         definition = deepcopy(self.program.definition)
         definition["agreements"][0]["title"] = "Changed service"
         definition["agreements"][0]["tiers"][1]["annual_fee"] = "9999"
@@ -250,7 +286,7 @@ class OnlineSigningTests(TestCase):
         Order.objects.filter(pk=order.pk).update(legal_name="Changed After Signing")
         frozen = reload(order)
         self.assertEqual(documents.order_form_markdown(frozen), original)
-        self.assertEqual(frozen.total_annual_display, old_total)
+        self.assertEqual(frozen.fee_totals, old_total)
         self.assertEqual(frozen.program_title, "Example Services")
         self.assertEqual(frozen.agreement_list[0].agreement_obj.title, "Example Studio Services")
 
@@ -295,6 +331,16 @@ class StaffHandlingTests(TestCase):
         self.customer = User.objects.create_user("ada", "ada@example.com", "password")
         self.program = make_program()
         self.client.force_login(self.officer)
+
+    def test_staff_queue_requires_login_and_manager_permission(self):
+        url = reverse("agreements:staff_orders")
+        self.assertEqual(self.client.get(url).status_code, 200)
+        self.client.force_login(self.customer)
+        self.assertEqual(self.client.get(url).status_code, 403)
+        self.client.logout()
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("next=" + url, response.url)
 
     def post(self, **overrides):
         return self.client.post(
@@ -386,11 +432,11 @@ class StaffHandlingTests(TestCase):
         definition = deepcopy(self.program.definition)
         definition["agreements"][0]["tiers"][1]["annual_fee"] = "2600"
         Program.objects.filter(pk=self.program.pk).update(definition=definition)
-        self.assertEqual(reload(order).total_annual_display, "$2,400")
+        self.assertEqual(reload(order).fee_totals["annual"], 2400)
         self.client.post(reverse("agreements:withdraw", args=[agreement.pk]))
         reopened = reload(order)
         self.assertTrue(reopened.is_editable)
-        self.assertEqual(reopened.total_annual_display, "$2,600")
+        self.assertEqual(reopened.fee_totals["annual"], 2600)
 
     def test_published_terms_apply_only_to_orders_offered_afterwards(self):
         terms = Terms.objects.get(slug="studio-terms")
@@ -453,7 +499,7 @@ class OrderBuilderTests(TestCase):
         self.client.post(self.url, payload(discount="eligible"))
         self.assertFalse(Order.objects.exists())
         self.client.post(self.url, payload(discount="eligible", discount_attestation="on"))
-        self.assertEqual(Order.objects.get().total_annual_display, "$6,300")
+        self.assertEqual(Order.objects.get().fee_totals["annual"], 6300)
 
     def test_selected_parameters_are_required(self):
         self.client.post(self.url, payload(**{"workshop-addon_schedule": "on"}))
@@ -467,7 +513,7 @@ class OrderBuilderTests(TestCase):
 
     def test_included_addons_do_not_charge_twice(self):
         self.client.post(self.url, payload(["workshop"], **{"workshop-addon_advisor": "on"}))
-        self.assertEqual(Order.objects.get().total_annual_display, "$7,200")
+        self.assertEqual(Order.objects.get().fee_totals["annual"], 7200)
 
     def test_quote_totals_combined_agreements_and_one_time_charges(self):
         response = self.client.get(
@@ -537,7 +583,7 @@ class OrderBuilderTests(TestCase):
         self.client.post(self.url, payload(["atelier"], **{"atelier-tier": "max"}))
         order = Order.objects.get()
         self.assertEqual(order.agreements.get().agreement, "atelier")
-        self.assertEqual(order.total_annual_display, "$4,800")
+        self.assertEqual(order.fee_totals["annual"], 4800)
 
     def test_removed_catalog_selection_can_be_corrected_before_signing(self):
         order = make_order(self.user, program=self.program)
@@ -571,8 +617,8 @@ class OrderBuilderTests(TestCase):
         )
         self.assertContains(self.client.get(offered.get_absolute_url()), "Plus")
         self.client.post(reverse("agreements:order_edit", args=[draft.pk]), payload(["studio"]))
-        self.assertEqual(reload(draft).total_annual_display, "$1,200")
-        self.assertEqual(reload(offered).total_annual_display, "$2,400")
+        self.assertEqual(reload(draft).fee_totals["annual"], 1200)
+        self.assertEqual(reload(offered).fee_totals["annual"], 2400)
 
 
 class PrivateProgramTests(TestCase):
@@ -625,7 +671,7 @@ class PrivateProgramTests(TestCase):
         self.client.post(
             reverse("agreements:order_edit", args=[self.order.pk]), payload(["studio"], **{"studio-tier": "max"})
         )
-        self.assertEqual(reload(self.order).total_annual_display, "$4,800")
+        self.assertEqual(reload(self.order).fee_totals["annual"], 4800)
         seen = agreement_documents.sha256(documents.compose_order_form_markdown(reload(self.order)))
         self.client.post(
             reverse("agreements:order_sign", args=[self.order.pk]),

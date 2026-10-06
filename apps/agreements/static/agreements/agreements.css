@@ -9,6 +9,7 @@
   hyphens: none;
   overflow-wrap: break-word;
 }
+.agreements :is(h1, h2, h3, .breadcrumbs) { overflow-wrap: anywhere; }
 
 .agreements .num { text-align: right; white-space: nowrap; }
 .agreements .actions { display: flex; flex-wrap: wrap; gap: 0.5em; align-items: center; }
@@ -62,6 +63,10 @@
 
 /* ---------- Tables ---------- */
 
+.agreements .table-scroll { overflow-x: auto; }
+.agreements .order-table { table-layout: fixed; min-width: 36em; }
+.agreements .order-table .status-pill { white-space: normal; }
+
 .agreements .order-table,
 .agreements .facts,
 .agreements .record { margin: 0.5em 0 1.3125em; }
@@ -71,6 +76,8 @@
 .agreements .facts td,
 .agreements .record th,
 .agreements .record td { padding: 0.45em 0.6em; border-bottom: 1px solid #e6e8ea; }
+.agreements .order-table th,
+.agreements .order-table td { overflow-wrap: anywhere; }
 .agreements .order-table thead th,
 .agreements .facts thead th { background-color: #e6e8ea; color: #444; font-family: SourceSansProBold, Arial, sans-serif; width: auto; }
 .agreements .facts tbody th,
@@ -150,5 +157,4 @@
 
 @media (max-width: 800px) {
   .agreements .field-row { grid-template-columns: minmax(0, 1fr); }
-  .agreements .order-table { display: block; overflow-x: auto; }
 }

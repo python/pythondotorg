@@ -50,6 +50,11 @@ class SignedCopyForm(_SeenDocument):
         error_messages={"required": "Confirm that the signed copy is this document, unchanged."}
     )
 
+    def __init__(self, *args, **kwargs):
+        """Keep upload labels distinct from the on-page account-signing form."""
+        kwargs.setdefault("auto_id", "id_copy_%s")
+        super().__init__(*args, **kwargs)
+
     def clean_signed_copy(self):
         """Accept a PDF only."""
         return _pdf_upload(self.cleaned_data.get("signed_copy"))

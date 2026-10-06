@@ -123,7 +123,7 @@
 .text .package-builder .pb-steps button[aria-current="step"] { border-bottom-color: var(--pb-blue); color: var(--pb-blue-dark) !important; font-family: SourceSansProBold, Arial, sans-serif; }
 .package-builder .pb-progress-text { margin: 0 0 1.5em; color: var(--pb-muted); font-size: 0.875em; }
 .package-builder.is-enhanced .pb-section { border-top: 0; padding-top: 0; }
-.package-builder.is-enhanced #review .pb-actions { display: none; }
+.package-builder.is-enhanced #review .pb-actions > button { display: none; }
 @media (min-width: 60em) {
   .package-builder .pb-layout { grid-template-columns: minmax(0, 1fr) minmax(17em, 20em); column-gap: 2.5em; }
   .package-builder .pb-summary,
