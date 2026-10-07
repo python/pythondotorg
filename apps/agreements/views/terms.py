@@ -177,3 +177,34 @@ def terms_edit(request: HttpRequest, slug: str) -> HttpResponse:
         },
         status=400 if form.errors else 200,
     )
+
+
+@never_cache
+@preparer_required
+def terms_compare(request: HttpRequest, slug: str) -> HttpResponse:
+    """Show what changed between two published versions; by default, what the newest version changed."""
+    terms = get_object_or_404(Terms, slug=slug)
+    versions = list(terms.versions.select_related("published_by"))  # newest first
+    by_label = {version.version: version for version in versions}
+    new = by_label.get(request.GET["to"]) if "to" in request.GET else next(iter(versions), None)
+    if new is None and "to" in request.GET:
+        raise Http404
+    if "from" in request.GET:
+        old = by_label.get(request.GET["from"])
+        if old is None:
+            raise Http404
+    else:
+        older = versions[versions.index(new) + 1 :] if new else []
+        old = older[0] if older else None
+    return render(
+        request,
+        "agreements/terms_compare.html",
+        {
+            "terms": terms,
+            "versions": versions,
+            "old": old,
+            "new": new,
+            "diff": _diff(old.markdown, new.markdown) if old and new else None,
+            "nav": "terms",
+        },
+    )

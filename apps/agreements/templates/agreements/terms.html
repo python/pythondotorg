@@ -24,7 +24,7 @@
       {% else %}
         <a href="{% url 'agreements:terms_version_download' terms.slug shown.version 'pdf' %}">PDF</a> · <a href="{% url 'agreements:terms_version_download' terms.slug shown.version 'docx' %}">DOCX</a>
       {% endif %}
-      {% if can_edit %} · <a href="{% url 'agreements:terms_edit' terms.slug %}">Edit</a>{% endif %}
+      {% if can_edit %} · <a href="{% url 'agreements:terms_edit' terms.slug %}">Edit</a> · <a href="{% url 'agreements:terms_compare' terms.slug %}?to={{ shown.version }}">Compare versions</a>{% endif %}
     </span>
   </p>
   <p class="terms-meta">
