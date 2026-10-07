@@ -194,6 +194,12 @@
         margin-left: 8px;
         vertical-align: middle;
     }
+    /* Status badge colors: white 11px text needs >= 4.5:1 contrast (WCAG AA) */
+    .badge.badge-red { background: #c62828; }
+    .badge.badge-gold { background: #8a6500; }
+    .badge.badge-orange { background: #b45309; }
+    .badge.badge-green { background: #2e7d32; }
+    .badge.badge-gray { background: #707070; }
 
     /* ── Tables ── */
     .manage-table {
@@ -304,8 +310,8 @@
         font-weight: 600;
         line-height: 1.6;
     }
-    .tag-blue { background: #e8f0fe; color: #3776ab; }
-    .tag-gold { background: #fff8dc; color: #b8860b; }
+    .tag-blue { background: #e8f0fe; color: #2d5f8a; }
+    .tag-gold { background: #fff8dc; color: #8a6500; }
     .tag-green { background: #e8f5e9; color: #2e7d32; }
     .tag-red { background: #fde8e8; color: #c62828; }
     .tag-gray { background: #f0f0f0; color: #666; }
@@ -385,8 +391,15 @@
     .form-group select:focus,
     .form-group textarea:focus {
         border-color: #3776ab;
-        outline: none;
-        box-shadow: 0 0 0 2px rgba(55, 118, 171, 0.15);
+    }
+
+    /* ── Focus indicator (every interactive control in the manage UI) ── */
+    .manage-wrap :is(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+        outline: 2px solid #3776ab !important;
+        outline-offset: 2px !important;
+    }
+    .manage-wrap :is(input:not([type="checkbox"], [type="radio"]), select, textarea):focus-visible {
+        outline-offset: 0 !important;
     }
     .form-group .checkbox-list {
         display: flex;
@@ -640,6 +653,33 @@
         align-items: flex-end;
     }
 
+    /* ── Bulk action bar (above list tables) ── */
+    .manage-wrap .manage-bulk-select,
+    .manage-wrap .manage-bulk-apply {
+        all: unset !important;
+        height: 28px !important;
+        font-size: 12px !important;
+        border: 1px solid #aaa !important;
+        border-radius: 3px !important;
+        box-sizing: border-box !important;
+        color: #333 !important;
+        cursor: pointer !important;
+    }
+    .manage-wrap .manage-bulk-select {
+        padding: 0 8px !important;
+        background: #fff !important;
+        -webkit-appearance: menulist !important;
+        appearance: menulist !important;
+    }
+    .manage-wrap .manage-bulk-apply {
+        padding: 0 12px !important;
+        font-weight: 600 !important;
+        background: #e8e8e8 !important;
+        font-family: inherit !important;
+        display: inline-flex !important;
+        align-items: center !important;
+    }
+
     /* ── Breadcrumbs (shown below navbar on sub-pages) ── */
     .manage-crumbs {
         font-size: 12px;
@@ -662,6 +702,37 @@
     .manage-crumbs .current {
         color: #555;
         font-weight: 600;
+    }
+
+    /* ── Small screens: wrap the navbar, scroll wide tables in place ── */
+    @media (max-width: 768px) {
+        .manage-navbar {
+            flex-wrap: wrap;
+        }
+        .manage-navbar-brand {
+            border-right: none;
+        }
+        .manage-nav {
+            flex-wrap: wrap;
+            order: 3;
+            width: 100%;
+        }
+        .manage-nav a {
+            padding: 8px 10px;
+        }
+        .manage-navbar-right {
+            flex-wrap: wrap;
+        }
+        .manage-table {
+            display: block;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .manage-section-header,
+        .form-row {
+            flex-wrap: wrap;
+            gap: 8px;
+        }
     }
 </style>
 

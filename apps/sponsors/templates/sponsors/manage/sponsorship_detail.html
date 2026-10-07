@@ -41,6 +41,11 @@
     .sp-timeline-step.active .step-date { color:#777; }
     .confirm-modal { background:#fff; border:1px solid #e0e0e0; border-radius:6px; padding:20px; margin-top:12px; display:none; }
     .confirm-modal.visible { display:block; }
+    @media (max-width: 768px) {
+        .sp-header { flex-wrap:wrap; gap:12px; }
+        .sp-grid { grid-template-columns:1fr; }
+        .sp-field .sp-value { overflow-wrap:anywhere; }
+    }
 </style>
 
 <!-- Header with actions -->

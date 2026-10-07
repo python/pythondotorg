@@ -23,7 +23,7 @@
     <div class="manage-section-header" style="flex-wrap:wrap;gap:12px;">
         <h2>Sent Notifications <span class="badge">{% if paginator %}{{ paginator.count }}{% else %}{{ logs|length }}{% endif %}</span></h2>
         <form method="get" style="display:flex;gap:6px;align-items:center;">
-            <input type="text" name="search" id="history-search" placeholder="Search subject, sponsor, recipient..." value="{{ filter_search }}" autocomplete="off" style="width:260px;padding:6px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;">
+            <input type="text" name="search" id="history-search" aria-label="Search sent notifications" placeholder="Search subject, sponsor, recipient..." value="{{ filter_search }}" autocomplete="off" style="width:260px;padding:6px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;">
             <button type="submit" class="btn btn-sm btn-secondary">Go</button>
             {% if filter_search %}
             <a href="{% url 'manage_notification_history' %}" class="btn btn-sm btn-secondary">Clear</a>

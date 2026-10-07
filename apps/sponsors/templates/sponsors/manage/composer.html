@@ -54,6 +54,16 @@
         min-width: 20px;
     }
     .composer-step-line.completed { background: #4caf50; }
+    @media (max-width: 768px) {
+        .composer-steps {
+            flex-wrap: wrap;
+            row-gap: 8px;
+        }
+        .composer-step-line {
+            flex: 0 0 20px;
+            margin: 0 6px;
+        }
+    }
 
     /* ── Sponsor list ── */
     .sponsor-list {
@@ -1479,7 +1489,7 @@ function filterBenefits(query) {
             {% csrf_token %}
             <input type="hidden" name="action" value="send_internal">
             <div style="display:flex;gap:8px;">
-                <input type="email" name="internal_email" placeholder="reviewer@python.org"
+                <input type="email" name="internal_email" aria-label="Internal reviewer email" placeholder="reviewer@python.org"
                        style="flex:1;padding:8px 12px;border:1px solid #ccc;border-radius:4px;font-size:13px;">
                 <button type="submit" class="btn btn-secondary" style="padding:8px 20px;">Send Internal Review</button>
             </div>

@@ -51,7 +51,7 @@
     {% if needs_review %}
     <div class="manage-section">
         <div class="manage-section-header">
-            <h2 style="color:#e74c3c;">Needs Review <span class="badge" style="background:#e74c3c;">{{ count_applied }}</span></h2>
+            <h2 style="color:#c62828;">Needs Review <span class="badge badge-red">{{ count_applied }}</span></h2>
             <a href="{% url 'manage_sponsorships' %}?status=applied&year={{ selected_year }}" class="btn btn-sm btn-secondary">View All</a>
         </div>
         <table class="manage-table">
@@ -88,7 +88,7 @@
     {% if pending_contracts %}
     <div class="manage-section">
         <div class="manage-section-header">
-            <h2 style="color:#b8860b;">Pending Contracts <span class="badge" style="background:#b8860b;">{{ count_approved }}</span></h2>
+            <h2 style="color:#8a6500;">Pending Contracts <span class="badge badge-gold">{{ count_approved }}</span></h2>
             <a href="{% url 'manage_sponsorships' %}?status=approved&year={{ selected_year }}" class="btn btn-sm btn-secondary">View All</a>
         </div>
         <table class="manage-table">
@@ -127,7 +127,7 @@
     {% if expiring_soon %}
     <div class="manage-section">
         <div class="manage-section-header">
-            <h2 style="color:#e67e22;">Expiring Soon <span class="badge" style="background:#e67e22;">{{ expiring_soon|length }}</span></h2>
+            <h2 style="color:#b45309;">Expiring Soon <span class="badge badge-orange">{{ expiring_soon|length }}</span></h2>
             <a href="{% url 'manage_sponsorships' %}?status=finalized&year={{ selected_year }}" class="btn btn-sm btn-secondary">View All Finalized</a>
         </div>
         <table class="manage-table">

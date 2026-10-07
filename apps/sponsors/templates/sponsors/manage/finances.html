@@ -27,6 +27,10 @@
     .chart-box h3 { font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:#3776ab; margin:0 0 16px; }
     .chart-box canvas { max-height:280px; }
     .chart-box.wide { grid-column:1 / -1; }
+    @media (max-width: 768px) {
+        .fin-cards { grid-template-columns:repeat(2, minmax(0, 1fr)); }
+        .chart-grid { grid-template-columns:minmax(0, 1fr); }
+    }
 </style>
 
 <script src="{% static 'js/libs/chart-4.5.1.umd.min.js' %}"></script>

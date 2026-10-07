@@ -49,7 +49,7 @@
 
         {% if contract.is_draft or contract.awaiting_signature and contract.document %}
         <!-- Step 2: Send -->
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(min(100%, 280px), 1fr));gap:20px;">
             <!-- Send to Sponsor -->
             <div class="manage-fieldset">
                 <legend>Send to Sponsor</legend>
@@ -83,7 +83,7 @@
                     {% csrf_token %}
                     <input type="hidden" name="action" value="send_internal">
                     <div class="form-group" style="margin-bottom:12px;">
-                        <input type="email" name="internal_email" value="{{ internal_email }}" placeholder="reviewer@pyfound.org" style="width:100%;padding:8px 12px;border:1px solid #ccc;border-radius:4px;font-size:14px;box-sizing:border-box;">
+                        <input type="email" name="internal_email" aria-label="Internal reviewer email" value="{{ internal_email }}" placeholder="reviewer@pyfound.org" style="width:100%;padding:8px 12px;border:1px solid #ccc;border-radius:4px;font-size:14px;box-sizing:border-box;">
                     </div>
                     <button type="submit" class="btn btn-secondary">Send for Review</button>
                 </form>

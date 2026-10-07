@@ -17,7 +17,7 @@
     <div class="manage-filter-bar" style="padding:12px 20px;">
         <form method="get" style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;">
             <div class="filter-field">
-                <select name="type" onchange="this.form.submit()">
+                <select name="type" aria-label="Asset type" onchange="this.form.submit()">
                     <option value="">All types</option>
                     {% for val, label in type_choices %}
                     <option value="{{ val }}" {% if val == filter_type %}selected{% endif %}>{{ label }}</option>
@@ -25,7 +25,7 @@
                 </select>
             </div>
             <div class="filter-field">
-                <select name="related" onchange="this.form.submit()">
+                <select name="related" aria-label="Related object" onchange="this.form.submit()">
                     <option value="">All objects</option>
                     {% for val, label in content_type_choices %}
                     <option value="{{ val }}" {% if val|slugify == filter_related %}selected{% endif %}>{{ label }}</option>
@@ -33,14 +33,14 @@
                 </select>
             </div>
             <div class="filter-field">
-                <select name="value" onchange="this.form.submit()">
+                <select name="value" aria-label="Submission status" onchange="this.form.submit()">
                     <option value="">Any status</option>
                     <option value="with" {% if filter_value == "with" %}selected{% endif %}>Submitted</option>
                     <option value="without" {% if filter_value == "without" %}selected{% endif %}>Missing</option>
                 </select>
             </div>
             <div class="filter-field">
-                <input type="text" name="search" placeholder="Search internal name..." value="{{ filter_search }}" style="width:180px;">
+                <input type="text" name="search" aria-label="Search internal name" placeholder="Search internal name..." value="{{ filter_search }}" style="width:180px;">
             </div>
             <div class="filter-actions">
                 <button type="submit" class="btn btn-sm btn-secondary">Go</button>
@@ -61,7 +61,7 @@
             <h2>
                 <span class="collapse-arrow">&#9662;</span>
                 {{ company_name }}
-                <span class="badge" style="{% if group.submitted == group.total %}background:#4caf50{% elif group.submitted == 0 %}background:#e74c3c{% else %}background:#e67e22{% endif %}">{{ group.submitted }}/{{ group.total }}</span>
+                <span class="badge {% if group.submitted == group.total %}badge-green{% elif group.submitted == 0 %}badge-red{% else %}badge-orange{% endif %}">{{ group.submitted }}/{{ group.total }}</span>
             </h2>
             {% if group.submitted < group.total and group.sponsorship_id %}
             <a href="{% url 'manage_sponsorship_notify' group.sponsorship_id %}" class="btn btn-xs btn-secondary" onclick="event.stopPropagation();" title="Send asset reminder to this sponsor">Send Reminder</a>

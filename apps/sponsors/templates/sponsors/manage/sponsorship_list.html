@@ -19,7 +19,7 @@
                 <a href="?status=rejected{% if filter_year %}&year={{ filter_year }}{% endif %}" class="year-pill {% if filter_status == 'rejected' %}active{% endif %}" style="padding:4px 10px;font-size:12px;">Rejected {{ count_rejected }}</a>
             </div>
             <div class="filter-field">
-                <select name="year" onchange="this.form.submit()">
+                <select name="year" aria-label="Year" onchange="this.form.submit()">
                     <option value="">All years</option>
                     {% for val, label in filter_form.year.field.choices %}
                     {% if val %}<option value="{{ val }}" {% if val|slugify == filter_year %}selected{% endif %}>{{ label }}</option>{% endif %}
@@ -27,7 +27,7 @@
                 </select>
             </div>
             <div class="filter-field">
-                <input type="text" name="search" id="live-search" placeholder="Search..." value="{{ filter_search }}" autocomplete="off" style="width:140px;">
+                <input type="text" name="search" id="live-search" aria-label="Search sponsorships" placeholder="Search..." value="{{ filter_search }}" autocomplete="off" style="width:140px;">
             </div>
             <div class="filter-actions">
                 <button type="submit" class="btn btn-sm btn-secondary">Go</button>
@@ -48,13 +48,13 @@
         {% csrf_token %}
         <!-- Bulk action bar -->
         <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
-            <select name="action" style="all:unset !important;height:28px !important;padding:0 8px !important;font-size:12px !important;border:1px solid #aaa !important;border-radius:3px !important;box-sizing:border-box !important;background:#fff !important;color:#333 !important;cursor:pointer !important;-webkit-appearance:menulist !important;appearance:menulist !important;">
+            <select name="action" class="manage-bulk-select" aria-label="Bulk action">
                 <option value="">Bulk action...</option>
                 <option value="export_csv">Export CSV</option>
                 <option value="export_assets">Export Assets ZIP</option>
                 <option value="send_notification">Send Notification</option>
             </select>
-            <button type="submit" onclick="return validateBulkAction();" style="all:unset !important;height:28px !important;padding:0 12px !important;font-size:12px !important;font-weight:600 !important;border:1px solid #aaa !important;border-radius:3px !important;background:#e8e8e8 !important;color:#333 !important;cursor:pointer !important;box-sizing:border-box !important;font-family:inherit !important;display:inline-flex !important;align-items:center !important;">Apply</button>
+            <button type="submit" class="manage-bulk-apply" onclick="return validateBulkAction();">Apply</button>
             <span style="font-size:11px;color:#999;" id="bulk-count">0 selected</span>
         </div>
 
@@ -78,7 +78,7 @@
             {% for sp in sponsorships %}
             <tr class="sp-row" data-search="{% if sp.sponsor %}{{ sp.sponsor.name|lower }}{% endif %} {% if sp.package %}{{ sp.package.name|lower }}{% endif %} {{ sp.status|lower }} {{ sp.year|default:'' }} {% if sp.sponsorship_fee %}{{ sp.sponsorship_fee|floatformat:"0" }}{% endif %}">
                 <td style="text-align:center;">
-                    <input type="checkbox" name="selected_ids" value="{{ sp.pk }}" class="row-select">
+                    <input type="checkbox" name="selected_ids" value="{{ sp.pk }}" class="row-select" aria-label="Select {% if sp.sponsor %}{{ sp.sponsor.name }}{% else %}sponsorship {{ sp.pk }}{% endif %}">
                 </td>
                 <td>
                     <a href="{% url 'manage_sponsorship_detail' sp.pk %}" style="font-weight:600;color:#1a1a2e;text-decoration:none;">

@@ -13,8 +13,8 @@
     <div class="manage-filter-bar">
         <form method="get">
             <div class="filter-field">
-                <label>Year</label>
-                <select name="year" onchange="this.form.submit()">
+                <label for="filter-year">Year</label>
+                <select name="year" id="filter-year" onchange="this.form.submit()">
                     <option value="">All years</option>
                     {% for choice_val, choice_label in filter_form.year.field.choices %}
                     {% if choice_val %}
@@ -24,8 +24,8 @@
                 </select>
             </div>
             <div class="filter-field">
-                <label>Program</label>
-                <select name="program" onchange="this.form.submit()">
+                <label for="filter-program">Program</label>
+                <select name="program" id="filter-program" onchange="this.form.submit()">
                     <option value="">All programs</option>
                     {% for program in filter_form.program.field.queryset %}
                     <option value="{{ program.pk }}" {% if program.pk|slugify == filter_program %}selected{% endif %}>{{ program.name }}</option>
