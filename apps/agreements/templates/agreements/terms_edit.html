@@ -53,9 +53,10 @@
   {% endif %}
 
   <h2>Published versions</h2>
+  {% if versions|length > 1 %}<p><a href="{% url 'agreements:terms_compare' terms.slug %}">Compare any two versions</a></p>{% endif %}
   <ol class="history">
     {% for version in versions %}
-      <li><a href="{{ version.get_absolute_url }}">Version {{ version.version }}</a>, {{ version.published_at|date:"M j, Y" }}{% if version.published_by %} by {{ version.published_by.email }}{% endif %}{% if version.notes %}: {{ version.notes }}{% endif %}</li>
+      <li><a href="{{ version.get_absolute_url }}">Version {{ version.version }}</a>, {{ version.published_at|date:"M j, Y" }}{% if version.published_by %} by {{ version.published_by.email }}{% endif %}{% if version.notes %}: {{ version.notes }}{% endif %}{% if not forloop.last %} · <a href="{% url 'agreements:terms_compare' terms.slug %}?to={{ version.version }}">What changed</a>{% endif %}</li>
     {% empty %}
       <li>None yet.</li>
     {% endfor %}
