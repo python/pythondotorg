@@ -86,12 +86,14 @@ class Contract(models.Model):
     document = models.FileField(
         upload_to=FINAL_VERSION_PDF_DIR,
         blank=True,
+        max_length=255,
         verbose_name="Unsigned PDF",
         storage=get_contract_storage,
     )
     document_docx = models.FileField(
         upload_to=FINAL_VERSION_DOCX_DIR,
         blank=True,
+        max_length=255,
         verbose_name="Unsigned Docx",
         storage=get_contract_storage,
     )
@@ -231,7 +233,9 @@ class Contract(models.Model):
             msg = f"Can't send a {self.get_status_display()} contract."
             raise InvalidStatusError(msg)
 
-        sponsor = self.sponsorship.sponsor.name.upper()
+        # Slashes would create nested directories; clamp the name so the stored path
+        # always fits the FileField column regardless of sponsor name length.
+        sponsor = self.sponsorship.sponsor.name.upper().replace("/", "-")[:100]
 
         # A random token makes the stored path unguessable. Without it the path is
         # derived solely from the sponsor name (e.g. "SoW: <name>.pdf"), so anyone
