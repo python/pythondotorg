@@ -199,6 +199,9 @@ after session or role revocation. Anonymous public terms remain publicly cacheab
         Once a version is published, its terms slug is read-only in the admin so cited
         addresses remain permanent. The draft editor is at
         ``/agreements/terms/<slug>/edit/draft/``; ``edit`` is also a valid version label.
+        Both agreement groups can compare any two published versions line by line at
+        ``/agreements/terms/<slug>/compare/versions/``, linked from the editor's version list
+        and from each terms page. By default it shows what the newest version changed.
         Publishing a version does not make it public: the separate *Make published versions
         public* setting controls that. Private versions are readable only by agreement group
         members and linked parties to documents citing them. An emailed signatory can review the cited versions through
