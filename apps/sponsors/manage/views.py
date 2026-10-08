@@ -176,7 +176,8 @@ class ManageDashboardView(SponsorshipAdminRequiredMixin, TemplateView):
         )
 
         # Expiring sponsorships (finalized, end_date within 90 days from today)
-        # Cross-year: shown on every dashboard regardless of selected year
+        # Cross-year: shown on every dashboard regardless of selected year. The
+        # 90-day window bounds the list, so show all of it.
         today = tz.now().date()
         expiring_soon = (
             Sponsorship.objects.filter(
@@ -185,26 +186,25 @@ class ManageDashboardView(SponsorshipAdminRequiredMixin, TemplateView):
                 end_date__lte=today + datetime.timedelta(days=90),
             )
             .select_related("sponsor", "package")
-            .order_by("end_date")[:10]
+            .order_by("end_date")
         )
 
         # Recently expired (finalized, end_date in the past, not overlapped)
         # Cross-year: shown on every dashboard regardless of selected year
-        recently_expired = (
-            Sponsorship.objects.filter(
-                status=Sponsorship.FINALIZED,
-                end_date__lt=today,
-                overlapped_by__isnull=True,
-            )
-            .select_related("sponsor", "package")
-            .order_by("-end_date")[:10]
+        recently_expired_qs = Sponsorship.objects.filter(
+            status=Sponsorship.FINALIZED,
+            end_date__lt=today,
+            overlapped_by__isnull=True,
         )
+        recently_expired = recently_expired_qs.select_related("sponsor", "package").order_by("-end_date")[:10]
 
         # Sponsors without a sponsorship for this year
-        sponsors_with_sponsorship_ids = year_sponsorships.values_list("sponsor_id", flat=True) if selected_year else []
-        unsponsored = (
-            Sponsor.objects.exclude(pk__in=sponsors_with_sponsorship_ids).order_by("name")[:20] if selected_year else []
+        unsponsored_qs = (
+            Sponsor.objects.exclude(pk__in=year_sponsorships.values_list("sponsor_id", flat=True))
+            if selected_year
+            else Sponsor.objects.none()
         )
+        unsponsored = unsponsored_qs.order_by("name")[:20]
 
         context.update(
             {
@@ -220,13 +220,16 @@ class ManageDashboardView(SponsorshipAdminRequiredMixin, TemplateView):
                 "count_approved": count_approved,
                 "count_finalized": count_finalized,
                 "count_rejected": count_rejected,
-                "total_sponsorships": count_applied + count_approved + count_finalized + count_rejected,
+                # Matches the sponsorship list's default view, which hides rejected ones
+                "total_sponsorships": count_applied + count_approved + count_finalized,
                 "total_revenue": total_revenue,
                 "needs_review": needs_review,
                 "pending_contracts": pending_contracts,
                 "expiring_soon": expiring_soon,
                 "recently_expired": recently_expired,
+                "recently_expired_count": recently_expired_qs.count(),
                 "unsponsored": unsponsored,
+                "unsponsored_count": unsponsored_qs.count(),
                 "today": today,
             }
         )

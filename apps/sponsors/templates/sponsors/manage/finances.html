@@ -60,7 +60,7 @@
     </div>
     <div class="fin-card">
         <div class="fin-val">{{ total_count }}</div>
-        <div class="fin-label">Sponsorships &middot; ${{ avg_deal|intcomma }} avg</div>
+        <div class="fin-label" title="Approved and finalized only. The dashboard count also includes applied sponsorships.">Committed sponsorships &middot; ${{ avg_deal|intcomma }} avg</div>
     </div>
 </div>
 
@@ -92,7 +92,7 @@
 {% if sponsorships %}
 <div class="manage-section">
     <div class="manage-section-header">
-        <h2>Sponsorship Detail <span class="badge">{{ total_count }}</span></h2>
+        <h2>Committed Sponsorships <span class="badge">{{ total_count }}</span></h2>
     </div>
     <table class="manage-table">
         <thead>
@@ -102,7 +102,7 @@
                 <th style="text-align:center;">Status</th>
                 <th style="text-align:right;">Fee</th>
                 <th style="text-align:right;">Internal Value</th>
-                <th style="text-align:right;">Margin</th>
+                <th style="text-align:right;" title="Sponsorship fee as a percentage of the summed internal value of its benefits">Fee / Value</th>
                 <th>Period</th>
             </tr>
         </thead>

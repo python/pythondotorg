@@ -25,7 +25,7 @@
     <div class="manage-cards">
         <div class="manage-card">
             <div class="card-value">{{ total_sponsorships }}</div>
-            <div class="card-label">Sponsorships</div>
+            <div class="card-label" title="Applied, approved, and finalized. Rejected ({{ count_rejected }}) are not counted, matching the Sponsorships list.">Sponsorships (excl. rejected)</div>
         </div>
         <a href="{% url 'manage_finances' %}?year={{ selected_year }}" class="manage-card gold" style="text-decoration:none;cursor:pointer;">
             <div class="card-value">${{ total_revenue|floatformat:"0" }}</div>
@@ -126,7 +126,7 @@
     <div class="manage-section">
         <div class="manage-section-header">
             <h2 style="color:#b45309;">Expiring Soon <span class="badge badge-orange">{{ expiring_soon|length }}</span></h2>
-            <a href="{% url 'manage_sponsorships' %}?status=finalized&year={{ selected_year }}" class="btn btn-sm btn-secondary">View All Finalized</a>
+            <span style="font-size:12px;color:#777;">Next 90 days, all years</span>
         </div>
         <table class="manage-table">
             <thead>
@@ -173,7 +173,8 @@
     {% if recently_expired %}
     <div class="manage-section">
         <div class="manage-section-header">
-            <h2 style="color:#95a5a6;">Recently Expired <span class="badge" style="background:#95a5a6;">{{ recently_expired|length }}</span></h2>
+            <h2 style="color:#707070;">Recently Expired <span class="badge badge-gray">{{ recently_expired_count }}</span></h2>
+            {% if recently_expired_count > recently_expired|length %}<span style="font-size:12px;color:#777;">Showing the {{ recently_expired|length }} most recent</span>{% endif %}
         </div>
         <table class="manage-table">
             <thead>
@@ -216,7 +217,7 @@
         <div class="manage-section-header collapse-toggle" onclick="this.parentElement.classList.toggle('collapsed')" style="cursor:pointer;user-select:none;">
             <h2>
                 <span class="collapse-arrow">&#9662;</span>
-                No Sponsorship for {{ selected_year }} <span class="badge" style="background:#999;">{{ unsponsored|length }}</span>
+                No Sponsorship for {{ selected_year }} <span class="badge badge-gray">{{ unsponsored_count }}</span>
             </h2>
         </div>
         <div class="collapse-body">
@@ -238,6 +239,9 @@
                 {% endfor %}
             </tbody>
         </table>
+        {% if unsponsored_count > unsponsored|length %}
+        <p style="font-size:12px;color:#777;margin:8px 0 0;">Showing the first {{ unsponsored|length }} alphabetically. Use the <a href="{% url 'manage_sponsors' %}" style="color:#3776ab;">Sponsors directory</a> to search all sponsors.</p>
+        {% endif %}
         </div>
     </div>
     {% endif %}
