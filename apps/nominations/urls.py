@@ -29,6 +29,11 @@ urlpatterns = [
         name="nomination_create",
     ),
     path(
+        "<slug:election>/endorse/",
+        views.EndorsementCreate.as_view(),
+        name="endorsement_create",
+    ),
+    path(
         "<slug:election>/<int:pk>/",
         views.NominationView.as_view(),
         name="nomination_detail",
