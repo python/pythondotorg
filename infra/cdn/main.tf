@@ -160,9 +160,6 @@ resource "fastly_service_vcl" "python_org" {
     name = "Default rules"
     content_types = [
       "application/javascript",
-      "text/css",
-      "application/javascript",
-      "text/javascript",
       "application/json",
       "application/vnd.ms-fontobject",
       "application/x-font-opentype",
@@ -174,6 +171,9 @@ resource "fastly_service_vcl" "python_org" {
       "font/otf",
       "image/svg+xml",
       "image/vnd.microsoft.icon",
+      "text/css",
+      "text/html",
+      "text/javascript",
       "text/plain",
       "text/xml",
     ]
