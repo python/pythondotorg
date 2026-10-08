@@ -59,17 +59,12 @@
     <div style="display: grid; gap: 2.5rem; grid-template-columns: repeat(auto-fit, minmax({{ dimension }}px, 1fr)); align-items: center; justify-content: center;">
       {% for sponsorship in placement_info.sponsorships %}
         <div id="{{ sponsorship.sponsor.slug }}" data-internal-year="{{ sponsorship.year|default_if_none:'' }}">
-            {% with logo_width=sponsorship.sponsor.web_logo|ideal_size:dimension %}
-            <a href="{{ sponsorship.sponsor.landing_page_url }}" rel="sponsored noopener" target="_blank" class="plausible-event-name=Sponsor+Click plausible-event-sponsor={{ sponsorship.sponsor.slug }}" style="border-bottom: 0;">
-              {% if sponsorship.sponsor.web_logo.name|lower|slice:"-4:" == ".svg" %}
-              <img src="{{ sponsorship.sponsor.web_logo.url }}" alt="{{ sponsorship.sponsor.name }} logo" style="max-width:{{ logo_width }}px;height:auto;width:auto;">
-              {% else %}
-              {% thumbnail sponsorship.sponsor.web_logo logo_width|stringformat:"d" format="PNG" quality=100 as im %}
-              <img src="{{ im.url }}" alt="{{ sponsorship.sponsor.name }} logo" style="max-width:{{ logo_width }}px;height:auto;width:auto;">
-              {% endthumbnail %}
-              {% endif %}
-            </a>
-            {% endwith %}
+            {% sponsor_logo sponsorship.sponsor.web_logo dimension as logo %}
+            {% if logo %}
+            {% if sponsorship.sponsor.landing_page_url %}<a href="{{ sponsorship.sponsor.landing_page_url }}" rel="sponsored noopener" target="_blank" class="plausible-event-name=Sponsor+Click plausible-event-sponsor={{ sponsorship.sponsor.slug }}" style="border-bottom: 0;">{% endif %}
+              <img src="{{ logo.src }}" srcset="{{ logo.srcset }}" sizes="{{ logo.width }}px" width="{{ logo.width }}" height="{{ logo.height }}" alt="{{ sponsorship.sponsor.name }} logo" loading="{% if forloop.parentloop.first %}eager{% else %}lazy{% endif %}" decoding="async" style="max-width:100%;height:auto;">
+            {% if sponsorship.sponsor.landing_page_url %}</a>{% endif %}
+            {% endif %}
             <p>{{ sponsorship.sponsor.name }}</p>
         </div>
       {% endfor %}

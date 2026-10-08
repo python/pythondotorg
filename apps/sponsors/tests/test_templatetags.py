@@ -1,8 +1,14 @@
+import io
 import string
+import tempfile
 from unittest.mock import patch
 
-from django.test import TestCase
+from django.core.files.storage import FileSystemStorage
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.template import Context, Template
+from django.test import TestCase, override_settings
 from model_bakery import baker
+from PIL import Image
 
 from apps.sponsors.models import Sponsor, SponsorshipBenefit, TieredBenefitConfiguration
 from apps.sponsors.templatetags.sponsors import (
@@ -10,8 +16,8 @@ from apps.sponsors.templatetags.sponsors import (
     benefit_quantity_for_package,
     escape_markdown,
     full_sponsorship,
-    ideal_size,
     list_sponsors,
+    sponsor_logo,
 )
 
 
@@ -93,26 +99,15 @@ class BenefitNameForDisplayTests(TestCase):
         mocked_name_for_display.assert_called_once_with(package=package)
 
 
-class IdealSizeFilterTests(TestCase):
-    def test_scales_width_to_fit_ideal_area(self):
-        class Image:
-            width = 400
-            height = 200
-
-        # int(400 * sqrt(20000 / 80000)) = int(400 * 0.5) = 200
-        self.assertEqual(ideal_size(Image(), 200), 200)
-
-    def test_no_file_associated_is_sized_as_square(self):
-        logo = Sponsor(web_logo="").web_logo
-
-        # int(250 * sqrt(25000 / 62500)) = 158, same as a square logo
-        self.assertEqual(ideal_size(logo, 250), 158)
+class SponsorLogoFallbackTests(TestCase):
+    def test_no_file_associated_renders_no_logo(self):
+        self.assertIsNone(sponsor_logo(Sponsor(web_logo="").web_logo, 250))
 
     def test_file_missing_from_storage_is_sized_as_square(self):
-        logo = Sponsor(web_logo="sponsor_web_logos/does-not-exist.png").web_logo
+        logo = sponsor_logo(Sponsor(web_logo="sponsor_web_logos/does-not-exist.png").web_logo, 300)
 
-        # int(300 * sqrt(30000 / 90000)) = 173, same as a square logo
-        self.assertEqual(ideal_size(logo, 300), 173)
+        # int(sqrt(100 * 300)) = 173, same as a square logo
+        self.assertEqual((logo["width"], logo["height"]), (173, 173))
 
 
 class EscapePandocMarkdownTests(TestCase):
@@ -139,3 +134,76 @@ class EscapePandocMarkdownTests(TestCase):
 
     def test_non_string_input_is_coerced(self):
         self.assertEqual(escape_markdown(42), "42")
+
+
+class SponsorLogoTagTests(TestCase):
+    def setUp(self):
+        media_root = tempfile.TemporaryDirectory()
+        self.addCleanup(media_root.cleanup)
+        settings_override = override_settings(MEDIA_ROOT=media_root.name)
+        settings_override.enable()
+        self.addCleanup(settings_override.disable)
+
+    def make_logo(self, size, **sponsor_attrs):
+        buf = io.BytesIO()
+        Image.new("RGB", size, "red").save(buf, "PNG")
+        sponsor = baker.make(
+            "sponsors.Sponsor", web_logo=SimpleUploadedFile("logo.png", buf.getvalue()), **sponsor_attrs
+        )
+        return sponsor.web_logo
+
+    def srcset_widths(self, logo):
+        return [int(candidate.split()[1].removesuffix("w")) for candidate in logo["srcset"].split(", ")]
+
+    def test_logo_gets_equal_area_size_and_true_2x_rendition(self):
+        logo = sponsor_logo(self.make_logo((600, 300)), "350")
+
+        self.assertEqual((logo["width"], logo["height"]), (264, 132))
+        self.assertEqual(self.srcset_widths(logo), [264, 528])
+        for candidate in logo["srcset"].split(", "):
+            url, descriptor = candidate.split()
+            with Image.open(FileSystemStorage().path(url.removeprefix("/media/"))) as rendition:
+                self.assertEqual(f"{rendition.width}w", descriptor)
+                self.assertEqual(rendition.format, "PNG")
+
+    def test_very_wide_logo_is_capped_at_column_width(self):
+        logo = sponsor_logo(self.make_logo((800, 200)), "350")
+
+        self.assertEqual((logo["width"], logo["height"]), (350, 88))
+        self.assertEqual(self.srcset_widths(logo), [350, 700])
+
+    def test_display_size_matches_1x_rendition_when_resize_rounds(self):
+        # 1500x600 at 300 asks sorl for 273px wide; sorl rounds via the height and returns 272.
+        logo = sponsor_logo(self.make_logo((1500, 600)), "300")
+
+        self.assertEqual((logo["width"], logo["height"]), (272, 109))
+        self.assertEqual(self.srcset_widths(logo)[0], logo["width"])
+
+    def test_small_logo_is_not_upscaled_past_its_original(self):
+        logo = sponsor_logo(self.make_logo((300, 300)), "350")
+
+        self.assertEqual((logo["width"], logo["height"]), (187, 187))
+        self.assertEqual(self.srcset_widths(logo), [187, 300])
+
+    def test_repeat_render_does_not_read_the_original(self):
+        image = self.make_logo((800, 200))
+        first = sponsor_logo(image, "350")
+
+        with patch.object(FileSystemStorage, "open", side_effect=AssertionError("read original")):
+            self.assertEqual(sponsor_logo(image, "350"), first)
+
+    def test_sponsors_page_links_only_logos_with_a_landing_page(self):
+        package = baker.make("sponsors.SponsorshipPackage", logo_dimension=350)
+        for name, url in (("Linked", "https://linked.example/"), ("Unlinked", None)):
+            sponsor = self.make_logo((600, 300), name=name, landing_page_url=url).instance
+            sponsorship = baker.make_recipe(
+                "apps.sponsors.tests.finalized_sponsorship", sponsor=sponsor, package=package
+            )
+            baker.make_recipe("apps.sponsors.tests.logo_at_sponsors_feature", sponsor_benefit__sponsorship=sponsorship)
+
+        html = Template('{% load sponsors %}{% list_sponsors "sponsors" %}').render(Context())
+
+        self.assertEqual(html.count("<a "), 1)
+        self.assertIn('<a href="https://linked.example/"', html)
+        self.assertIn("plausible-event-sponsor=linked", html)
+        self.assertIn('alt="Unlinked logo"', html)
