@@ -360,5 +360,3 @@ class UpdateSponsorshipAssetsView(UpdateView):
         """Update assets and redirect to the success URL."""
         form.update_assets()
         return redirect(self.get_success_url())
-
-

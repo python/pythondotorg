@@ -32,7 +32,6 @@ urlpatterns = [
         views.UpdateSponsorshipAssetsView.as_view(),
         name="update_sponsorship_assets",
     ),
-
     path(
         "sponsorships/<int:pk>/",
         views.SponsorshipDetailView.as_view(),
