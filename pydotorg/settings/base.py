@@ -64,6 +64,8 @@ MEDIA_URL = "/media/"
 MEDIAFILES_LOCATION = "media"
 
 SPONSORS_CONTRACT_STORAGE_ROOT = str(Path(BASE) / "private-media" / "sponsors-contracts")
+SPONSORS_ASSET_STORAGE_ROOT = str(Path(BASE) / "private-media" / "sponsors-assets")
+AGREEMENTS_STORAGE_ROOT = str(Path(BASE) / "private-media" / "agreements")
 
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files

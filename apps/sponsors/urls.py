@@ -20,6 +20,11 @@ urlpatterns = [
         views.download_contract_document,
         name="download_contract_document",
     ),
+    path(
+        "assets/<path:name>/",
+        views.download_sponsor_asset,
+        name="download_sponsor_asset",
+    ),
     # Staff-only management UI
     path("manage/", include("apps.sponsors.manage.urls")),
 ]

@@ -1,32 +1,27 @@
-"""Contract storage returns application URLs that authorize every download."""
+"""Private sponsor storage returns application URLs that authorize every download."""
 
-from pathlib import Path
-
-from django.conf import settings
-from django.core.exceptions import ImproperlyConfigured
-from django.core.files.storage import FileSystemStorage
-from django.urls import reverse
-from django.utils.module_loading import import_string
+from custom_storages.private import LocalPrivateStorage, load_private_storage
 
 
-class LocalContractStorage(FileSystemStorage):
+class LocalContractStorage(LocalPrivateStorage):
     """Keep local contract files outside the publicly served media directory."""
 
-    def __init__(self, *args, **kwargs):
-        """Reject storage inside public media."""
-        kwargs.setdefault("location", settings.SPONSORS_CONTRACT_STORAGE_ROOT)
-        kwargs.setdefault("base_url", None)
-        super().__init__(*args, **kwargs)
-        if Path(self.location).resolve().is_relative_to(Path(settings.MEDIA_ROOT).resolve()):
-            message = "Contract storage must be outside MEDIA_ROOT."
-            raise ImproperlyConfigured(message)
+    root_setting = "SPONSORS_CONTRACT_STORAGE_ROOT"
+    download_view = "download_contract_document"
 
-    def url(self, name):
-        """Return the authorized download URL."""
-        return reverse("download_contract_document", args=[name])
+
+class LocalSponsorAssetStorage(LocalPrivateStorage):
+    """Keep local provided and uploaded benefit files outside the publicly served media directory."""
+
+    root_setting = "SPONSORS_ASSET_STORAGE_ROOT"
+    download_view = "download_sponsor_asset"
 
 
 def get_contract_storage():
-    """Resolve the deployment's backend without importing optional S3 packages locally."""
-    backend = getattr(settings, "SPONSORS_CONTRACT_STORAGE_BACKEND", "apps.sponsors.storage.LocalContractStorage")
-    return import_string(backend)()
+    """Resolve the deployment's contract backend without importing optional S3 packages locally."""
+    return load_private_storage("SPONSORS_CONTRACT_STORAGE_BACKEND", "apps.sponsors.storage.LocalContractStorage")
+
+
+def get_asset_storage():
+    """Resolve the deployment's benefit file backend without importing optional S3 packages locally."""
+    return load_private_storage("SPONSORS_ASSET_STORAGE_BACKEND", "apps.sponsors.storage.LocalSponsorAssetStorage")

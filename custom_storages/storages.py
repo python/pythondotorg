@@ -21,18 +21,41 @@ class MediaStorage(S3Boto3Storage):
     location = settings.MEDIAFILES_LOCATION
 
 
-class S3ContractStorage(S3Boto3Storage):
-    """Store contracts privately and serve them through the authorized download view."""
+class PrivateS3Storage(S3Boto3Storage):
+    """Store files privately; only ``download_view`` may serve them, after authorizing the request."""
 
-    location = getattr(settings, "SPONSORS_CONTRACT_STORAGE_LOCATION", "contracts-private")
     default_acl = "private"
     file_overwrite = False
     querystring_auth = False
     object_parameters = {"CacheControl": "private, no-store", "ContentDisposition": "attachment"}
+    download_view = None
 
     def url(self, name, parameters=None, expire=None, http_method=None):
         """Return the authorized download route instead of a signed/public S3 URL."""
-        return reverse("download_contract_document", args=[name])
+        if self.download_view is None:
+            message = "This file is not accessible via a URL."
+            raise ValueError(message)
+        return reverse(self.download_view, args=[name])
+
+
+class S3ContractStorage(PrivateS3Storage):
+    """Store sponsor contracts privately."""
+
+    location = getattr(settings, "SPONSORS_CONTRACT_STORAGE_LOCATION", "contracts-private")
+    download_view = "download_contract_document"
+
+
+class S3SponsorAssetStorage(PrivateS3Storage):
+    """Store PSF-provided and sponsor-uploaded benefit files privately."""
+
+    location = getattr(settings, "SPONSORS_ASSET_STORAGE_LOCATION", "sponsor-assets-private")
+    download_view = "download_sponsor_asset"
+
+
+class S3AgreementStorage(PrivateS3Storage):
+    """Store agreement signed copies privately; agreement views stream them after their own checks."""
+
+    location = getattr(settings, "AGREEMENTS_STORAGE_LOCATION", "agreements-private")
 
 
 class PipelineManifestStorage(PipelineMixin, ManifestFilesMixin, StaticFilesStorage):

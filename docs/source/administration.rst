@@ -263,12 +263,34 @@ after session or role revocation. Anonymous public terms remain publicly cacheab
             model with an ``agreement`` field; see ``apps/agreements/orders/kinds.py``.
 
 
-Contract files
-^^^^^^^^^^^^^^
+Contract and benefit files
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Contracts are emailed to verified sponsor contacts. Website downloads are limited
 to authorized sponsorship managers and contract administrators, including signed
 copies. New contract files use private storage; public media is unchanged.
+
+Files PSF staff provide to sponsors and files sponsors upload for benefits are
+also kept in private storage and served at ``/sponsors/assets/<name>/`` as
+uncached attachments. A download is allowed for:
+
+* superusers, members of the ``Sponsorship Admin`` group, and staff with view or
+  change permission on sponsorships or on the asset's model;
+* sponsor contacts and submitters who can see a sponsorship the file belongs
+  to in their sponsorship dashboard. A file attached to a sponsor is visible
+  from any of that sponsor's sponsorships; a provided file is visible once it
+  is offered on one of their sponsorships;
+* holders of the ``Can access sponsor placement API`` permission, using either
+  a site login or their API token (``Authorization: Token <key>``). The
+  sponsorship assets API returns these files as absolute URLs to that route.
+
+Sponsor-uploaded images (``sponsors-app-assets/`` image assets) and sponsor logos
+stay on public media on purpose, because sponsor sites such as PyCon use their
+URLs directly.
+
+Files uploaded earlier stay on public media until
+``./manage.py remediate_sponsor_asset_storage --apply`` copies and verifies them;
+``--delete-legacy`` then removes the public copies. See the command's ``--help``.
 
 
 Events

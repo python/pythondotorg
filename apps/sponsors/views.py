@@ -7,6 +7,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import redirect_to_login
+from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.db.models import Q
@@ -16,15 +17,29 @@ from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import FormView
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.exceptions import AuthenticationFailed
 
 from apps.sponsors import cookies, use_cases
 from apps.sponsors.forms import SponsorshipApplicationForm, SponsorshipsBenefitsForm
 from apps.sponsors.models import (
     Contract,
+    FileAsset,
+    ProvidedFileAsset,
+    ProvidedFileAssetConfiguration,
+    Sponsor,
+    Sponsorship,
     SponsorshipBenefit,
     SponsorshipCurrentYear,
     SponsorshipPackage,
     SponsorshipProgram,
+)
+
+# Each tracked benefit file field, with the sponsors models whose view/change permission lets staff download it.
+SPONSOR_ASSET_FILE_SOURCES = (
+    (FileAsset, "file", ("genericasset", "fileasset")),
+    (ProvidedFileAssetConfiguration, "shared_file", ("providedfileassetconfiguration",)),
+    (ProvidedFileAsset, "shared_file", ("providedfileasset",)),
 )
 
 
@@ -200,29 +215,19 @@ class NewSponsorshipApplicationView(FormView):
         return response
 
 
-def _can_view_contract_documents(user):
-    """Allow active sponsorship managers and Django contract administrators."""
+def _is_sponsorship_manager(user, *model_names):
+    """Allow active sponsorship managers and staff who may view or change one of the named sponsors models."""
     if not user.is_authenticated or not user.is_active:
         return False
     if user.is_superuser or user.groups.filter(name="Sponsorship Admin").exists():
         return True
-    return user.is_staff and (user.has_perm("sponsors.view_contract") or user.has_perm("sponsors.change_contract"))
-
-
-def download_contract_document(request, name):
-    """Authorize each request before streaming an exact, tracked contract attachment."""
-    if not request.user.is_authenticated:
-        return redirect_to_login(request.get_full_path())
-    if not _can_view_contract_documents(request.user):
-        raise PermissionDenied
-
-    contract = Contract.objects.filter(Q(document=name) | Q(document_docx=name) | Q(signed_document=name)).first()
-    if contract is None:
-        raise Http404
-
-    field_file = next(
-        f for f in (contract.document, contract.document_docx, contract.signed_document) if f.name == name
+    return user.is_staff and any(
+        user.has_perm(f"sponsors.{action}_{model_name}") for model_name in model_names for action in ("view", "change")
     )
+
+
+def _private_attachment(field_file, name):
+    """Stream a private file as an uncached attachment, or 404 when storage no longer has it."""
     try:
         document = field_file.open("rb")
     except FileNotFoundError as exc:
@@ -237,3 +242,79 @@ def download_contract_document(request, name):
     response["Cache-Control"] = "private, no-store"
     response["X-Content-Type-Options"] = "nosniff"
     return response
+
+
+def download_contract_document(request, name):
+    """Authorize each request before streaming an exact, tracked contract attachment."""
+    if not request.user.is_authenticated:
+        return redirect_to_login(request.get_full_path())
+    if not _is_sponsorship_manager(request.user, "contract"):
+        raise PermissionDenied
+
+    contract = Contract.objects.filter(Q(document=name) | Q(document_docx=name) | Q(signed_document=name)).first()
+    if contract is None:
+        raise Http404
+
+    field_file = next(
+        f for f in (contract.document, contract.document_docx, contract.signed_document) if f.name == name
+    )
+    return _private_attachment(field_file, name)
+
+
+def _api_token_or_session_user(request):
+    """Return the user of a sent API token, like the sponsors API, falling back to the session user."""
+    try:
+        authenticated = TokenAuthentication().authenticate(request)
+    except AuthenticationFailed as exc:
+        raise PermissionDenied from exc
+    return authenticated[0] if authenticated else request.user
+
+
+def _tracked_sponsor_asset(name):
+    """Return the field file tracked under ``name`` and the sponsors models governing staff access to it."""
+    field_file, model_names = None, ["sponsorship"]
+    for model, field, governing_models in SPONSOR_ASSET_FILE_SOURCES:
+        record = model.objects.filter(**{field: name}).first()
+        if record is not None:
+            field_file = field_file or getattr(record, field)
+            model_names.extend(governing_models)
+    if field_file is None:
+        return None, ()
+    return field_file, model_names
+
+
+def _sponsor_can_view_asset(user, name):
+    """Return whether ``name`` belongs to a sponsorship, or the sponsor of one, that the user can see."""
+    visible = Sponsorship.objects.visible_to(user)
+    visible_ids = visible.values("pk")
+    content_types = ContentType.objects.get_for_models(Sponsor, Sponsorship)
+    owned_upload = Q(content_type=content_types[Sponsorship], object_id__in=visible_ids) | Q(
+        content_type=content_types[Sponsor], object_id__in=visible.values("sponsor_id")
+    )
+    return (
+        FileAsset.objects.filter(owned_upload, file=name).exists()
+        or ProvidedFileAsset.objects.filter(shared_file=name, sponsor_benefit__sponsorship__in=visible_ids).exists()
+    )
+
+
+def download_sponsor_asset(request, name):
+    """Authorize each request before streaming a tracked provided or uploaded benefit file.
+
+    Sponsorship managers, sponsor publishers (API token or session) and portal users who can see an owning
+    sponsorship may download. Untracked names are 404 only for users who could otherwise download any file.
+    """
+    user = _api_token_or_session_user(request)
+    if not user.is_authenticated:
+        return redirect_to_login(request.get_full_path())
+
+    field_file, model_names = _tracked_sponsor_asset(name)
+    allowed = (
+        (user.is_active and user.has_perm("sponsors.sponsor_publisher"))
+        or _is_sponsorship_manager(user, *model_names)
+        or _sponsor_can_view_asset(user, name)
+    )
+    if not allowed:
+        raise PermissionDenied
+    if field_file is None:
+        raise Http404
+    return _private_attachment(field_file, name)
