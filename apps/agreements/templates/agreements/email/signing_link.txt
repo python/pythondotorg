@@ -1,0 +1,17 @@
+{% autoescape off %}Hello {{ link.name }},
+
+The Python Software Foundation has prepared the following for {{ agreement.counterparty_name }} to sign:
+
+    {{ agreement.title }}
+    Reference {{ agreement.reference }}
+
+Review and sign it here:
+
+    {{ url }}
+
+The link works once and expires on {{ link.expires_at|date:"F j, Y" }}. Your name, title, email, the time, and your IP address are recorded with your signature. If you would rather sign through DocuSign or on paper, reply to this email.
+
+If you weren't expecting this, you can ignore it.
+
+Python Software Foundation
+{% endautoescape %}

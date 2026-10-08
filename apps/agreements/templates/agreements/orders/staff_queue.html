@@ -1,0 +1,18 @@
+{% extends "agreements/orders/base.html" %}
+{% block title %}All orders{% endblock %}
+{% block crumbs %}
+<li><a href="{% url 'agreements:program_list' %}">Programs</a><span class="prompt">&gt;&gt;&gt;</span></li>
+<li>All orders</li>
+{% endblock %}
+
+{% block content %}
+<article class="text">
+  <header class="article-header"><h1 class="page-title">All orders</h1></header>
+  <p>To prepare an order for a customer, <a href="{% url 'agreements:program_list' %}">choose a program</a>. Signed Order Forms wait in the <a href="{% url 'agreements:queue' %}">agreements queue</a> for countersignature.</p>
+  {% if orders %}
+    {% include "agreements/orders/_order_table.html" with show_owner=True %}
+  {% else %}
+    <p>No orders have been prepared yet.</p>
+  {% endif %}
+</article>
+{% endblock %}

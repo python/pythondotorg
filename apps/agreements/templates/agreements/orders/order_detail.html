@@ -1,0 +1,132 @@
+{% extends "agreements/orders/base.html" %}
+{% load agreements %}
+{% block title %}{{ order.legal_name }}: {{ order.program_title }} order{% endblock %}
+
+{% block crumbs %}
+<li><a href="{% url 'agreements:program_list' %}">Programs</a><span class="prompt">&gt;&gt;&gt;</span></li>
+{% if nav == "staff" %}
+  <li><a href="{% url 'agreements:staff_orders' %}">Orders</a><span class="prompt">&gt;&gt;&gt;</span></li>
+{% else %}
+  <li><a href="{% url 'agreements:order_list' %}">Your orders</a><span class="prompt">&gt;&gt;&gt;</span></li>
+{% endif %}
+<li>{{ order.legal_name }}</li>
+{% endblock %}
+
+{% block content %}
+<article class="text">
+  <header class="article-header">
+    <h1 class="page-title">{{ order.legal_name }}</h1>
+  </header>
+  <p class="order-meta">{% status_badge order.status %} {{ order.program_title }} order · Reference <code>{{ order.reference }}</code>{% if order.agreement and order.agreement.revision > 1 %} · Order Form revision {{ order.agreement.revision }}{% endif %}{% if can_prepare and order.agreement %} · <a href="{{ order.agreement.get_absolute_url }}">Agreement record</a>{% endif %}</p>
+
+  {% if configuration_error %}
+    <div class="user-feedback level-error"><p>{{ configuration_error }}</p></div>
+    {% if can_edit %}<p><a class="button" href="{% url 'agreements:order_edit' order.pk %}">Edit selections</a></p>{% endif %}
+  {% else %}
+  <div class="table-scroll" role="region" aria-label="Package fees" tabindex="0">
+  <table class="facts">
+    <thead>
+      <tr><th scope="col">Agreement</th><th scope="col">Service Tier</th><th scope="col">Terms</th><th scope="col" class="num">Fees</th></tr>
+    </thead>
+    <tbody>
+      {% for line in lines %}
+        {% with terms=line.cited_terms %}
+        <tr>
+          <th scope="row">{{ line.agreement_obj.short_name }}</th>
+          <td>{{ line.tier_name }}</td>
+          <td><a href="{{ terms.get_absolute_url }}">Version {{ terms.version }}</a></td>
+          <td class="num">{{ line.fee_totals.annual|money }} a year{% if line.fee_totals.one_time %}<br>{{ line.fee_totals.one_time|money }} one-time{% endif %}</td>
+        </tr>
+        {% endwith %}
+      {% endfor %}
+    </tbody>
+    <tfoot>
+      <tr>
+        <th scope="row" colspan="3">Total annual fees</th>
+        <td class="num">{{ order.fee_totals.annual|money }}</td>
+      </tr>
+      {% if order.fee_totals.one_time %}
+      <tr>
+        <th scope="row" colspan="3">Total one-time fees</th>
+        <td class="num">{{ order.fee_totals.one_time|money }}</td>
+      </tr>
+      {% endif %}
+      {% if order.term_months > 12 or order.fee_totals.one_time %}
+      <tr>
+        <th scope="row" colspan="3">{{ order.term_months }}-month Initial Term{% if order.term_months > 12 %}, prepaid{% endif %}</th>
+        <td class="num">{{ order.term_total_display }}</td>
+      </tr>
+      {% endif %}
+    </tfoot>
+  </table>
+  </div>
+  <p class="order-orgs">{{ order.catalog.covered_entities_label }}: {{ order.organization_list|join:", " }}</p>
+
+  {% if not order.agreement %}
+    <p>Review the Order Form below. It cites the published terms of each agreement, which are part of the contract.{% if can_edit %} <a href="{% url 'agreements:order_edit' order.pk %}">Edit selections</a>{% endif %}</p>
+  {% endif %}
+
+  <section class="agreement-block" id="order-form" aria-labelledby="order-form-title">
+    <h2 id="order-form-title">Order Form</h2>
+    <p class="agreement-meta">Download: <a href="{% url 'agreements:order_document' order.pk 'pdf' %}">PDF</a> · <a href="{% url 'agreements:order_document' order.pk 'docx' %}">DOCX</a>{% if not order.agreement %} (preview){% endif %}</p>
+    {% if metadata_hidden %}<p class="agreement-meta">For the complete document, download the PDF or DOCX.</p>{% endif %}
+    {% if order.status == "draft" or order.status == "offered" %}
+      <div class="agreement-scroll" tabindex="0" aria-label="Order Form text"><div class="agreement-text">{{ html|safe }}</div></div>
+    {% else %}
+      <details class="agreement-details">
+        <summary>Read the Order Form</summary>
+        <div class="agreement-text">{{ html|safe }}</div>
+      </details>
+    {% endif %}
+  </section>
+
+  {% if order.agreement %}
+    {% include "agreements/_actions.html" with agreement=order.agreement %}
+  {% else %}
+    {% if draft_sign_form %}
+      <section aria-labelledby="sign-title">
+        <h2 id="sign-title">Sign on python.org</h2>
+        <form method="post" action="{% url 'agreements:order_sign' order.pk %}" class="sign-form">
+          {% csrf_token %}
+          {{ draft_sign_form.document_sha256 }}
+          {{ draft_sign_form.non_field_errors }}
+          <label class="choice accept{% if draft_sign_form.accept.errors %} has-error{% endif %}">
+            {{ draft_sign_form.accept }}
+            <span>By clicking “Sign Order Form” I, on behalf of Customer, sign this Order Form and so enter into {% for line in lines %}the {{ line.agreement_obj.title }}{% if not forloop.last %} and {% endif %}{% endfor %} with the Python Software Foundation, each made up of this Order Form and the terms it cites. I represent and warrant that I am authorized to sign on behalf of, and to legally bind, Customer.</span>
+          </label>
+          {{ draft_sign_form.accept.errors }}
+          <div class="field-row">
+            {% include "agreements/_field.html" with field=draft_sign_form.signer_name %}
+            {% include "agreements/_field.html" with field=draft_sign_form.signer_title %}
+          </div>
+          <div class="user-feedback level-general signing-as">
+            <p><strong>Signing as {{ user.get_full_name|default:user.get_username }}</strong> ({{ user.email }}) for {{ order.legal_name }}, {% now "F j, Y" %}.</p>
+            <p>Your identity comes from your python.org account. Your email, the time, and your IP address are recorded with your signature and the exact text of the Order Form.</p>
+          </div>
+          <button type="submit">Sign Order Form</button>
+        </form>
+      </section>
+    {% endif %}
+
+    {% if can_offer %}
+      <section class="offline-signing" aria-labelledby="ready-title">
+        <h2 id="ready-title">{% if draft_sign_form %}Or sign some other way{% else %}Prepare for signature{% endif %}</h2>
+        <p>Making the Order Form ready to sign fixes its text. Then {% if is_administrator %}the PSF can edit it for this customer, email a one-time signing link to anyone, or record a copy signed through DocuSign or on paper{% else %}you can download it to sign through DocuSign, your procurement system, or on paper, and upload the signed copy{% endif %}. It can be withdrawn and changed until it is signed.</p>
+        <div class="actions">
+          <form method="post" action="{% url 'agreements:order_offer' order.pk %}">
+            {% csrf_token %}
+            <button type="submit">Make ready to sign</button>
+          </form>
+        </div>
+      </section>
+    {% endif %}
+    {% if can_edit %}
+      <form method="post" action="{% url 'agreements:order_delete' order.pk %}" class="discard-form">
+        {% csrf_token %}
+        <button type="submit">Discard draft</button>
+      </form>
+    {% endif %}
+  {% endif %}
+  {% endif %}
+</article>
+{% endblock %}

@@ -198,6 +198,7 @@ INSTALLED_APPS = [
     "django_countries",
     "sorl.thumbnail",
     "pydotorg",
+    "apps.agreements",
     "apps.banners",
     "apps.blogs",
     "apps.boxes",
@@ -257,6 +258,9 @@ LOGGING = {
 ### Honeypot
 HONEYPOT_FIELD_NAME = "email_body_text"
 HONEYPOT_VALUE = "write your message"
+
+### Haystack
+HAYSTACK_CUSTOM_HIGHLIGHTER = "pydotorg.search.Highlighter"
 
 ### Blog Feed URL
 PYTHON_BLOG_FEED_URL = "https://blog.python.org/feeds/posts/default?alt=rss"
@@ -328,7 +332,11 @@ CONTENT_SECURITY_POLICY_REPORT_ONLY = {
             UNSAFE_INLINE,
             "https://ajax.googleapis.com",
         ],
-        "img-src": [SELF, "data:", "https://media.ethicalads.io"],
+        "img-src": [
+            SELF,
+            "data:",
+            "https:",
+        ],
         "font-src": [SELF, "data:"],
         "connect-src": [
             SELF,

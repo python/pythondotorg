@@ -1,9 +1,9 @@
 version: 2
 updates:
-- package-ecosystem: pip
+- package-ecosystem: uv
   directory: "/"
   groups:
-    pip:
+    uv:
       patterns:
         - "*"
       # Review major upgrades separately.
@@ -26,7 +26,7 @@ updates:
   cooldown:
     default-days: 7
 - package-ecosystem: docker
-  directory: "/"
+  directory: "/docker"
   groups:
     docker:
       patterns:
