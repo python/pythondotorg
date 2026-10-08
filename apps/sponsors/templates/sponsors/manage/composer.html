@@ -647,7 +647,7 @@
                     <ul style="margin:6px 0 0;">
                     {% for dup in form.duplicate_sponsors %}
                         <li style="margin-bottom:4px;">
-                            <a href="{% url 'manage_sponsor_edit' dup.pk %}" target="_blank" rel="noopener noreferrer">{{ dup.name }}{% if dup.city %} ({{ dup.city }}){% endif %}</a>
+                            <a href="{% url 'manage_sponsor_edit' dup.pk %}" target="_blank">{{ dup.name }}{% if dup.city %} ({{ dup.city }}){% endif %}<span class="sr-only"> (opens in a new tab)</span></a>
                             <button type="submit" form="select-dup-{{ dup.pk }}" class="btn btn-sm btn-secondary" style="margin-left:6px;">Use this sponsor</button>
                         </li>
                     {% endfor %}
@@ -1516,8 +1516,8 @@ refreshAvailable();
     <div style="background:#fff;border:1px solid #e8e8e8;border-radius:8px;padding:24px;margin-bottom:24px;">
         <h3 style="font-size:16px;font-weight:700;color:#1a1a2e;margin:0 0 16px;">Preview &amp; Download</h3>
         <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
-            <a href="{% url 'manage_composer_contract_preview' %}" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="padding:8px 20px;text-decoration:none;">
-                Preview PDF
+            <a href="{% url 'manage_composer_contract_preview' %}" target="_blank" class="btn btn-primary" style="padding:8px 20px;text-decoration:none;">
+                Preview PDF<span class="sr-only"> (opens in a new tab)</span>
             </a>
             <form method="post" style="display:inline;">
                 {% csrf_token %}
