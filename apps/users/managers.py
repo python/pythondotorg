@@ -5,18 +5,11 @@ from django.db.models.query import QuerySet
 
 
 class UserQuerySet(QuerySet):
-    """QuerySet with convenience filters for active and searchable users."""
+    """QuerySet with convenience filters for active users."""
 
     def active(self):
         """Filter to active users only."""
         return self.filter(is_active=True)
-
-    def searchable(self):
-        """Filter to users who have opted into public search visibility."""
-        return self.active().filter(
-            public_profile=True,
-            search_visibility__exact=self.model.SEARCH_PUBLIC,
-        )
 
 
 class UserManager(DjangoUserManager.from_queryset(UserQuerySet)):
