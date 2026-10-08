@@ -120,6 +120,8 @@ controlled only by membership in these groups:
 * **Agreements Administrators** have those preparation rights and can manage configuration,
   publish terms, offer documents, revise unsigned offers, send signing links, record signed
   copies, decline, withdraw, countersign, and resend executed copies.
+* **Sponsorship Admin** members, the sponsors app's management group, have exactly the
+  Agreements Editors rights above. They are not Agreements Administrators.
 
 Only Agreements Administrators may assign, replace, or remove a draft's linked customer
 or counterparty account. Editors can prepare all other draft fields, including special
@@ -127,7 +129,7 @@ terms, but their new drafts remain unlinked and edits preserve any existing acco
 Customers creating their own public orders are linked automatically. An Editor linked
 as the customer by an Administrator retains that customer's offer and signing rights.
 
-Migrations create both groups without permissions or members and remove the obsolete
+Migrations create both Agreements groups without permissions or members and remove the obsolete
 ``agreements.manage_agreement`` permission. After deployment, explicitly add the appropriate
 users to these groups in the Django admin. No users are enrolled automatically, and no
 programs, terms, pricing, or agreements are seeded. Direct permissions, other groups'
@@ -142,13 +144,13 @@ Superusers are trusted identity administrators who can provision agreement roles
 still need group membership to use the agreements workflow themselves.
 
 Only superusers can grant or remove staff status, superuser status, groups (including
-both agreement roles), or direct permissions on user accounts. Staff with delegated
+both agreement roles and Sponsorship Admin), or direct permissions on user accounts. Staff with delegated
 user-administration permissions can edit, deactivate, reset passwords for, and delete
 ordinary accounts only. Accounts that hold any authority (superuser, staff, direct or
-group permissions, or either agreement role, even when inactive) are view-only to them,
+group permissions, or any group that grants agreement access, even when inactive) are view-only to them,
 including password changes, the changelist active toggle, bulk deletion, and API key inlines.
 
-Authenticated accounts outside both groups receive a permission-denied page for management
+Authenticated accounts outside these groups receive a permission-denied page for management
 views; anonymous visitors are directed to sign in. Linked customers retain their own
 order and signing rights independently of group membership, as do valid one-time
 signing links. Removing group membership removes management access on the next request;
@@ -231,8 +233,12 @@ after session or role revocation. Anonymous public terms remain publicly cacheab
                    their stored text and complete PDF/DOCX downloads remain intact.
 :Signing: Use the linked python.org account, an emailed one-time link (valid for 14 days),
           or a signed PDF collected through another signing service or on paper.
-          Linked customers and Agreements Administrators can upload signed copies. Copies stay in the
-          database, not public media storage.
+          Linked customers and Agreements Administrators can upload signed copies. Copies are kept
+          in private agreement storage (``AGREEMENTS_STORAGE_BACKEND``; locally
+          ``AGREEMENTS_STORAGE_ROOT``, outside ``MEDIA_ROOT``), never public media, and have no
+          public URL: they download only from the agreement page, after the same access check.
+          Migration ``agreements.0006`` moves copies previously kept in the database into this
+          storage and stops if any stored copy does not match its recorded SHA-256.
           If an invitation email fails, the page reports the failure and removes the
           undelivered, unused link. Existing invitations remain valid; send a new link
           to retry delivery.

@@ -15,6 +15,7 @@ from apps.agreements.models import Agreement, CustomContract, Order, Program, Te
 from apps.agreements.tests.catalog_data import make_program
 from apps.agreements.tests.test_agreements import offer_contract
 from apps.agreements.tests.test_orders import make_order
+from apps.sponsors.manage.views import SponsorshipAdminRequiredMixin
 
 if TYPE_CHECKING:
     from apps.users.models import User
@@ -23,6 +24,7 @@ if TYPE_CHECKING:
 class DraftGroupRoleTests(TestCase):
     administrator: User
     editor: User
+    sponsorship_admin: User
     staff: User
     superuser: User
     permission_only: User
@@ -41,6 +43,10 @@ class DraftGroupRoleTests(TestCase):
         cls.administrator.groups.add(Group.objects.get_or_create(name=ADMINISTRATORS)[0])
         cls.editor = users.create_user("editor", "editor@example.org", is_staff=True)
         cls.editor.groups.add(Group.objects.get_or_create(name=EDITORS)[0])
+        cls.sponsorship_admin = users.create_user("sponsorship-admin", "sponsorships@example.org", is_staff=True)
+        cls.sponsorship_admin.groups.add(
+            Group.objects.get_or_create(name=SponsorshipAdminRequiredMixin.group_required)[0]
+        )
         cls.staff = users.create_user("staff", "staff@example.org", is_staff=True)
         cls.superuser = users.create_superuser("superuser", "superuser@example.org", "password")
         cls.permission_only = users.create_user("permission-only", "permissions@example.org", is_staff=True)
@@ -97,8 +103,24 @@ class DraftGroupRoleTests(TestCase):
         self.assertTrue(self.terms.under_review)
         self.assertEqual(self.terms.versions.count(), 1)
 
+    def test_sponsorship_admin_saves_drafts_like_an_editor(self) -> None:
+        self.client.force_login(self.sponsorship_admin)
+        response = self.client.post(self.terms_url(), {"markdown": "Saved example.", "action": "save"})
+        self.assertRedirects(response, self.terms_url())
+        self.terms.refresh_from_db()
+        self.assertEqual(self.terms.draft_updated_by, self.sponsorship_admin)
+        self.assertEqual(self.terms.versions.count(), 1)
+        response = self.client.post(reverse("agreements:custom_create"), self.contract_data())
+        contract = CustomContract.objects.get(title="Updated example")
+        self.assertRedirects(response, contract.get_absolute_url())
+        self.assertEqual(contract.created_by, self.sponsorship_admin)
+
     def test_editor_forged_publication_and_configuration_posts_are_forbidden(self) -> None:
-        self.client.force_login(self.editor)
+        for user in (self.editor, self.sponsorship_admin):
+            self.client.force_login(user)
+            self.assert_forged_terms_posts_are_forbidden()
+
+    def assert_forged_terms_posts_are_forbidden(self) -> None:
         for payload in (
             {"action": "publish", "version": "v2", "notes": "Changed"},
             {"action": "publish", "preview": "1"},
@@ -160,7 +182,7 @@ class DraftGroupRoleTests(TestCase):
 
     def test_only_administrator_can_offer_custom_draft(self) -> None:
         url = reverse("agreements:custom_offer", args=[self.contract.pk])
-        for user in (self.editor, self.staff, self.superuser, self.permission_only):
+        for user in (self.editor, self.sponsorship_admin, self.staff, self.superuser, self.permission_only):
             with self.subTest(user=user.username):
                 self.client.force_login(user)
                 self.assertEqual(self.client.post(url).status_code, 403)
@@ -241,8 +263,16 @@ class DraftGroupRoleTests(TestCase):
 
     def test_admin_module_and_view_permissions_use_only_groups(self) -> None:
         instances = (self.terms, self.program, self.contract, self.agreement, self.order)
-        for user in (self.editor, self.administrator, self.staff, self.superuser, self.permission_only):
-            allowed = user in (self.editor, self.administrator)
+        users = (
+            self.editor,
+            self.sponsorship_admin,
+            self.administrator,
+            self.staff,
+            self.superuser,
+            self.permission_only,
+        )
+        for user in users:
+            allowed = user in (self.editor, self.sponsorship_admin, self.administrator)
             self.client.force_login(user)
             index = self.client.get(reverse("admin:index"))
             for instance in instances:
@@ -259,7 +289,7 @@ class DraftGroupRoleTests(TestCase):
                     self.assertEqual(response.status_code, 200 if allowed else 403)
 
     def test_group_members_can_view_record_inlines_without_model_permissions(self) -> None:
-        for user in (self.editor, self.administrator):
+        for user in (self.editor, self.sponsorship_admin, self.administrator):
             self.client.force_login(user)
             self.assertFalse(user.user_permissions.exists())
             for instance, expected in (
@@ -278,7 +308,7 @@ class DraftGroupRoleTests(TestCase):
     def test_admin_configuration_rejects_forged_writes_without_administrator_group(self) -> None:
         original_definition = self.program.definition
         forged_definition = {**original_definition, "order_title": "Unauthorized"}
-        for user in (self.editor, self.staff, self.superuser, self.permission_only):
+        for user in (self.editor, self.sponsorship_admin, self.staff, self.superuser, self.permission_only):
             self.client.force_login(user)
             for instance, data in (
                 (self.terms, {"slug": self.terms.slug, "title": "Unauthorized", "is_public": "on"}),
@@ -345,7 +375,15 @@ class DraftGroupRoleTests(TestCase):
         self.assertTrue(self.program.is_public)
 
     def test_all_groups_and_superusers_cannot_mutate_admin_records(self) -> None:
-        for user in (self.editor, self.administrator, self.staff, self.superuser, self.permission_only):
+        users = (
+            self.editor,
+            self.sponsorship_admin,
+            self.administrator,
+            self.staff,
+            self.superuser,
+            self.permission_only,
+        )
+        for user in users:
             self.client.force_login(user)
             for instance in (self.agreement, self.contract, self.order):
                 name = type(instance).__name__.lower()

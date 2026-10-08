@@ -16,6 +16,7 @@ from apps.agreements.orders import documents
 from apps.agreements.registry import get_kind
 from apps.agreements.tests.catalog_data import make_program
 from apps.agreements.tests.test_orders import make_officer, make_order, payload, reload
+from apps.sponsors.manage.views import SponsorshipAdminRequiredMixin
 
 User = get_user_model()
 
@@ -25,6 +26,10 @@ class OrderGroupRoleTests(TestCase):
         self.editor = User.objects.create_user("editor", "editor@example.org", "password")
         self.editors = Group.objects.get_or_create(name=EDITORS)[0]
         self.editor.groups.add(self.editors)
+        self.sponsorship_admin = User.objects.create_user("sponsorship-admin", "sponsorships@example.org", "password")
+        self.sponsorship_admin.groups.add(
+            Group.objects.get_or_create(name=SponsorshipAdminRequiredMixin.group_required)[0]
+        )
         self.administrator = make_officer()
         self.customer = User.objects.create_user("customer", "customer@example.com", "password")
         self.program = make_program(is_public=False)
@@ -33,8 +38,8 @@ class OrderGroupRoleTests(TestCase):
         self.quote_url = reverse("agreements:quote", args=[self.program.slug])
         self.create_url = reverse("agreements:order_create", args=[self.program.slug])
 
-    def test_both_groups_can_read_private_catalogs_and_all_order_queues(self) -> None:
-        for user in (self.editor, self.administrator):
+    def test_editor_level_groups_can_read_private_catalogs_and_all_order_queues(self) -> None:
+        for user in (self.editor, self.sponsorship_admin, self.administrator):
             with self.subTest(user=user.username):
                 self.client.force_login(user)
                 self.assertTrue(Program.visible_to(user).filter(pk=self.program.pk).exists())
@@ -72,17 +77,21 @@ class OrderGroupRoleTests(TestCase):
         self.assertEqual(self.client.post(reverse("agreements:order_delete", args=[created.pk])).status_code, 302)
         self.assertFalse(Order.objects.filter(pk=created.pk).exists())
 
-    def test_editor_cannot_offer_or_sign_for_the_linked_customer(self) -> None:
-        self.client.force_login(self.editor)
-        self.assertTrue(self.order.can_edit(self.editor))
-        self.assertFalse(self.order.can_offer(self.editor))
-        page = self.client.get(self.order.get_absolute_url())
-        self.assertContains(page, "Discard draft")
-        self.assertNotContains(page, "Make ready to sign")
-        self.assertNotContains(page, "Sign Order Form")
-        self.assertEqual(self.client.post(self.offer_url).status_code, 404)
-        self.assertEqual(self.client.post(reverse("agreements:order_sign", args=[self.order.pk])).status_code, 404)
-        self.assertIsNone(reload(self.order).agreement)
+    def test_editor_level_roles_cannot_offer_or_sign_for_the_linked_customer(self) -> None:
+        for user in (self.editor, self.sponsorship_admin):
+            with self.subTest(user=user.username):
+                self.client.force_login(user)
+                self.assertTrue(self.order.can_edit(user))
+                self.assertFalse(self.order.can_offer(user))
+                page = self.client.get(self.order.get_absolute_url())
+                self.assertContains(page, "Discard draft")
+                self.assertNotContains(page, "Make ready to sign")
+                self.assertNotContains(page, "Sign Order Form")
+                self.assertEqual(self.client.post(self.offer_url).status_code, 404)
+                self.assertEqual(
+                    self.client.post(reverse("agreements:order_sign", args=[self.order.pk])).status_code, 404
+                )
+                self.assertIsNone(reload(self.order).agreement)
 
     def test_administrator_can_offer_for_another_customer(self) -> None:
         self.client.force_login(self.administrator)

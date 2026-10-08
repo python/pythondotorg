@@ -1,13 +1,19 @@
 from __future__ import annotations
 
 import datetime
+import hashlib
 import re
+from pathlib import PurePosixPath
+from tempfile import TemporaryDirectory
 from typing import TYPE_CHECKING, Any, cast
+from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.core import mail
+from django.core.files.base import ContentFile
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.db import IntegrityError
 from django.test import Client, TestCase
 from django.urls import reverse
 from django.utils import timezone
@@ -16,7 +22,16 @@ from apps.agreements import documents, workflow
 from apps.agreements.auth import ADMINISTRATORS
 from apps.agreements.documents import SIGNATURES
 from apps.agreements.kinds import CustomContractKind
-from apps.agreements.models import Agreement, AgreementRevision, CustomContract, SigningLink, Terms, TermsVersion
+from apps.agreements.models import (
+    Agreement,
+    AgreementRevision,
+    CustomContract,
+    SignedCopy,
+    SigningLink,
+    Terms,
+    TermsVersion,
+)
+from apps.agreements.storage import LocalAgreementStorage
 
 if TYPE_CHECKING:
     from django.test.client import _MonkeyPatchedWSGIResponse
@@ -55,8 +70,18 @@ def refresh(agreement: Agreement) -> Agreement:
     return Agreement.objects.get(pk=agreement.pk)
 
 
-class OfferAndEditTests(TestCase):
+class PrivateStorageTestCase(TestCase):
+    """Keep the signed copies a test stores in its own directory, not the shared private root."""
+
     def setUp(self) -> None:
+        super().setUp()
+        self.storage = LocalAgreementStorage(location=self.enterContext(TemporaryDirectory()))
+        self.enterContext(patch.object(SignedCopy.file.field, "storage", self.storage))
+
+
+class OfferAndEditTests(PrivateStorageTestCase):
+    def setUp(self) -> None:
+        super().setUp()
         self.officer = make_officer()
         self.client.force_login(self.officer)
 
@@ -243,8 +268,9 @@ class SigningLinkTests(TestCase):
         self.assertEqual(self.client.get(reverse("agreements:sign_link", args=[token])).status_code, 410)
 
 
-class SignedCopyAndCountersignTests(TestCase):
+class SignedCopyAndCountersignTests(PrivateStorageTestCase):
     def setUp(self) -> None:
+        super().setUp()
         self.officer = make_officer()
         self.other = User.objects.create_user("eve", "eve@example.com", "password")
         self.agreement = offer_contract(self.officer)
@@ -272,7 +298,13 @@ class SignedCopyAndCountersignTests(TestCase):
         self.assertIn("Signed copy on file", text)
 
         download = reverse("agreements:copy_download", args=[agreement.pk, "customer"])
-        self.assertEqual(self.client.get(download).content, PDF)
+        response = self.client.get(download)
+        self.assertEqual(response.getvalue(), PDF)
+        self.assertEqual(response["Content-Type"], "application/pdf")
+        self.assertEqual(
+            response["Content-Disposition"], f'attachment; filename="psf-agreement-{agreement.reference}-customer.pdf"'
+        )
+        self.assertEqual(response["Cache-Control"], "private, no-store")
         self.client.force_login(self.other)
         self.assertEqual(self.client.get(download).status_code, 404)
 
@@ -294,6 +326,57 @@ class SignedCopyAndCountersignTests(TestCase):
         email = mail.outbox[-1]
         self.assertEqual(email.to, ["grace@example.com"])
         self.assertTrue(email.attachments[0][1].startswith(b"%PDF"))
+
+    def stored_names(self) -> list[str]:
+        return self.storage.listdir(f"signed-copies/{self.agreement.pk}")[1]
+
+    def test_signed_copy_is_stored_privately_under_an_unguessable_name(self) -> None:
+        self.record()
+        copy = SignedCopy.objects.get(agreement=self.agreement)
+        self.assertEqual(copy.filename, "signed.pdf")
+        self.assertEqual(copy.sha256, hashlib.sha256(PDF).hexdigest())
+        self.assertRegex(copy.file.name, rf"^signed-copies/{self.agreement.pk}/customer-[\w-]{{22}}\.pdf$")
+        with self.storage.open(copy.file.name) as stored:
+            self.assertEqual(stored.read(), PDF)
+        with self.assertRaises(ValueError):
+            _ = copy.file.url
+
+    def test_rolled_back_countersignature_deletes_its_stored_copy(self) -> None:
+        self.record()
+        with (
+            patch.object(CustomContractKind, "executed", side_effect=RuntimeError("hook failed")),
+            self.assertRaises(RuntimeError),
+        ):
+            workflow.countersign(
+                refresh(self.agreement),
+                user=self.officer,
+                name="Pat Officer",
+                title="Executive Director",
+                upload=workflow.Upload("executed.pdf", b"%PDF-1.4 executed"),
+            )
+        self.assertEqual(refresh(self.agreement).status, Agreement.Status.SIGNED)
+        customer_copy = SignedCopy.objects.get(agreement=self.agreement)
+        self.assertEqual(self.stored_names(), [PurePosixPath(customer_copy.file.name).name])
+
+    def test_second_copy_of_a_kind_is_refused_without_leaving_its_file(self) -> None:
+        earlier = SignedCopy(
+            agreement=self.agreement,
+            kind=SignedCopy.Kind.CUSTOMER,
+            filename="earlier.pdf",
+            sha256=hashlib.sha256(PDF).hexdigest(),
+            uploaded_by=self.officer,
+        )
+        earlier.file.save("earlier.pdf", ContentFile(PDF))
+        with self.assertRaises(IntegrityError):
+            workflow.record_signed_copy(
+                self.agreement,
+                workflow.Signature("Grace", "CTO", "grace@example.com", signed_on=timezone.localdate()),
+                upload=workflow.Upload("again.pdf", b"%PDF-1.4 again"),
+                user=self.officer,
+                seen_sha256=self.agreement.document_sha256,
+            )
+        self.assertEqual(refresh(self.agreement).status, Agreement.Status.OFFERED)
+        self.assertEqual(self.stored_names(), [PurePosixPath(earlier.file.name).name])
 
     def test_agreements_are_private(self) -> None:
         self.client.force_login(self.other)

@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import hashlib
 import re
+import secrets
 import uuid
 from typing import TYPE_CHECKING, Any
 
@@ -33,6 +34,7 @@ from django.utils.functional import cached_property
 
 from apps.agreements.auth import can_prepare
 from apps.agreements.registry import get_kind
+from apps.agreements.storage import get_agreement_storage
 
 _DOCUMENT_REFERENCE = re.compile(r"^\*Reference ([A-F0-9]{8})\*$", re.MULTILINE)
 
@@ -177,10 +179,15 @@ class AgreementRevision(models.Model):
         return f"{self.agreement}, revision {self.revision}"
 
 
+def signed_copy_path(instance: SignedCopy, filename: str) -> str:
+    """Name each copy by agreement and kind with a random suffix, never by the uploaded filename."""
+    return f"signed-copies/{instance.agreement_id}/{instance.kind}-{secrets.token_urlsafe(16)}.pdf"
+
+
 class SignedCopy(models.Model):
     """A signed copy received outside python.org, for example through DocuSign or on paper.
 
-    Stored in the database rather than media storage: media is public, these are contracts.
+    Kept in private agreement storage, which has no public URL: only the agreement views read it.
     """
 
     class Kind(models.TextChoices):
@@ -194,7 +201,7 @@ class SignedCopy(models.Model):
     agreement = models.ForeignKey(Agreement, on_delete=models.PROTECT, related_name="signed_copies")
     kind = models.CharField(max_length=16, choices=Kind.choices)
     filename = models.CharField(max_length=255)
-    content = models.BinaryField()
+    file = models.FileField(upload_to=signed_copy_path, storage=get_agreement_storage)
     sha256 = models.CharField(max_length=64)
     uploaded_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="+")
     uploaded_at = models.DateTimeField(auto_now_add=True)

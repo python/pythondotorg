@@ -23,7 +23,7 @@ from apps.agreements.models import (
 )
 
 if TYPE_CHECKING:
-    from django.db.models import Model, QuerySet
+    from django.db.models import Model
     from django.http import HttpRequest
 
 admin.site.unregister(Group)
@@ -120,15 +120,11 @@ class RevisionInline(_ReadOnlyInline):
 
 
 class SignedCopyInline(_ReadOnlyInline):
-    """Signed copies; download them from the agreement page."""
+    """Signed copies; download them from the agreement page. The private file has no admin URL."""
 
     model = SignedCopy
     fields = ("kind", "filename", "sha256", "uploaded_by", "uploaded_at")
     readonly_fields = fields
-
-    def get_queryset(self, request: HttpRequest) -> QuerySet[SignedCopy]:
-        """Leave the file contents in the database."""
-        return super().get_queryset(request).defer("content")
 
 
 class SigningLinkInline(_ReadOnlyInline):

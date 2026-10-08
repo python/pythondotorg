@@ -1,26 +1,36 @@
 """Group boundaries must hold independently of staff flags and Django permissions."""
 
+import hashlib
+
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.core import mail
+from django.core.files.base import ContentFile
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import TestCase
 from django.urls import reverse
 
 from apps.agreements import workflow
-from apps.agreements.auth import EDITORS
+from apps.agreements.auth import EDITORS, can_prepare, is_administrator
 from apps.agreements.models import Agreement, SignedCopy
-from apps.agreements.tests.test_agreements import PDF, make_officer, offer_contract
+from apps.agreements.tests.test_agreements import PDF, PrivateStorageTestCase, make_officer, offer_contract
+from apps.sponsors.manage.views import SponsorshipAdminRequiredMixin
 
 
-class SigningGroupAccessTests(TestCase):
+class SigningGroupAccessTests(PrivateStorageTestCase):
     def setUp(self) -> None:
+        super().setUp()
         self.administrator = make_officer()
         users = get_user_model().objects
         self.customer = users.create_user("customer", "customer@example.com", "password")
         self.editor = users.create_user("editor", "editor@example.com", "password", is_staff=True)
         self.editor.groups.add(Group.objects.get_or_create(name=EDITORS)[0])
+        self.sponsorship_admin = users.create_user(
+            "sponsorship-admin", "sponsorships@example.com", "password", is_staff=True
+        )
+        self.sponsorship_admin.groups.add(
+            Group.objects.get_or_create(name=SponsorshipAdminRequiredMixin.group_required)[0]
+        )
         self.staff = users.create_user("staff", "staff@example.com", "password", is_staff=True)
         self.superuser = users.create_superuser("root", "root@example.com", "password")
         self.permissions_only = users.create_user("permissions", "permissions@example.com", "password", is_staff=True)
@@ -32,15 +42,19 @@ class SigningGroupAccessTests(TestCase):
         self.permissions_only.user_permissions.set(Permission.objects.filter(content_type__app_label="agreements"))
         self.agreement = offer_contract(self.administrator, counterparty_account=self.customer)
 
-    def test_staff_superuser_and_direct_permissions_do_not_grant_record_access(self) -> None:
-        copy = SignedCopy.objects.create(
+    def store_copy(self) -> SignedCopy:
+        copy = SignedCopy(
             agreement=self.agreement,
             kind=SignedCopy.Kind.CUSTOMER,
             filename="signed.pdf",
-            content=PDF,
-            sha256="0" * 64,
+            sha256=hashlib.sha256(PDF).hexdigest(),
             uploaded_by=self.administrator,
         )
+        copy.file.save(copy.filename, ContentFile(PDF))
+        return copy
+
+    def test_staff_superuser_and_direct_permissions_do_not_grant_record_access(self) -> None:
+        copy = self.store_copy()
         for user in (self.staff, self.superuser, self.permissions_only):
             self.client.force_login(user)
             with self.subTest(user=user.username):
@@ -56,8 +70,37 @@ class SigningGroupAccessTests(TestCase):
                     404,
                 )
 
-    def test_editor_can_read_but_cannot_modify_or_send_an_offer(self) -> None:
-        self.client.force_login(self.editor)
+    def test_editor_level_roles_can_read_records_and_signed_copies(self) -> None:
+        copy = self.store_copy()
+        for user in (self.editor, self.sponsorship_admin):
+            self.client.force_login(user)
+            with self.subTest(user=user.username):
+                self.assertTrue(can_prepare(user))
+                self.assertFalse(is_administrator(user))
+                self.assertEqual(self.client.get(reverse("agreements:queue")).status_code, 200)
+                self.assertContains(
+                    self.client.get(self.agreement.get_absolute_url()), self.agreement.counterparty_name
+                )
+                download = self.client.get(reverse("agreements:copy_download", args=[self.agreement.pk, copy.kind]))
+                self.assertEqual(download.getvalue(), PDF)
+                self.assertEqual(self.client.get(reverse("admin:agreements_agreement_changelist")).status_code, 200)
+                self.assertEqual(self.client.get(reverse("admin:agreements_terms_add")).status_code, 403)
+
+    def test_sponsorship_admin_access_ends_with_group_membership(self) -> None:
+        self.client.force_login(self.sponsorship_admin)
+        self.assertEqual(self.client.get(reverse("agreements:queue")).status_code, 200)
+        self.sponsorship_admin.groups.clear()
+        self.assertFalse(can_prepare(self.sponsorship_admin))
+        self.assertEqual(self.client.get(reverse("agreements:queue")).status_code, 403)
+        self.assertEqual(self.client.get(self.agreement.get_absolute_url()).status_code, 404)
+
+    def test_editor_level_roles_can_read_but_cannot_modify_or_send_an_offer(self) -> None:
+        for user in (self.editor, self.sponsorship_admin):
+            self.client.force_login(user)
+            with self.subTest(user=user.username):
+                self.assert_cannot_modify_or_send_an_offer()
+
+    def assert_cannot_modify_or_send_an_offer(self) -> None:
         page = self.client.get(self.agreement.get_absolute_url())
         self.assertContains(page, self.agreement.counterparty_name)
         edit_url = reverse("agreements:edit", args=[self.agreement.pk])
@@ -106,7 +149,7 @@ class SigningGroupAccessTests(TestCase):
             workflow.Signature("Customer", "Director", self.customer.email),
             seen_sha256=self.agreement.document_sha256,
         )
-        for user in (self.editor, self.staff, self.superuser, self.permissions_only):
+        for user in (self.editor, self.sponsorship_admin, self.staff, self.superuser, self.permissions_only):
             self.client.force_login(user)
             for name, data in (
                 ("countersign", {"name": "Officer", "title": "Director", "accept": "on"}),
@@ -133,7 +176,7 @@ class SigningGroupAccessTests(TestCase):
         self.assertEqual(signed.status, Agreement.Status.EXECUTED)
         self.assertEqual(signed.countersigned_by, self.administrator)
         self.assertEqual(len(mail.outbox), 1)
-        for user in (self.editor, self.staff, self.superuser, self.permissions_only):
+        for user in (self.editor, self.sponsorship_admin, self.staff, self.superuser, self.permissions_only):
             self.client.force_login(user)
             with self.subTest(user=user.username, action="resend"):
                 self.assertEqual(

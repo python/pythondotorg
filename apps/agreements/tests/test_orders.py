@@ -23,6 +23,7 @@ from apps.agreements.models import Agreement, Order, OrderLine, Program, Terms, 
 from apps.agreements.orders import documents
 from apps.agreements.registry import get_kind
 from apps.agreements.tests.catalog_data import make_program
+from apps.agreements.tests.test_agreements import PrivateStorageTestCase
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -358,8 +359,9 @@ class OnlineSigningTests(TestCase):
         self.assertIn("/s/ Ada Byron", text)
 
 
-class StaffHandlingTests(TestCase):
+class StaffHandlingTests(PrivateStorageTestCase):
     def setUp(self) -> None:
+        super().setUp()
         self.officer = make_officer()
         self.customer = User.objects.create_user("ada", "ada@example.com", "password")
         self.program = make_program()

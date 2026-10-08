@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, cast
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.http import Http404, HttpResponse
+from django.http import FileResponse, Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.cache import never_cache
 
@@ -71,11 +71,15 @@ def document(request: HttpRequest, pk: UUID, fmt: str) -> HttpResponse:
 
 
 @login_required
-def copy_download(request: HttpRequest, pk: UUID, kind: str) -> HttpResponse:
-    """Download a signed copy kept with the agreement."""
+def copy_download(request: HttpRequest, pk: UUID, kind: str) -> FileResponse:
+    """Stream a signed copy kept with the agreement from private storage."""
     agreement = _agreement_or_404(request, pk)
     copy = get_object_or_404(SignedCopy, agreement=agreement, kind=kind)
-    response = HttpResponse(bytes(copy.content), content_type="application/pdf")
+    try:
+        stored = copy.file.open("rb")
+    except FileNotFoundError as exc:
+        raise Http404 from exc
+    response = FileResponse(stored, content_type="application/pdf")
     response["Content-Disposition"] = f'attachment; filename="psf-agreement-{agreement.reference}-{kind}.pdf"'
     response["Cache-Control"] = "private, no-store"
     response["X-Content-Type-Options"] = "nosniff"

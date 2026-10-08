@@ -58,7 +58,7 @@ def action_forms(request: HttpRequest, agreement: Agreement, **bound: BaseForm |
         "is_administrator": administrator,
         "can_withdraw": agreement.status == Agreement.Status.OFFERED
         and (administrator or agreement.is_counterparty(user)),
-        "copies": agreement.signed_copies.defer("content").select_related("uploaded_by"),
+        "copies": agreement.signed_copies.select_related("uploaded_by"),
         "links": agreement.signing_links.all() if administrator else (),
     }
 
