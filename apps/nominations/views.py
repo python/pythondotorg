@@ -78,7 +78,8 @@ class NomineeList(NominationMixin, ListView):
             # themselves when somebody nominated them.
             return (
                 Nominee.objects.filter(
-                    Q(user=self.request.user) | Q(nominations__nominator=self.request.user),
+                    Q(user=self.request.user)
+                    | Q(nominations__nominator=self.request.user, nominations__election=election),
                     election=election,
                 )
                 .exclude(user=None)

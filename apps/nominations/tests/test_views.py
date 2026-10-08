@@ -389,6 +389,13 @@ class NomineeListPreviewTests(TestCase):
         response = self.client.get(self._url(self.election))
         self.assertNotIn(self.unrelated_nominee, response.context["object_list"])
 
+    def test_preview_ignores_nominations_filed_under_another_election(self):
+        # A nomination whose election disagrees with its nominee's (possible via the admin).
+        self._nomination(self.other_election, self.nominator, self.unrelated_nominee)
+        self.client.force_login(self.nominator)
+        response = self.client.get(self._url(self.election))
+        self.assertNotIn(self.unrelated_nominee, response.context["object_list"])
+
     def test_preview_includes_the_user_as_a_candidate(self):
         self.client.force_login(self.nominator)
         response = self.client.get(self._url(self.other_election))
