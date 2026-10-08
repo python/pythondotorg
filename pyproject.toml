@@ -15,7 +15,7 @@ dependencies = [
     "dj-database-url==3.1.2",
     "django==5.2.17",
     "django-admin-interface==0.32.0",
-    "django-allauth==65.19.5",
+    "django-allauth==65.19.6",
     "django-apptemplates==1.5",
     "django-celery-beat==2.9.0",
     "django-countries==9.1.0",
@@ -36,7 +36,7 @@ dependencies = [
     "django-waffle==5.0.0",
     "django-widget-tweaks==1.5.1",
     "djangorestframework==3.18.1",
-    "docutils==0.22.4",
+    "docutils==0.23",
     "elasticsearch>=7,<8",
     "feedparser==6.0.14",
     "icalendar==7.3.0",
@@ -59,7 +59,7 @@ dependencies = [
 ]
 [project.optional-dependencies]
 prod = [
-    "boto3==1.43.104",
+    "boto3==1.43.106",
     "django-storages==1.14.6",
     "gunicorn==26.2.0",
     "sentry-sdk[django]==2.71.0",
