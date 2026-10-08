@@ -130,11 +130,9 @@ class NominationCreate(LoginRequiredMixin, NominationMixin, CreateView):
         return self.form_classes[election.nomination_form_variant]
 
     def get_success_url(self):
-        """Return the URL for the newly created nomination detail page."""
-        return reverse(
-            "nominations:nomination_detail",
-            kwargs={"election": self.object.election.slug, "pk": self.object.id},
-        )
+        """Send self-nominators to the next-steps page, everyone else to the nomination detail page."""
+        url_name = "nominations:nomination_submitted" if self.object.nominee_id else "nominations:nomination_detail"
+        return reverse(url_name, kwargs={"election": self.object.election.slug, "pk": self.object.id})
 
     def form_valid(self, form):
         """Set nominator, election, and handle self-nomination before saving."""

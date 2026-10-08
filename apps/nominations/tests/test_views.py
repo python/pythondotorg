@@ -196,6 +196,36 @@ class NominationCreatePersistenceTests(TestCase):
         self.assertTrue(nomination.eligibility_confirmed)
 
 
+class NominationSubmittedTests(TestCase):
+    def setUp(self):
+        self.user = UserFactory(first_name="Grace", last_name="Hopper")
+        self.client.force_login(self.user)
+        self.election = open_election("2026 Board Election")
+        self.create_url = reverse("nominations:nomination_create", kwargs={"election": self.election.slug})
+
+    def test_self_nomination_redirects_to_next_steps(self):
+        response = self.client.post(self.create_url, nomination_payload(self_nomination="on", coc_acknowledged="on"))
+        nomination = Nomination.objects.get(election=self.election)
+        submitted_url = reverse(
+            "nominations:nomination_submitted", kwargs={"election": self.election.slug, "pk": nomination.pk}
+        )
+        self.assertRedirects(response, submitted_url)
+
+    def test_third_party_nomination_redirects_to_detail(self):
+        response = self.client.post(self.create_url, nomination_payload())
+        nomination = Nomination.objects.get(election=self.election)
+        self.assertRedirects(response, nomination.get_absolute_url())
+
+    def test_next_steps_forbidden_to_other_users(self):
+        self.client.post(self.create_url, nomination_payload(self_nomination="on", coc_acknowledged="on"))
+        nomination = Nomination.objects.get(election=self.election)
+        self.client.force_login(UserFactory(is_staff=True))
+        response = self.client.get(
+            reverse("nominations:nomination_submitted", kwargs={"election": self.election.slug, "pk": nomination.pk})
+        )
+        self.assertEqual(response.status_code, 403)
+
+
 class NominationStatementPreviewTests(TestCase):
     def test_renders_markdown_with_html_escaped(self):
         self.client.force_login(UserFactory())
