@@ -121,7 +121,7 @@ resource "fastly_service_vcl" "python_org" {
   condition {
     name      = "Uncacheable URLs"
     priority  = 10
-    statement = "req.url ~ \"^/(api|admin)/\""
+    statement = "req.url ~ \"^/(api|admin|sponsors/(manage|documents))(/|[?]|$)\""
     type      = "REQUEST"
   }
   condition {

@@ -49,6 +49,9 @@ STORAGES = {
     },
 }
 
+SPONSORS_CONTRACT_STORAGE_BACKEND = "custom_storages.storages.S3ContractStorage"
+SPONSORS_CONTRACT_STORAGE_LOCATION = "contracts-private"
+
 EMAIL_HOST = config("EMAIL_HOST")
 EMAIL_HOST_USER = config("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")

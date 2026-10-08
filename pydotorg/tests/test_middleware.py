@@ -1,16 +1,30 @@
 from django.contrib.redirects.models import Redirect
 from django.contrib.sites.models import Site
-from django.test import TestCase, override_settings
+from django.http import HttpResponse, StreamingHttpResponse
+from django.test import Client, RequestFactory, SimpleTestCase, TestCase, override_settings
 
-from pydotorg.middleware import GlobalSurrogateKey
+from pydotorg.middleware import AdminNoCaching, GlobalSurrogateKey
 
 
 class MiddlewareTests(TestCase):
     def test_admin_caching(self):
         """Ensure admin is not cached"""
         response = self.client.get("/admin/")
-        self.assertTrue(response.has_header("Cache-Control"))
-        self.assertEqual(response["Cache-Control"], "private")
+        self.assertIn("private", response["Cache-Control"])
+        self.assertIn("no-store", response["Cache-Control"])
+        self.assertIn("max-age=0", response["Cache-Control"])
+
+    def test_management_redirects_and_csrf_rejections_are_not_cached(self):
+        client = Client(enforce_csrf_checks=True)
+        responses = (
+            (client.get("/sponsors/manage"), 301),
+            (client.post("/sponsors/manage/sponsorships/1/lock/", {"action": "lock"}), 403),
+        )
+        for response, status in responses:
+            with self.subTest(status=status):
+                self.assertEqual(response.status_code, status)
+                self.assertIn("private", response["Cache-Control"])
+                self.assertIn("no-store", response["Cache-Control"])
 
     def test_csp_report_only_header(self):
         """CSP ships in Report-Only mode; the enforcing header must not be set."""
@@ -29,6 +43,33 @@ class MiddlewareTests(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 301)
         self.assertEqual(response["Location"], redirect.new_path)
+
+
+class ManagementCacheTests(SimpleTestCase):
+    def test_private_pages_and_streaming_downloads_cannot_be_cached(self):
+        for path in (
+            "/admin/",
+            "/sponsors/manage",
+            "/sponsors/manage?year=2026",
+            "/sponsors/manage/sponsorships/export/",
+            "/sponsors/manage/sponsorships/1/export-assets/",
+            "/sponsors/documents/sponsors/contracts/signed/example.pdf/",
+        ):
+            with self.subTest(path=path):
+                response = StreamingHttpResponse(iter([b"private"]), headers={"Cache-Control": "public, max-age=3600"})
+                result = AdminNoCaching(lambda _, response=response: response)(RequestFactory().get(path))
+                directives = {part.strip() for part in result["Cache-Control"].split(",")}
+                self.assertTrue({"private", "no-store", "no-cache", "max-age=0"} <= directives)
+                self.assertNotIn("public", directives)
+                self.assertIn("Expires", result)
+                result.close()
+
+    def test_public_sponsor_paths_keep_their_cache_policy(self):
+        for path in ("/sponsors/", "/sponsors/manage-other/", "/admin-other/"):
+            with self.subTest(path=path):
+                response = HttpResponse(headers={"Cache-Control": "public, max-age=3600"})
+                result = AdminNoCaching(lambda _, response=response: response)(RequestFactory().get(path))
+                self.assertEqual(result["Cache-Control"], "public, max-age=3600")
 
 
 class GlobalSurrogateKeyTests(TestCase):

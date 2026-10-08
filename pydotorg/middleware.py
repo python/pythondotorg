@@ -1,20 +1,24 @@
 """Middleware for cache control and surrogate keys."""
 
 from django.conf import settings
+from django.utils.cache import add_never_cache_headers
 
 
 class AdminNoCaching:
-    """Middleware to ensure the admin is not cached by Fastly or other caches."""
+    """Prevent caching of Django admin and sponsorship management responses."""
 
     def __init__(self, get_response):
         """Store the get_response callable."""
         self.get_response = get_response
 
     def __call__(self, request):
-        """Set Cache-Control to private for admin requests."""
+        """Keep private management responses out of browser and shared caches."""
         response = self.get_response(request)
-        if request.path.startswith("/admin"):
-            response["Cache-Control"] = "private"
+        if any(
+            request.path_info == root or request.path_info.startswith(root + "/")
+            for root in ("/admin", "/sponsors/manage", "/sponsors/documents")
+        ):
+            add_never_cache_headers(response)
         return response
 
 

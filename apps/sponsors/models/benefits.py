@@ -177,7 +177,11 @@ class AssetConfigurationMixin:
             kwargs["internal_name"] = f"{self.internal_name}_{new_benefit.year}"
         due_date = kwargs.get("due_date")
         if due_date:
-            kwargs["due_date"] = due_date.replace(year=new_benefit.year)
+            try:
+                kwargs["due_date"] = due_date.replace(year=new_benefit.year)
+            except ValueError:
+                # Feb 29 has no counterpart in a non-leap target year
+                kwargs["due_date"] = due_date.replace(year=new_benefit.year, day=28)
         return kwargs
 
     class Meta:
@@ -490,7 +494,7 @@ class EmailTargetableConfiguration(BaseEmailTargetable, BenefitFeatureConfigurat
 
     def __str__(self):
         """Return string representation."""
-        return "Email targeatable configuration"
+        return "Email targetable configuration"
 
     @property
     def benefit_feature_class(self):

@@ -263,6 +263,14 @@ after session or role revocation. Anonymous public terms remain publicly cacheab
             model with an ``agreement`` field; see ``apps/agreements/orders/kinds.py``.
 
 
+Contract files
+^^^^^^^^^^^^^^
+
+Contracts are emailed to verified sponsor contacts. Website downloads are limited
+to authorized sponsorship managers and contract administrators, including signed
+copies. New contract files use private storage; public media is unchanged.
+
+
 Events
 ------
 

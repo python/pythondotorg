@@ -1,12 +1,17 @@
 """Public-facing views for the sponsorship application workflow."""
 
 from itertools import chain
+from pathlib import PurePosixPath
 
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.views import redirect_to_login
+from django.core.exceptions import PermissionDenied
 from django.db import transaction
+from django.db.models import Q
 from django.forms.utils import ErrorList
+from django.http import FileResponse, Http404
 from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
@@ -14,7 +19,13 @@ from django.views.generic import FormView
 
 from apps.sponsors import cookies, use_cases
 from apps.sponsors.forms import SponsorshipApplicationForm, SponsorshipsBenefitsForm
-from apps.sponsors.models import SponsorshipBenefit, SponsorshipCurrentYear, SponsorshipPackage, SponsorshipProgram
+from apps.sponsors.models import (
+    Contract,
+    SponsorshipBenefit,
+    SponsorshipCurrentYear,
+    SponsorshipPackage,
+    SponsorshipProgram,
+)
 
 
 class SelectSponsorshipApplicationBenefitsView(FormView):
@@ -187,3 +198,42 @@ class NewSponsorshipApplicationView(FormView):
         )
         cookies.delete_sponsorship_selected_benefits(response)
         return response
+
+
+def _can_view_contract_documents(user):
+    """Allow active sponsorship managers and Django contract administrators."""
+    if not user.is_authenticated or not user.is_active:
+        return False
+    if user.is_superuser or user.groups.filter(name="Sponsorship Admin").exists():
+        return True
+    return user.is_staff and (user.has_perm("sponsors.view_contract") or user.has_perm("sponsors.change_contract"))
+
+
+def download_contract_document(request, name):
+    """Authorize each request before streaming an exact, tracked contract attachment."""
+    if not request.user.is_authenticated:
+        return redirect_to_login(request.get_full_path())
+    if not _can_view_contract_documents(request.user):
+        raise PermissionDenied
+
+    contract = Contract.objects.filter(Q(document=name) | Q(document_docx=name) | Q(signed_document=name)).first()
+    if contract is None:
+        raise Http404
+
+    field_file = next(
+        f for f in (contract.document, contract.document_docx, contract.signed_document) if f.name == name
+    )
+    try:
+        document = field_file.open("rb")
+    except FileNotFoundError as exc:
+        raise Http404 from exc
+
+    response = FileResponse(
+        document,
+        content_type="application/octet-stream",
+        as_attachment=True,
+        filename=PurePosixPath(name).name,
+    )
+    response["Cache-Control"] = "private, no-store"
+    response["X-Content-Type-Options"] = "nosniff"
+    return response

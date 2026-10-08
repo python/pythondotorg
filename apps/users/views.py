@@ -19,12 +19,25 @@ from django.views.generic import CreateView, DeleteView, DetailView, ListView, T
 from honeypot.decorators import check_honeypot
 
 from apps.sponsors.forms import SponsorRequiredAssetsForm, SponsorUpdateForm
+from apps.sponsors.manage.views import SponsorshipAdminRequiredMixin
 from apps.sponsors.models import BenefitFeature, Sponsor, Sponsorship
 from apps.users.forms import MembershipForm, MembershipUpdateForm, UserProfileForm
 from apps.users.models import Membership
 from pydotorg.mixins import LoginRequiredMixin
 
 User = get_user_model()
+
+
+def _portal_sponsorships(request, *, read_only):
+    """Return the sponsorships ``request.user`` may open in the sponsor portal.
+
+    Sponsors see their own. Superusers see all. Sponsorship admins see all on read-only
+    requests, so staff can check what a sponsor sees without editing on the sponsor's behalf.
+    """
+    user = request.user
+    if user.is_superuser or (read_only and SponsorshipAdminRequiredMixin.is_sponsorship_admin(user)):
+        return Sponsorship.objects.select_related("sponsor").all()
+    return user.sponsorships.select_related("sponsor")
 
 
 class MembershipCreate(LoginRequiredMixin, CreateView):
@@ -269,10 +282,8 @@ class SponsorshipDetailView(DetailView):
     template_name = "users/sponsorship_detail.html"
 
     def get_queryset(self):
-        """Return all sponsorships for superusers, user-visible ones otherwise."""
-        if self.request.user.is_superuser:
-            return Sponsorship.objects.select_related("sponsor").all()
-        return self.request.user.sponsorships.select_related("sponsor")
+        """Return sponsorships the user may view."""
+        return _portal_sponsorships(self.request, read_only=True)
 
     def get_context_data(self, *args, **kwargs):
         """Add required, fulfilled, and provided asset lists to the context."""
@@ -340,10 +351,8 @@ class UpdateSponsorshipAssetsView(UpdateView):
     form_class = SponsorRequiredAssetsForm
 
     def get_queryset(self):
-        """Return all sponsorships for superusers, user-visible ones otherwise."""
-        if self.request.user.is_superuser:
-            return Sponsorship.objects.select_related("sponsor").all()
-        return self.request.user.sponsorships.select_related("sponsor")
+        """Return sponsorships the user may view (GET) or update (POST)."""
+        return _portal_sponsorships(self.request, read_only=self.request.method in ("GET", "HEAD"))
 
     def get_form_kwargs(self):
         """Add optional required_assets_ids filter from query parameters."""
@@ -378,10 +387,8 @@ class ProvidedSponsorshipAssetsView(DetailView):
     template_name = "users/sponsorship_assets_view.html"
 
     def get_queryset(self):
-        """Return all sponsorships for superusers, user-visible ones otherwise."""
-        if self.request.user.is_superuser:
-            return Sponsorship.objects.select_related("sponsor").all()
-        return self.request.user.sponsorships.select_related("sponsor")
+        """Return sponsorships the user may view."""
+        return _portal_sponsorships(self.request, read_only=True)
 
     def get_context_data(self, **kwargs):
         """Add provided assets with values to the context."""
