@@ -889,12 +889,17 @@ class CloneYearView(SponsorshipAdminRequiredMixin, FormView):
     form_class = CloneYearForm
 
     def get_initial(self):
-        """Return initial years from query parameters, set when the source year select changes."""
+        """Return initial years from query parameters, defaulting the source to the active year."""
         initial = super().get_initial()
         for field in ("source_year", "target_year"):
             year = _int_or_none(self.request.GET.get(field))
             if year is not None:
                 initial[field] = year
+        if "source_year" not in initial:
+            with contextlib.suppress(SponsorshipCurrentYear.DoesNotExist):
+                current_year = SponsorshipCurrentYear.get_year()
+                if SponsorshipBenefit.objects.filter(year=current_year).exists():
+                    initial["source_year"] = current_year
         return initial
 
     def get_context_data(self, **kwargs):
@@ -1960,10 +1965,10 @@ class ContractRegenerateView(SponsorshipAdminRequiredMixin, View):
             old_contract.save()
             add_log_entry(request, old_contract, CHANGE, "Contract Outdated by Regeneration")
         new_contract = Contract.new(sp)
-        # Set revision to count of historical contracts for this sponsorship
-        historical_count = sp.contract_history.filter(status=Contract.OUTDATED).count()
-        new_contract.revision = historical_count
-        new_contract.save()
+        # Revision counts the historical contracts for this sponsorship. Set it with update():
+        # Contract.save() would bump a draft's revision again.
+        new_contract.revision = sp.contract_history.filter(status=Contract.OUTDATED).count()
+        Contract.objects.filter(pk=new_contract.pk).update(revision=new_contract.revision)
         add_log_entry(request, new_contract, ADDITION, "Created by Regenerating the Contract")
         add_log_entry(request, sp, CHANGE, "Contract Regenerated")
         messages.success(

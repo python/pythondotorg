@@ -28,7 +28,7 @@
             <div class="card-label" title="Applied, approved, and finalized. Rejected ({{ count_rejected }}) are not counted, matching the Sponsorships list.">Sponsorships (excl. rejected)</div>
         </div>
         <a href="{% url 'manage_finances' %}?year={{ selected_year }}" class="manage-card gold" style="text-decoration:none;cursor:pointer;">
-            <div class="card-value">${{ total_revenue|floatformat:"0" }}</div>
+            <div class="card-value">${{ total_revenue|floatformat:"0g" }}</div>
             <div class="card-label">Revenue &rarr;</div>
         </a>
         <div class="manage-card">
@@ -73,7 +73,7 @@
                         {% if sp.for_modified_package %}<span class="tag tag-gold" style="margin-left:4px;">Custom</span>{% endif %}
                     </td>
                     <td>{% if sp.package %}<a href="{% url 'manage_package_edit' sp.package.pk %}" class="tag tag-blue" style="text-decoration:none;">{{ sp.package.name }}</a>{% endif %}</td>
-                    <td style="text-align:right;font-variant-numeric:tabular-nums;font-weight:600;">${{ sp.sponsorship_fee|default:"0"|floatformat:"0" }}</td>
+                    <td style="text-align:right;font-variant-numeric:tabular-nums;font-weight:600;">${{ sp.sponsorship_fee|default:"0"|floatformat:"0g" }}</td>
                     <td style="font-size:12px;color:#777;">{{ sp.applied_on|date:"M j" }}</td>
                     <td><a href="{% url 'manage_sponsorship_detail' sp.pk %}" class="btn btn-xs btn-primary">Review</a></td>
                 </tr>
@@ -109,7 +109,7 @@
                         </a>
                     </td>
                     <td>{% if sp.package %}<a href="{% url 'manage_package_edit' sp.package.pk %}" class="tag tag-blue" style="text-decoration:none;">{{ sp.package.name }}</a>{% endif %}</td>
-                    <td style="text-align:right;font-variant-numeric:tabular-nums;font-weight:600;">${{ sp.sponsorship_fee|default:"0"|floatformat:"0" }}</td>
+                    <td style="text-align:right;font-variant-numeric:tabular-nums;font-weight:600;">${{ sp.sponsorship_fee|default:"0"|floatformat:"0g" }}</td>
                     <td style="font-size:12px;color:#777;">{{ sp.approved_on|date:"M j" }}</td>
                     <td style="font-size:12px;color:#777;">
                         {% if sp.start_date %}{{ sp.start_date|date:"M j" }} &ndash; {{ sp.end_date|date:"M j, Y" }}{% endif %}
@@ -150,7 +150,7 @@
                         {% if sp.renewal %}<span class="tag tag-blue" style="margin-left:4px;">Renewal</span>{% endif %}
                     </td>
                     <td>{% if sp.package %}<a href="{% url 'manage_package_edit' sp.package.pk %}" class="tag tag-blue" style="text-decoration:none;">{{ sp.package.name }}</a>{% endif %}</td>
-                    <td style="text-align:right;font-variant-numeric:tabular-nums;font-weight:600;">${{ sp.sponsorship_fee|default:"0"|floatformat:"0" }}</td>
+                    <td style="text-align:right;font-variant-numeric:tabular-nums;font-weight:600;">${{ sp.sponsorship_fee|default:"0"|floatformat:"0g" }}</td>
                     <td style="font-size:12px;color:#777;">{{ sp.end_date|date:"M j, Y" }}</td>
                     <td>
                         {% days_until sp.end_date today as days_left %}
@@ -195,7 +195,7 @@
                         </a>
                     </td>
                     <td>{% if sp.package %}<a href="{% url 'manage_package_edit' sp.package.pk %}" class="tag tag-blue" style="text-decoration:none;">{{ sp.package.name }}</a>{% endif %}</td>
-                    <td style="text-align:right;font-variant-numeric:tabular-nums;font-weight:600;">${{ sp.sponsorship_fee|default:"0"|floatformat:"0" }}</td>
+                    <td style="text-align:right;font-variant-numeric:tabular-nums;font-weight:600;">${{ sp.sponsorship_fee|default:"0"|floatformat:"0g" }}</td>
                     <td style="font-size:12px;color:#e74c3c;">{{ sp.end_date|date:"M j, Y" }}</td>
                     <td><a href="{% url 'manage_composer' %}?new=1&sponsor_id={{ sp.sponsor_id }}&renewal=1" class="btn btn-xs btn-gold">+ Renewal</a></td>
                 </tr>
@@ -266,7 +266,7 @@
             </div>
             <div style="font-size:12px;color:#777;">
                 {% for pkg in year_packages %}
-                {{ pkg.name }}: ${{ pkg.sponsorship_amount|floatformat:"0" }}{% if not forloop.last %} &middot; {% endif %}
+                {{ pkg.name }}: ${{ pkg.sponsorship_amount|floatformat:"0g" }}{% if not forloop.last %} &middot; {% endif %}
                 {% endfor %}
             </div>
         </div>
@@ -297,7 +297,7 @@
                     {% for pkg in year_packages %}
                     <tr>
                         <td><a href="{% url 'manage_package_edit' pkg.pk %}" style="font-weight:600;color:#1a1a2e;text-decoration:none;">{{ pkg.name }}</a></td>
-                        <td style="text-align:right;font-variant-numeric:tabular-nums;">${{ pkg.sponsorship_amount|floatformat:"0" }}</td>
+                        <td style="text-align:right;font-variant-numeric:tabular-nums;">${{ pkg.sponsorship_amount|floatformat:"0g" }}</td>
                         <td><code style="background:#f5f5f5;padding:2px 6px;border-radius:3px;font-size:12px;">{{ pkg.slug }}</code></td>
                         <td style="text-align:center;">{% if pkg.advertise %}<span class="tag tag-green">Yes</span>{% else %}<span class="tag tag-gray">No</span>{% endif %}</td>
                         <td style="text-align:center;">{% if pkg.allow_a_la_carte %}<span class="tag tag-green">Yes</span>{% else %}<span class="tag tag-gray">No</span>{% endif %}</td>
@@ -351,7 +351,7 @@
                             {% endif %}
                             {% endwith %}
                         </td>
-                        <td style="text-align:right;font-variant-numeric:tabular-nums;">{% if benefit.internal_value %}<span style="font-weight:600;">${{ benefit.internal_value|floatformat:"0" }}</span>{% else %}<span style="color:#ccc;">&mdash;</span>{% endif %}</td>
+                        <td style="text-align:right;font-variant-numeric:tabular-nums;">{% if benefit.internal_value %}<span style="font-weight:600;">${{ benefit.internal_value|floatformat:"0g" }}</span>{% else %}<span style="color:#ccc;">&mdash;</span>{% endif %}</td>
                         <td style="text-align:center;">
                             {% if benefit.unavailable %}<span class="tag tag-red">Unavailable</span>
                             {% elif benefit.package_only %}<span class="tag tag-gray">Pkg Only</span>

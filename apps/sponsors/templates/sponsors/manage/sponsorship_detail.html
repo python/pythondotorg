@@ -178,11 +178,11 @@
         </div>
         <div class="sp-field">
             <div class="sp-label">Fee</div>
-            <div class="sp-value money">${{ sponsorship.sponsorship_fee|default:"0"|floatformat:"0" }}</div>
+            <div class="sp-value money">${{ sponsorship.sponsorship_fee|default:"0"|floatformat:"0g" }}</div>
         </div>
         <div class="sp-field">
             <div class="sp-label">Estimated Internal Value</div>
-            <div class="sp-value money">${{ sponsorship.estimated_cost|floatformat:"0" }}</div>
+            <div class="sp-value money">${{ sponsorship.estimated_cost|floatformat:"0g" }}</div>
         </div>
         <div class="sp-field">
             <div class="sp-label">Year</div>
@@ -293,11 +293,11 @@
                 <div style="display:flex;justify-content:space-between;margin-bottom:12px;">
                     <div>
                         <div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#999;">Sponsorship Fee</div>
-                        <div style="font-size:20px;font-weight:700;color:#b8860b;font-variant-numeric:tabular-nums;">${{ sponsorship.sponsorship_fee|default:"0"|floatformat:"0" }}</div>
+                        <div style="font-size:20px;font-weight:700;color:#b8860b;font-variant-numeric:tabular-nums;">${{ sponsorship.sponsorship_fee|default:"0"|floatformat:"0g" }}</div>
                     </div>
                     <div style="text-align:right;">
                         <div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#999;">Internal Value</div>
-                        <div style="font-size:20px;font-weight:700;color:#555;font-variant-numeric:tabular-nums;">${{ sponsorship.estimated_cost|floatformat:"0" }}</div>
+                        <div style="font-size:20px;font-weight:700;color:#555;font-variant-numeric:tabular-nums;">${{ sponsorship.estimated_cost|floatformat:"0g" }}</div>
                     </div>
                 </div>
                 {% if sponsorship.sponsorship_fee and sponsorship.estimated_cost %}
@@ -317,7 +317,7 @@
                 <div style="margin-bottom:6px;">
                     <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:2px;">
                         <span style="font-weight:600;color:#1a1a2e;">{{ pv.name }}</span>
-                        <span style="color:#777;font-variant-numeric:tabular-nums;">${{ pv.total|floatformat:"0" }}</span>
+                        <span style="color:#777;font-variant-numeric:tabular-nums;">${{ pv.total|floatformat:"0g" }}</span>
                     </div>
                     <div style="height:6px;background:#f0f0f0;border-radius:3px;overflow:hidden;">
                         <div style="height:100%;width:{% widthratio pv.total max_program_value 100 %}%;background:#3776ab;border-radius:3px;"></div>
@@ -523,7 +523,7 @@
                 <td>{% if b.sponsorship_benefit %}<a href="{% url 'manage_benefit_edit' b.sponsorship_benefit.pk %}" style="font-weight:500;color:#1a1a2e;text-decoration:none;">{{ b.name }}</a>{% else %}<span style="font-weight:500;">{{ b.name }}</span>{% endif %}</td>
                 <td>{% if b.program %}<a href="{% url 'manage_benefit_list' %}?year={{ sponsorship.year }}&program={{ b.program.pk }}" style="font-size:12px;color:#3776ab;text-decoration:none;">{{ b.program_name }}</a>{% else %}<span style="font-size:12px;color:#777;">{{ b.program_name }}</span>{% endif %}</td>
                 <td style="text-align:right;font-variant-numeric:tabular-nums;">
-                    {% if b.benefit_internal_value %}${{ b.benefit_internal_value|floatformat:"0" }}{% else %}<span style="color:#ccc;">&mdash;</span>{% endif %}
+                    {% if b.benefit_internal_value %}${{ b.benefit_internal_value|floatformat:"0g" }}{% else %}<span style="color:#ccc;">&mdash;</span>{% endif %}
                 </td>
                 <td style="text-align:center;">
                     {% if b.added_by_user %}<span class="tag tag-gold">Added</span>

@@ -100,7 +100,11 @@
         text-align: left;
         transition: background 0.1s;
     }
-    .sponsor-card:focus-visible {
+    .sponsor-card:focus-visible,
+    .package-card:focus-visible,
+    .benefit-item:focus-visible,
+    .benefit-group-label:focus-visible,
+    .review-group-toggle:focus-visible {
         outline: 2px solid #3776ab;
         outline-offset: -2px;
     }
@@ -776,14 +780,17 @@ function selectPackage(pkgId) {
                 <div class="benefits-col-body" id="available-benefits">
                     {% for group in benefits_by_program %}
                     <div class="benefit-group" data-program="{{ group.program.name }}">
-                        <div class="benefit-group-label" style="cursor:pointer;user-select:none;" onclick="var body=this.nextElementSibling;body.style.display=body.style.display==='none'?'':'none';this.querySelector('.collapse-arrow').textContent=body.style.display==='none'?'&#9656;':'&#9662;';"><span class="collapse-arrow" style="font-size:10px;margin-right:4px;">&#9662;</span>{{ group.program.name }} <span style="font-size:11px;opacity:0.6;font-weight:400;">(<span class="group-count">{{ group.benefits|length }}</span>)</span></div>
+                        <div class="benefit-group-label" style="cursor:pointer;user-select:none;" role="button" tabindex="0" aria-expanded="true"
+                             onclick="var body=this.nextElementSibling;body.style.display=body.style.display==='none'?'':'none';this.setAttribute('aria-expanded', body.style.display!=='none');this.querySelector('.collapse-arrow').textContent=body.style.display==='none'?'&#9656;':'&#9662;';"
+                             onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}"><span class="collapse-arrow" style="font-size:10px;margin-right:4px;">&#9662;</span>{{ group.program.name }} <span style="font-size:11px;opacity:0.6;font-weight:400;">(<span class="group-count">{{ group.benefits|length }}</span>)</span></div>
                         <div class="benefit-group-items">
                         {% for b in group.benefits %}
-                        <div class="benefit-item" id="avail-{{ b.pk }}"
+                        <div class="benefit-item" id="avail-{{ b.pk }}" role="button" tabindex="0"
                              data-name="{{ b.name|lower }}"
                              style="cursor:pointer;{% if b.pk in selected_ids %}display:none;{% endif %}"
                              data-pkg-only="{% if b.package_only %}{% for p in b.packages.all %}{{ p.name }}{% if not forloop.last %}, {% endif %}{% endfor %}{% endif %}"
-                             onclick="addBenefitClick(this, {{ b.pk }}, '{{ b.name|escapejs }}', '{{ b.program.name|escapejs }}', {{ b.internal_value|default_if_none:"0" }}, '{{ b.description|default:""|escapejs }}', {% if b.pk in package_benefit_ids %}true{% else %}false{% endif %});">
+                             onclick="addBenefitClick(this, {{ b.pk }}, '{{ b.name|escapejs }}', '{{ b.program.name|escapejs }}', {{ b.internal_value|default_if_none:"0" }}, '{{ b.description|default:""|escapejs }}', {% if b.pk in package_benefit_ids %}true{% else %}false{% endif %});"
+                             onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">
                             <div class="benefit-info">
                                 <span class="benefit-name">{{ b.name }}</span>
                                 {% if b.description %}<span title="{{ b.description }}" style="cursor:help;color:#999;font-size:12px;margin-left:4px;">?</span>{% endif %}
@@ -1246,8 +1253,10 @@ refreshAvailable();
             <h3>Benefits ({{ selected_benefits|length }})</h3>
             {% for group in review_benefits_by_program %}
             <div style="margin-bottom:12px;">
-                <div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:6px 0;border-bottom:1px solid #eee;user-select:none;"
-                     onclick="var body=this.nextElementSibling;body.style.display=body.style.display==='none'?'':'none';this.querySelector('.review-arrow').textContent=body.style.display==='none'?'\u25b6':'\u25bc';">
+                <div class="review-group-toggle" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:6px 0;border-bottom:1px solid #eee;user-select:none;"
+                     role="button" tabindex="0" aria-expanded="true"
+                     onclick="var body=this.nextElementSibling;body.style.display=body.style.display==='none'?'':'none';this.setAttribute('aria-expanded', body.style.display!=='none');this.querySelector('.review-arrow').textContent=body.style.display==='none'?'\u25b6':'\u25bc';"
+                     onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">
                     <span style="font-size:13px;font-weight:700;color:#3776ab;">
                         <span class="review-arrow" style="font-size:10px;margin-right:4px;">&#9660;</span>
                         {{ group.program.name }}

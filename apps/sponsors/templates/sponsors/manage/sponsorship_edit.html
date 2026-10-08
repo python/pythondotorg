@@ -18,7 +18,7 @@
     <div class="manage-form">
         <h2 style="font-size:18px;font-weight:700;color:#1a1a2e;margin:0 0 4px;">Edit Sponsorship</h2>
         <p style="font-size:13px;color:#777;margin:0 0 20px;">
-            {{ object.sponsor.name }} &middot; {{ object.level_name|default:"No package" }} &middot; ${{ object.sponsorship_fee|default:"0"|floatformat:"0" }} &middot; {{ object.get_status_display }}
+            {{ object.sponsor.name }} &middot; {{ object.level_name|default:"No package" }} &middot; ${{ object.sponsorship_fee|default:"0"|floatformat:"0g" }} &middot; {{ object.get_status_display }}
         </p>
 
         {% if form.errors %}

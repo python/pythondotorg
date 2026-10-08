@@ -36,9 +36,12 @@
         <div class="form-errors">
             <strong>Please correct the errors below:</strong>
             <ul>
-            {% for field, errors in form.errors.items %}
-                {% for error in errors %}
-                <li>{{ field }}: {{ error }}</li>
+            {% for error in form.non_field_errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+            {% for field in form %}
+                {% for error in field.errors %}
+                <li>{{ field.label }}: {{ error }}</li>
                 {% endfor %}
             {% endfor %}
             </ul>
@@ -283,7 +286,7 @@
                     {% for pkg in benefit_packages %}
                     <tr>
                         <td style="font-weight:600;">{{ pkg.name }}</td>
-                        <td style="text-align:right;font-variant-numeric:tabular-nums;">${{ pkg.sponsorship_amount|floatformat:"0" }}</td>
+                        <td style="text-align:right;font-variant-numeric:tabular-nums;">${{ pkg.sponsorship_amount|floatformat:"0g" }}</td>
                         <td style="text-align:center;">{% if pkg.advertise %}<span class="tag tag-green">Yes</span>{% else %}<span class="tag tag-gray">No</span>{% endif %}</td>
                         <td><a href="{% url 'manage_package_edit' pkg.pk %}" style="font-size:12px;color:#3776ab;text-decoration:none;">Edit</a></td>
                     </tr>

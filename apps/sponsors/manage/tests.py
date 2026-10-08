@@ -317,6 +317,12 @@ class CloneYearViewTests(SponsorManageTestBase):
         response = self.client.get(reverse("manage_clone_year"))
         self.assertEqual(response.status_code, 200)
 
+    def test_source_defaults_to_active_year_not_newest(self):
+        SponsorshipBenefit.objects.create(name="Future benefit", program=self.program, year=self.year + 3)
+        response = self.client.get(reverse("manage_clone_year"))
+        self.assertEqual(response.context["form"]["source_year"].value(), self.year)
+        self.assertEqual(response.context["source_year"], self.year)
+
     def test_clone_year(self):
         target_year = self.year + 1
         response = self.client.post(
@@ -770,6 +776,15 @@ class ContractRegenerateViewTests(SponsorshipReviewTestBase):
         new_contract = self.sponsorship.contract
         self.assertNotEqual(new_contract.pk, old_pk)
         self.assertEqual(new_contract.status, Contract.DRAFT)
+
+    def test_regenerate_numbers_revision_by_outdated_contracts(self):
+        self._approve_sponsorship()
+        self.client.post(reverse("manage_contract_regenerate", args=[self.sponsorship.pk]))
+        self.sponsorship.refresh_from_db()
+        self.assertEqual(self.sponsorship.contract.revision, 1)
+        self.client.post(reverse("manage_contract_regenerate", args=[self.sponsorship.pk]))
+        self.sponsorship.refresh_from_db()
+        self.assertEqual(self.sponsorship.contract.revision, 2)
 
     def test_regenerate_without_existing_contract_creates_new(self):
         self.sponsorship.approve(

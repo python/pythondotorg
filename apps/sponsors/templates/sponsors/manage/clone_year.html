@@ -74,7 +74,7 @@
                         {% for pkg in preview_packages %}
                         <li>
                             <strong>{{ pkg.name }}</strong>
-                            <span style="color:#999;margin-left:8px;">${{ pkg.sponsorship_amount|floatformat:"0" }}</span>
+                            <span style="color:#999;margin-left:8px;">${{ pkg.sponsorship_amount|floatformat:"0g" }}</span>
                         </li>
                         {% endfor %}
                     </ul>

@@ -20,7 +20,7 @@
             Approve with Signed Contract
         </h2>
         <p style="font-size:13px;color:#777;margin:0 0 20px;">
-            <strong>{{ sponsorship.sponsor.name }}</strong> &middot; {{ sponsorship.level_name }} &middot; ${{ sponsorship.sponsorship_fee|default:"0"|floatformat:"0" }}
+            <strong>{{ sponsorship.sponsor.name }}</strong> &middot; {{ sponsorship.level_name }} &middot; ${{ sponsorship.sponsorship_fee|default:"0"|floatformat:"0g" }}
             {% if previous_effective %}
             <br>Previous effective date: <strong>{{ previous_effective }}</strong>
             {% endif %}

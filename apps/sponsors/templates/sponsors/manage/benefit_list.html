@@ -101,7 +101,7 @@
                     {% endwith %}
                 </td>
                 <td style="text-align:right;font-variant-numeric:tabular-nums;">
-                    {% if benefit.internal_value %}<span style="font-weight:600;">${{ benefit.internal_value|floatformat:"0" }}</span>{% else %}<span style="color:#ccc;">&mdash;</span>{% endif %}
+                    {% if benefit.internal_value %}<span style="font-weight:600;">${{ benefit.internal_value|floatformat:"0g" }}</span>{% else %}<span style="color:#ccc;">&mdash;</span>{% endif %}
                 </td>
                 <td style="text-align:center;">
                     {% if benefit.unavailable %}<span class="tag tag-red">Unavailable</span>
