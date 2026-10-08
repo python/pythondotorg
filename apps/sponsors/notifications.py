@@ -5,9 +5,15 @@ from django.contrib.admin.models import ADDITION, CHANGE, LogEntry
 from django.contrib.contenttypes.models import ContentType
 from django.core.cache import cache
 from django.core.mail import EmailMessage
-from django.template.loader import render_to_string
+from django.template import Context
+from django.template.loader import get_template
 
 from apps.sponsors.models import BenefitFeature
+
+
+def _render_plain_text(template_name, context):
+    """Render a plain-text email template; values like "Code & Supply" must not be HTML-escaped."""
+    return get_template(template_name).template.render(Context(context, autoescape=False)).strip()
 
 
 class BaseEmailSponsorshipNotification:
@@ -19,11 +25,11 @@ class BaseEmailSponsorshipNotification:
 
     def get_subject(self, context):
         """Render and return the email subject from the template."""
-        return render_to_string(self.subject_template, context).strip()
+        return _render_plain_text(self.subject_template, context)
 
     def get_message(self, context):
         """Render and return the email body from the template."""
-        return render_to_string(self.message_template, context).strip()
+        return _render_plain_text(self.message_template, context)
 
     def get_recipient_list(self, context):
         """Return the list of email recipients; must be implemented by subclasses."""

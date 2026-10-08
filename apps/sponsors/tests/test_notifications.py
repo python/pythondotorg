@@ -37,6 +37,19 @@ class AppliedSponsorshipNotificationToPSFTests(TestCase):
         self.assertEqual(settings.SPONSORSHIP_NOTIFICATION_FROM_EMAIL, email.from_email)
         self.assertEqual([settings.SPONSORSHIP_NOTIFICATION_TO_EMAIL], email.to)
 
+    def test_sponsor_input_is_not_html_escaped(self):
+        self.sponsorship.sponsor.name = "Code & Supply"
+        self.sponsorship.sponsor.description = "Tools <for> teams"
+        self.sponsorship.sponsor.save()
+
+        self.notification.notify(sponsorship=self.sponsorship)
+
+        email = mail.outbox[0]
+        self.assertIn("Code & Supply", email.subject)
+        self.assertIn("Code & Supply", email.body)
+        self.assertIn("Tools <for> teams", email.body)
+        self.assertNotIn("&amp;", email.subject + email.body)
+
 
 class AppliedSponsorshipNotificationToSponsorsTests(TestCase):
     def setUp(self):
