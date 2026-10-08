@@ -5,6 +5,9 @@ from collections import OrderedDict
 
 from django import template
 from django.utils.safestring import mark_safe
+from sorl.thumbnail import default as thumbnail_default
+from sorl.thumbnail import get_thumbnail
+from sorl.thumbnail.images import ImageFile
 
 from apps.sponsors.models import Sponsorship, SponsorshipPackage, TieredBenefitConfiguration
 from apps.sponsors.models.enums import LogoPlacementChoices, PublisherChoices
@@ -91,16 +94,39 @@ def benefit_name_for_display(benefit, package):
     return benefit.name_for_display(package=package)
 
 
-@register.filter
-def ideal_size(image, ideal_dimension):
-    """Scale an image width to fit within the given ideal dimension area."""
+@register.simple_tag
+def sponsor_logo(image, ideal_dimension):
+    """Size a logo so every sponsor in a tier gets the same visual area, with 1x and 2x PNG renditions.
+
+    The source size comes from sorl's key-value store: reading ``image.width`` would download
+    the full original from S3 on every render, while sorl records the size once per image.
+    Returns ``None`` when no file is associated with the field.
+    """
+    if not image:
+        return None
     ideal_dimension = int(ideal_dimension)
     try:
-        w, h = image.width, image.height
-    except (FileNotFoundError, ValueError):
-        # FileNotFoundError: local dev doesn't have all images if DB is a copy from prod environment.
-        # ValueError: no file is associated with the field.
-        # Size as a square logo would be instead of erroring.
-        w, h = ideal_dimension, ideal_dimension
+        source_width, source_height = thumbnail_default.kvstore.get_or_set(ImageFile(image)).size
+    except FileNotFoundError:
+        # local dev doesn't have all images if DB is a copy from prod environment;
+        # size it as a square logo would be instead of erroring.
+        width = int(math.sqrt(100 * ideal_dimension))
+        return {"src": image.url, "srcset": f"{image.url} {width}w", "width": width, "height": width}
 
-    return int(w * math.sqrt((100 * ideal_dimension) / (w * h)))
+    # Equal area per logo, but no wider than the tier's grid column (ideal_dimension px).
+    width = min(int(math.sqrt(100 * ideal_dimension * source_width / source_height)), ideal_dimension)
+    # Never upscale: past the original's size a bigger file adds bytes, not detail.
+    one_x, two_x = (get_thumbnail(image, str(width * scale), format="PNG", upscale=False) for scale in (1, 2))
+    if source_width > width:
+        # sorl can land 1px off the requested width; drawing at the rendition's exact size
+        # keeps 1x screens on the 1x file instead of fetching 2x.
+        width, height = one_x.width, one_x.height
+    else:
+        height = round(width * source_height / source_width)
+    renditions = {im.width: im.url for im in (one_x, two_x)}
+    return {
+        "src": one_x.url,
+        "srcset": ", ".join(f"{url} {im_width}w" for im_width, url in renditions.items()),
+        "width": width,
+        "height": height,
+    }
