@@ -21,15 +21,11 @@ class UsersViewsTestCase(TestCase):
             username="username",
             password="password",
             email="niklas@sundin.se",
-            search_visibility=User.SEARCH_PUBLIC,
             membership=None,
         )
         self.user2 = UserFactory(
             username="spameggs",
             password="password",
-            search_visibility=User.SEARCH_PRIVATE,
-            email_privacy=User.EMAIL_PRIVATE,
-            public_profile=False,
         )
 
     def assertUserCreated(self, data=None, template_name="account/verification_sent.html"):  # noqa: N802 - unittest assertion naming convention
@@ -136,12 +132,9 @@ class UsersViewsTestCase(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
-        # should return 200 if the user does want to see their user profile
+        # should redirect to the profile page after saving
         post_data = {
             "username": "username",
-            "search_visibility": 0,
-            "email_privacy": 1,
-            "public_profile": False,
             "email": "niklas@sundin.se",
             settings.HONEYPOT_FIELD_NAME: settings.HONEYPOT_VALUE,
         }
