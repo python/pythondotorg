@@ -47,7 +47,7 @@
 
 {% elif logo_place == "sponsors" %}
 {% comment %}cache for 1 day{% endcomment %}
-{% cache 86400 CACHED_SPONSORS_LIST %}
+{% cache 86400 SPONSORS_PAGE_LIST %}
 
   {% for package, placement_info in sponsorships_by_package.items %}
   {% if placement_info.sponsorships %}
@@ -59,12 +59,17 @@
     <div style="display: grid; gap: 2.5rem; grid-template-columns: repeat(auto-fit, minmax({{ dimension }}px, 1fr)); align-items: center; justify-content: center;">
       {% for sponsorship in placement_info.sponsorships %}
         <div id="{{ sponsorship.sponsor.slug }}" data-internal-year="{{ sponsorship.year|default_if_none:'' }}">
-            <div
-                data-ea-publisher="psf"
-                data-ea-type="psf-image-only"
-                data-ea-force-ad="{{ sponsorship.sponsor.slug }}-psf-sponsors"
-                style="max-width:{{ sponsorship.sponsor.web_logo|ideal_size:dimension }}px;height:auto;width:auto;"
-            ></div>
+            {% with logo_width=sponsorship.sponsor.web_logo|ideal_size:dimension %}
+            <a href="{{ sponsorship.sponsor.landing_page_url }}" rel="sponsored noopener" target="_blank" class="plausible-event-name=Sponsor+Click plausible-event-sponsor={{ sponsorship.sponsor.slug }}" style="border-bottom: 0;">
+              {% if sponsorship.sponsor.web_logo.name|lower|slice:"-4:" == ".svg" %}
+              <img src="{{ sponsorship.sponsor.web_logo.url }}" alt="{{ sponsorship.sponsor.name }} logo" style="max-width:{{ logo_width }}px;height:auto;width:auto;">
+              {% else %}
+              {% thumbnail sponsorship.sponsor.web_logo logo_width|stringformat:"d" format="PNG" quality=100 as im %}
+              <img src="{{ im.url }}" alt="{{ sponsorship.sponsor.name }} logo" style="max-width:{{ logo_width }}px;height:auto;width:auto;">
+              {% endthumbnail %}
+              {% endif %}
+            </a>
+            {% endwith %}
             <p>{{ sponsorship.sponsor.name }}</p>
         </div>
       {% endfor %}
@@ -74,5 +79,5 @@
   </div>
   {% endif %}
   {% endfor %}
-{% endcache CACHED_SPONSORS_LIST %}
+{% endcache SPONSORS_PAGE_LIST %}
 {% endif %}
