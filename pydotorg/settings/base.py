@@ -350,7 +350,7 @@ CONTENT_SECURITY_POLICY_REPORT_ONLY = {
         "base-uri": [SELF],
         "object-src": ["'none'"],
         "form-action": [SELF],
-        "report-uri": [_CSP_REPORT_URI],
+        "report-uri": _CSP_REPORT_URI,
         # When we upgrade to Django 6, begin using
         # 'report-to' and 'Reporting-Endpoints' header.
         # django-csp doesn't support automatically
