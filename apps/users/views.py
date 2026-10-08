@@ -7,7 +7,6 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import UserPassesTestMixin
 from django.core.mail import send_mail
 from django.db.models import Subquery
 from django.http import Http404
@@ -186,21 +185,20 @@ class UserDeleteView(LoginRequiredMixin, DeleteView):
         return self.request.user
 
 
-class MembershipDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+class MembershipDeleteView(LoginRequiredMixin, DeleteView):
     """Allow users to delete their own PSF membership."""
 
-    model = Membership
-    slug_field = "creator__username"
-    raise_exception = True
     http_method_names = ["post", "delete"]
 
     def get_success_url(self):
         """Redirect to the user's profile page after deletion."""
         return reverse("users:user_detail")
 
-    def test_func(self):
-        """Only allow the membership creator to delete it."""
-        return self.get_object().creator == self.request.user
+    def get_object(self, queryset=None):
+        """Return the current user's membership or raise 404."""
+        if self.request.user.has_membership:
+            return self.request.user.membership
+        raise Http404
 
 
 class UserNominationsView(LoginRequiredMixin, TemplateView):

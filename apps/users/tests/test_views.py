@@ -268,34 +268,38 @@ class UsersViewsTestCase(TestCase):
         self.assertTrue(User.objects.filter(username=self.user2.username).exists())
 
     def test_membership_delete_needs_to_be_logged_in(self):
-        url = reverse("users:user_membership_delete", kwargs={"slug": self.user2.username})
+        url = reverse("users:user_membership_delete")
         response = self.client.delete(url)
         self.assertRedirects(response, "{}?next={}".format(reverse("account_login"), url))
 
     def test_membership_delete_invalid_request_method(self):
-        url = reverse("users:user_membership_delete", kwargs={"slug": self.user2.username})
+        url = reverse("users:user_membership_delete")
         self.client.login(username=self.user2.username, password="password")
         response = self.client.get(url)
         self.assertEqual(response.status_code, 405)
 
-    def test_membership_delete_different_user_membership(self):
-        user = UserFactory()
-        self.assertTrue(user.has_membership)
-        url = reverse("users:user_membership_delete", kwargs={"slug": user.username})
+    def test_membership_delete_not_addressable_by_username(self):
+        # Membership deletion used to live at /users/membership/delete/<username>/
+        # and answered 403 for members and 404 for everyone else.
+        member = UserFactory()
+        self.assertTrue(member.has_membership)
         self.client.login(username=self.user2.username, password="password")
-        response = self.client.delete(url)
-        self.assertEqual(response.status_code, 403)
+        existing = self.client.delete(f"/users/membership/delete/{member.username}/")
+        unknown = self.client.delete("/users/membership/delete/thisusernamedoesntexist/")
+        self.assertEqual(existing.status_code, 404)
+        self.assertEqual(unknown.status_code, 404)
+        self.assertTrue(Membership.objects.filter(creator=member).exists())
 
     def test_membership_does_not_exist(self):
         self.assertFalse(self.user.has_membership)
-        url = reverse("users:user_membership_delete", kwargs={"slug": self.user.username})
+        url = reverse("users:user_membership_delete")
         self.client.login(username=self.user.username, password="password")
         response = self.client.delete(url)
         self.assertEqual(response.status_code, 404)
 
     def test_membership_delete(self):
         self.assertTrue(self.user2.has_membership)
-        url = reverse("users:user_membership_delete", kwargs={"slug": self.user2.username})
+        url = reverse("users:user_membership_delete")
         self.client.login(username=self.user2.username, password="password")
         response = self.client.delete(url)
         self.assertRedirects(response, reverse("users:user_detail"))

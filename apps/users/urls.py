@@ -1,6 +1,6 @@
 """URL configuration for user profiles, memberships, and sponsorship management."""
 
-from django.urls import path, re_path
+from django.urls import path
 
 from apps.users import views
 
@@ -11,11 +11,7 @@ urlpatterns = [
     path("profile/delete/", views.UserDeleteView.as_view(), name="user_delete"),
     path("membership/", views.MembershipCreate.as_view(), name="user_membership_create"),
     path("membership/edit/", views.MembershipUpdate.as_view(), name="user_membership_edit"),
-    re_path(
-        r"^membership/delete/(?P<slug>[-a-zA-Z0-9_\@\.+]+)/$",
-        views.MembershipDeleteView.as_view(),
-        name="user_membership_delete",
-    ),
+    path("membership/delete/", views.MembershipDeleteView.as_view(), name="user_membership_delete"),
     path("membership/thanks/", views.MembershipThanks.as_view(), name="user_membership_thanks"),
     path("membership/affirm/", views.MembershipVoteAffirm.as_view(), name="membership_affirm_vote"),
     path("membership/affirm/done/", views.MembershipVoteAffirmDone.as_view(), name="membership_affirm_vote_done"),
