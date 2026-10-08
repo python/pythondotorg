@@ -488,9 +488,9 @@
         border-radius: 4px;
         margin-bottom: 20px;
         font-size: 13px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
+        line-height: 1.5;
+        /* Block, not flex: alerts are prose, and flex would split inline <strong>/<a> into columns. */
+        display: block;
     }
     .manage-alert-success {
         background: #e8f5e9;
@@ -599,6 +599,13 @@
         color: #ccc;
     }
     .manage-table thead th.sortable.sorted .sort-arrow {
+        color: #3776ab;
+    }
+    .manage-table thead th .sort-link {
+        color: inherit;
+        text-decoration: none;
+    }
+    .manage-table thead th .sort-link:hover {
         color: #3776ab;
     }
 
@@ -815,9 +822,38 @@
 
 {% block extra_js %}
 <script>
-// Client-side table sorting for all .manage-table tables
+// Client-side table sorting for .manage-table tables that hold every row on one page.
+// Paginated tables sort on the server instead and opt out with data-server-sort.
+// Cells may carry data-sort with a machine-readable value (ISO date, number) to sort by.
 (function() {
-    document.querySelectorAll('.manage-table').forEach(function(table) {
+    var MONTH_DATE = /^([A-Z][a-z]{2})\.? (\d{1,2}),? (\d{4})/;
+    var NUMBER = /^-?\$?-?[\d,]+(\.\d+)?$/;
+
+    function sortKey(cell) {
+        var raw = cell.dataset.sort !== undefined ? cell.dataset.sort : cell.textContent.trim();
+        if (raw === '' || raw === '—' || raw === '-') return { str: '' };
+        var compact = raw.replace(/\s/g, '');
+        if (NUMBER.test(compact)) return { num: parseFloat(compact.replace(/[$,]/g, '')) };
+        if (/^\d{4}-\d{2}-\d{2}/.test(raw)) return { num: Date.parse(raw.slice(0, 10)) };
+        var m = raw.match(MONTH_DATE);
+        if (m) {
+            var t = Date.parse(m[1] + ' ' + m[2] + ', ' + m[3]);
+            if (!isNaN(t)) return { num: t };
+        }
+        return { str: raw.toLowerCase() };
+    }
+
+    function compare(a, b) {
+        if (a.num !== undefined && b.num !== undefined) return a.num - b.num;
+        // Numbers/dates before text.
+        if (a.num !== undefined) return -1;
+        if (b.num !== undefined) return 1;
+        return a.str.localeCompare(b.str, undefined, { numeric: true });
+    }
+
+    function isBlank(key) { return key.str === ''; }
+
+    document.querySelectorAll('.manage-table:not([data-server-sort])').forEach(function(table) {
         var headers = table.querySelectorAll('thead th');
         headers.forEach(function(th, colIdx) {
             // Skip headers that have no text or are too narrow (action columns)
@@ -825,18 +861,18 @@
             if (!text || th.style.width === '50px' || th.style.width === '60px') return;
 
             th.classList.add('sortable');
+            th.tabIndex = 0;
+            th.setAttribute('aria-sort', 'none');
             // Add arrow if not already present
             if (!th.querySelector('.sort-arrow')) {
                 var arrow = document.createElement('span');
                 arrow.className = 'sort-arrow';
+                arrow.setAttribute('aria-hidden', 'true');
                 arrow.innerHTML = '&#9660;';
                 th.appendChild(arrow);
             }
 
-            th.addEventListener('click', function(e) {
-                // Don't sort if clicking a link inside the header
-                if (e.target.tagName === 'A') return;
-
+            function sortBy() {
                 var tbody = table.querySelector('tbody');
                 var rows = Array.prototype.slice.call(tbody.querySelectorAll('tr'));
                 var ascending = th.dataset.sortDir !== 'asc';
@@ -846,40 +882,87 @@
                 headers.forEach(function(h) {
                     h.classList.remove('sorted');
                     h.dataset.sortDir = '';
+                    if (h.classList.contains('sortable')) h.setAttribute('aria-sort', 'none');
                     var a = h.querySelector('.sort-arrow');
                     if (a) a.innerHTML = '&#9660;';
                 });
 
                 th.classList.add('sorted');
                 th.dataset.sortDir = ascending ? 'asc' : 'desc';
+                th.setAttribute('aria-sort', ascending ? 'ascending' : 'descending');
                 arrow.innerHTML = ascending ? '&#9650;' : '&#9660;';
 
-                rows.sort(function(a, b) {
-                    var cellA = a.cells[colIdx];
-                    var cellB = b.cells[colIdx];
-                    if (!cellA || !cellB) return 0;
-
-                    var valA = cellA.textContent.trim();
-                    var valB = cellB.textContent.trim();
-
-                    // Try numeric sort (strip $ , and whitespace)
-                    var numA = parseFloat(valA.replace(/[$,\s]/g, ''));
-                    var numB = parseFloat(valB.replace(/[$,\s]/g, ''));
-                    if (!isNaN(numA) && !isNaN(numB)) {
-                        return ascending ? numA - numB : numB - numA;
-                    }
-
-                    // String sort
-                    valA = valA.toLowerCase();
-                    valB = valB.toLowerCase();
-                    if (valA < valB) return ascending ? -1 : 1;
-                    if (valA > valB) return ascending ? 1 : -1;
-                    return 0;
+                var keyed = rows.map(function(row) {
+                    var cell = row.cells[colIdx];
+                    return { row: row, key: cell ? sortKey(cell) : { str: '' } };
                 });
+                keyed.sort(function(a, b) {
+                    // Blank cells stay at the bottom in either direction.
+                    if (isBlank(a.key) !== isBlank(b.key)) return isBlank(a.key) ? 1 : -1;
+                    var result = compare(a.key, b.key);
+                    return ascending ? result : -result;
+                });
+                keyed.forEach(function(item) { tbody.appendChild(item.row); });
+            }
 
-                rows.forEach(function(row) { tbody.appendChild(row); });
+            th.addEventListener('click', function(e) {
+                // Don't sort if clicking a link inside the header
+                if (e.target.tagName === 'A') return;
+                sortBy();
+            });
+            th.addEventListener('keydown', function(e) {
+                if (e.target !== th) return;
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    sortBy();
+                }
             });
         });
+    });
+})();
+
+// Submit guard: once a POST form is submitted, ignore further submits (double-clicks,
+// repeated Enter) and disable its buttons until the next page loads.
+(function() {
+    var BUTTONS = 'button[type="submit"], button:not([type]), input[type="submit"]';
+
+    function release(form) {
+        delete form.dataset.submitting;
+        form.querySelectorAll('[data-submit-guarded]').forEach(function(btn) {
+            btn.disabled = false;
+            delete btn.dataset.submitGuarded;
+        });
+    }
+
+    document.addEventListener('submit', function(e) {
+        var form = e.target;
+        if (e.defaultPrevented || form.method !== 'post' || form.target === '_blank') return;
+        if (form.dataset.submitting) {
+            e.preventDefault();
+            return;
+        }
+        form.dataset.submitting = '1';
+        // Disable on the next tick: a disabled submitter would drop its name (e.g. "confirm")
+        // from the request the browser is building now.
+        setTimeout(function() {
+            if (e.defaultPrevented) {
+                release(form);
+                return;
+            }
+            form.querySelectorAll(BUTTONS).forEach(function(btn) {
+                if (btn.disabled) return;
+                btn.disabled = true;
+                btn.dataset.submitGuarded = '1';
+            });
+        }, 0);
+        // Responses that don't navigate (file downloads) leave the page in place; re-arm it.
+        setTimeout(function() { release(form); }, 15000);
+    });
+
+    // Back/forward cache restores the disabled state; undo it.
+    window.addEventListener('pageshow', function(e) {
+        if (!e.persisted) return;
+        document.querySelectorAll('form[data-submitting]').forEach(release);
     });
 })();
 </script>
