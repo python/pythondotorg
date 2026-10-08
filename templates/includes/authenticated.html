@@ -2,7 +2,7 @@
     <ul class="navigation menu" aria-label="Social Media Navigation">
         <li class="tier-1 last" aria-haspopup="true">
             {% if request.user.is_authenticated %}
-            <a href="{% url 'users:user_detail' slug=request.user.username %}">Your account</a>
+            <a href="{% url 'users:user_detail' %}">Your account</a>
             <ul class="subnav menu" role="menu">
                 <li class="tier-2 element-1" role="menuitem"><a href="{% url 'users:user_profile_edit' %}">Edit your user profile</a></li>
                 <li class="tier-2 element-2" role="menuitem"><a href="{% url 'account_change_password' %}">Change your password</a></li>

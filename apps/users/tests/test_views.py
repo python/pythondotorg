@@ -146,80 +146,30 @@ class UsersViewsTestCase(TestCase):
             settings.HONEYPOT_FIELD_NAME: settings.HONEYPOT_VALUE,
         }
         response = self.client.post(url, post_data)
-        profile_url = reverse("users:user_detail", kwargs={"slug": "username"})
+        profile_url = reverse("users:user_detail")
         self.assertRedirects(response, profile_url)
 
-        # should return 404 for another user
-        another_user_url = reverse("users:user_detail", kwargs={"slug": "spameggs"})
-        response = self.client.get(another_user_url)
-        self.assertEqual(response.status_code, 404)
-
-        # should return 404 if the user is not logged-in
+        # should redirect to login if the user is not logged-in
         self.client.logout()
         response = self.client.get(profile_url)
-        self.assertEqual(response.status_code, 404)
+        self.assertRedirects(response, "{}?next={}".format(reverse("account_login"), profile_url))
 
     def test_user_detail(self):
-        # Ensure detail page is viewable without login, but that edit URLs
-        # do not appear
-        detail_url = reverse("users:user_detail", kwargs={"slug": self.user.username})
+        # Ensure the detail page shows the logged-in user's own profile
+        detail_url = reverse("users:user_detail")
         edit_url = reverse("users:user_profile_edit")
+        self.client.login(username=self.user2.username, password="password")
         response = self.client.get(detail_url)
-        self.assertTrue(self.user.is_active)
-        self.assertNotContains(response, edit_url)
-
-        # Ensure edit url is available to logged in users
-        self.client.login(username="username", password="password")
-        response = self.client.get(detail_url)
+        self.assertEqual(response.context["object"], self.user2)
         self.assertContains(response, edit_url)
 
-        # Ensure inactive accounts shouldn't be shown to users.
-        user = User.objects.create_user(
-            username="foobar",
-            password="baz",
-            email="paradiselost@example.com",
-        )
-        user.is_active = False
-        user.save()
-        self.assertFalse(user.is_active)
-        detail_url = reverse("users:user_detail", kwargs={"slug": user.username})
-        response = self.client.get(detail_url)
-        self.assertEqual(response.status_code, 404)
-
-    def test_special_usernames(self):
-        # Ensure usernames in the forms of:
-        # first.last
-        # user@host.com
-        # are allowed to view their profile pages since we allow them in
-        # the username field
-        u1 = User.objects.create_user(
-            username="user.name",
-            password="password",
-        )
-        detail_url = reverse("users:user_detail", kwargs={"slug": u1.username})
-        edit_url = reverse("users:user_profile_edit")
-
-        self.client.login(username=u1.username, password="password")
-        response = self.client.get(detail_url)
-        self.assertEqual(response.status_code, 200)
-
-        response = self.client.get(edit_url)
-        self.assertEqual(response.status_code, 200)
-
-        u2 = User.objects.create_user(
-            username="user@example.com",
-            password="password",
-        )
-
-        detail_url = reverse("users:user_detail", kwargs={"slug": u2.username})
-        edit_url = reverse("users:user_profile_edit")
-
-        self.client.login(username=u2.username, password="password")
-        response = self.client.get(detail_url)
-        self.assertEqual(response.status_code, 200)
-
-        response = self.client.get(edit_url)
-        self.assertEqual(response.status_code, 200)
+    def test_user_detail_not_addressable_by_username(self):
+        # Profiles used to live at /users/<username>/; existing and unknown
+        # usernames must be indistinguishable to prevent user enumeration.
+        existing = self.client.get(f"/users/{self.user.username}/")
+        unknown = self.client.get("/users/thisusernamedoesntexist/")
+        self.assertEqual(existing.status_code, 404)
+        self.assertEqual(unknown.status_code, 404)
 
     def test_user_new_account(self):
         self.assertUserCreated(
@@ -298,29 +248,24 @@ class UsersViewsTestCase(TestCase):
         self.assertRedirects(response, "{}?next={}".format(reverse("account_login"), url))
 
     def test_user_delete_needs_to_be_logged_in(self):
-        url = reverse("users:user_delete", kwargs={"slug": self.user.username})
+        url = reverse("users:user_delete")
         response = self.client.delete(url)
         self.assertRedirects(response, "{}?next={}".format(reverse("account_login"), url))
 
     def test_user_delete_invalid_request_method(self):
-        url = reverse("users:user_delete", kwargs={"slug": self.user.username})
+        url = reverse("users:user_delete")
         self.client.login(username=self.user.username, password="password")
         response = self.client.get(url)
         self.assertEqual(response.status_code, 405)
 
-    def test_user_delete_different_user(self):
-        url = reverse("users:user_delete", kwargs={"slug": self.user.username})
-        self.client.login(username=self.user2.username, password="password")
-        response = self.client.delete(url)
-        self.assertEqual(response.status_code, 403)
-
     def test_user_delete(self):
-        url = reverse("users:user_delete", kwargs={"slug": self.user.username})
+        url = reverse("users:user_delete")
         self.client.login(username=self.user.username, password="password")
         response = self.client.delete(url)
         self.assertRedirects(response, reverse("home"))
         self.assertRaises(User.DoesNotExist, User.objects.get, username=self.user.username)
         self.assertRaises(Membership.DoesNotExist, Membership.objects.get, creator=self.user)
+        self.assertTrue(User.objects.filter(username=self.user2.username).exists())
 
     def test_membership_delete_needs_to_be_logged_in(self):
         url = reverse("users:user_membership_delete", kwargs={"slug": self.user2.username})
@@ -353,7 +298,7 @@ class UsersViewsTestCase(TestCase):
         url = reverse("users:user_membership_delete", kwargs={"slug": self.user2.username})
         self.client.login(username=self.user2.username, password="password")
         response = self.client.delete(url)
-        self.assertRedirects(response, reverse("users:user_detail", kwargs={"slug": self.user2.username}))
+        self.assertRedirects(response, reverse("users:user_detail"))
         # TODO: We can't use 'self.user2.refresh_from_db()' because
         # of https://code.djangoproject.com/ticket/27846.
         with self.assertRaises(Membership.DoesNotExist):
