@@ -1,6 +1,7 @@
 """RSS feed parsing and blog supernav rendering utilities."""
 
 import datetime
+from urllib.parse import urlparse, urlunparse
 
 import feedparser
 from django.conf import settings
@@ -8,6 +9,19 @@ from django.template.loader import render_to_string
 
 from apps.blogs.models import BlogEntry, Feed
 from apps.boxes.models import Box
+
+# Blogger serves RSS entry links with this legacy domain instead of
+# the canonical blog.python.org hostname.
+_BLOGGER_LEGACY_HOST = "pythoninsider.blogspot.com"
+
+
+def _normalize_blog_url(url):
+    """Rewrite legacy Blogger URLs to the canonical blog.python.org domain."""
+    parsed = urlparse(url)
+    if parsed.hostname == _BLOGGER_LEGACY_HOST:
+        canonical = urlparse(settings.PYTHON_BLOG_URL)
+        return urlunparse(parsed._replace(scheme=canonical.scheme, netloc=canonical.netloc))
+    return url
 
 
 def get_all_entries(feed_url):
@@ -22,7 +36,7 @@ def get_all_entries(feed_url):
             "title": e["title"],
             "summary": e.get("summary", ""),
             "pub_date": published,
-            "url": e["link"],
+            "url": _normalize_blog_url(e["link"]),
         }
 
         entries.append(entry)

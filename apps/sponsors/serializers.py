@@ -6,6 +6,17 @@ from apps.sponsors.models import GenericAsset
 from apps.sponsors.models.enums import LogoPlacementChoices, PublisherChoices
 
 
+class SponsorContactSerializer(serializers.Serializer):
+    """Serializer for sponsor contact information."""
+
+    name = serializers.CharField()
+    email = serializers.EmailField()
+    primary = serializers.BooleanField()
+    administrative = serializers.BooleanField()
+    accounting = serializers.BooleanField()
+    manager = serializers.BooleanField()
+
+
 class LogoPlacementSerializer(serializers.Serializer):
     """Serializer for sponsor logo placement data."""
 
@@ -16,11 +27,13 @@ class LogoPlacementSerializer(serializers.Serializer):
     sponsor_slug = serializers.CharField()
     description = serializers.CharField()
     logo = serializers.URLField()
+    white_logo = serializers.URLField(required=False, allow_null=True)
     start_date = serializers.DateField()
     end_date = serializers.DateField()
     sponsor_url = serializers.URLField()
     level_name = serializers.CharField()
     level_order = serializers.IntegerField()
+    contacts = SponsorContactSerializer(many=True, required=False)
 
 
 class AssetSerializer(serializers.ModelSerializer):

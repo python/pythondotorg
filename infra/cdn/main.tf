@@ -149,6 +149,12 @@ resource "fastly_service_vcl" "python_org" {
     statement = "req.url ~ \"^/static/\" && beresp.status == 404"
     type      = "CACHE"
   }
+  condition {
+    name      = "First Fastly hop"
+    priority  = 10
+    statement = "fastly.ff.visits_this_service == 0 && req.restarts == 0"
+    type      = "REQUEST"
+  }
 
   gzip {
     name = "Default rules"
@@ -206,6 +212,15 @@ resource "fastly_service_vcl" "python_org" {
     priority    = 10
     source      = "\"${var.fastly_header_token}\""
     type        = "request"
+  }
+  header {
+    action            = "set"
+    destination       = "http.Fastly-Client-IP"
+    name              = "Fastly-Client-IP from client.ip"
+    priority          = 10
+    request_condition = "First Fastly hop"
+    source            = "client.ip"
+    type              = "request"
   }
   header {
     action             = "set"

@@ -2,32 +2,25 @@ name: Check collectstatic
 
 on: [push, pull_request, workflow_dispatch]
 
+permissions: {}
+
 jobs:
   collectstatic:
     if: github.event_name != 'push' || github.event.repository.fork == true || github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
-      - uses: actions/setup-python@v6
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
         with:
-            python-version-file: '.python-version'
-      - name: Cache Python dependencies
-        uses: actions/cache@v5
-        env:
-          cache-name: pythondotorg-cache-pip
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-${{ github.job }}-${{ env.cache-name }}-${{ hashFiles('pyproject.toml') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ github.job }}-${{ env.cache-name }}-
-            ${{ runner.os }}-${{ github.job }}-
-            ${{ runner.os }}-
+          version: "0.12.17"
+          enable-cache: true
+
       - name: Install Python dependencies
-        run: |
-          pip install -U pip setuptools wheel
-          pip install '.[prod]'
+        run: uv sync --locked --no-dev --extra prod
       - name: Run Tests
         run: |
-          DJANGO_SETTINGS_MODULE=pydotorg.settings.static python manage.py collectstatic --noinput
+          DJANGO_SETTINGS_MODULE=pydotorg.settings.static uv run --no-sync python manage.py collectstatic --noinput

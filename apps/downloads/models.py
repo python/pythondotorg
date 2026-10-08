@@ -5,7 +5,7 @@ import re
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models.signals import post_save
+from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
 from django.template.loader import render_to_string
 from django.urls import reverse
@@ -19,6 +19,24 @@ from apps.pages.models import Page
 from fastly.utils import purge_surrogate_key, purge_url
 
 DEFAULT_MARKUP_TYPE = getattr(settings, "DEFAULT_MARKUP_TYPE", "markdown")
+PYTHON_DOT_ORG_HTTPS_PREFIX = "https://www.python.org/"
+PYTHON_DOT_ORG_HTTP_PREFIX = "http://www.python.org/"
+RELEASE_FILE_URL_FIELDS = (
+    "url",
+    "gpg_signature_file",
+    "sigstore_signature_file",
+    "sigstore_cert_file",
+    "sigstore_bundle_file",
+    "sbom_spdx2_file",
+)
+RELEASE_FILE_SIDECAR_SUFFIXES = {
+    "gpg_signature_file": ".asc",
+    "sigstore_signature_file": ".sig",
+    "sigstore_cert_file": ".crt",
+    "sigstore_bundle_file": ".sigstore",
+    "sbom_spdx2_file": ".spdx.json",
+}
+RELEASE_FILE_HTTPS_ERROR = "Release file URLs must begin with 'https://www.python.org/'."
 
 
 class OS(ContentManageable, NameSlugModel):
@@ -332,6 +350,75 @@ def update_download_supernav_and_boxes(sender, instance, **kwargs):
         update_homepage_download_box()
 
 
+def _update_boxes_for_release_file(instance):
+    """Update supernav and download boxes if the file's release is published."""
+    if instance.release_id and instance.release.is_published:
+        update_supernav()
+        update_download_landing_sources_box()
+        update_homepage_download_box()
+        purge_url("/box/supernav-python-downloads/")
+        purge_url("/box/homepage-downloads/")
+        purge_url("/box/download-sources/")
+
+
+@receiver(post_save, sender="downloads.ReleaseFile")
+def update_boxes_on_release_file_save(sender, instance, **kwargs):
+    """Refresh supernav when a release file is added or changed."""
+    if kwargs.get("raw", False):
+        return
+    _update_boxes_for_release_file(instance)
+
+
+@receiver(post_delete, sender="downloads.ReleaseFile")
+def update_boxes_on_release_file_delete(sender, instance, **kwargs):
+    """Refresh supernav when a release file is deleted."""
+    _update_boxes_for_release_file(instance)
+
+
+def condition_url_is_blank_or_python_dot_org(column: str):
+    """Conditions for a URLField column to force 'http[s]://python.org'."""
+    return (
+        models.Q(**{f"{column}__exact": ""})
+        | models.Q(**{f"{column}__startswith": PYTHON_DOT_ORG_HTTPS_PREFIX})
+        # Older releases allowed 'http://'. 'https://' is required at
+        # the API level, so shouldn't show up in newer releases.
+        | models.Q(**{f"{column}__startswith": PYTHON_DOT_ORG_HTTP_PREFIX})
+    )
+
+
+def validate_release_file_urls(release_file):
+    """Validate current ReleaseFile URL writes without rejecting unchanged legacy rows."""
+    values = {}
+    for field_name in RELEASE_FILE_URL_FIELDS:
+        values[field_name] = getattr(release_file, field_name) or ""
+
+    previous_values = None
+    if release_file.pk is not None:
+        release_file_model = type(release_file)
+        previous_values_qs = release_file_model.objects.filter(pk=release_file.pk)
+        previous_values = previous_values_qs.values(*RELEASE_FILE_URL_FIELDS).first()
+    errors = {}
+
+    for field_name, value in values.items():
+        if not value or value.startswith(PYTHON_DOT_ORG_HTTPS_PREFIX):
+            continue
+        if previous_values is None or value != (previous_values[field_name] or ""):
+            errors.setdefault(field_name, []).append(RELEASE_FILE_HTTPS_ERROR)
+
+    artifact_url = values["url"]
+    if artifact_url:
+        for field_name, suffix in RELEASE_FILE_SIDECAR_SUFFIXES.items():
+            sidecar_url = values[field_name]
+            expected_url = f"{artifact_url}{suffix}"
+            if not sidecar_url or sidecar_url == expected_url:
+                continue
+            message = f"Sidecar URL must match the artifact URL plus '{suffix}'."
+            errors.setdefault(field_name, []).append(message)
+
+    if errors:
+        raise ValidationError(errors)
+
+
 class ReleaseFile(ContentManageable, NameSlugModel):
     """Individual files in a release.
 
@@ -359,9 +446,14 @@ class ReleaseFile(ContentManageable, NameSlugModel):
     filesize = models.IntegerField(default=0)
     download_button = models.BooleanField(default=False, help_text="Use for the supernav download button for this OS")
 
+    def clean(self):
+        """Validate release-file URL relationships."""
+        super().clean()
+        validate_release_file_urls(self)
+
     def validate_unique(self, exclude=None):
         """Ensure only one release file per OS has the download button enabled."""
-        if self.download_button:
+        if self.download_button and self.release_id:
             qs = ReleaseFile.objects.filter(release=self.release, os=self.os, download_button=True).exclude(pk=self.id)
             if qs.count() > 0:
                 msg = 'Only one Release File per OS can have "Download button" enabled'
@@ -380,5 +472,17 @@ class ReleaseFile(ContentManageable, NameSlugModel):
                 fields=["os", "release"],
                 condition=models.Q(download_button=True),
                 name="only_one_download_per_os_per_release",
+            ),
+            models.CheckConstraint(
+                condition=(
+                    condition_url_is_blank_or_python_dot_org("url")
+                    & condition_url_is_blank_or_python_dot_org("gpg_signature_file")
+                    & condition_url_is_blank_or_python_dot_org("sigstore_signature_file")
+                    & condition_url_is_blank_or_python_dot_org("sigstore_cert_file")
+                    & condition_url_is_blank_or_python_dot_org("sigstore_bundle_file")
+                    & condition_url_is_blank_or_python_dot_org("sbom_spdx2_file")
+                ),
+                name="only_python_dot_org_urls",
+                violation_error_message="All file URLs must begin with 'https://www.python.org/'",
             ),
         ]

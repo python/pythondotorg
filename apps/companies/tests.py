@@ -10,3 +10,7 @@ class CompaniesTagsTests(TestCase):
             render_email("firstname.lastname@domain.com"),
             "firstname<span>.</span>lastname<span>@</span>domain<span>.</span>com",
         )
+        self.assertEqual(
+            render_email('"escape.>me"@domain.com'),
+            "&quot;escape<span>.</span>&gt;me&quot;<span>@</span>domain<span>.</span>com",
+        )

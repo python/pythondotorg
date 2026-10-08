@@ -35,4 +35,4 @@ class StoryAdmin(ContentManageableModelAdmin):
     @admin.display(description="View on site")
     def show_link(self, obj):
         """Return a clickable link icon to the story's public page."""
-        return format_html(f'<a href="{obj.get_absolute_url()}">\U0001f517</a>')
+        return format_html('<a href="{}">\U0001f517</a>', obj.get_absolute_url())

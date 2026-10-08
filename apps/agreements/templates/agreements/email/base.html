@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>{% block title %}{% endblock %}</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f2f4f6;">
+<div style="display:none;max-height:0;overflow:hidden;mso-hide:all;">{% block preheader %}{% endblock %}</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f2f4f6;">
+  <tr>
+    <td align="center" style="padding:32px 12px;">
+      <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px;background-color:#ffffff;border:1px solid #caccce;border-radius:6px;overflow:hidden;">
+        <tr>
+          <td style="background-color:#2b5b84;padding:22px 32px;border-bottom:4px solid #ffd343;">
+            <a href="https://www.python.org/psf/" style="text-decoration:none;">
+              <img src="https://www.python.org/static/img/psf-logo.png" width="220" height="54" alt="Python Software Foundation" style="display:block;border:0;width:220px;height:auto;color:#ffffff;font-family:Arial,Helvetica,sans-serif;font-size:18px;font-weight:bold;">
+            </a>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:32px;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1.5;color:#222222;">
+            {% block content %}{% endblock %}
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:20px 32px;background-color:#f2f4f6;border-top:1px solid #e6e8ea;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.5;color:#666666;">
+            Python Software Foundation &middot; <a href="https://www.python.org/psf/" style="color:#3776ab;text-decoration:none;">python.org/psf</a><br>
+            {% block footer %}You received this email because the PSF sent you an agreement.{% endblock %}
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+</body>
+</html>

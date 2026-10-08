@@ -10,7 +10,7 @@ from django.core.validators import FileExtensionValidator
 from django.db.models import Q
 from django.utils import timezone
 from django.utils.functional import cached_property
-from django.utils.safestring import mark_safe
+from django.utils.html import format_html
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 from django_countries.fields import CountryField
@@ -229,6 +229,11 @@ class SponsorshipApplicationForm(forms.Form):
         help_text="For display on our sponsor webpage. High resolution PNG or JPG, smallest dimension no less than 256px",
         required=False,
     )
+    white_logo = forms.ImageField(
+        label="Sponsor white logo",
+        help_text="For display on dark backgrounds (e.g. PyPI footer). Transparent PNG, smallest dimension no less than 256px",
+        required=False,
+    )
     print_logo = forms.FileField(
         label="Sponsor print logo",
         help_text="For printed materials, signage, and projection. SVG or EPS",
@@ -396,6 +401,7 @@ class SponsorshipApplicationForm(forms.Form):
             landing_page_url=self.cleaned_data.get("landing_page_url", ""),
             twitter_handle=self.cleaned_data["twitter_handle"],
             linked_in_page_url=self.cleaned_data["linked_in_page_url"],
+            white_logo=self.cleaned_data.get("white_logo"),
             print_logo=self.cleaned_data.get("print_logo"),
             country_of_incorporation=self.cleaned_data.get("country_of_incorporation", ""),
             state_of_incorporation=self.cleaned_data.get("state_of_incorporation", ""),
@@ -606,6 +612,11 @@ class SponsorUpdateForm(forms.ModelForm):
         help_text="For display on our sponsor webpage. High resolution PNG or JPG, smallest dimension no less than 256px",
         required=False,
     )
+    white_logo = forms.ImageField(
+        widget=forms.widgets.FileInput,
+        help_text="For display on dark backgrounds (e.g. PyPI footer). Transparent PNG, smallest dimension no less than 256px",
+        required=False,
+    )
     print_logo = forms.FileField(
         widget=forms.widgets.FileInput,
         help_text="For printed materials, signage, and projection. SVG or EPS",
@@ -647,6 +658,7 @@ class SponsorUpdateForm(forms.ModelForm):
             "twitter_handle",
             "linked_in_page_url",
             "web_logo",
+            "white_logo",
             "print_logo",
             "primary_phone",
             "mailing_address_line_1",
@@ -751,11 +763,11 @@ class SponsorRequiredAssetsForm(forms.Form):
             field = required_asset.as_form_field(required=required, initial=value)
 
             if required_asset.due_date and not bool(value):
-                field.label = mark_safe(
-                    f"<big><b>{field.label}</b></big><br><b>(Required by {required_asset.due_date})</b>"
+                field.label = format_html(
+                    "<big><b>{}</b></big><br><b>(Required by {})</b>", field.label, required_asset.due_date
                 )
             if bool(value):
-                field.label = mark_safe(f"<big><b>{field.label}</b></big><br><small>(Fulfilled, thank you!)</small>")
+                field.label = format_html("<big><b>{}</b></big><br><small>(Fulfilled, thank you!)</small>", field.label)
 
             fields[f_name] = field
 

@@ -1,7 +1,7 @@
 """Forms for the mailing app."""
 
 from django import forms
-from django.template import Context, Template, TemplateSyntaxError
+from django.template import Context, TemplateSyntaxError
 
 from apps.mailing.models import BaseEmailTemplate
 
@@ -13,7 +13,7 @@ class BaseEmailTemplateForm(forms.ModelForm):
         """Validate that the content field contains valid Django template syntax."""
         content = self.cleaned_data["content"]
         try:
-            template = Template(content)
+            template = BaseEmailTemplate.template_engine.from_string(content)
             template.render(Context({}))
         except TemplateSyntaxError as e:
             raise forms.ValidationError(e) from e

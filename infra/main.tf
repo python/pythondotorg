@@ -5,7 +5,7 @@ module "fastly_production" {
   domain          = "python.org"
   subdomain       = "www.python.org"
   extra_domains   = ["www.python.org"]
-  backend_address = "pythondotorg.ingress.us-east-2.psfhosted.computer"
+  backend_address = "psf-pythondotorg-pythondotorg-b0dbd19e-web.psfhosted.net"
   default_ttl     = 3600
 
   datadog_key         = var.DATADOG_API_KEY
@@ -27,7 +27,7 @@ module "fastly_staging" {
   subdomain     = "www.test.python.org"
   extra_domains = ["www.test.python.org"]
   # TODO: adjust to test-pythondotorg when done testing NGWAF
-  backend_address = "pythondotorg.ingress.us-east-2.psfhosted.computer"
+  backend_address = "psf-pythondotorg-pythondotorg-b0dbd19e-web.psfhosted.net"
   default_ttl     = 3600
 
   datadog_key         = var.DATADOG_API_KEY

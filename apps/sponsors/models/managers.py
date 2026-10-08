@@ -5,7 +5,16 @@ from django.db.models import Count, Q, Subquery
 from django.db.models.query import QuerySet
 from django.utils import timezone
 from ordered_model.models import OrderedModelQuerySet
+from polymorphic.managers import PolymorphicManager
 from polymorphic.query import PolymorphicQuerySet
+
+
+class NonPolymorphicManager(PolymorphicManager):
+    """Keep base queries homogeneous for Django's cascading deletion collector."""
+
+    def get_queryset(self):
+        """Return base instances while retaining polymorphic queryset operations."""
+        return super().get_queryset().non_polymorphic()
 
 
 class SponsorshipQuerySet(QuerySet):
@@ -170,12 +179,6 @@ class SponsorshipPackageQuerySet(OrderedModelQuerySet):
 class BenefitFeatureQuerySet(PolymorphicQuerySet):
     """QuerySet for polymorphic benefit feature models."""
 
-    def delete(self):
-        """Delete using non-polymorphic queryset to avoid polymorphic deletion issues."""
-        if not self.polymorphic_disabled:
-            return self.non_polymorphic().delete()
-        return super().delete()
-
     def from_sponsorship(self, sponsorship):
         """Return benefit features belonging to the given sponsorship."""
         return self.filter(sponsor_benefit__sponsorship=sponsorship).select_related("sponsor_benefit__sponsorship")
@@ -193,16 +196,6 @@ class BenefitFeatureQuerySet(PolymorphicQuerySet):
 
         provided_assets_classes = ProvidedAssetMixin.__subclasses__()
         return self.instance_of(*provided_assets_classes).select_related("sponsor_benefit__sponsorship")
-
-
-class BenefitFeatureConfigurationQuerySet(PolymorphicQuerySet):
-    """QuerySet for polymorphic benefit feature configuration models."""
-
-    def delete(self):
-        """Delete using non-polymorphic queryset to avoid polymorphic deletion issues."""
-        if not self.polymorphic_disabled:
-            return self.non_polymorphic().delete()
-        return super().delete()
 
 
 class GenericAssetQuerySet(PolymorphicQuerySet):

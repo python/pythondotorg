@@ -1,0 +1,22 @@
+{% load agreements %}
+{% if agreements %}
+  <div class="table-scroll" role="region" aria-label="{{ label|default:'Agreements' }}" tabindex="0">
+  <table class="order-table">
+    <thead>
+      <tr><th scope="col">Counterparty</th><th scope="col">Document</th><th scope="col">Status</th><th scope="col">Since</th></tr>
+    </thead>
+    <tbody>
+      {% for agreement in agreements %}
+        <tr>
+          <th scope="row"><a href="{{ agreement.get_absolute_url }}">{{ agreement.counterparty_name }}</a><span class="ref">{{ agreement.reference }}</span></th>
+          <td>{{ agreement.title }}{% if agreement.revision > 1 %} (revision {{ agreement.revision }}){% endif %}</td>
+          <td>{% status_badge agreement.status %}</td>
+          <td>{% if agreement.status == "signed" %}{{ agreement.signed_at|date:"M j, Y" }} by {{ agreement.signer_email }}{% elif agreement.status == "executed" %}{{ agreement.countersigned_at|date:"M j, Y" }}{% else %}{{ agreement.offered_at|date:"M j, Y" }}{% endif %}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  </div>
+{% else %}
+  <p>{{ empty }}</p>
+{% endif %}
