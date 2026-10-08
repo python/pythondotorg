@@ -5,6 +5,9 @@ from django.conf import settings
 from django.contrib.admin.models import ADDITION, CHANGE, LogEntry
 from django.contrib.contenttypes.models import ContentType
 from django.core import mail
+from django.core.cache import cache
+from django.core.cache.utils import make_template_fragment_key
+from django.template import Context, Template
 from django.template.loader import render_to_string
 from django.test import RequestFactory, TestCase
 from django.utils import timezone
@@ -489,3 +492,14 @@ class ClonedResourceLoggerTests(TestCase):
         self.assertEqual(str(self.package), log_entry.object_repr)
         self.assertEqual(log_entry.action_flag, ADDITION)
         self.assertEqual(log_entry.change_message, "Cloned from 2022 sponsorship application config")
+
+
+class RefreshSponsorshipsCacheTests(TestCase):
+    def test_clears_cached_sponsors_page_fragment(self):
+        Template('{% load sponsors %}{% list_sponsors "sponsors" %}').render(Context())
+        key = make_template_fragment_key("SPONSORS_PAGE_LIST")
+        self.assertIsNotNone(cache.get(key))
+
+        notifications.RefreshSponsorshipsCache().notify()
+
+        self.assertIsNone(cache.get(key))
