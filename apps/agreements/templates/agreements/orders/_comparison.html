@@ -1,0 +1,95 @@
+{% load agreements %}{% with agreement=aform.agreement tier_options=aform.tier_options has_included_extras=aform.has_included_extras %}
+<details class="pb-comparison-details" id="compare-{{ slug }}">
+  <summary>Compare service levels<span class="screen-reader-text"> for {{ agreement.short_name }}</span></summary>
+  <p class="pb-help">Base-service marks show availability, not automatic selection. Choose your base services above; the tier fee stays the same.</p>
+  <div class="pb-comparison-scroll">
+    <table class="pb-comparison">
+      <caption class="screen-reader-text">{{ agreement.short_name }} service levels</caption>
+      <colgroup>
+        <col class="pb-comparison-label">
+        {% for tier in agreement.tiers %}<col>{% endfor %}
+      </colgroup>
+      <thead>
+        <tr>
+          <th scope="col">Service tier</th>
+          {% for tier in agreement.tiers %}<th scope="col">{{ tier.name }}</th>{% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope="row">Annual fee</th>
+          {% for tier in agreement.tiers %}<td>{{ tier.annual_fee|money }}</td>{% endfor %}
+        </tr>
+        <tr>
+          <th scope="row">Critical (P1) response target</th>
+          {% for tier in agreement.tiers %}<td>{{ tier.response_targets.0 }}</td>{% endfor %}
+        </tr>
+        <tr>
+          <th scope="row">High (P2) response target</th>
+          {% for tier in agreement.tiers %}<td>{{ tier.response_targets.1 }}</td>{% endfor %}
+        </tr>
+        <tr>
+          <th scope="row">Medium (P3) response target</th>
+          {% for tier in agreement.tiers %}<td>{{ tier.response_targets.2 }}</td>{% endfor %}
+        </tr>
+        <tr>
+          <th scope="row">Low (P4) response target</th>
+          {% for tier in agreement.tiers %}<td>{{ tier.response_targets.3 }}</td>{% endfor %}
+        </tr>
+        <tr>
+          <th scope="row">Support requests a year <small>Fair-use threshold</small></th>
+          {% for tier in agreement.tiers %}<td>{{ tier.fair_use }}</td>{% endfor %}
+        </tr>
+        {% for service in agreement.services %}
+          <tr>
+            <th scope="row">{{ service.name }}</th>
+            {% for option in tier_options %}
+              {% if service in option.services %}
+                <td class="pb-yes"><span class="pb-mark" aria-hidden="true"></span><span class="screen-reader-text">Available to select</span></td>
+              {% else %}
+                <td class="pb-no"><span class="pb-mark" aria-hidden="true"></span><span class="screen-reader-text">Not available</span></td>
+              {% endif %}
+            {% endfor %}
+          </tr>
+        {% endfor %}
+        {% if has_included_extras %}
+          <tr>
+            <th scope="row">Included with the tier</th>
+            {% for option in tier_options %}{% with tier=option.tier %}
+              <td>
+                {% if tier.includes or option.included_addons %}
+                  <ul class="pb-also-list">
+                    {% if tier.includes %}<li>{{ tier.includes }}</li>{% endif %}
+                    {% for addon in option.included_addons %}<li>{{ addon.name }}</li>{% endfor %}
+                  </ul>
+                {% else %}
+                  <span class="pb-none">Nothing else</span>
+                {% endif %}
+              </td>
+            {% endwith %}{% endfor %}
+          </tr>
+        {% endif %}
+      </tbody>
+      <tfoot>
+        <tr>
+          <th scope="row"><span class="screen-reader-text">Choose a service tier</span></th>
+          {% for tier in agreement.tiers %}
+            <td><button type="button" class="pb-secondary" data-choose-family="{{ slug }}" data-choose-tier="{{ tier.key }}" hidden>Choose {{ tier.name }}</button></td>
+          {% endfor %}
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+  {% if agreement.services %}
+    <div class="pb-glossary">
+      <h3 class="pb-glossary-title">What the base services cover</h3>
+      <dl>
+        {% for service, tiers in agreement.service_rows %}
+          <dt>{{ service.name }} <span class="pb-glossary-tiers">{% if tiers %}{{ tiers }} only{% else %}Every tier{% endif %}</span></dt>
+          {% if service.description %}<dd>{{ service.description }}</dd>{% endif %}
+        {% endfor %}
+      </dl>
+    </div>
+  {% endif %}
+</details>
+{% endwith %}

@@ -14,24 +14,13 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
         with:
-            python-version-file: '.python-version'
-      - name: Cache Python dependencies
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        env:
-          cache-name: pythondotorg-cache-pip
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-${{ github.job }}-${{ env.cache-name }}-${{ hashFiles('pyproject.toml') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ github.job }}-${{ env.cache-name }}-
-            ${{ runner.os }}-${{ github.job }}-
-            ${{ runner.os }}-
+          version: "0.12.17"
+          enable-cache: true
+
       - name: Install Python dependencies
-        run: |
-          pip install -U pip setuptools wheel
-          pip install '.[prod]'
+        run: uv sync --locked --no-dev --extra prod
       - name: Run Tests
         run: |
-          DJANGO_SETTINGS_MODULE=pydotorg.settings.static python manage.py collectstatic --noinput
+          DJANGO_SETTINGS_MODULE=pydotorg.settings.static uv run --no-sync python manage.py collectstatic --noinput

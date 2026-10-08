@@ -1,0 +1,160 @@
+/* Agreement pages: documents, signing, and records. Layered on python.org's style.css.
+   Pages that use these pieces add the "agreements" class to <body>. */
+
+.agreements [hidden] { display: none !important; }
+
+/* Keep ordinary prose intact; long addresses and URLs may still wrap to fit. */
+.agreements :is(p, dd, blockquote, address) {
+  -webkit-hyphens: none;
+  hyphens: none;
+  overflow-wrap: break-word;
+}
+.agreements :is(h1, h2, h3, .breadcrumbs) { overflow-wrap: anywhere; }
+
+.agreements .num { text-align: right; white-space: nowrap; }
+.agreements .actions { display: flex; flex-wrap: wrap; gap: 0.5em; align-items: center; }
+.agreements .actions .button,
+.agreements .actions form { display: inline-block; margin: 0; }
+.agreements .actions button { margin: 0; }
+.agreements .actions .discard-form button { min-height: 44px; padding: 0.5em; border: 0; background: none; box-shadow: none; color: #74333b !important; text-shadow: none; }
+.agreements .actions .discard-form button:is(:hover, :focus) { background: none; color: #74333b !important; text-decoration: underline; }
+.agreements .introduction { font-size: 1.125em; }
+.agreements .aside-note { color: #666; }
+
+/* Primary link buttons match python.org's blue submit buttons. */
+.agreements a.button.button-primary {
+  color: #e6e8ea !important;
+  text-shadow: none;
+  background-color: #2b5b84;
+  background-image: linear-gradient(#3776ab 10%, #2b5b84 90%);
+  border: 1px solid #3776ab;
+  border-top-color: #3d83be;
+  border-left-color: #3d83be;
+}
+.agreements a.button.button-primary:hover,
+.agreements a.button.button-primary:focus {
+  color: #f2f4f6 !important;
+  background-color: #244e71;
+  background-image: linear-gradient(#316998 10%, #244e71 90%);
+}
+
+/* Section navigation: mark the current page like the site's sitetree menus. */
+.agreements .section-nav .selected > a { font-family: SourceSansProBold, Arial, sans-serif; color: #222; }
+.agreements .account-widget p { margin-bottom: 0.65em; }
+.agreements .account-widget .button { display: inline-block; }
+.agreements .contents-widget .section-nav a { padding: 0.2em 0; line-height: 1.3; border-bottom: 0; }
+.agreements .psf-sidebar-widget p { color: #f2f4f6; }
+
+/* Status pills use the site's feedback palette. */
+.status-pill {
+  display: inline-block;
+  padding: 0.1em 0.6em;
+  border-radius: 6px;
+  font-family: SourceSansProBold, Arial, sans-serif;
+  font-size: 0.85em;
+  white-space: nowrap;
+  vertical-align: 0.1em;
+  line-height: 1.4;
+}
+.status-success { background-color: #d6e7bf; border: 1px solid #82b043; color: #3d5a1a; }
+.status-notice { background-color: #fff7dc; border: 1px solid #ffd343; color: #6b5200; }
+.status-error { background-color: #ecd4d7; border: 1px solid #b55863; color: #74333b; }
+.status-neutral { background-color: #e6e8ea; border: 1px solid #caccce; color: #444; }
+
+/* ---------- Tables ---------- */
+
+.agreements .table-scroll { overflow-x: auto; }
+.agreements .order-table { table-layout: fixed; min-width: 36em; }
+.agreements .order-table .status-pill { white-space: normal; }
+
+.agreements .order-table,
+.agreements .facts,
+.agreements .record { margin: 0.5em 0 1.3125em; }
+.agreements .order-table th,
+.agreements .order-table td,
+.agreements .facts th,
+.agreements .facts td,
+.agreements .record th,
+.agreements .record td { padding: 0.45em 0.6em; border-bottom: 1px solid #e6e8ea; }
+.agreements .order-table th,
+.agreements .order-table td { overflow-wrap: anywhere; }
+.agreements .order-table thead th,
+.agreements .facts thead th { background-color: #e6e8ea; color: #444; font-family: SourceSansProBold, Arial, sans-serif; width: auto; }
+.agreements .facts tbody th,
+.agreements .record th { width: 32%; color: #666; font-weight: normal; font-family: SourceSansProRegular, Arial, sans-serif; }
+.agreements .facts tfoot th,
+.agreements .facts tfoot td { font-family: SourceSansProBold, Arial, sans-serif; color: #222; border-bottom: 0; }
+.agreements .record caption { text-align: left; font-family: SourceSansProBold, Arial, sans-serif; color: #222; padding: 0.5em 0; }
+.agreements .order-table .ref { display: block; font-size: 0.8em; color: #666; font-family: monospace; }
+
+/* ---------- Document text ---------- */
+
+.agreements .terms-meta { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.5em 1.5em; color: #666; }
+.agreements .agreement-meta { color: #666; margin-bottom: 0.5em; }
+.agreements .agreement-text h1 { font-size: 1.5em; }
+.agreements .agreement-text h2 { font-size: 1.3125em; font-family: SourceSansProBold, Arial, sans-serif; margin-top: 1.75em; }
+.agreements .agreement-text .sub { margin-left: 1.75em; }
+.agreements .agreement-text .sub p { margin-bottom: 0.4em; }
+.agreements .agreement-text table th,
+.agreements .agreement-text table td { border: 1px solid #caccce; padding: 0.4em 0.6em; }
+.agreements .agreement-text table thead th { background-color: #e6e8ea; }
+.agreements .next-step .button { display: inline-block; margin-top: 0.5em; }
+.agreements .agreement-scroll {
+  max-height: 32em;
+  overflow: auto;
+  padding: 0 1.25em;
+  margin-bottom: 1.3125em;
+  border: 1px solid #caccce;
+  border-top: 5px solid #caccce;
+}
+.agreements .agreement-details summary { cursor: pointer; color: #3776ab; margin-bottom: 0.875em; }
+.agreements .agreement-block { border-top: 5px solid #caccce; margin-top: 1.75em; padding-top: 0.25em; }
+
+/* ---------- Forms ---------- */
+
+.agreements .help { color: #666; font-size: 0.9em; margin-bottom: 0.65em; }
+.agreements .req { color: #999; font-weight: normal; font-family: SourceSansProRegular, Arial, sans-serif; }
+.agreements .field label { color: #444; }
+.agreements .field input,
+.agreements .field textarea,
+.agreements .field select { margin-bottom: 0.25em; }
+.agreements .field .help { margin-bottom: 0.25em; }
+.agreements .field { margin-bottom: 0.65em; }
+.agreements .field-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 1em; }
+.agreements .has-error input,
+.agreements .has-error textarea { border-color: #b55863; }
+.agreements label.choice {
+  display: flex; gap: 0.6em; align-items: flex-start; margin: 0;
+  color: #444; font-weight: normal; cursor: pointer;
+}
+.agreements label.choice input { flex: none; margin: 0.3em 0 0; }
+.agreements .choice-help { color: #666; font-size: 0.9em; }
+.agreements .form-actions { display: flex; flex-wrap: wrap; gap: 1em; align-items: center; border-top: 5px solid #caccce; padding-top: 1em; margin-top: 1.75em; }
+.agreements .form-actions button { margin-bottom: 0; }
+.agreements textarea.markdown-editor { font-family: monospace; font-size: 0.9em; line-height: 1.45; width: 100%; }
+
+/* ---------- Signing and staff actions ---------- */
+
+.agreements .discard-form { margin-top: 0.5em; }
+.agreements .sign-form { margin-bottom: 1.3125em; }
+.agreements .sign-form .accept { padding: 0.75em; border: 1px solid #caccce; border-radius: 6px; margin-bottom: 0.875em; }
+.agreements .sign-form .accept.has-error { border-color: #b55863; }
+.agreements .signing-as p { margin-bottom: 0.35em; }
+.agreements .countersign,
+.agreements .staff-panel { border-top: 5px solid #ffd343; margin-top: 1.75em; padding-top: 0.25em; }
+.agreements .decline summary { cursor: pointer; color: #b55863; }
+.agreements .offline-signing details > summary { cursor: pointer; color: #3776ab; margin-bottom: 0.875em; }
+
+/* ---------- Revision and terms history ---------- */
+
+.agreements .history { list-style: none; margin: 0; padding: 0; }
+.agreements .history > li { border-bottom: 1px solid #e6e8ea; padding: 0.55em 0; }
+.agreements .history summary { cursor: pointer; }
+.agreements .diff { font-size: 0.8em; line-height: 1.4; max-height: 28em; overflow: auto; background-color: #f2f4f6; padding: 0.5em; white-space: pre-wrap; }
+.agreements .diff .add { background-color: #d6e7bf; display: block; }
+.agreements .diff .del { background-color: #ecd4d7; display: block; }
+.agreements .diff .hunk { color: #666; display: block; }
+
+@media (max-width: 800px) {
+  .agreements .field-row { grid-template-columns: minmax(0, 1fr); }
+}

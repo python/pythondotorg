@@ -18,7 +18,7 @@ The codebase behind [python.org](https://www.python.org). Built with Django, Pos
 make serve
 ```
 
-Then visit http://localhost:8000. See the [full setup docs](https://pythondotorg.readthedocs.io/en/latest/install.html) for prerequisites.
+Then visit http://localhost:8000. See the [full setup docs](https://pythondotorg.readthedocs.io/install.html) for prerequisites.
 
 ### Contributing
 
