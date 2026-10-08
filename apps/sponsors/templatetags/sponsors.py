@@ -97,9 +97,10 @@ def ideal_size(image, ideal_dimension):
     ideal_dimension = int(ideal_dimension)
     try:
         w, h = image.width, image.height
-    except FileNotFoundError:
-        # local dev doesn't have all images if DB is a copy from prod environment
-        # this is just a fallback to return ideal_dimension instead
+    except (FileNotFoundError, ValueError):
+        # FileNotFoundError: local dev doesn't have all images if DB is a copy from prod environment.
+        # ValueError: no file is associated with the field.
+        # Size as a square logo would be instead of erroring.
         w, h = ideal_dimension, ideal_dimension
 
     return int(w * math.sqrt((100 * ideal_dimension) / (w * h)))
