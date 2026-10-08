@@ -316,12 +316,6 @@ class AssetMixin:
         url = reverse("users:update_sponsorship_assets", args=[self.sponsor_benefit.sponsorship.pk])
         return url + f"?required_asset={self.pk}"
 
-    @property
-    def user_view_url(self):
-        """Return the URL for sponsors to view this provided asset."""
-        url = reverse("users:view_provided_sponsorship_assets", args=[self.sponsor_benefit.sponsorship.pk])
-        return url + f"?provided_asset={self.pk}"
-
 
 class RequiredAssetMixin(AssetMixin):
     """Mixin for required assets submitted by the user.
