@@ -1,9 +1,12 @@
 """Views for browsing elections, nominees, and managing nominations."""
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
+from django.core.mail import send_mail
 from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404
+from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.functional import cached_property
 from django.views import View
@@ -149,7 +152,26 @@ class NominationCreate(LoginRequiredMixin, NominationMixin, CreateView):
                 )
             form.instance.nominee = nominee
             form.instance.accepted = True
-        return super().form_valid(form)
+        response = super().form_valid(form)
+        if self.object.nominee_id:
+            self.send_self_nomination_email()
+        return response
+
+    def send_self_nomination_email(self):
+        """Email the self-nominator the same next steps shown on the submitted page."""
+        nomination = self.object
+        context = {
+            "nomination": nomination,
+            "submitted_url": self.request.build_absolute_uri(self.get_success_url()),
+            "nomination_create_url": self.request.build_absolute_uri(
+                reverse("nominations:nomination_create", kwargs={"election": nomination.election.slug})
+            ),
+            "user_nominations_url": self.request.build_absolute_uri(reverse("users:user_nominations_view")),
+        }
+        # subject can't contain newlines, thus strip() call
+        subject = render_to_string("nominations/email/self_nomination_received_subject.txt", context).strip()
+        message = render_to_string("nominations/email/self_nomination_received.txt", context)
+        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [self.request.user.email])
 
     def get_context_data(self, **kwargs):
         """Return context data for the nomination creation page."""

@@ -1,6 +1,7 @@
 import datetime
 
 from django.contrib.auth import get_user_model
+from django.core import mail
 from django.test import TestCase
 from django.urls import reverse
 
@@ -224,6 +225,32 @@ class NominationSubmittedTests(TestCase):
             reverse("nominations:nomination_submitted", kwargs={"election": self.election.slug, "pk": nomination.pk})
         )
         self.assertEqual(response.status_code, 403)
+
+
+class SelfNominationEmailTests(TestCase):
+    def setUp(self):
+        self.user = UserFactory(first_name="Grace", last_name="Hopper", email="grace@python.example")
+        self.client.force_login(self.user)
+        self.election = open_election("2026 Board Election")
+        self.create_url = reverse("nominations:nomination_create", kwargs={"election": self.election.slug})
+
+    def test_self_nomination_emails_candidate_next_steps(self):
+        self.client.post(self.create_url, nomination_payload(self_nomination="on", coc_acknowledged="on"))
+        nomination = Nomination.objects.get(election=self.election)
+
+        self.assertEqual(len(mail.outbox), 1)
+        email = mail.outbox[0]
+        self.assertEqual(email.to, ["grace@python.example"])
+        submitted_path = reverse(
+            "nominations:nomination_submitted", kwargs={"election": self.election.slug, "pk": nomination.pk}
+        )
+        self.assertIn(f"http://testserver{submitted_path}", email.body)
+        self.assertIn(f"http://testserver{self.create_url}", email.body)
+
+    def test_third_party_nomination_sends_no_email(self):
+        self.client.post(self.create_url, nomination_payload())
+        self.assertTrue(Nomination.objects.filter(election=self.election).exists())
+        self.assertEqual(mail.outbox, [])
 
 
 class NominationStatementPreviewTests(TestCase):
