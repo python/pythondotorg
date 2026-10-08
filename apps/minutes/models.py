@@ -1,7 +1,7 @@
 """Models for PSF board meeting minutes."""
 
 from django.conf import settings
-from django.db import models
+from django.db import models, transaction
 from django.db.models.signals import post_delete, post_save, pre_save
 from django.dispatch import receiver
 from django.urls import reverse
@@ -72,18 +72,23 @@ def remember_previous_url(sender, instance, **kwargs):
 @receiver(post_save, sender=Minutes)
 @receiver(post_delete, sender=Minutes)
 def purge_fastly_cache(sender, instance, **kwargs):
-    """Purge the minutes detail, list, and feed pages so edits show up immediately.
+    """Purge the minutes detail, list, and feed pages once the change is committed.
 
     Purges regardless of publish state so unpublished or deleted minutes disappear too.
+    Deferred to commit so a request racing the admin transaction can't re-cache stale content.
     """
     # Skip in fixtures
     if kwargs.get("raw", False):
         return
 
     current_url = instance.get_absolute_url()
-    purge_url(current_url)
+    urls = [current_url, reverse("minutes_list"), reverse("minutes_feed")]
     previous_url = getattr(instance, "previous_url", None)
     if previous_url and previous_url != current_url:
-        purge_url(previous_url)
-    purge_url(reverse("minutes_list"))
-    purge_url(reverse("minutes_feed"))
+        urls.append(previous_url)
+
+    def purge():
+        for url in urls:
+            purge_url(url)
+
+    transaction.on_commit(purge, using=kwargs["using"])

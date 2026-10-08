@@ -38,7 +38,8 @@ class MinutesPurgeTests(TestCase):
         return {c.args[0] for c in purge_url.call_args_list}
 
     def test_save_purges_detail_list_and_feed(self, purge_url):
-        Minutes.objects.create(date=datetime.date(2024, 3, 5), content="x", is_published=True)
+        with self.captureOnCommitCallbacks(execute=True):
+            Minutes.objects.create(date=datetime.date(2024, 3, 5), content="x", is_published=True)
         self.assertEqual(
             self.purged(purge_url),
             {
@@ -48,16 +49,22 @@ class MinutesPurgeTests(TestCase):
             },
         )
 
+    def test_no_purge_before_commit(self, purge_url):
+        with self.captureOnCommitCallbacks(execute=False) as callbacks:
+            Minutes.objects.create(date=datetime.date(2024, 3, 5), content="x", is_published=True)
+        purge_url.assert_not_called()
+        self.assertEqual(len(callbacks), 1)
+
     def test_changing_date_purges_old_and_new_detail(self, purge_url):
         minutes = Minutes.objects.create(date=datetime.date(2024, 3, 5), content="x", is_published=True)
-        purge_url.reset_mock()
         minutes.date = datetime.date(2024, 3, 6)
-        minutes.save()
+        with self.captureOnCommitCallbacks(execute=True):
+            minutes.save()
         self.assertIn("/psf/records/board/minutes/2024-03-05/", self.purged(purge_url))
         self.assertIn("/psf/records/board/minutes/2024-03-06/", self.purged(purge_url))
 
     def test_delete_purges_detail(self, purge_url):
         minutes = Minutes.objects.create(date=datetime.date(2024, 3, 5), content="x", is_published=True)
-        purge_url.reset_mock()
-        minutes.delete()
+        with self.captureOnCommitCallbacks(execute=True):
+            minutes.delete()
         self.assertIn("/psf/records/board/minutes/2024-03-05/", self.purged(purge_url))
