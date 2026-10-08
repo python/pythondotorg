@@ -69,3 +69,39 @@ class ProgramImportTests(TestCase):
             self.run_import(payload)
         self.assertFalse(Terms.objects.filter(slug="new-private-terms").exists())
         self.assertFalse(Program.objects.filter(slug="invalid-program").exists())
+
+    def test_terms_only_import_creates_terms_without_a_program(self) -> None:
+        programs = Program.objects.count()
+        payload = {
+            "terms": [
+                {
+                    "slug": "standalone-terms",
+                    "title": "Standalone terms",
+                    "is_public": False,
+                    "versions": [{"version": "2026-1", "markdown": "## Scope\n\nExample scope.", "notes": "First."}],
+                }
+            ]
+        }
+        self.run_import(payload)
+        terms = Terms.objects.get(slug="standalone-terms")
+        self.assertFalse(terms.is_public)
+        version = terms.versions.get()
+        self.assertEqual(
+            (version.version, version.markdown, version.notes), ("2026-1", "## Scope\n\nExample scope.", "First.")
+        )
+        self.assertEqual(Program.objects.count(), programs)
+        self.run_import(payload)
+        self.assertEqual(terms.versions.count(), 1)
+
+    def test_terms_only_import_keeps_versions_immutable(self) -> None:
+        terms = Terms.objects.get(slug=next(iter(self.program.catalog.agreements.values())).terms_slug)
+        version = cast("TermsVersion", terms.current_version)
+        payload = {"terms": [{"slug": terms.slug, "versions": [{"version": version.version, "markdown": "Changed"}]}]}
+        with self.assertRaises(CommandError):
+            self.run_import(payload)
+        self.assertEqual(TermsVersion.objects.get(pk=version.pk).markdown, version.markdown)
+
+    def test_object_without_program_or_terms_is_rejected(self) -> None:
+        for payload in ({}, {"other": []}):
+            with self.subTest(payload=payload), self.assertRaisesMessage(CommandError, "'program', 'terms', or both"):
+                self.run_import(payload)
