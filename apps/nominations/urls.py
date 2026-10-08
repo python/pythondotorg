@@ -34,6 +34,11 @@ urlpatterns = [
         name="nomination_detail",
     ),
     path(
+        "<slug:election>/<int:pk>/submitted/",
+        views.NominationSubmitted.as_view(),
+        name="nomination_submitted",
+    ),
+    path(
         "<slug:election>/<int:pk>/edit/",
         views.NominationEdit.as_view(),
         name="nomination_edit",

@@ -238,6 +238,29 @@ class NominationAccept(LoginRequiredMixin, NominationMixin, UserPassesTestMixin,
         return super().get_context_data(**kwargs)
 
 
+class NominationSubmitted(LoginRequiredMixin, NominationMixin, UserPassesTestMixin, DetailView):
+    """Show a self-nominator what happens next and how to gather supporting statements."""
+
+    model = Nomination
+    template_name_suffix = "_submitted"
+    raise_exception = True
+
+    def test_func(self):
+        """Only the candidate who self-nominated may view this page."""
+        nomination = self.get_object()
+        return (
+            nomination.nominator == self.request.user
+            and nomination.nominee is not None
+            and nomination.nominee.user == self.request.user
+        )
+
+    def get_queryset(self):
+        """Return the URL election's nominations with related objects."""
+        return Nomination.objects.filter(election__slug=self.kwargs["election"]).select_related(
+            "election__kind", "nominee__user", "nominator"
+        )
+
+
 class NominationStatementPreview(LoginRequiredMixin, View):
     """Render a nomination statement preview using the model field's own pipeline."""
 
