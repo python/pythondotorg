@@ -400,7 +400,7 @@ class SponsorshipApproveSignedForm(SponsorshipApproveForm):
 
     signed_contract = forms.FileField(
         label="Signed contract document",
-        help_text="Upload the final version of the signed contract (PDF or DOCX).",
+        help_text="Upload the final version of the signed contract (PDF or DOCX, at most 20 MB).",
         widget=forms.ClearableFileInput(attrs={"style": INPUT_STYLE, "accept": ".pdf,.docx"}),
         validators=[validate_signed_contract],
     )
@@ -418,6 +418,12 @@ class SponsorshipEditForm(forms.ModelForm):
             "package": forms.Select(attrs={"style": INPUT_STYLE}),
             "sponsorship_fee": forms.NumberInput(attrs={"style": INPUT_STYLE}),
             "year": forms.NumberInput(attrs={"style": "width:120px;" + INPUT_STYLE}),
+        }
+        help_texts = {
+            "package": (
+                "Changing the package does not change the benefits on this sponsorship; "
+                "it will be marked as a custom package so you can review the benefits."
+            ),
         }
 
     def __init__(self, *args, **kwargs):
@@ -527,7 +533,7 @@ class ExecuteContractForm(forms.Form):
 
     signed_document = forms.FileField(
         label="Signed contract document",
-        help_text="Upload the signed contract (PDF or DOCX).",
+        help_text="Upload the signed contract (PDF or DOCX, at most 20 MB).",
         widget=forms.ClearableFileInput(attrs={"style": INPUT_STYLE, "accept": ".pdf,.docx"}),
         validators=[validate_signed_contract],
     )

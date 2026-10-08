@@ -24,6 +24,9 @@ _MAX_ZIP_ENTRIES = 512
 _MAX_INSPECT_BYTES = 1024 * 1024
 _MAX_DOCUMENT_XML_BYTES = 16 * 1024 * 1024
 
+# Same ceiling as signed agreement copies (agreements.SignedCopy.MAX_BYTES).
+MAX_SIGNED_CONTRACT_BYTES = 20 * 1024 * 1024
+
 
 def _looks_like_pdf(file):
     """Return True if ``file`` starts with a PDF header and ends with an EOF marker."""
@@ -79,7 +82,12 @@ def _looks_like_docx(file):
 
 
 def validate_signed_contract(file):
-    """Check format signatures and restore stream position; this is not a malware scanner."""
+    """Check size and format signatures and restore stream position; this is not a malware scanner."""
+    size = getattr(file, "size", None)
+    if size is not None and size > MAX_SIGNED_CONTRACT_BYTES:
+        msg = f"Upload at most {MAX_SIGNED_CONTRACT_BYTES // (1024 * 1024)} MB."
+        raise ValidationError(msg)
+
     try:
         start = file.tell()
     except (OSError, AttributeError):

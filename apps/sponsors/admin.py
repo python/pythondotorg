@@ -369,11 +369,12 @@ class SponsorBenefitInline(admin.TabularInline):
     def get_queryset(self, request):
         """Filter benefits to only those matching the sponsorship's year."""
         # filters the available benefits by the benefits for the year of the sponsorship
-        match = request.resolver_match
-        sponsorship = self.parent_model.objects.get(pk=match.kwargs["object_id"])
-        year = sponsorship.year
-
-        return super().get_queryset(request).filter(sponsorship_benefit__year=year)
+        object_id = request.resolver_match.kwargs.get("object_id")
+        if object_id is None:
+            # The add view has no sponsorship yet, so there are no benefits to list.
+            return super().get_queryset(request).none()
+        sponsorship = self.parent_model.objects.get(pk=object_id)
+        return super().get_queryset(request).filter(sponsorship_benefit__year=sponsorship.year)
 
 
 class TargetableEmailBenefitsFilter(admin.SimpleListFilter):
@@ -646,7 +647,7 @@ class SponsorshipAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
             extra = ["start_date", "end_date", "package", "level_name", "sponsorship_fee"]
             readonly_fields.extend(extra)
 
-        if obj.year:
+        if obj and obj.year:
             readonly_fields.append("year")
 
         return readonly_fields

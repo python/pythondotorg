@@ -28,18 +28,14 @@
 
         {% if form.errors %}
         <div class="form-errors">
-            <strong>Please correct the errors below:</strong>
+            <strong>Please correct the errors below.</strong>
             <ul>
             {% for error in form.non_field_errors %}
                 <li>{{ error }}</li>
             {% endfor %}
-            {% for field, errors in form.errors.items %}
-                {% if field != '__all__' %}
-                {% for error in errors %}
-                <li>{{ field }}: {{ error }}</li>
-                {% endfor %}
-                {% endif %}
-            {% endfor %}
+            {% for field in form %}{% if field.errors %}
+                <li><a href="#{{ field.id_for_label }}">{{ field.label }}</a></li>
+            {% endif %}{% endfor %}
             </ul>
         </div>
         {% endif %}
@@ -116,7 +112,14 @@
                         b.addEventListener('click', function() {
                             target.value = fmt(date);
                             target.dispatchEvent(new Event('change'));
-                            if (target === startInput) renderEndBtns();
+                            if (target === startInput) {
+                                // Suggest a one-year term when no end date has been picked yet.
+                                if (!endInput.value) {
+                                    endInput.value = fmt(addYears(date, 1));
+                                    endInput.dispatchEvent(new Event('change'));
+                                }
+                                renderEndBtns();
+                            }
                         });
                         return b;
                     }
@@ -174,10 +177,12 @@
                     <div class="form-group">
                         <label for="id_package">Package</label>
                         {{ form.package }}
+                        {% if form.package.errors %}<div class="field-errors">{{ form.package.errors.0 }}</div>{% endif %}
                     </div>
                     <div class="form-group">
                         <label for="id_sponsorship_fee">Sponsorship Fee ($)</label>
                         {{ form.sponsorship_fee }}
+                        {% if form.sponsorship_fee.errors %}<div class="field-errors">{{ form.sponsorship_fee.errors.0 }}</div>{% endif %}
                     </div>
                 </div>
 
@@ -185,6 +190,7 @@
                     {{ form.renewal }} Renewal sponsorship
                 </label>
                 {% if form.renewal.help_text %}<span class="helptext" style="display:block;font-size:12px;color:#888;margin-top:4px;">{{ form.renewal.help_text }}</span>{% endif %}
+                {% if form.renewal.errors %}<div class="field-errors">{{ form.renewal.errors.0 }}</div>{% endif %}
             </fieldset>
 
             <fieldset class="manage-fieldset" style="margin-top:16px;">

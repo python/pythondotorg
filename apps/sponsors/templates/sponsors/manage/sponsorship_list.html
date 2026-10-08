@@ -8,13 +8,15 @@
     <div class="manage-filter-bar" style="padding:12px 20px;">
         <form method="get" style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;">
             {% if filter_status %}<input type="hidden" name="status" value="{{ filter_status }}">{% endif %}
+            {% if filter_sponsor %}<input type="hidden" name="sponsor" value="{{ filter_sponsor.pk }}">{% endif %}
+            {% if current_sort %}<input type="hidden" name="sort" value="{{ current_sort }}">{% endif %}
             <!-- Status pills inline -->
             <div style="display:flex;gap:4px;align-items:center;margin-right:8px;">
-                <a href="{% url 'manage_sponsorships' %}{% if filter_year %}?year={{ filter_year }}{% endif %}" class="year-pill {% if not filter_status %}active{% endif %}" style="padding:4px 10px;font-size:12px;">All</a>
-                <a href="?status=applied{% if filter_year %}&year={{ filter_year }}{% endif %}" class="year-pill {% if filter_status == 'applied' %}active{% endif %}" style="padding:4px 10px;font-size:12px;">Applied {{ count_applied }}</a>
-                <a href="?status=approved{% if filter_year %}&year={{ filter_year }}{% endif %}" class="year-pill {% if filter_status == 'approved' %}active{% endif %}" style="padding:4px 10px;font-size:12px;">Approved {{ count_approved }}</a>
-                <a href="?status=finalized{% if filter_year %}&year={{ filter_year }}{% endif %}" class="year-pill {% if filter_status == 'finalized' %}active{% endif %}" style="padding:4px 10px;font-size:12px;">Finalized {{ count_finalized }}</a>
-                <a href="?status=rejected{% if filter_year %}&year={{ filter_year }}{% endif %}" class="year-pill {% if filter_status == 'rejected' %}active{% endif %}" style="padding:4px 10px;font-size:12px;">Rejected {{ count_rejected }}</a>
+                <a href="{% url 'manage_sponsorships' %}{% if pill_query %}?{{ pill_query }}{% endif %}" class="year-pill {% if not filter_status %}active{% endif %}" style="padding:4px 10px;font-size:12px;">All</a>
+                <a href="?status=applied{% if pill_query %}&amp;{{ pill_query }}{% endif %}" class="year-pill {% if filter_status == 'applied' %}active{% endif %}" style="padding:4px 10px;font-size:12px;">Applied {{ count_applied }}</a>
+                <a href="?status=approved{% if pill_query %}&amp;{{ pill_query }}{% endif %}" class="year-pill {% if filter_status == 'approved' %}active{% endif %}" style="padding:4px 10px;font-size:12px;">Approved {{ count_approved }}</a>
+                <a href="?status=finalized{% if pill_query %}&amp;{{ pill_query }}{% endif %}" class="year-pill {% if filter_status == 'finalized' %}active{% endif %}" style="padding:4px 10px;font-size:12px;">Finalized {{ count_finalized }}</a>
+                <a href="?status=rejected{% if pill_query %}&amp;{{ pill_query }}{% endif %}" class="year-pill {% if filter_status == 'rejected' %}active{% endif %}" style="padding:4px 10px;font-size:12px;">Rejected {{ count_rejected }}</a>
             </div>
             <div class="filter-field">
                 <select name="year" aria-label="Year" onchange="this.form.submit()">
@@ -27,14 +29,19 @@
             <div class="filter-field">
                 <input type="text" name="search" id="live-search" aria-label="Search sponsorships" placeholder="Search..." value="{{ filter_search }}" autocomplete="off" style="width:140px;">
             </div>
+            {% if filter_sponsor %}
+            <div class="filter-field">
+                <span class="tag tag-blue" style="font-size:12px;">Sponsor: {{ filter_sponsor.name }}</span>
+            </div>
+            {% endif %}
             <div class="filter-actions">
                 <button type="submit" class="btn btn-sm btn-secondary">Go</button>
-                {% if filter_year or filter_search or filter_status %}
+                {% if filter_year or filter_search or filter_status or filter_sponsor %}
                 <a href="{% url 'manage_sponsorships' %}" class="btn btn-sm btn-secondary">Clear</a>
                 {% endif %}
             </div>
             <div style="margin-left:auto;display:flex;gap:6px;">
-                <a href="{% url 'manage_sponsorship_export' %}{% if filter_status or filter_year or filter_search %}?{% endif %}{% if filter_status %}status={{ filter_status }}{% endif %}{% if filter_status and filter_year %}&{% endif %}{% if filter_year %}year={{ filter_year }}{% endif %}{% if filter_year and filter_search or filter_status and filter_search %}&{% endif %}{% if filter_search %}search={{ filter_search }}{% endif %}" class="btn btn-secondary">CSV</a>
+                <a href="{% url 'manage_sponsorship_export' %}{% if filter_query %}?{{ filter_query }}{% endif %}" class="btn btn-secondary">CSV</a>
                 <a href="{% url 'manage_composer' %}?new=1" class="btn btn-primary">+ Sponsorship</a>
                 <a href="{% url 'manage_sponsor_create' %}" class="btn btn-secondary" style="border:1px solid #ccc !important;">+ Sponsor</a>
             </div>
@@ -44,6 +51,7 @@
     {% if sponsorships %}
     <form method="post" action="{% url 'manage_bulk_action' %}" id="bulk-action-form">
         {% csrf_token %}
+        <input type="hidden" name="return_query" value="{{ return_query }}">
         <!-- Bulk action bar -->
         <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
             <select name="action" class="manage-bulk-select" aria-label="Bulk action">
@@ -56,19 +64,19 @@
             <span style="font-size:11px;color:#999;" id="bulk-count">0 selected</span>
         </div>
 
-    <table class="manage-table">
+    <table class="manage-table" data-server-sort>
         <thead>
             <tr>
                 <th style="width:30px;text-align:center;">
                     <input type="checkbox" id="select-all" title="Select all">
                 </th>
-                <th style="width:25%;">Sponsor</th>
-                <th>Package</th>
-                <th style="text-align:right;">Fee</th>
-                <th>Year</th>
-                <th style="text-align:center;">Status</th>
-                <th>Applied</th>
-                <th>Period</th>
+                <th style="width:25%;" aria-sort="{% if sort_states.sponsor == 'asc' %}ascending{% elif sort_states.sponsor == 'desc' %}descending{% else %}none{% endif %}"><a href="{{ sort_urls.sponsor }}" class="sort-link">Sponsor{% if sort_states.sponsor == 'asc' %} &#9650;{% elif sort_states.sponsor == 'desc' %} &#9660;{% endif %}</a></th>
+                <th aria-sort="{% if sort_states.package == 'asc' %}ascending{% elif sort_states.package == 'desc' %}descending{% else %}none{% endif %}"><a href="{{ sort_urls.package }}" class="sort-link">Package{% if sort_states.package == 'asc' %} &#9650;{% elif sort_states.package == 'desc' %} &#9660;{% endif %}</a></th>
+                <th style="text-align:right;" aria-sort="{% if sort_states.fee == 'asc' %}ascending{% elif sort_states.fee == 'desc' %}descending{% else %}none{% endif %}"><a href="{{ sort_urls.fee }}" class="sort-link">Fee{% if sort_states.fee == 'asc' %} &#9650;{% elif sort_states.fee == 'desc' %} &#9660;{% endif %}</a></th>
+                <th aria-sort="{% if sort_states.year == 'asc' %}ascending{% elif sort_states.year == 'desc' %}descending{% else %}none{% endif %}"><a href="{{ sort_urls.year }}" class="sort-link">Year{% if sort_states.year == 'asc' %} &#9650;{% elif sort_states.year == 'desc' %} &#9660;{% endif %}</a></th>
+                <th style="text-align:center;" aria-sort="{% if sort_states.status == 'asc' %}ascending{% elif sort_states.status == 'desc' %}descending{% else %}none{% endif %}"><a href="{{ sort_urls.status }}" class="sort-link">Status{% if sort_states.status == 'asc' %} &#9650;{% elif sort_states.status == 'desc' %} &#9660;{% endif %}</a></th>
+                <th aria-sort="{% if sort_states.applied == 'asc' %}ascending{% elif sort_states.applied == 'desc' %}descending{% else %}none{% endif %}"><a href="{{ sort_urls.applied }}" class="sort-link">Applied{% if sort_states.applied == 'asc' %} &#9650;{% elif sort_states.applied == 'desc' %} &#9660;{% endif %}</a></th>
+                <th aria-sort="{% if sort_states.period == 'asc' %}ascending{% elif sort_states.period == 'desc' %}descending{% else %}none{% endif %}"><a href="{{ sort_urls.period }}" class="sort-link">Period{% if sort_states.period == 'asc' %} &#9650;{% elif sort_states.period == 'desc' %} &#9660;{% endif %}</a></th>
                 <th style="width:50px;"></th>
             </tr>
         </thead>
@@ -127,11 +135,11 @@
     {% if is_paginated %}
     <div style="display:flex;justify-content:center;gap:4px;margin-top:20px;">
         {% if page_obj.has_previous %}
-        <a href="?page={{ page_obj.previous_page_number }}{% if filter_status %}&status={{ filter_status }}{% endif %}{% if filter_year %}&year={{ filter_year }}{% endif %}{% if filter_search %}&search={{ filter_search }}{% endif %}" class="btn btn-sm btn-secondary">&larr; Prev</a>
+        <a href="?page={{ page_obj.previous_page_number }}{% if filter_query %}&amp;{{ filter_query }}{% endif %}" class="btn btn-sm btn-secondary">&larr; Prev</a>
         {% endif %}
         <span style="padding:6px 12px;font-size:13px;color:#555;">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
         {% if page_obj.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}{% if filter_status %}&status={{ filter_status }}{% endif %}{% if filter_year %}&year={{ filter_year }}{% endif %}{% if filter_search %}&search={{ filter_search }}{% endif %}" class="btn btn-sm btn-secondary">Next &rarr;</a>
+        <a href="?page={{ page_obj.next_page_number }}{% if filter_query %}&amp;{{ filter_query }}{% endif %}" class="btn btn-sm btn-secondary">Next &rarr;</a>
         {% endif %}
     </div>
     {% endif %}
@@ -183,11 +191,13 @@ function validateBulkAction() {
     return true;
 }
 
-// Live search filtering
+// Live search: narrows the rows on this page while typing; Enter submits the server search over all results.
 (function() {
     var input = document.getElementById('live-search');
     if (!input) return;
     var rows = document.querySelectorAll('tr.sp-row');
+    if (!rows.length) return;
+    var multiPage = {% if is_paginated %}true{% else %}false{% endif %};
     var debounceTimer;
 
     input.addEventListener('input', function() {
@@ -204,30 +214,23 @@ function validateBulkAction() {
             // Update empty state
             var emptyRow = document.getElementById('live-search-empty');
             if (visible === 0 && q) {
+                var text = (multiPage ? 'No sponsorships on this page match \u201C' : 'No sponsorships here match \u201C')
+                    + q + '\u201D. Press Enter to search all sponsorships.';
                 if (!emptyRow) {
                     emptyRow = document.createElement('tr');
                     emptyRow.id = 'live-search-empty';
                     var td = document.createElement('td');
                     td.setAttribute('colspan', '9');
                     td.style.cssText = 'text-align:center;padding:20px;color:#999;';
-                    td.textContent = 'No sponsorships match \u201C' + q + '\u201D';
                     emptyRow.appendChild(td);
                     rows[0].parentNode.appendChild(emptyRow);
-                } else {
-                    emptyRow.firstChild.textContent = 'No sponsorships match \u201C' + q + '\u201D';
-                    emptyRow.style.display = '';
                 }
+                emptyRow.firstChild.textContent = text;
+                emptyRow.style.display = '';
             } else if (emptyRow) {
                 emptyRow.style.display = 'none';
             }
         }, 100);
-    });
-
-    // Prevent form submit on Enter in search field — just filter live
-    input.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-        }
     });
 })();
 </script>

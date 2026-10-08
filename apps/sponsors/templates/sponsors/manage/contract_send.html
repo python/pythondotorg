@@ -59,7 +59,11 @@
                     {% for email in sponsor_emails %}
                     <div style="font-size:12px;padding:4px 8px;background:#f7f8fa;border-radius:4px;margin-bottom:4px;">{{ email }}</div>
                     {% empty %}
-                    <div style="font-size:12px;color:#999;">No verified emails found.</div>
+                    <div style="font-size:12px;color:#777;line-height:1.5;">
+                        No verified sponsor emails. Contracts are only emailed to sponsor contacts whose address belongs to a python.org account with a verified email.
+                        {% if contact_count %}This sponsor has {{ contact_count }} contact{{ contact_count|pluralize }}, but none with a verified python.org account yet: ask them to sign in and verify their email address.{% else %}This sponsor has no contacts yet.{% endif %}
+                        {% if sponsorship.sponsor %}<a href="{% url 'manage_contact_create' sponsorship.sponsor.pk %}">Add a contact</a> or <a href="{% url 'manage_sponsor_edit' sponsorship.sponsor.pk %}?from_sponsorship={{ sponsorship.pk }}">review contacts</a>. You can still send the contract for internal review.{% endif %}
+                    </div>
                     {% endfor %}
                 </div>
                 {% if sponsor_emails %}

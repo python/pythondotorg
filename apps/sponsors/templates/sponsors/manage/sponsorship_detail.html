@@ -75,14 +75,16 @@
         {% if can_reject %}
         <button type="button" class="btn btn-danger" onclick="document.getElementById('reject-confirm').classList.toggle('visible')">Reject</button>
         {% endif %}
-        {% if can_rollback and sponsorship.status != 'applied' %}
+        {% if can_rollback %}
         <button type="button" class="btn btn-secondary" onclick="document.getElementById('rollback-confirm').classList.toggle('visible')">Rollback to Edit</button>
+        {% elif rollback_hint %}
+        <span style="font-size:11px;color:#777;max-width:220px;" title="Rollback to Edit is unavailable">{{ rollback_hint }}</span>
         {% endif %}
         {% if can_create_renewal %}
         <a href="{% url 'manage_composer' %}?new=1&sponsor_id={{ sponsorship.sponsor_id }}&renewal=1" class="btn btn-gold" title="Create a renewal sponsorship for this sponsor">+ Renewal</a>
         {% endif %}
         <a href="{% url 'manage_sponsorship_notify' sponsorship.pk %}" class="btn btn-secondary">Notify</a>
-        <a href="{% url 'manage_sponsorship_export' %}?search={{ sponsorship.sponsor.name|urlencode }}" class="btn btn-secondary" style="font-size:11px;">CSV</a>
+        <a href="{% url 'manage_sponsorship_export' %}?selected_ids={{ sponsorship.pk }}" class="btn btn-secondary" style="font-size:11px;" title="Export this sponsorship as CSV">CSV</a>
         <a href="{% url 'manage_sponsorship_export_assets' sponsorship.pk %}" class="btn btn-secondary" style="font-size:11px;">Assets</a>
         {% if sponsorship.sponsor %}<a href="{{ sponsorship.detail_url }}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary" style="font-size:11px;" title="View what the sponsor sees">Sponsor View</a>{% endif %}
         {% if can_lock %}
@@ -105,12 +107,13 @@
 <div id="reject-confirm" class="confirm-modal">
     <div style="flex:1;margin-bottom:12px;">
         <strong style="color:#e74c3c;">Reject this sponsorship?</strong>
+        <p style="font-size:13px;color:#777;margin:4px 0 0;">Both options reject immediately. &ldquo;Reject &amp; compose email&rdquo; then opens the email composer; nothing is emailed until you send it there.</p>
     </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;">
         <form method="post" action="{% url 'manage_sponsorship_reject' sponsorship.pk %}" style="display:inline;">
             {% csrf_token %}
             <input type="hidden" name="action" value="reject_notify">
-            <button type="submit" class="btn btn-danger">Reject &amp; Compose Email</button>
+            <button type="submit" class="btn btn-danger">Reject now &amp; compose email</button>
         </form>
         <form method="post" action="{% url 'manage_sponsorship_reject' sponsorship.pk %}" style="display:inline;">
             {% csrf_token %}
@@ -123,7 +126,7 @@
 {% endif %}
 
 <!-- Inline rollback confirmation -->
-{% if can_rollback and sponsorship.status != 'applied' %}
+{% if can_rollback %}
 <div id="rollback-confirm" class="confirm-modal">
     <div style="display:flex;align-items:center;gap:12px;">
         <div style="flex:1;">
@@ -371,7 +374,7 @@
                     <button type="submit" class="btn btn-sm btn-secondary">Re-draft</button>
                 </form>
                 {% endif %}
-                {% if sponsorship.open_for_editing %}<a href="#" onclick="event.preventDefault();document.getElementById('regenerate-confirm').style.display='block';" style="font-size:12px;color:#b8860b;">Regenerate</a>{% endif %}
+                {% if can_regenerate %}<a href="#" onclick="event.preventDefault();document.getElementById('regenerate-confirm').style.display='block';" style="font-size:12px;color:#b8860b;" title="Replace this contract with a new draft built from the current sponsorship">Regenerate</a>{% endif %}
             </div>
         </div>
 
@@ -384,21 +387,21 @@
             <a href="{% url 'manage_contract_preview' sponsorship.pk %}?format=docx" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:#f7f8fa;border:1px solid #e0e0e0;border-radius:4px;font-size:12px;color:#333;text-decoration:none;">
                 <span style="color:#3776ab;font-weight:700;">DOCX</span> Preview
             </a>
-            <!-- Stored sent documents -->
+            <!-- Stored final documents: "Sent" only once they were emailed to the sponsor -->
             {% if contract.document %}
             <a href="{{ contract.document.url }}" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:#fff8dc;border:1px solid #ffd43b;border-radius:4px;font-size:12px;color:#333;text-decoration:none;">
-                <span style="color:#e74c3c;font-weight:700;">PDF</span> Sent
+                <span style="color:#e74c3c;font-weight:700;">PDF</span> {% if contract.sent_on %}Sent{% else %}Generated{% endif %}
             </a>
             {% endif %}
             {% if contract.document_docx %}
             <a href="{{ contract.document_docx.url }}" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:#fff8dc;border:1px solid #ffd43b;border-radius:4px;font-size:12px;color:#333;text-decoration:none;">
-                <span style="color:#3776ab;font-weight:700;">DOCX</span> Sent
+                <span style="color:#3776ab;font-weight:700;">DOCX</span> {% if contract.sent_on %}Sent{% else %}Generated{% endif %}
             </a>
             {% endif %}
             <!-- Signed document -->
             {% if contract.signed_document %}
             <a href="{{ contract.signed_document.url }}" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:#e8f5e9;border:1px solid #a5d6a7;border-radius:4px;font-size:12px;color:#2e7d32;text-decoration:none;font-weight:600;">
-                <span style="font-weight:700;">PDF</span> Signed Contract
+                <span style="font-weight:700;">{{ signed_document_kind }}</span> Signed Contract
             </a>
             {% endif %}
         </div>

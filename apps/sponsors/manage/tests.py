@@ -1116,7 +1116,7 @@ class SponsorshipExportViewTests(SponsorshipReviewTestBase):
 
     def _parse_csv(self, response):
         """Parse a CSV response into a list of dicts."""
-        content = response.content.decode("utf-8")
+        content = response.content.decode("utf-8-sig")
         reader = csv.DictReader(io.StringIO(content))
         return list(reader)
 
@@ -1134,7 +1134,7 @@ class SponsorshipExportViewTests(SponsorshipReviewTestBase):
     def test_export_csv_content_type(self):
         response = self.client.get(reverse("manage_sponsorship_export"))
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response["Content-Type"], "text/csv")
+        self.assertEqual(response["Content-Type"], "text/csv; charset=utf-8")
         self.assertIn("attachment", response["Content-Disposition"])
         self.assertIn("sponsorships.csv", response["Content-Disposition"])
 
@@ -1202,7 +1202,7 @@ class SponsorshipExportViewTests(SponsorshipReviewTestBase):
             {"selected_ids": [self.sponsorship.pk]},
         )
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response["Content-Type"], "text/csv")
+        self.assertEqual(response["Content-Type"], "text/csv; charset=utf-8")
         rows = self._parse_csv(response)
         self.assertEqual(len(rows), 1)
         self.assertEqual(rows[0]["Sponsor Name"], "Acme Corp")
@@ -1233,7 +1233,7 @@ class BulkActionDispatchViewTests(SponsorshipReviewTestBase):
             {"action": "export_csv", "selected_ids": [self.sponsorship.pk]},
         )
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response["Content-Type"], "text/csv")
+        self.assertEqual(response["Content-Type"], "text/csv; charset=utf-8")
         content = response.content.decode("utf-8")
         self.assertIn("Acme Corp", content)
 

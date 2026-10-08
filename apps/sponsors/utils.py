@@ -17,3 +17,9 @@ def file_from_storage(filename, mode, storage):
         file = storage.open(filename, mode)
 
     return file
+
+
+def with_article(word):
+    """Prefix ``word`` with the indefinite article that reads correctly ("an Approved", "a Draft")."""
+    article = "an" if word and word[0].lower() in "aeiou" else "a"
+    return f"{article} {word}"

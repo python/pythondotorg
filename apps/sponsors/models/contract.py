@@ -16,7 +16,7 @@ from ordered_model.models import OrderedModel
 from apps.sponsors.exceptions import InvalidStatusError
 from apps.sponsors.models.sponsorship import Sponsorship
 from apps.sponsors.storage import get_contract_storage
-from apps.sponsors.utils import file_from_storage
+from apps.sponsors.utils import file_from_storage, with_article
 
 
 class LegalClause(OrderedModel):
@@ -230,7 +230,7 @@ class Contract(models.Model):
     def set_final_version(self, pdf_file, docx_file=None):
         """Store the final PDF/DOCX files and transition to awaiting signature."""
         if self.AWAITING_SIGNATURE not in self.next_status:
-            msg = f"Can't send a {self.get_status_display()} contract."
+            msg = f"Can't send {with_article(self.get_status_display())} contract."
             raise InvalidStatusError(msg)
 
         # Slashes would create nested directories; clamp the name so the stored path
@@ -263,7 +263,7 @@ class Contract(models.Model):
     def execute(self, commit=True, force=False):
         """Mark the contract as executed and finalize the sponsorship."""
         if not force and self.EXECUTED not in self.next_status:
-            msg = f"Can't execute a {self.get_status_display()} contract."
+            msg = f"Can't execute {with_article(self.get_status_display())} contract."
             raise InvalidStatusError(msg)
 
         self.status = self.EXECUTED
@@ -277,7 +277,7 @@ class Contract(models.Model):
     def nullify(self, commit=True):
         """Nullify the contract, preventing further use."""
         if self.NULLIFIED not in self.next_status:
-            msg = f"Can't nullify a {self.get_status_display()} contract."
+            msg = f"Can't nullify {with_article(self.get_status_display())} contract."
             raise InvalidStatusError(msg)
 
         self.status = self.NULLIFIED
@@ -288,13 +288,14 @@ class Contract(models.Model):
     def redraft(self, commit=True):
         """Return a nullified contract to draft, deleting its stale finalized documents."""
         if self.DRAFT not in self.next_status:
-            msg = f"Can't re-draft a {self.get_status_display()} contract."
+            msg = f"Can't re-draft {with_article(self.get_status_display())} contract."
             raise InvalidStatusError(msg)
 
         stale_files = [(f.storage, f.name) for f in (self.document, self.document_docx) if f]
         self.status = self.DRAFT
         self.document = ""
         self.document_docx = ""
+        self.sent_on = None
         if commit:
             self.save()
             # Delete after commit so a rolled-back redraft never references missing files.

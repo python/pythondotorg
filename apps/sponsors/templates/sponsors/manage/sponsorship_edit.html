@@ -18,16 +18,19 @@
     <div class="manage-form">
         <h2 style="font-size:18px;font-weight:700;color:#1a1a2e;margin:0 0 4px;">Edit Sponsorship</h2>
         <p style="font-size:13px;color:#777;margin:0 0 20px;">
-            {{ object.sponsor.name }} &middot; {{ object.get_status_display }}
+            {{ object.sponsor.name }} &middot; {{ object.level_name|default:"No package" }} &middot; ${{ object.sponsorship_fee|default:"0"|floatformat:"0" }} &middot; {{ object.get_status_display }}
         </p>
 
         {% if form.errors %}
         <div class="form-errors">
-            <strong>Please correct the errors below:</strong>
+            <strong>Please correct the errors below.</strong>
             <ul>
-            {% for field, errors in form.errors.items %}
-                {% for error in errors %}<li>{{ field }}: {{ error }}</li>{% endfor %}
+            {% for error in form.non_field_errors %}
+                <li>{{ error }}</li>
             {% endfor %}
+            {% for field in form %}{% if field.errors %}
+                <li><a href="#{{ field.id_for_label }}">{{ field.label }}</a></li>
+            {% endif %}{% endfor %}
             </ul>
         </div>
         {% endif %}
@@ -40,16 +43,20 @@
                 <div class="form-group">
                     <label for="id_package">Package</label>
                     {{ form.package }}
+                    {% if form.package.help_text %}<span class="helptext">{{ form.package.help_text }}</span>{% endif %}
+                    {% if form.package.errors %}<div class="field-errors">{{ form.package.errors.0 }}</div>{% endif %}
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
                         <label for="id_sponsorship_fee">Sponsorship Fee ($)</label>
                         {{ form.sponsorship_fee }}
+                        {% if form.sponsorship_fee.errors %}<div class="field-errors">{{ form.sponsorship_fee.errors.0 }}</div>{% endif %}
                     </div>
                     <div class="form-group">
                         <label for="id_year">Year</label>
                         {{ form.year }}
+                        {% if form.year.errors %}<div class="field-errors">{{ form.year.errors.0 }}</div>{% endif %}
                     </div>
                 </div>
             </fieldset>

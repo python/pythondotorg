@@ -220,7 +220,7 @@ class SponsorshipReviewTestBase(ManageRenderingRegressionTestBase):
         )
 
     def _parse_csv(self, response):
-        content = response.content.decode("utf-8")
+        content = response.content.decode("utf-8-sig")
         reader = csv.DictReader(io.StringIO(content))
         return list(reader)
 

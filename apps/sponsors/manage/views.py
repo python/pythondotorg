@@ -4,24 +4,26 @@ Restricted to active Sponsorship Admin group members and active superusers.
 """
 
 import contextlib
+import copy
 import csv
 import datetime
 import io
 import logging
 import zipfile
 from pathlib import Path
-from shutil import copyfileobj
 from smtplib import SMTPException
 
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.admin.models import ADDITION, CHANGE
 from django.core.mail import EmailMessage
 from django.db import transaction
-from django.db.models import Count, Prefetch, Q, Sum
-from django.http import HttpResponse
+from django.db.models import Count, F, Prefetch, Q, Sum
+from django.http import HttpResponse, QueryDict
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone as tz
+from django.utils.http import urlencode
 from django.utils.text import slugify
 from django.views import View
 from django.views.generic import CreateView, DeleteView, DetailView, FormView, ListView, TemplateView, UpdateView
@@ -70,6 +72,8 @@ from apps.sponsors.models import (
     TieredBenefitConfiguration,
 )
 from apps.sponsors.models.enums import AssetsRelatedTo
+from apps.sponsors.notifications import add_log_entry
+from apps.sponsors.utils import with_article
 from pydotorg.mixins import GroupRequiredMixin, LoginRequiredMixin
 
 logger = logging.getLogger(__name__)
@@ -956,6 +960,47 @@ class CurrentYearUpdateView(SponsorshipAdminRequiredMixin, UpdateView):
 # ── Sponsorship Review Views ──────────────────────────────────────────
 
 
+def _redirect_unless_approvable(request, sponsorship):
+    """Return a redirect to the detail page with an error when the sponsorship can't be approved."""
+    if Sponsorship.APPROVED in sponsorship.next_status:
+        return None
+    messages.error(request, f"Can't approve {with_article(sponsorship.get_status_display())} sponsorship.")
+    return redirect(reverse("manage_sponsorship_detail", args=[sponsorship.pk]))
+
+
+def _rollback_blocker(sponsorship, contract):
+    """Explain why ``rollback_to_editing`` would fail, or return None when it can succeed."""
+    if sponsorship.status not in (Sponsorship.APPLIED, Sponsorship.APPROVED, Sponsorship.REJECTED):
+        return f"Can't rollback to edit {with_article(sponsorship.get_status_display())} sponsorship."
+    if contract is not None and contract.status == Contract.AWAITING_SIGNATURE:
+        return "To roll back to editing, nullify and then re-draft the contract first."
+    if contract is not None and not contract.is_draft:
+        return "To roll back to editing, re-draft the contract first."
+    return None
+
+
+def _regenerate_blocker(sponsorship, contract):
+    """Explain why the contract can't be regenerated, or return None when it can."""
+    if contract is not None and contract.status == Contract.EXECUTED:
+        return "An executed contract cannot be regenerated."
+    if not sponsorship.open_for_editing:
+        return "This sponsorship is locked. Unlock it to regenerate the contract."
+    return None
+
+
+def _executable_contract_or_redirect(request, sponsorship):
+    """Return ``(contract, None)`` when the contract can be executed, else ``(None, redirect)`` with an error."""
+    try:
+        contract = sponsorship.contract
+    except Contract.DoesNotExist:
+        messages.error(request, "No contract exists.")
+        return None, redirect(reverse("manage_sponsorship_detail", args=[sponsorship.pk]))
+    if Contract.EXECUTED not in contract.next_status:
+        messages.error(request, f"Can't execute {with_article(contract.get_status_display())} contract.")
+        return None, redirect(reverse("manage_sponsorship_detail", args=[sponsorship.pk]))
+    return contract, None
+
+
 class SponsorshipListView(SponsorshipAdminRequiredMixin, ListView):
     """List sponsorships with filters for status, year, and search."""
 
@@ -964,23 +1009,40 @@ class SponsorshipListView(SponsorshipAdminRequiredMixin, ListView):
     paginate_by = 30
 
     def get_queryset(self):
-        """Return sponsorships filtered by status, year, and search term."""
-        self.filter_status = self.request.GET.get("status", "")
-        self.filter_year = self.request.GET.get("year", "")
-        self.filter_search = self.request.GET.get("search", "")
-
+        """Return sponsorships filtered by status, year, sponsor, and search term, in the requested order."""
+        self.filters = _sponsorship_filter_params(self.request)
         return _filtered_sponsorship_queryset(self.request)
 
+    def paginate_queryset(self, queryset, page_size):
+        """Clamp malformed or out-of-range page numbers instead of raising 404."""
+        paginator = self.get_paginator(queryset, page_size, allow_empty_first_page=True)
+        page = paginator.get_page(self.request.GET.get(self.page_kwarg))
+        return paginator, page, page.object_list, page.has_other_pages()
+
     def get_context_data(self, **kwargs):
-        """Return context with filter form and status counts."""
+        """Return context with filter form, encoded filter links, sort links, and status counts."""
         context = super().get_context_data(**kwargs)
+        filters = self.filters
         context["filter_form"] = SponsorshipFilterForm(self.request.GET)
-        context["filter_status"] = self.filter_status
-        context["filter_year"] = self.filter_year
-        context["filter_search"] = self.filter_search
+        context["filter_status"] = filters["status"]
+        context["filter_year"] = "" if filters["year"] == "all" else filters["year"]
+        context["filter_search"] = filters["search"]
+        sponsor_pk = _int_or_none(filters["sponsor"])
+        context["filter_sponsor"] = Sponsor.objects.filter(pk=sponsor_pk).first() if sponsor_pk else None
+        context["current_sort"] = filters["sort"]
+        context["filter_query"] = _sponsorship_filter_query(filters)
+        context["pill_query"] = _sponsorship_filter_query(filters, exclude=("status",))
+        context["sort_urls"], context["sort_states"] = _sponsorship_sort_links(filters)
+        page_obj = context.get("page_obj")
+        context["return_query"] = _sponsorship_filter_query(filters, page=page_obj.number if page_obj else None)
         context["today"] = tz.now().date()
-        # Individual count vars for template
-        status_counts = dict(Sponsorship.objects.values_list("status").annotate(count=Count("id")))
+        # Pill counts follow every active filter except status itself.
+        status_counts = dict(
+            _filtered_sponsorship_queryset(self.request, ignore_status=True)
+            .order_by()
+            .values_list("status")
+            .annotate(count=Count("id"))
+        )
         context["count_applied"] = status_counts.get(Sponsorship.APPLIED, 0)
         context["count_approved"] = status_counts.get(Sponsorship.APPROVED, 0)
         context["count_finalized"] = status_counts.get(Sponsorship.FINALIZED, 0)
@@ -1009,17 +1071,21 @@ class SponsorshipDetailView(SponsorshipAdminRequiredMixin, DetailView):
         context["contacts"] = sp.sponsor.contacts.all() if sp.sponsor else []
         context["can_approve"] = Sponsorship.APPROVED in sp.next_status
         context["can_reject"] = Sponsorship.REJECTED in sp.next_status
-        context["can_rollback"] = (
-            sp.status in [Sponsorship.APPLIED, Sponsorship.APPROVED, Sponsorship.REJECTED]
-            and sp.status != Sponsorship.FINALIZED
-        )
-        context["can_unlock"] = sp.locked and sp.status == Sponsorship.FINALIZED
-        context["can_lock"] = not sp.locked and sp.status != Sponsorship.APPLIED
-        # Contract info
         try:
-            context["contract"] = sp.contract
+            contract = sp.contract
         except Contract.DoesNotExist:
-            context["contract"] = None
+            contract = None
+        context["contract"] = contract
+        rollback_blocker = _rollback_blocker(sp, contract)
+        context["can_rollback"] = sp.status != Sponsorship.APPLIED and rollback_blocker is None
+        # Only explain blockers the staff can act on; finalized sponsorships never roll back.
+        context["rollback_hint"] = rollback_blocker if sp.status == Sponsorship.APPROVED else None
+        context["can_regenerate"] = contract is not None and _regenerate_blocker(sp, contract) is None
+        context["can_unlock"] = sp.locked and sp.status in (Sponsorship.APPROVED, Sponsorship.FINALIZED)
+        context["can_lock"] = not sp.locked and sp.status != Sponsorship.APPLIED
+        if contract and contract.signed_document:
+            is_docx = contract.signed_document.name.lower().endswith(".docx")
+            context["signed_document_kind"] = "DOCX" if is_docx else "PDF"
         # Required assets
         required_assets = list(BenefitFeature.objects.required_assets().from_sponsorship(sp))
         assets_submitted = 0
@@ -1070,6 +1136,27 @@ class SponsorshipApproveView(SponsorshipAdminRequiredMixin, UpdateView):
         """Return sponsorships with related sponsor and package."""
         return Sponsorship.objects.select_related("sponsor", "package")
 
+    def get(self, request, *args, **kwargs):
+        """Render the approval form, or send the user back when the sponsorship can't be approved."""
+        self.object = self.get_object()
+        if blocked := _redirect_unless_approvable(request, self.object):
+            return blocked
+        return self.render_to_response(self.get_context_data())
+
+    def post(self, request, *args, **kwargs):
+        """Validate and approve, refusing early when the sponsorship can't be approved."""
+        self.object = self.get_object()
+        if blocked := _redirect_unless_approvable(request, self.object):
+            return blocked
+        form = self.get_form()
+        return self.form_valid(form) if form.is_valid() else self.form_invalid(form)
+
+    def get_form_kwargs(self):
+        """Bind a copy so an invalid submission doesn't leak posted values into the page header."""
+        kwargs = super().get_form_kwargs()
+        kwargs["instance"] = copy.copy(self.object)
+        return kwargs
+
     def get_initial(self):
         """Return initial form data from the sponsorship instance."""
         return {
@@ -1105,6 +1192,8 @@ class SponsorshipApproveSignedView(SponsorshipAdminRequiredMixin, View):
     def get(self, request, pk):
         """Render the approve-with-signed-contract form."""
         sp = get_object_or_404(Sponsorship.objects.select_related("sponsor", "package"), pk=pk)
+        if blocked := _redirect_unless_approvable(request, sp):
+            return blocked
         form = SponsorshipApproveSignedForm(
             instance=sp,
             initial={
@@ -1124,7 +1213,10 @@ class SponsorshipApproveSignedView(SponsorshipAdminRequiredMixin, View):
     def post(self, request, pk):
         """Approve sponsorship and execute the uploaded signed contract."""
         sp = get_object_or_404(Sponsorship.objects.select_related("sponsor", "package"), pk=pk)
-        form = SponsorshipApproveSignedForm(request.POST, request.FILES, instance=sp)
+        if blocked := _redirect_unless_approvable(request, sp):
+            return blocked
+        # Bind a copy so an invalid submission doesn't leak posted values into the page header.
+        form = SponsorshipApproveSignedForm(request.POST, request.FILES, instance=copy.copy(sp))
         if form.is_valid():
             kwargs = form.cleaned_data
             kwargs["request"] = request
@@ -1148,14 +1240,21 @@ class SponsorshipApproveSignedView(SponsorshipAdminRequiredMixin, View):
 
 
 def _write_sponsorship_assets(zip_file, sponsorship):
-    """Write submitted required assets, resolving each asset against its owner."""
+    """Write submitted required assets, resolving each asset against its owner.
+
+    Returns ``(written, missing)``: the number of assets now in the ZIP and the
+    ``directory/filename`` paths whose stored file could not be read. Sponsor-level
+    assets already written for another sponsorship of the same sponsor are skipped.
+    """
     required_names = {}
     for feature in BenefitFeature.objects.required_assets().from_sponsorship(sponsorship):
         required_names.setdefault(feature.related_to, set()).add(feature.internal_name)
 
     sponsor_name = sponsorship.sponsor.slug if sponsorship.sponsor else "unknown"
     directory = sponsor_name or f"sponsor-{sponsorship.sponsor_id}"
+    existing = set(zip_file.namelist())
     written = 0
+    missing = []
     for related_to, owner in (
         (AssetsRelatedTo.SPONSOR.value, sponsorship.sponsor),
         (AssetsRelatedTo.SPONSORSHIP.value, sponsorship),
@@ -1169,13 +1268,57 @@ def _write_sponsorship_assets(zip_file, sponsorship):
             value = asset.value
             if asset.is_file:
                 extension = slugify(Path(value.name).suffix)
-                filename = f"{name}.{extension}" if extension else name
-                with value.open("rb") as source, zip_file.open(f"{directory}/{filename}", "w") as destination:
-                    copyfileobj(source, destination)
+                path = f"{directory}/{name}.{extension}" if extension else f"{directory}/{name}"
             else:
-                zip_file.writestr(f"{directory}/{name}.txt", value)
+                path = f"{directory}/{name}.txt"
+            if path in existing:
+                continue
+            if asset.is_file:
+                try:
+                    with value.open("rb") as source:
+                        content = source.read()
+                except Exception:  # Storage backends disagree on the error for a missing file.
+                    logger.exception("Asset file %s for sponsorship %s is unreadable", value.name, sponsorship.pk)
+                    missing.append(path)
+                    continue
+                zip_file.writestr(path, content)
+            else:
+                zip_file.writestr(path, value)
+            existing.add(path)
             written += 1
-    return written
+    return written, missing
+
+
+def _assets_zip(sponsorships):
+    """Build an assets ZIP; returns ``(zip_bytes, written, missing)``.
+
+    Unreadable files are skipped and listed in ``MISSING_FILES.txt`` inside the ZIP.
+    """
+    buffer = io.BytesIO()
+    written = 0
+    missing = []
+    with zipfile.ZipFile(buffer, "w") as zip_file:
+        for sp in sponsorships:
+            sp_written, sp_missing = _write_sponsorship_assets(zip_file, sp)
+            written += sp_written
+            missing.extend(sp_missing)
+        if written and missing:
+            zip_file.writestr(
+                "MISSING_FILES.txt",
+                "These submitted assets could not be read from storage and were skipped:\n" + "\n".join(missing),
+            )
+    return buffer.getvalue(), written, missing
+
+
+_MISSING_ASSETS_SHOWN = 5
+
+
+def _missing_assets_message(missing):
+    """Describe skipped asset files for a flash message."""
+    shown = ", ".join(missing[:_MISSING_ASSETS_SHOWN])
+    extra = len(missing) - _MISSING_ASSETS_SHOWN
+    more = f" and {extra} more" if extra > 0 else ""
+    return f"{len(missing)} asset file(s) could not be read and were skipped: {shown}{more}."
 
 
 class AssetExportView(SponsorshipAdminRequiredMixin, View):
@@ -1184,15 +1327,15 @@ class AssetExportView(SponsorshipAdminRequiredMixin, View):
     def get(self, request, pk):
         """Generate and return a ZIP of all submitted assets for the sponsorship."""
         sp = get_object_or_404(Sponsorship.objects.select_related("sponsor"), pk=pk)
-        buffer = io.BytesIO()
-        with zipfile.ZipFile(buffer, "w") as zip_file:
-            written = _write_sponsorship_assets(zip_file, sp)
+        content, written, missing = _assets_zip([sp])
+        if missing:
+            messages.warning(request, _missing_assets_message(missing))
         if not written:
             messages.warning(request, "No submitted assets to export.")
             return redirect(reverse("manage_sponsorship_detail", args=[pk]))
 
         sponsor_name = (sp.sponsor.slug if sp.sponsor else None) or f"sponsor-{sp.sponsor_id}"
-        response = HttpResponse(buffer.getvalue())
+        response = HttpResponse(content)
         response["Content-Type"] = "application/x-zip-compressed"
         response["Content-Disposition"] = f'attachment; filename="{sponsor_name}-assets.zip"'
         return response
@@ -1206,22 +1349,23 @@ class BulkAssetExportView(SponsorshipAdminRequiredMixin, View):
         selected_ids = request.POST.getlist("selected_ids")
         if not selected_ids:
             messages.warning(request, "No sponsorships selected.")
-            return redirect(reverse("manage_sponsorships"))
+            return redirect(_sponsorship_list_return_url(request))
 
-        sponsorships = Sponsorship.objects.select_related("sponsor").filter(pk__in=_safe_int_pks(selected_ids))
-        if not sponsorships.exists():
+        sponsorships = list(
+            Sponsorship.objects.select_related("sponsor").filter(pk__in=_safe_int_pks(selected_ids)).order_by("pk")
+        )
+        if not sponsorships:
             messages.warning(request, "No sponsorships found.")
-            return redirect(reverse("manage_sponsorships"))
+            return redirect(_sponsorship_list_return_url(request))
 
-        buffer = io.BytesIO()
-        with zipfile.ZipFile(buffer, "w") as zip_file:
-            total_assets = sum(_write_sponsorship_assets(zip_file, sp) for sp in sponsorships)
-
+        content, total_assets, missing = _assets_zip(sponsorships)
+        if missing:
+            messages.warning(request, _missing_assets_message(missing))
         if total_assets == 0:
             messages.warning(request, "No submitted assets found for the selected sponsorships.")
-            return redirect(reverse("manage_sponsorships"))
+            return redirect(_sponsorship_list_return_url(request))
 
-        response = HttpResponse(buffer.getvalue())
+        response = HttpResponse(content)
         response["Content-Type"] = "application/x-zip-compressed"
         response["Content-Disposition"] = 'attachment; filename="sponsorship-assets.zip"'
         return response
@@ -1236,22 +1380,23 @@ class SponsorshipRejectView(SponsorshipAdminRequiredMixin, View):
         action = request.POST.get("action", "reject_notify")
 
         try:
-            if action == "reject_silent":
-                # Reject without sending any emails
-                sp.reject()
-                sp.save()
-                messages.success(request, f'Sponsorship for "{sp.sponsor.name}" rejected (no notification sent).')
-            else:
-                # Reject and redirect to notify page for customizable email
-                sp.reject()
-                sp.save()
-                messages.success(
-                    request, f'Sponsorship for "{sp.sponsor.name}" rejected. Compose the rejection email below.'
-                )
-                return redirect(reverse("manage_sponsorship_notify", args=[pk]) + "?prefill=rejection")
+            sp.reject()
+            sp.save()
         except InvalidStatusError as e:
             messages.error(request, str(e))
-        return redirect(reverse("manage_sponsorship_detail", args=[pk]))
+            return redirect(reverse("manage_sponsorship_detail", args=[pk]))
+
+        add_log_entry(request, sp, CHANGE, "Sponsorship Rejected")
+        if action == "reject_silent":
+            messages.success(request, f'Sponsorship for "{sp.sponsor.name}" rejected (no notification sent).')
+            return redirect(reverse("manage_sponsorship_detail", args=[pk]))
+        # The rejection is already saved; the notify page only composes the optional email.
+        messages.success(
+            request,
+            f'Sponsorship for "{sp.sponsor.name}" rejected. No email has been sent yet: '
+            "compose the rejection email below, or leave this page to skip it.",
+        )
+        return redirect(reverse("manage_sponsorship_notify", args=[pk]) + "?prefill=rejection")
 
 
 class SponsorshipRollbackView(SponsorshipAdminRequiredMixin, View):
@@ -1263,9 +1408,11 @@ class SponsorshipRollbackView(SponsorshipAdminRequiredMixin, View):
         try:
             sp.rollback_to_editing()
             sp.save()
-            messages.success(request, f'Sponsorship for "{sp.sponsor.name}" rolled back to editing.')
         except InvalidStatusError as e:
             messages.error(request, str(e))
+        else:
+            add_log_entry(request, sp, CHANGE, "Sponsorship Rolled Back to Editing")
+            messages.success(request, f'Sponsorship for "{sp.sponsor.name}" rolled back to editing.')
         return redirect(reverse("manage_sponsorship_detail", args=[pk]))
 
 
@@ -1279,11 +1426,15 @@ class SponsorshipLockToggleView(SponsorshipAdminRequiredMixin, View):
         if action == "lock":
             sp.locked = True
             sp.save(update_fields=["locked"])
+            add_log_entry(request, sp, CHANGE, "Sponsorship Locked")
             messages.success(request, "Sponsorship locked.")
         elif action == "unlock":
             sp.locked = False
             sp.save(update_fields=["locked"])
+            add_log_entry(request, sp, CHANGE, "Sponsorship Unlocked")
             messages.success(request, "Sponsorship unlocked.")
+        else:
+            messages.error(request, "Unknown lock action.")
         return redirect(reverse("manage_sponsorship_detail", args=[pk]))
 
 
@@ -1298,6 +1449,14 @@ class SponsorshipEditView(SponsorshipAdminRequiredMixin, UpdateView):
         """Return sponsorships with related sponsor and package."""
         return Sponsorship.objects.select_related("sponsor", "package")
 
+    def get(self, request, *args, **kwargs):
+        """Render the edit form, or send the user back when the sponsorship is locked."""
+        self.object = self.get_object()
+        if not self.object.open_for_editing:
+            messages.error(request, "This sponsorship is locked and cannot be edited. Unlock it first.")
+            return redirect(reverse("manage_sponsorship_detail", args=[self.object.pk]))
+        return self.render_to_response(self.get_context_data())
+
     @transaction.atomic
     def post(self, request, *args, **kwargs):
         """Check editability on the locked row before binding and saving changes."""
@@ -1308,10 +1467,37 @@ class SponsorshipEditView(SponsorshipAdminRequiredMixin, UpdateView):
         form = self.get_form()
         return self.form_valid(form) if form.is_valid() else self.form_invalid(form)
 
-    def get_success_url(self):
-        """Return URL to sponsorship detail after update."""
+    def get_form_kwargs(self):
+        """Bind a copy so an invalid submission doesn't leak posted values into the page."""
+        kwargs = super().get_form_kwargs()
+        kwargs["instance"] = copy.copy(self.object)
+        return kwargs
+
+    def form_valid(self, form):
+        """Save only the edited fields, keep the lock state, and flag package changes as custom."""
+        previous_package = self.object.package
+        sp = form.save(commit=False)
+        changed = list(form.changed_data)
+        package_changed = "package" in changed and sp.benefits.exists()
+        if package_changed:
+            sp.for_modified_package = True
+        if changed:
+            update_fields = [*changed, "for_modified_package"] if package_changed else changed
+            # Listing "locked" stops Sponsorship.save() from re-locking a sponsorship staff unlocked to edit.
+            sp.save(update_fields=[*update_fields, "locked"])
+            labels = ", ".join(str(form.fields[name].label) for name in changed)
+            add_log_entry(self.request, sp, CHANGE, f"Changed {labels} in sponsor management")
+        self.object = sp
         messages.success(self.request, "Sponsorship updated.")
-        return reverse("manage_sponsorship_detail", args=[self.object.pk])
+        if package_changed:
+            old_name = previous_package.name if previous_package else "no package"
+            messages.warning(
+                self.request,
+                f"Package changed from {old_name} to {sp.level_name}, but the benefits were not changed. "
+                "The sponsorship is now marked as a custom package; review its benefits"
+                + (" and regenerate the contract." if Contract.objects.filter(sponsorship=sp).exists() else "."),
+            )
+        return redirect(reverse("manage_sponsorship_detail", args=[sp.pk]))
 
 
 class SponsorCreateView(SponsorshipAdminRequiredMixin, CreateView):
@@ -1377,6 +1563,7 @@ class SponsorshipAddBenefitView(SponsorshipAdminRequiredMixin, View):
         if form.is_valid():
             benefit = form.cleaned_data["benefit"]
             SponsorBenefit.new_copy(benefit, sponsorship=sp, added_by_user=True)
+            add_log_entry(request, sp, CHANGE, f'Added benefit "{benefit.name}"')
             messages.success(request, f'Added "{benefit.name}" to sponsorship.')
         else:
             messages.error(request, "Invalid benefit selection.")
@@ -1396,6 +1583,7 @@ class SponsorshipRemoveBenefitView(SponsorshipAdminRequiredMixin, View):
         benefit = get_object_or_404(SponsorBenefit, pk=benefit_pk, sponsorship=sp)
         name = benefit.name
         benefit.delete()
+        add_log_entry(request, sp, CHANGE, f'Removed benefit "{name}"')
         messages.success(request, f'Removed "{name}" from sponsorship.')
         return redirect(reverse("manage_sponsorship_detail", args=[pk]))
 
@@ -1404,14 +1592,21 @@ class SponsorshipRemoveBenefitView(SponsorshipAdminRequiredMixin, View):
 
 
 def _internal_review_attachments(contract):
-    """Load review attachments, returning (None, None) on failure."""
+    """Load review attachments, returning (None, None) on failure; ContractRenderError propagates with its reason."""
     if contract.is_draft:
-        from apps.sponsors.contracts import render_contract_to_docx_file, render_contract_to_pdf_file
+        from apps.sponsors.contracts import (
+            ContractRenderError,
+            render_contract_to_docx_file,
+            render_contract_to_pdf_file,
+        )
 
         try:
             pdf_bytes = render_contract_to_pdf_file(contract)
             docx_bytes = render_contract_to_docx_file(contract)
+        except ContractRenderError:
+            raise
         except (OSError, RuntimeError, ImportError):
+            logger.exception("Contract rendering failed for internal review of contract %s", contract.pk)
             return None, None
         if not pdf_bytes or not docx_bytes:
             return None, None
@@ -1450,7 +1645,13 @@ def _log_email_notification(request, sponsorship, email, tag):
 
 def _send_internal_review_email(request, sponsor, contract, internal_email):
     """Send attachments to the reviewer and record delivery."""
-    pdf_bytes, docx_bytes = _internal_review_attachments(contract)
+    from apps.sponsors.contracts import ContractRenderError
+
+    try:
+        pdf_bytes, docx_bytes = _internal_review_attachments(contract)
+    except ContractRenderError as exc:
+        messages.error(request, str(exc))
+        return False
     if not pdf_bytes:
         return False
 
@@ -1520,10 +1721,14 @@ class ContractSendView(SponsorshipAdminRequiredMixin, View):
         except Contract.DoesNotExist:
             messages.error(request, "No contract exists for this sponsorship.")
             return redirect(reverse("manage_sponsorship_detail", args=[pk]))
+        if contract.status not in (Contract.DRAFT, Contract.AWAITING_SIGNATURE):
+            messages.error(request, f"Can't send {with_article(contract.get_status_display())} contract.")
+            return redirect(reverse("manage_sponsorship_detail", args=[pk]))
         context = {
             "sponsorship": sp,
             "contract": contract,
             "sponsor_emails": sp.verified_emails if sp.sponsor else [],
+            "contact_count": sp.sponsor.contacts.count() if sp.sponsor else 0,
             "internal_email": request.GET.get("internal_email", ""),
         }
         return render(request, "sponsors/manage/contract_send.html", context)
@@ -1606,7 +1811,7 @@ class ContractSendView(SponsorshipAdminRequiredMixin, View):
         contract = get_object_or_404(Contract.objects.select_for_update(), pk=contract_pk, sponsorship_id=sp_pk)
 
         if contract.status not in (Contract.DRAFT, Contract.AWAITING_SIGNATURE):
-            msg = f"Can't send a {contract.get_status_display()} contract."
+            msg = f"Can't send {with_article(contract.get_status_display())} contract."
             raise InvalidStatusError(msg)
 
         if contract.is_draft:
@@ -1624,6 +1829,8 @@ class ContractSendView(SponsorshipAdminRequiredMixin, View):
         if sent_count != 1:
             msg = "The email backend did not send the contract."
             raise SMTPException(msg)
+        contract.sent_on = tz.now().date()
+        contract.save(update_fields=["sent_on"])
         _log_email_notification(request, contract.sponsorship, email, tag="contract")
 
     @staticmethod
@@ -1649,32 +1856,29 @@ class ContractExecuteView(SponsorshipAdminRequiredMixin, View):
     def get(self, request, pk):
         """Render the contract execution form."""
         sp = get_object_or_404(Sponsorship.objects.select_related("sponsor"), pk=pk)
-        try:
-            contract = sp.contract
-        except Contract.DoesNotExist:
-            messages.error(request, "No contract exists.")
-            return redirect(reverse("manage_sponsorship_detail", args=[pk]))
+        contract, blocked = _executable_contract_or_redirect(request, sp)
+        if blocked:
+            return blocked
         form = ExecuteContractForm()
         context = {"sponsorship": sp, "contract": contract, "form": form}
         return render(request, "sponsors/manage/contract_execute.html", context)
 
     def post(self, request, pk):
         """Upload signed document and execute the contract."""
-        sp = get_object_or_404(Sponsorship, pk=pk)
+        sp = get_object_or_404(Sponsorship.objects.select_related("sponsor"), pk=pk)
+        contract, blocked = _executable_contract_or_redirect(request, sp)
+        if blocked:
+            return blocked
         form = ExecuteContractForm(request.POST, request.FILES)
-        if form.is_valid():
-            try:
-                contract = sp.contract
-                signed_doc = form.cleaned_data["signed_document"]
-                use_case = use_cases.ExecuteContractUseCase.build()
-                use_case.execute(contract, signed_doc, request=request)
-                messages.success(request, "Contract executed. Sponsorship finalized.")
-            except Contract.DoesNotExist:
-                messages.error(request, "No contract exists.")
-            except InvalidStatusError as e:
-                messages.error(request, str(e))
-        else:
-            messages.error(request, "Please upload the signed document.")
+        if not form.is_valid():
+            context = {"sponsorship": sp, "contract": contract, "form": form}
+            return render(request, "sponsors/manage/contract_execute.html", context)
+        try:
+            use_case = use_cases.ExecuteContractUseCase.build()
+            use_case.execute(contract, form.cleaned_data["signed_document"], request=request)
+            messages.success(request, "Contract executed. Sponsorship finalized.")
+        except InvalidStatusError as e:
+            messages.error(request, str(e))
         return redirect(reverse("manage_sponsorship_detail", args=[pk]))
 
 
@@ -1705,6 +1909,7 @@ class ContractRedraftView(SponsorshipAdminRequiredMixin, View):
         try:
             contract = sp.contract
             contract.redraft()
+            add_log_entry(request, contract, CHANGE, "Contract Re-drafted")
             messages.success(request, f"Contract re-drafted (Revision {contract.revision}).")
         except Contract.DoesNotExist:
             messages.error(request, "No contract exists.")
@@ -1720,24 +1925,25 @@ class ContractRegenerateView(SponsorshipAdminRequiredMixin, View):
     def post(self, request, pk):
         """Regenerate the contract for a sponsorship."""
         sp = get_object_or_404(Sponsorship.objects.select_for_update(), pk=pk)
-        if not sp.open_for_editing:
-            messages.error(request, "This sponsorship is locked and cannot be edited.")
-            return redirect(reverse("manage_sponsorship_detail", args=[pk]))
         try:
             old_contract = sp.contract
-            if old_contract.status == Contract.EXECUTED:
-                messages.error(request, "An executed contract cannot be regenerated.")
-                return redirect(reverse("manage_sponsorship_detail", args=[pk]))
+        except Contract.DoesNotExist:
+            old_contract = None
+        if blocker := _regenerate_blocker(sp, old_contract):
+            messages.error(request, blocker)
+            return redirect(reverse("manage_sponsorship_detail", args=[pk]))
+        if old_contract is not None:
             old_contract.sponsorship = None
             old_contract.status = Contract.OUTDATED
             old_contract.save()
-        except Contract.DoesNotExist:
-            pass
+            add_log_entry(request, old_contract, CHANGE, "Contract Outdated by Regeneration")
         new_contract = Contract.new(sp)
         # Set revision to count of historical contracts for this sponsorship
         historical_count = sp.contract_history.filter(status=Contract.OUTDATED).count()
         new_contract.revision = historical_count
         new_contract.save()
+        add_log_entry(request, new_contract, ADDITION, "Created by Regenerating the Contract")
+        add_log_entry(request, sp, CHANGE, "Contract Regenerated")
         messages.success(
             request,
             f"New contract draft created (Revision {new_contract.revision}). Previous contract preserved.",
@@ -2021,29 +2227,116 @@ def _safe_int_pks(raw_ids):
     return pks
 
 
-def _filtered_sponsorship_queryset(request):
-    """Build a Sponsorship queryset from request query params.
+_SPONSORSHIP_FILTER_KEYS = ("status", "year", "sponsor", "search", "sort")
 
-    Applies the same filters as SponsorshipListView: status, year, search.
+# ``?sort=<key>`` sorts ascending, ``?sort=-<key>`` descending; the list defaults to newest applications first.
+_SPONSORSHIP_SORT_FIELDS = {
+    "sponsor": "sponsor__name",
+    "package": "package__name",
+    "fee": "sponsorship_fee",
+    "year": "year",
+    "status": "status",
+    "applied": "applied_on",
+    "period": "start_date",
+}
+_DEFAULT_SPONSORSHIP_SORT = "-applied"
+
+
+def _sponsorship_filter_params(request):
+    """Return the sponsorship list filters from the query string, falling back to POST data."""
+    return {key: (request.GET.get(key, "") or request.POST.get(key, "")).strip() for key in _SPONSORSHIP_FILTER_KEYS}
+
+
+def _sponsorship_filter_query(filters, exclude=(), page=None):
+    """URL-encode the active filters (minus ``exclude``) for links that must keep them."""
+    params = [(key, value) for key, value in filters.items() if value and key not in exclude]
+    if page and page != 1:
+        params.append(("page", page))
+    return urlencode(params)
+
+
+def _sponsorship_sort_links(filters):
+    """Return ``(urls, states)`` per sortable column; states are ``"asc"``, ``"desc"`` or ``""``."""
+    current = filters["sort"]
+    if current.lstrip("-") not in _SPONSORSHIP_SORT_FIELDS:
+        current = _DEFAULT_SPONSORSHIP_SORT
+    base = _sponsorship_filter_query(filters, exclude=("sort",))
+    urls = {}
+    states = {}
+    for key in _SPONSORSHIP_SORT_FIELDS:
+        if current == key:
+            states[key], next_sort = "asc", f"-{key}"
+        elif current == f"-{key}":
+            states[key], next_sort = "desc", key
+        else:
+            states[key], next_sort = "", key
+        urls[key] = "?" + "&".join(part for part in (base, urlencode({"sort": next_sort})) if part)
+    return urls, states
+
+
+def _sponsorship_ordering(sort):
+    """Translate a ``sort`` parameter into a stable ``order_by`` list with blanks last."""
+    descending = sort.startswith("-")
+    field = _SPONSORSHIP_SORT_FIELDS.get(sort.lstrip("-"))
+    if field is None:
+        return _sponsorship_ordering(_DEFAULT_SPONSORSHIP_SORT)
+    if descending:
+        return [F(field).desc(nulls_last=True), "-pk"]
+    return [F(field).asc(nulls_last=True), "pk"]
+
+
+def _sponsorship_list_return_url(request):
+    """Return the sponsorship list URL with the filters the bulk form was submitted from."""
+    query = QueryDict(request.POST.get("return_query", "")).urlencode()
+    url = reverse("manage_sponsorships")
+    return f"{url}?{query}" if query else url
+
+
+def _filtered_sponsorship_queryset(request, *, ignore_status=False):
+    """Build an ordered Sponsorship queryset from request params.
+
+    Applies the same filters as SponsorshipListView: status, year (``all`` or
+    blank for every year), sponsor id, and search. ``ignore_status`` drops the
+    status filter entirely (including the default rejected exclusion) so status
+    counts can be computed over the other filters.
     """
-    qs = Sponsorship.objects.select_related("sponsor", "package").order_by("-applied_on")
+    filters = _sponsorship_filter_params(request)
+    qs = Sponsorship.objects.select_related("sponsor", "package").order_by(*_sponsorship_ordering(filters["sort"]))
 
-    status = request.GET.get("status", "") or request.POST.get("status", "")
-    year = request.GET.get("year", "") or request.POST.get("year", "")
-    search = request.GET.get("search", "") or request.POST.get("search", "")
-
-    qs = qs.filter(status=status) if status else qs.exclude(status=Sponsorship.REJECTED)
-    if year:
+    status = filters["status"]
+    if not ignore_status:
+        qs = qs.filter(status=status) if status else qs.exclude(status=Sponsorship.REJECTED)
+    year = filters["year"]
+    if year and year != "all":
         try:
             qs = qs.filter(year=int(year))
         except ValueError:
             # A malformed year must narrow to no results, never silently
             # broaden back out to "all years".
             return qs.none()
-    if search:
-        qs = qs.filter(Q(sponsor__name__icontains=search))
+    if filters["sponsor"]:
+        sponsor_pk = _int_or_none(filters["sponsor"])
+        if sponsor_pk is None:
+            return qs.none()
+        qs = qs.filter(sponsor_id=sponsor_pk)
+    if filters["search"]:
+        qs = qs.filter(Q(sponsor__name__icontains=filters["search"]))
 
     return qs
+
+
+def _sponsorship_csv_filename(filters):
+    """Name the CSV after the filters that produced it, e.g. ``sponsorships-finalized-2026.csv``."""
+    parts = ["sponsorships"]
+    if filters["status"]:
+        parts.append(filters["status"])
+    if filters["year"] and filters["year"] != "all":
+        parts.append(filters["year"])
+    if filters["sponsor"]:
+        parts.append(f"sponsor-{filters['sponsor']}")
+    if filters["search"]:
+        parts.append(f"search-{filters['search']}")
+    return slugify("-".join(parts))[:100] + ".csv"
 
 
 def _csv_text(value):
@@ -2105,27 +2398,40 @@ class SponsorshipExportView(SponsorshipAdminRequiredMixin, View):
     """
 
     def get(self, request):
-        """Export all sponsorships matching current filters."""
+        """Export sponsorships by ``selected_ids`` when given, otherwise all matching the current filters."""
+        selected_ids = request.GET.getlist("selected_ids")
+        if selected_ids:
+            return self._export_selected(selected_ids)
         sponsorships = list(_filtered_sponsorship_queryset(request))
-        return self._make_csv(sponsorships)
+        return self._make_csv(sponsorships, _sponsorship_csv_filename(_sponsorship_filter_params(request)))
 
     def post(self, request):
         """Export specific sponsorships by selected IDs."""
         selected_ids = request.POST.getlist("selected_ids")
         if selected_ids:
-            sponsorships = list(
-                Sponsorship.objects.select_related("sponsor", "package")
-                .filter(pk__in=_safe_int_pks(selected_ids))
-                .order_by("-applied_on")
-            )
-        else:
-            sponsorships = list(_filtered_sponsorship_queryset(request))
-        return self._make_csv(sponsorships)
+            return self._export_selected(selected_ids)
+        sponsorships = list(_filtered_sponsorship_queryset(request))
+        return self._make_csv(sponsorships, _sponsorship_csv_filename(_sponsorship_filter_params(request)))
 
-    def _make_csv(self, sponsorships):
-        """Build and return an HttpResponse with CSV content."""
-        response = HttpResponse(content_type="text/csv")
-        response["Content-Disposition"] = 'attachment; filename="sponsorships.csv"'
+    def _export_selected(self, selected_ids):
+        """Export exactly the given sponsorships, whatever their status."""
+        pks = _safe_int_pks(selected_ids)
+        sponsorships = list(
+            Sponsorship.objects.select_related("sponsor", "package").filter(pk__in=pks).order_by("-applied_on", "-pk")
+        )
+        if len(sponsorships) == 1:
+            sp = sponsorships[0]
+            name = slugify(f"sponsorship-{sp.pk}-{sp.sponsor.name if sp.sponsor else ''}")[:100]
+            filename = f"{name}.csv"
+        else:
+            filename = "sponsorships-selected.csv"
+        return self._make_csv(sponsorships, filename)
+
+    def _make_csv(self, sponsorships, filename):
+        """Build and return a UTF-8 CSV response with a BOM so Excel detects the encoding."""
+        response = HttpResponse(content_type="text/csv; charset=utf-8")
+        response["Content-Disposition"] = f'attachment; filename="{filename}"'
+        response.write("\ufeff")
         return _write_sponsorship_csv(sponsorships, response)
 
 
@@ -2145,7 +2451,7 @@ class BulkActionDispatchView(SponsorshipAdminRequiredMixin, View):
         if action == "export_csv":
             if not selected_ids:
                 messages.warning(request, "No sponsorships selected.")
-                return redirect(reverse("manage_sponsorships"))
+                return redirect(_sponsorship_list_return_url(request))
             return SponsorshipExportView.as_view()(request)
 
         if action == "send_notification":
@@ -2159,7 +2465,7 @@ class BulkActionDispatchView(SponsorshipAdminRequiredMixin, View):
             return BulkAssetExportView.as_view()(request)
 
         messages.error(request, "Unknown action.")
-        return redirect(reverse("manage_sponsorships"))
+        return redirect(_sponsorship_list_return_url(request))
 
 
 class BulkNotifyView(SponsorshipAdminRequiredMixin, View):

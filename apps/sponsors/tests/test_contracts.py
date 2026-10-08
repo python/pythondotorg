@@ -31,7 +31,9 @@ class TestRenderContract(TestCase):
         self.contract.sponsorship.renewal = False
         response = render_contract_to_docx_response(request, self.contract)
 
-        self.assertEqual(response.get("Content-Disposition"), "attachment; filename=sponsorship-contract-Sponsor.docx")
+        self.assertEqual(
+            response.get("Content-Disposition"), 'attachment; filename="sponsorship-contract-Sponsor.docx"'
+        )
         self.assertEqual(
             response.get("Content-Type"), "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
         )
@@ -42,7 +44,7 @@ class TestRenderContract(TestCase):
         self.contract.sponsorship.renewal = True
         response = render_contract_to_docx_response(request, self.contract)
 
-        self.assertEqual(response.get("Content-Disposition"), "attachment; filename=sponsorship-renewal-Sponsor.docx")
+        self.assertEqual(response.get("Content-Disposition"), 'attachment; filename="sponsorship-renewal-Sponsor.docx"')
         self.assertEqual(
             response.get("Content-Type"), "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
         )
