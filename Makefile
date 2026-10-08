@@ -7,7 +7,7 @@ help: ## Display this help text
 # Docker State
 # =============================================================================
 
-.state/docker-build-web: Dockerfile pyproject.toml uv.lock
+.state/docker-build-web: docker/Dockerfile pyproject.toml uv.lock
 	docker compose build --force-rm web
 	mkdir -p .state && touch .state/docker-build-web
 
