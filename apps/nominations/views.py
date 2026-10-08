@@ -4,6 +4,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.core.mail import send_mail
+from django.db.models import Q
 from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
@@ -75,7 +76,19 @@ class NomineeList(NominationMixin, ListView):
             return Nominee.objects.filter(accepted=True, approved=True, election=election).exclude(user=None)
 
         if self.request.user.is_authenticated:
-            return Nominee.objects.filter(user=self.request.user)
+            # Before the results are public, preview the nominees relevant to
+            # this user in this election: the people they nominated, plus
+            # themselves when somebody nominated them.
+            return (
+                Nominee.objects.filter(
+                    Q(user=self.request.user)
+                    | Q(nominations__nominator=self.request.user, nominations__election=election),
+                    election=election,
+                )
+                .exclude(user=None)
+                .distinct()
+                .select_related("user")
+            )
         return None
 
 

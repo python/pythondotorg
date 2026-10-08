@@ -7,7 +7,6 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import UserPassesTestMixin
 from django.core.mail import send_mail
 from django.db.models import Subquery
 from django.http import Http404
@@ -127,8 +126,8 @@ class UserUpdate(LoginRequiredMixin, UpdateView):
     """Edit the current user's profile information."""
 
     form_class = UserProfileForm
-    slug_field = "username"
     template_name = "users/user_form.html"
+    success_url = reverse_lazy("users:user_detail")
 
     @method_decorator(check_honeypot)
     def dispatch(self, *args, **kwargs):
@@ -136,21 +135,18 @@ class UserUpdate(LoginRequiredMixin, UpdateView):
         return super().dispatch(*args, **kwargs)
 
     def get_object(self, queryset=None):
+        """Return a fresh copy of the logged-in user, so invalid input never mutates request.user."""
+        return User.objects.get(pk=self.request.user.pk)
+
+
+class UserDetail(LoginRequiredMixin, DetailView):
+    """Display the logged-in user's own profile details."""
+
+    template_name = "users/user_detail.html"
+
+    def get_object(self, queryset=None):
         """Return the current logged-in user."""
-        return User.objects.get(username=self.request.user)
-
-
-class UserDetail(DetailView):
-    """Display a user's public profile page."""
-
-    slug_field = "username"
-
-    def get_queryset(self):
-        """Return all users if viewing own profile, searchable users otherwise."""
-        queryset = User.objects.select_related()
-        if self.request.user.username == self.kwargs["slug"]:
-            return queryset
-        return queryset.searchable()
+        return self.request.user
 
 
 class HoneypotSignupView(SignupView):
@@ -178,35 +174,31 @@ class CustomPasswordChangeView(LoginRequiredMixin, PasswordChangeView):
         return reverse("users:user_profile_edit")
 
 
-class UserDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+class UserDeleteView(LoginRequiredMixin, DeleteView):
     """Allow users to delete their own account."""
 
-    model = User
     success_url = reverse_lazy("home")
-    slug_field = "username"
-    raise_exception = True
     http_method_names = ["post", "delete"]
 
-    def test_func(self):
-        """Only allow users to delete their own account."""
-        return self.get_object() == self.request.user
+    def get_object(self, queryset=None):
+        """Return the current logged-in user."""
+        return self.request.user
 
 
-class MembershipDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+class MembershipDeleteView(LoginRequiredMixin, DeleteView):
     """Allow users to delete their own PSF membership."""
 
-    model = Membership
-    slug_field = "creator__username"
-    raise_exception = True
     http_method_names = ["post", "delete"]
 
     def get_success_url(self):
         """Redirect to the user's profile page after deletion."""
-        return reverse("users:user_detail", kwargs={"slug": self.request.user.username})
+        return reverse("users:user_detail")
 
-    def test_func(self):
-        """Only allow the membership creator to delete it."""
-        return self.get_object().creator == self.request.user
+    def get_object(self, queryset=None):
+        """Return the current user's membership or raise 404."""
+        if self.request.user.has_membership:
+            return self.request.user.membership
+        raise Http404
 
 
 class UserNominationsView(LoginRequiredMixin, TemplateView):
@@ -368,26 +360,3 @@ class UpdateSponsorshipAssetsView(UpdateView):
         """Update assets and redirect to the success URL."""
         form.update_assets()
         return redirect(self.get_success_url())
-
-
-@method_decorator(login_required(login_url=settings.LOGIN_URL), name="dispatch")
-class ProvidedSponsorshipAssetsView(DetailView):
-    """TODO: Deprecate this view now that everything lives in the SponsorshipDetailView."""
-
-    object_name = "sponsorship"
-    template_name = "users/sponsorship_assets_view.html"
-
-    def get_queryset(self):
-        """Return all sponsorships for superusers, user-visible ones otherwise."""
-        if self.request.user.is_superuser:
-            return Sponsorship.objects.select_related("sponsor").all()
-        return self.request.user.sponsorships.select_related("sponsor")
-
-    def get_context_data(self, **kwargs):
-        """Add provided assets with values to the context."""
-        context = super().get_context_data(**kwargs)
-        provided_assets = BenefitFeature.objects.provided_assets().from_sponsorship(context["sponsorship"])
-        provided = [asset for asset in provided_assets if bool(asset.value)]
-        context["provided_assets"] = provided
-        context["provided_asset_id"] = self.request.GET.get("provided_asset", None)
-        return context
