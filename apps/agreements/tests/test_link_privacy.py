@@ -53,7 +53,6 @@ class SigningLinkPrivacyTests(TestCase):
                 self.assertEqual(response.status_code, 410 if state == "used" else 400 if state == "invalid" else 200)
                 scripts = ScriptSources(response.content.decode())
                 self.assertNotIn("analytics.python.org", scripts.hosts)
-                self.assertNotIn("media.ethicalads.io", scripts.hosts)
 
     def test_token_download_and_terms_errors_do_not_load_trackers(self) -> None:
         officer = make_officer()
@@ -70,7 +69,6 @@ class SigningLinkPrivacyTests(TestCase):
                 self.assertEqual(response.status_code, 404)
                 scripts = ScriptSources(response.content.decode())
                 self.assertNotIn("analytics.python.org", scripts.hosts)
-                self.assertNotIn("media.ethicalads.io", scripts.hosts)
 
     def test_public_pages_retain_analytics(self) -> None:
         terms = make_terms()

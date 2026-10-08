@@ -47,7 +47,7 @@
 
 {% elif logo_place == "sponsors" %}
 {% comment %}cache for 1 day{% endcomment %}
-{% cache 86400 CACHED_SPONSORS_LIST %}
+{% cache 86400 SPONSORS_PAGE_LIST %}
 
   {% for package, placement_info in sponsorships_by_package.items %}
   {% if placement_info.sponsorships %}
@@ -59,12 +59,12 @@
     <div style="display: grid; gap: 2.5rem; grid-template-columns: repeat(auto-fit, minmax({{ dimension }}px, 1fr)); align-items: center; justify-content: center;">
       {% for sponsorship in placement_info.sponsorships %}
         <div id="{{ sponsorship.sponsor.slug }}" data-internal-year="{{ sponsorship.year|default_if_none:'' }}">
-            <div
-                data-ea-publisher="psf"
-                data-ea-type="psf-image-only"
-                data-ea-force-ad="{{ sponsorship.sponsor.slug }}-psf-sponsors"
-                style="max-width:{{ sponsorship.sponsor.web_logo|ideal_size:dimension }}px;height:auto;width:auto;"
-            ></div>
+            {% sponsor_logo sponsorship.sponsor.web_logo dimension as logo %}
+            {% if logo %}
+            {% if sponsorship.sponsor.landing_page_url %}<a href="{{ sponsorship.sponsor.landing_page_url }}" rel="sponsored noopener" target="_blank" class="plausible-event-name=Sponsor+Click plausible-event-sponsor={{ sponsorship.sponsor.slug }}" style="border-bottom: 0;">{% endif %}
+              <img src="{{ logo.src }}" srcset="{{ logo.srcset }}" sizes="{{ logo.width }}px" width="{{ logo.width }}" height="{{ logo.height }}" alt="{{ sponsorship.sponsor.name }} logo" loading="{% if forloop.parentloop.first %}eager{% else %}lazy{% endif %}" decoding="async" style="max-width:100%;height:auto;">
+            {% if sponsorship.sponsor.landing_page_url %}</a>{% endif %}
+            {% endif %}
             <p>{{ sponsorship.sponsor.name }}</p>
         </div>
       {% endfor %}
@@ -74,5 +74,5 @@
   </div>
   {% endif %}
   {% endfor %}
-{% endcache CACHED_SPONSORS_LIST %}
+{% endcache SPONSORS_PAGE_LIST %}
 {% endif %}
