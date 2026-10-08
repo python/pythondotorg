@@ -7,6 +7,8 @@ from apps.users import views
 app_name = "users"
 urlpatterns = [
     path("edit/", views.UserUpdate.as_view(), name="user_profile_edit"),
+    path("profile/detail/", views.UserDetail.as_view(), name="user_detail"),
+    path("profile/delete/", views.UserDeleteView.as_view(), name="user_delete"),
     path("membership/", views.MembershipCreate.as_view(), name="user_membership_create"),
     path("membership/edit/", views.MembershipUpdate.as_view(), name="user_membership_edit"),
     re_path(
@@ -44,6 +46,4 @@ urlpatterns = [
         views.SponsorshipDetailView.as_view(),
         name="sponsorship_application_detail",
     ),
-    re_path(r"^(?P<slug>[-a-zA-Z0-9_\@\.+]+)/delete/$", views.UserDeleteView.as_view(), name="user_delete"),
-    re_path(r"^(?P<slug>[-a-zA-Z0-9_\@\.+]+)/$", views.UserDetail.as_view(), name="user_detail"),
 ]
