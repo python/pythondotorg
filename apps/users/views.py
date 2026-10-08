@@ -127,8 +127,8 @@ class UserUpdate(LoginRequiredMixin, UpdateView):
     """Edit the current user's profile information."""
 
     form_class = UserProfileForm
-    slug_field = "username"
     template_name = "users/user_form.html"
+    success_url = reverse_lazy("users:user_detail")
 
     @method_decorator(check_honeypot)
     def dispatch(self, *args, **kwargs):
@@ -140,17 +140,14 @@ class UserUpdate(LoginRequiredMixin, UpdateView):
         return User.objects.get(username=self.request.user)
 
 
-class UserDetail(DetailView):
-    """Display a user's public profile page."""
+class UserDetail(LoginRequiredMixin, DetailView):
+    """Display the logged-in user's own profile details."""
 
-    slug_field = "username"
+    template_name = "users/user_detail.html"
 
-    def get_queryset(self):
-        """Return all users if viewing own profile, searchable users otherwise."""
-        queryset = User.objects.select_related()
-        if self.request.user.username == self.kwargs["slug"]:
-            return queryset
-        return queryset.searchable()
+    def get_object(self, queryset=None):
+        """Return the current logged-in user."""
+        return self.request.user
 
 
 class HoneypotSignupView(SignupView):
@@ -178,18 +175,15 @@ class CustomPasswordChangeView(LoginRequiredMixin, PasswordChangeView):
         return reverse("users:user_profile_edit")
 
 
-class UserDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+class UserDeleteView(LoginRequiredMixin, DeleteView):
     """Allow users to delete their own account."""
 
-    model = User
     success_url = reverse_lazy("home")
-    slug_field = "username"
-    raise_exception = True
     http_method_names = ["post", "delete"]
 
-    def test_func(self):
-        """Only allow users to delete their own account."""
-        return self.get_object() == self.request.user
+    def get_object(self, queryset=None):
+        """Return the current logged-in user."""
+        return self.request.user
 
 
 class MembershipDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
@@ -202,7 +196,7 @@ class MembershipDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
     def get_success_url(self):
         """Redirect to the user's profile page after deletion."""
-        return reverse("users:user_detail", kwargs={"slug": self.request.user.username})
+        return reverse("users:user_detail")
 
     def test_func(self):
         """Only allow the membership creator to delete it."""
