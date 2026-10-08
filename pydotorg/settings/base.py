@@ -321,7 +321,6 @@ CONTENT_SECURITY_POLICY_REPORT_ONLY = {
             SELF,
             NONCE,
             "https://analytics.python.org",
-            "https://media.ethicalads.io",
             "https://ajax.googleapis.com",
         ],
         "style-src": [
@@ -342,7 +341,6 @@ CONTENT_SECURITY_POLICY_REPORT_ONLY = {
             SELF,
             "https://console.python.org",
             "https://analytics.python.org",
-            "https://server.ethicalads.io",
             # Status Page, host included in 'static/js/script.js'
             "https://2p66nmmycsj3.statuspage.io",
         ],
