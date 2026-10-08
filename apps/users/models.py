@@ -5,7 +5,6 @@ import datetime
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.urls import reverse
 from django.utils import timezone
 from markupfield.fields import MarkupField
 from tastypie.models import create_api_key
@@ -50,10 +49,6 @@ class User(AbstractUser):
     public_profile = models.BooleanField("Make my profile public", default=True)
 
     objects = CustomUserManager()
-
-    def get_absolute_url(self):
-        """Return the URL for the user's profile page."""
-        return reverse("users:user_detail", kwargs={"slug": self.username})
 
     @property
     def has_membership(self):
