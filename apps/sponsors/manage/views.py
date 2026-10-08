@@ -23,7 +23,8 @@ from django.http import HttpResponse, QueryDict
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone as tz
-from django.utils.http import urlencode
+from django.utils.html import format_html
+from django.utils.http import url_has_allowed_host_and_scheme, urlencode
 from django.utils.text import slugify
 from django.views import View
 from django.views.generic import CreateView, DeleteView, DetailView, FormView, ListView, TemplateView, UpdateView
@@ -1507,6 +1508,16 @@ class SponsorshipEditView(SponsorshipAdminRequiredMixin, UpdateView):
         return redirect(reverse("manage_sponsorship_detail", args=[sp.pk]))
 
 
+def _safe_next_url(request):
+    """Return the ``next`` URL from POST or GET when it stays on this site, else an empty string."""
+    url = request.POST.get("next") or request.GET.get("next", "")
+    if url and url_has_allowed_host_and_scheme(
+        url, allowed_hosts={request.get_host()}, require_https=request.is_secure()
+    ):
+        return url
+    return ""
+
+
 class SponsorCreateView(SponsorshipAdminRequiredMixin, CreateView):
     """Create a new sponsor (standalone, not via composer)."""
 
@@ -1537,8 +1548,9 @@ class SponsorEditView(SponsorshipAdminRequiredMixin, UpdateView):
     template_name = "sponsors/manage/sponsor_edit.html"
 
     def get_context_data(self, **kwargs):
-        """Return context with originating sponsorship reference."""
+        """Return context with the sponsor's contacts and originating sponsorship reference."""
         context = super().get_context_data(**kwargs)
+        context["contacts"] = self.object.contacts.order_by("-primary", "name")
         sp_pk = self.request.GET.get("from_sponsorship")
         if sp_pk:
             context["from_sponsorship"] = sp_pk
@@ -2156,6 +2168,7 @@ class SponsorContactCreateView(SponsorshipAdminRequiredMixin, CreateView):
         """Look up the sponsor from the URL."""
         self.sponsor = get_object_or_404(Sponsor, pk=kwargs["sponsor_pk"])
         self.from_sponsorship = request.GET.get("from_sponsorship", "")
+        self.next_url = _safe_next_url(request)
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -2164,6 +2177,7 @@ class SponsorContactCreateView(SponsorshipAdminRequiredMixin, CreateView):
         context["sponsor"] = self.sponsor
         context["is_create"] = True
         context["from_sponsorship"] = self.from_sponsorship
+        context["next_url"] = self.next_url
         return context
 
     def form_valid(self, form):
@@ -2172,8 +2186,10 @@ class SponsorContactCreateView(SponsorshipAdminRequiredMixin, CreateView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        """Return URL back to sponsorship detail or sponsor edit."""
+        """Return URL back to the safe ``next`` page, sponsorship detail or sponsor edit."""
         messages.success(self.request, f'Contact "{self.object.name}" added.')
+        if self.next_url:
+            return self.next_url
         if self.from_sponsorship:
             return reverse("manage_sponsorship_detail", args=[self.from_sponsorship])
         return reverse("manage_sponsor_edit", args=[self.sponsor.pk])
@@ -2187,8 +2203,9 @@ class SponsorContactUpdateView(SponsorshipAdminRequiredMixin, UpdateView):
     template_name = "sponsors/manage/contact_form.html"
 
     def dispatch(self, request, *args, **kwargs):
-        """Store from_sponsorship for redirect."""
+        """Store from_sponsorship and the safe ``next`` URL for redirect."""
         self.from_sponsorship = request.GET.get("from_sponsorship", "")
+        self.next_url = _safe_next_url(request)
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -2197,11 +2214,14 @@ class SponsorContactUpdateView(SponsorshipAdminRequiredMixin, UpdateView):
         context["sponsor"] = self.object.sponsor
         context["is_create"] = False
         context["from_sponsorship"] = self.from_sponsorship
+        context["next_url"] = self.next_url
         return context
 
     def get_success_url(self):
-        """Return URL back to sponsorship detail or sponsor edit."""
+        """Return URL back to the safe ``next`` page, sponsorship detail or sponsor edit."""
         messages.success(self.request, f'Contact "{self.object.name}" updated.')
+        if self.next_url:
+            return self.next_url
         if self.from_sponsorship:
             return reverse("manage_sponsorship_detail", args=[self.from_sponsorship])
         return reverse("manage_sponsor_edit", args=[self.object.sponsor.pk])
@@ -2216,8 +2236,11 @@ class SponsorContactDeleteView(SponsorshipAdminRequiredMixin, View):
         name = contact.name
         sponsor_pk = contact.sponsor_id
         from_sp = request.POST.get("from_sponsorship", "")
+        next_url = _safe_next_url(request)
         contact.delete()
         messages.success(request, f'Contact "{name}" deleted.')
+        if next_url:
+            return redirect(next_url)
         if from_sp:
             return redirect(reverse("manage_sponsorship_detail", args=[from_sp]))
         return redirect(reverse("manage_sponsor_edit", args=[sponsor_pk]))
@@ -2699,6 +2722,40 @@ def _build_sponsor_edit_form(request, sponsor):
     return SponsorEditForm(data, instance=sponsor)
 
 
+COMPOSER_DEFAULT_SUBJECT = "Sponsorship Proposal from the Python Software Foundation"
+
+
+def _contract_render_error_message(exc, fallback):
+    """Return a staff-facing explanation for a contract rendering failure."""
+    from apps.sponsors.contracts import ContractRenderError
+
+    if isinstance(exc, ContractRenderError):
+        return str(exc)
+    logger.error("Contract rendering failed", exc_info=exc)
+    return fallback
+
+
+def _default_proposal_body(sponsorship):
+    """Build the proposal email body from the saved sponsorship, so it matches the attached contract."""
+    fee = f"${sponsorship.sponsorship_fee:,}" if sponsorship.sponsorship_fee is not None else "TBD"
+    start = sponsorship.start_date.isoformat() if sponsorship.start_date else "TBD"
+    end = sponsorship.end_date.isoformat() if sponsorship.end_date else "TBD"
+    return (
+        f"Dear {sponsorship.sponsor.name},\n\n"
+        "Thank you for your interest in sponsoring the Python Software Foundation!\n\n"
+        f"Please find attached the sponsorship agreement for the proposed "
+        f"{sponsorship.level_name or 'custom'} sponsorship package "
+        f"for {sponsorship.year or 'N/A'}.\n\n"
+        f"Fee: {fee}\n"
+        f"Period: {start} to {end}\n\n"
+        "Please review the attached contract and let us know if you have "
+        "any questions or would like to discuss adjustments.\n\n"
+        "Best regards,\n"
+        "The PSF Sponsorship Team\n"
+        "sponsors@python.org"
+    )
+
+
 class ComposerView(SponsorshipAdminRequiredMixin, View):
     """Multi-step wizard for building a custom sponsorship.
 
@@ -2706,12 +2763,17 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
     1. Select or create a sponsor
     2. Choose a base package
     3. Customize benefits
-    4. Set terms (fee, dates, renewal, notes)
+    4. Set terms (fee, dates, renewal)
     5. Review & create sponsorship + draft contract
     6. Contract editor & send
+
+    Once the sponsorship exists (step 5), steps 2-5 are closed: changes go through step 6
+    or the sponsorship page. Step forms post ``composer_sponsor_id`` so a stale tab can't
+    write into a composition another tab has since switched to a different sponsor.
     """
 
     TOTAL_STEPS = 6
+    SPONSOR_SEARCH_LIMIT = 50
 
     def _get_step(self, request):
         """Return the current step number, clamped to valid range."""
@@ -2744,6 +2806,40 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
             return 4
         return 5
 
+    def _step_url(self, step):
+        return reverse("manage_composer") + f"?step={step}"
+
+    def _composer_sponsor(self, data):
+        """Return the sponsor being composed for, or None."""
+        if not data.get("sponsor_id"):
+            return None
+        return Sponsor.objects.filter(pk=data["sponsor_id"]).first()
+
+    def _composer_package(self, data):
+        """Return the selected base package, or None for a custom composition."""
+        if not data.get("package_id"):
+            return None
+        return SponsorshipPackage.objects.filter(pk=data["package_id"]).first()
+
+    def _composer_benefits(self, data, benefit_ids):
+        """Return the benefits among ``benefit_ids`` that belong to the composition's year."""
+        return SponsorshipBenefit.objects.filter(pk__in=benefit_ids, year=self._get_composer_year(data))
+
+    def _render(self, request, step, data, **context):
+        """Render a wizard step with the shared composer context."""
+        context.setdefault("composer_sponsor", self._composer_sponsor(data))
+        context.update({"step": step, "total_steps": self.TOTAL_STEPS, "data": data})
+        return render(request, "sponsors/manage/composer.html", context)
+
+    def _created_redirect(self, request):
+        """Send edits of steps 2-5 back to step 6 once the sponsorship exists."""
+        messages.info(
+            request,
+            "The sponsorship has already been created, so its package, benefits and terms can no longer be "
+            "changed in the Composer. Edit the contract below, or change the sponsorship from its detail page.",
+        )
+        return redirect(self._step_url(6))
+
     def get(self, request):
         """Render the current wizard step."""
         # Clear session when starting a new composer session
@@ -2762,7 +2858,7 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
             self._set_composer_data(request, data)
             # Skip to step 2 if sponsor was pre-selected
             if data.get("sponsor_id"):
-                return redirect(reverse("manage_composer") + "?step=2")
+                return redirect(self._step_url(2))
             return redirect(reverse("manage_composer"))
 
         step = self._get_step(request)
@@ -2771,6 +2867,8 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
         # Don't let user skip ahead
         max_step = self._max_allowed_step(data)
         step = min(step, max_step)
+        if data.get("sponsorship_id") and 1 < step < self.TOTAL_STEPS:
+            return self._created_redirect(request)
 
         handler = {
             1: self._render_step1,
@@ -2789,7 +2887,19 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
         max_step = self._max_allowed_step(data)
         if step > max_step:
             messages.error(request, "Please complete the previous steps first.")
-            return redirect(reverse("manage_composer") + f"?step={max_step}")
+            return redirect(self._step_url(max_step))
+        if step > 1:
+            posted_sponsor_id = request.POST.get("composer_sponsor_id")
+            if posted_sponsor_id is not None and posted_sponsor_id != str(data.get("sponsor_id", "")):
+                sponsor = self._composer_sponsor(data)
+                now = f" and is now for {sponsor.name}" if sponsor else ""
+                messages.error(
+                    request,
+                    f"The composition changed in another tab{now}. Nothing was saved; review this page and try again.",
+                )
+                return redirect(self._step_url(step))
+            if data.get("sponsorship_id") and step < self.TOTAL_STEPS:
+                return self._created_redirect(request)
         handler = {
             1: self._process_step1,
             2: self._process_step2,
@@ -2802,22 +2912,21 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
 
     # ── Step 1: Select Sponsor ──
 
-    def _render_step1(self, request, data):
-        q = request.GET.get("q", "")
+    def _render_step1(self, request, data, form=None):
+        q = request.GET.get("q", "").strip()
         sponsors = Sponsor.objects.order_by("name")
         if q:
-            sponsors = sponsors.filter(Q(name__icontains=q))
-        sponsors = sponsors[:50]
-        form = ComposerSponsorForm()
-        context = {
-            "step": 1,
-            "total_steps": self.TOTAL_STEPS,
-            "data": data,
-            "sponsors": sponsors,
-            "search_query": q,
-            "form": form,
-        }
-        return render(request, "sponsors/manage/composer.html", context)
+            sponsors = sponsors.filter(name__icontains=q)
+        return self._render(
+            request,
+            1,
+            data,
+            sponsors=sponsors[: self.SPONSOR_SEARCH_LIMIT],
+            sponsor_total=sponsors.count(),
+            sponsor_search_limit=self.SPONSOR_SEARCH_LIMIT,
+            search_query=q,
+            form=form or ComposerSponsorForm(),
+        )
 
     def _process_step1(self, request):
         data = self._get_composer_data(request)
@@ -2830,32 +2939,33 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
                 # Reset all data for fresh start with this sponsor
                 data = {"sponsor_id": sponsor.pk}
                 self._set_composer_data(request, data)
-                return redirect(reverse("manage_composer") + "?step=2")
+                return redirect(self._step_url(2))
 
-        elif action == "create_sponsor":
+        elif action in ("create_sponsor", "create_sponsor_only"):
             form = ComposerSponsorForm(request.POST)
-            if form.is_valid():
-                sponsor = form.save(commit=False)
-                sponsor.creator = request.user
-                sponsor.save()
-                data["sponsor_id"] = sponsor.pk
-                data.pop("new_sponsor", None)
-                self._set_composer_data(request, data)
-                return redirect(reverse("manage_composer") + "?step=2")
-            # Re-render with errors
-            sponsors = Sponsor.objects.order_by("name")[:50]
-            context = {
-                "step": 1,
-                "total_steps": self.TOTAL_STEPS,
-                "data": data,
-                "sponsors": sponsors,
-                "search_query": "",
-                "form": form,
-            }
-            return render(request, "sponsors/manage/composer.html", context)
+            if not form.is_valid():
+                return self._render_step1(request, data, form=form)
+            sponsor = form.save(commit=False)
+            sponsor.creator = request.user
+            sponsor.save()
+            if action == "create_sponsor_only":
+                messages.success(
+                    request,
+                    format_html(
+                        'Sponsor "{}" created. <a href="{}">Add contacts, address and logos</a>, '
+                        "or select it below to compose a sponsorship.",
+                        sponsor.name,
+                        reverse("manage_sponsor_edit", args=[sponsor.pk]),
+                    ),
+                )
+                return redirect(reverse("manage_composer") + "?" + urlencode({"step": 1, "q": sponsor.name}))
+            # A new sponsor starts a fresh composition, exactly like selecting an existing one.
+            self._set_composer_data(request, {"sponsor_id": sponsor.pk})
+            messages.success(request, f'Sponsor "{sponsor.name}" created. Now choose a package.')
+            return redirect(self._step_url(2))
 
         messages.error(request, "Please select or create a sponsor.")
-        return redirect(reverse("manage_composer") + "?step=1")
+        return redirect(self._step_url(1))
 
     # ── Step 2: Choose Package ──
 
@@ -2874,20 +2984,18 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
             with contextlib.suppress(TypeError, ValueError):
                 year = int(request.GET["year"])
 
-        packages = SponsorshipPackage.objects.filter(year=year).order_by("-sponsorship_amount") if year else []
+        packages = (
+            SponsorshipPackage.objects.filter(year=year)
+            .annotate(benefit_count=Count("benefits"))
+            .order_by("-sponsorship_amount")
+            if year
+            else []
+        )
         years = sorted(
             set(SponsorshipPackage.objects.values_list("year", flat=True).distinct()) - {None},
             reverse=True,
         )
-        context = {
-            "step": 2,
-            "total_steps": self.TOTAL_STEPS,
-            "data": data,
-            "packages": packages,
-            "years": years,
-            "selected_year": year,
-        }
-        return render(request, "sponsors/manage/composer.html", context)
+        return self._render(request, 2, data, packages=packages, years=years, selected_year=year)
 
     def _process_step2(self, request):
         data = self._get_composer_data(request)
@@ -2913,14 +3021,14 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
             except (SponsorshipPackage.DoesNotExist, ValueError):
                 messages.error(request, "Invalid package selection.")
                 self._set_composer_data(request, data)
-                return redirect(reverse("manage_composer") + "?step=2")
+                return redirect(self._step_url(2))
         else:
             messages.error(request, "Please select a package.")
             self._set_composer_data(request, data)
-            return redirect(reverse("manage_composer") + "?step=2")
+            return redirect(self._step_url(2))
 
         self._set_composer_data(request, data)
-        return redirect(reverse("manage_composer") + "?step=3")
+        return redirect(self._step_url(3))
 
     # ── Step 3: Customize Benefits ──
 
@@ -2939,58 +3047,55 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
 
         # Determine which benefits come from the selected package (locked)
         package_benefit_ids = set()
-        if data.get("package_id"):
-            pkg = SponsorshipPackage.objects.filter(pk=data["package_id"]).first()
-            if pkg:
-                package_benefit_ids = set(pkg.benefits.values_list("pk", flat=True))
+        package = self._composer_package(data)
+        if package:
+            package_benefit_ids = set(package.benefits.values_list("pk", flat=True))
 
-        context = {
-            "step": 3,
-            "total_steps": self.TOTAL_STEPS,
-            "data": data,
-            "benefits_by_program": benefits_by_program,
-            "selected_benefits": selected_benefits,
-            "selected_ids": selected_ids,
-            "total_value": total_value,
-            "package_benefit_ids": package_benefit_ids,
-        }
-        return render(request, "sponsors/manage/composer.html", context)
+        return self._render(
+            request,
+            3,
+            data,
+            benefits_by_program=benefits_by_program,
+            selected_benefits=selected_benefits,
+            selected_ids=selected_ids,
+            total_value=total_value,
+            package_benefit_ids=package_benefit_ids,
+        )
 
     def _process_step3(self, request):
         data = self._get_composer_data(request)
-        benefit_ids_raw = request.POST.getlist("benefit_ids")
-        benefit_ids = []
-        for bid in benefit_ids_raw:
-            try:
-                benefit_ids.append(int(bid))
-            except (TypeError, ValueError):
-                continue
-        data["benefit_ids"] = benefit_ids
+        posted_ids = []
+        for bid in request.POST.getlist("benefit_ids"):
+            with contextlib.suppress(TypeError, ValueError):
+                posted_ids.append(int(bid))
+        posted_ids = list(dict.fromkeys(posted_ids))
+        allowed = set(self._composer_benefits(data, posted_ids).values_list("pk", flat=True))
+        data["benefit_ids"] = [bid for bid in posted_ids if bid in allowed]
+        if len(data["benefit_ids"]) < len(posted_ids):
+            messages.warning(
+                request,
+                f"Some selected benefits are not available for {self._get_composer_year(data)} and were ignored.",
+            )
         self._set_composer_data(request, data)
-        return redirect(reverse("manage_composer") + "?step=4")
+        return redirect(self._step_url(4))
 
     # ── Step 4: Set Terms ──
 
-    def _render_step4(self, request, data):
-        initial = {}
-        if data.get("fee") is not None:
-            initial["fee"] = data["fee"]
-        elif data.get("package_id"):
-            try:
-                pkg = SponsorshipPackage.objects.get(pk=data["package_id"])
-                initial["fee"] = pkg.sponsorship_amount
-            except SponsorshipPackage.DoesNotExist:
-                pass
-        if data.get("start_date"):
-            initial["start_date"] = data["start_date"]
-        if data.get("end_date"):
-            initial["end_date"] = data["end_date"]
-        if data.get("renewal") is not None:
-            initial["renewal"] = data["renewal"]
-        if data.get("notes"):
-            initial["notes"] = data["notes"]
-
-        form = ComposerTermsForm(initial=initial)
+    def _render_step4(self, request, data, form=None):
+        package = self._composer_package(data)
+        if form is None:
+            initial = {}
+            if data.get("fee") is not None:
+                initial["fee"] = data["fee"]
+            elif package:
+                initial["fee"] = package.sponsorship_amount
+            if data.get("start_date"):
+                initial["start_date"] = data["start_date"]
+            if data.get("end_date"):
+                initial["end_date"] = data["end_date"]
+            if data.get("renewal") is not None:
+                initial["renewal"] = data["renewal"]
+            form = ComposerTermsForm(initial=initial)
 
         # Calculate total internal value from selected benefits for staff reference
         total_internal_value = 0
@@ -3001,45 +3106,32 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
                 or 0
             )
 
-        context = {
-            "step": 4,
-            "total_steps": self.TOTAL_STEPS,
-            "data": data,
-            "form": form,
-            "total_internal_value": total_internal_value,
-        }
-        return render(request, "sponsors/manage/composer.html", context)
+        return self._render(
+            request,
+            4,
+            data,
+            form=form,
+            total_internal_value=total_internal_value,
+            package_amount=package.sponsorship_amount if package and package.sponsorship_amount else 0,
+        )
 
     def _process_step4(self, request):
         data = self._get_composer_data(request)
         form = ComposerTermsForm(request.POST)
-        if form.is_valid():
-            data["fee"] = form.cleaned_data["fee"]
-            data["start_date"] = form.cleaned_data["start_date"].isoformat()
-            data["end_date"] = form.cleaned_data["end_date"].isoformat()
-            data["renewal"] = form.cleaned_data["renewal"]
-            data["notes"] = form.cleaned_data["notes"]
-            self._set_composer_data(request, data)
-            return redirect(reverse("manage_composer") + "?step=5")
-        # Re-render with errors
-        context = {
-            "step": 4,
-            "total_steps": self.TOTAL_STEPS,
-            "data": data,
-            "form": form,
-        }
-        return render(request, "sponsors/manage/composer.html", context)
+        if not form.is_valid():
+            return self._render_step4(request, data, form=form)
+        data["fee"] = form.cleaned_data["fee"]
+        data["start_date"] = form.cleaned_data["start_date"].isoformat()
+        data["end_date"] = form.cleaned_data["end_date"].isoformat()
+        data["renewal"] = form.cleaned_data["renewal"]
+        self._set_composer_data(request, data)
+        return redirect(self._step_url(5))
 
     # ── Step 5: Review & Create ──
 
     def _render_step5(self, request, data):
-        sponsor = None
-        if data.get("sponsor_id"):
-            sponsor = Sponsor.objects.filter(pk=data["sponsor_id"]).first()
-
-        package = None
-        if data.get("package_id"):
-            package = SponsorshipPackage.objects.filter(pk=data["package_id"]).first()
+        sponsor = self._composer_sponsor(data)
+        package = self._composer_package(data)
 
         selected_benefits = (
             SponsorshipBenefit.objects.filter(pk__in=data.get("benefit_ids", []))
@@ -3059,33 +3151,31 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
 
         # Determine which benefits come from the selected package
         package_benefit_ids = set()
-        if data.get("package_id") and package:
+        if package:
             package_benefit_ids = set(package.benefits.values_list("pk", flat=True))
 
-        context = {
-            "step": 5,
-            "total_steps": self.TOTAL_STEPS,
-            "data": data,
-            "sponsor": sponsor,
-            "package": package,
-            "selected_benefits": selected_benefits,
-            "total_value": total_value,
-            "review_benefits_by_program": review_benefits_by_program,
-            "package_benefit_ids": package_benefit_ids,
-        }
-        return render(request, "sponsors/manage/composer.html", context)
+        return self._render(
+            request,
+            5,
+            data,
+            composer_sponsor=sponsor,
+            sponsor=sponsor,
+            package=package,
+            selected_benefits=selected_benefits,
+            total_value=total_value,
+            review_benefits_by_program=review_benefits_by_program,
+            package_benefit_ids=package_benefit_ids,
+        )
 
     @transaction.atomic
     def _process_step5(self, request):
         data = self._get_composer_data(request)
 
         # Resolve sponsor
-        sponsor = None
-        if data.get("sponsor_id"):
-            sponsor = Sponsor.objects.filter(pk=data["sponsor_id"]).first()
+        sponsor = self._composer_sponsor(data)
         if not sponsor:
             messages.error(request, "Sponsor not found. Please start over.")
-            return redirect(reverse("manage_composer") + "?step=1")
+            return redirect(self._step_url(1))
 
         # Re-validate stored terms so a tampered/incomplete session can't bypass step 4.
         terms_form = ComposerTermsForm(
@@ -3094,21 +3184,15 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
                 "start_date": data.get("start_date"),
                 "end_date": data.get("end_date"),
                 "renewal": data.get("renewal", False),
-                "notes": data.get("notes", ""),
             }
         )
         if not terms_form.is_valid():
             messages.error(request, "Sponsorship terms are incomplete or invalid. Please set them again.")
-            return redirect(reverse("manage_composer") + "?step=4")
+            return redirect(self._step_url(4))
 
-        # Resolve benefits
-        benefit_ids = data.get("benefit_ids", [])
-        benefits = list(SponsorshipBenefit.objects.filter(pk__in=benefit_ids).select_related("program"))
-
-        # Resolve package
-        package = None
-        if data.get("package_id"):
-            package = SponsorshipPackage.objects.filter(pk=data["package_id"]).first()
+        # Resolve benefits; only the composition year's benefits can be included.
+        benefits = list(self._composer_benefits(data, data.get("benefit_ids", [])).select_related("program"))
+        package = self._composer_package(data)
 
         from apps.sponsors.exceptions import SponsorWithExistingApplicationError
 
@@ -3117,8 +3201,6 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
         except SponsorWithExistingApplicationError:
             existing = Sponsorship.objects.in_progress().filter(sponsor=sponsor).first()
             if existing:
-                from django.utils.html import format_html
-
                 url = reverse("manage_sponsorship_detail", args=[existing.pk])
                 messages.error(
                     request,
@@ -3130,7 +3212,7 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
                 )
             else:
                 messages.error(request, f"{sponsor.name} already has an in-progress sponsorship.")
-            return redirect(reverse("manage_composer") + "?step=5")
+            return redirect(self._step_url(5))
 
         # Create draft contract
         contract = Contract.new(sponsorship)
@@ -3143,12 +3225,10 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
             request,
             f"Sponsorship and draft contract created for {sponsor.name}. You can now edit the contract and send it.",
         )
-        return redirect(reverse("manage_composer") + "?step=6")
+        return redirect(self._step_url(6))
 
     def _create_sponsorship(self, request, data, sponsor, package, benefits):
-        """Create the Sponsorship and SponsorBenefit copies."""
-        import datetime
-
+        """Create the Sponsorship and SponsorBenefit copies, flagging customizations like Sponsorship.new."""
         from apps.sponsors.exceptions import SponsorWithExistingApplicationError
 
         year = data.get("year") or SponsorshipCurrentYear.get_year()
@@ -3158,13 +3238,17 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
             msg = f"Sponsor pk: {sponsor.pk}"
             raise SponsorWithExistingApplicationError(msg)
 
+        package_benefits = set(package.benefits.all()) if package else set()
+        # A custom composition is always "modified"; a package only when its benefits were changed.
+        for_modified_package = package is None or set(benefits) != package_benefits
+
         sponsorship = Sponsorship.objects.create(
             submited_by=request.user,
             sponsor=sponsor,
             level_name="" if not package else package.name,
             package=package,
             sponsorship_fee=data.get("fee"),
-            for_modified_package=True,
+            for_modified_package=for_modified_package,
             year=year,
             start_date=datetime.date.fromisoformat(data["start_date"]) if data.get("start_date") else None,
             end_date=datetime.date.fromisoformat(data["end_date"]) if data.get("end_date") else None,
@@ -3172,71 +3256,64 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
         )
 
         for benefit in benefits:
-            SponsorBenefit.new_copy(benefit, sponsorship=sponsorship)
+            added_by_user = for_modified_package and benefit not in package_benefits
+            SponsorBenefit.new_copy(benefit, sponsorship=sponsorship, added_by_user=added_by_user)
 
         return sponsorship
 
     # ── Step 6: Contract & Send ──
 
-    def _render_step6(self, request, data, si_form=None):
+    def _render_step6(self, request, data, si_form=None, contract_fields=None):
         contract_id = data.get("contract_id")
         if not contract_id:
             messages.error(request, "No contract found. Please go back and create the sponsorship.")
-            return redirect(reverse("manage_composer") + "?step=5")
+            return redirect(self._step_url(5))
 
         contract = Contract.objects.filter(pk=contract_id).select_related("sponsorship__sponsor").first()
         if not contract:
             messages.error(request, "Contract not found. Please start over.")
-            return redirect(reverse("manage_composer") + "?step=1")
+            return redirect(self._step_url(1))
 
-        sponsor = contract.sponsorship.sponsor
-        package = None
-        if data.get("package_id"):
-            package = SponsorshipPackage.objects.filter(pk=data["package_id"]).first()
-
-        sponsor_contacts = sponsor.contacts.all()
-
-        # Pre-fill email body
-        default_body = (
-            f"Dear {sponsor.name},\n\n"
-            "Thank you for your interest in sponsoring the Python Software Foundation!\n\n"
-            f"Please find attached the sponsorship agreement for the proposed "
-            f"{package.name if package else 'custom'} sponsorship package "
-            f"for {data.get('year', 'N/A')}.\n\n"
-            f"Fee: ${data.get('fee', 0):,}\n"
-            f"Period: {data.get('start_date', 'TBD')} to {data.get('end_date', 'TBD')}\n\n"
-            "Please review the attached contract and let us know if you have "
-            "any questions or would like to discuss adjustments.\n\n"
-            "Best regards,\n"
-            "The PSF Sponsorship Team\n"
-            "sponsors@python.org"
-        )
-
-        primary_contact = sponsor.primary_contact
+        sponsorship = contract.sponsorship
+        sponsor = sponsorship.sponsor
+        sponsor_contacts = list(sponsor.contacts.all())
+        # Only contacts whose email is verified on a python.org account receive the proposal.
+        verified = {email.casefold() for email in sponsor.verified_emails()}
+        recipient_contacts = [c for c in sponsor_contacts if c.email.casefold() in verified]
+        unverified_contacts = [c for c in sponsor_contacts if c.email.casefold() not in verified]
 
         # Bound with posted values on a failed save, else the current sponsor data.
         if si_form is None:
             si_form = SponsorEditForm(instance=sponsor)
+        if contract_fields is None:
+            contract_fields = {
+                "benefits_list": contract.benefits_list.raw,
+                "legal_clauses": contract.legal_clauses.raw,
+            }
 
-        context = {
-            "step": 6,
-            "total_steps": self.TOTAL_STEPS,
-            "data": data,
-            "sponsor": sponsor,
-            "package": package,
-            "contract": contract,
-            "sponsor_contacts": sponsor_contacts,
-            "primary_contact": primary_contact,
-            "si_form": si_form,
-            "contract_sponsor_info": contract.sponsor_info,
-            "contract_sponsor_contact": contract.sponsor_contact,
-            "contract_benefits_list": contract.benefits_list.raw,
-            "contract_legal_clauses": contract.legal_clauses.raw,
-            "available_clauses": LegalClause.objects.all().order_by("order"),
-            "default_subject": "Sponsorship Proposal from the Python Software Foundation",
-            "default_body": default_body,
-        }
-        return render(request, "sponsors/manage/composer.html", context)
+        return self._render(
+            request,
+            6,
+            data,
+            composer_sponsor=sponsor,
+            sponsor=sponsor,
+            sponsorship=sponsorship,
+            package=sponsorship.package,
+            contract=contract,
+            sponsor_contacts=sponsor_contacts,
+            recipient_contacts=recipient_contacts,
+            unverified_contacts=unverified_contacts,
+            primary_contact=sponsor.primary_contact,
+            si_form=si_form,
+            contract_sponsor_info=contract.sponsor_info,
+            contract_sponsor_contact=contract.sponsor_contact,
+            contract_benefits_list=contract_fields["benefits_list"],
+            contract_legal_clauses=contract_fields["legal_clauses"],
+            available_clauses=LegalClause.objects.all().order_by("order"),
+            default_subject=COMPOSER_DEFAULT_SUBJECT,
+            default_body=_default_proposal_body(sponsorship),
+            composer_return_url=self._step_url(6),
+        )
 
     def _load_step6_contract(self, data):
         """Load and validate the contract for step 6.
@@ -3249,7 +3326,7 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
         contract_id = data.get("contract_id")
         sponsorship_id = data.get("sponsorship_id")
         if not contract_id or not sponsorship_id:
-            return None, None, redirect(reverse("manage_composer") + "?step=1")
+            return None, None, redirect(self._step_url(1))
 
         contract = (
             Contract.objects.filter(pk=contract_id, sponsorship_id=sponsorship_id)
@@ -3257,7 +3334,7 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
             .first()
         )
         if not contract:
-            return None, None, redirect(reverse("manage_composer") + "?step=1")
+            return None, None, redirect(self._step_url(1))
 
         return contract, contract.sponsorship.sponsor, None
 
@@ -3283,7 +3360,7 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
             return handler(request, data, contract, sponsor)
 
         messages.error(request, "Unknown action.")
-        return redirect(reverse("manage_composer") + "?step=6")
+        return redirect(self._step_url(6))
 
     @transaction.atomic
     def _handle_save_contract(self, request, data, contract, sponsor):
@@ -3297,7 +3374,16 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
         sponsor_form = _build_sponsor_edit_form(request, sponsor)
         if not sponsor_form.is_valid():
             messages.error(request, "Please correct the errors in the sponsor information below.")
-            return self._render_step6(request, data, si_form=sponsor_form)
+            # Keep the unsaved contract text alongside the sponsor errors.
+            return self._render_step6(
+                request,
+                data,
+                si_form=sponsor_form,
+                contract_fields={
+                    "benefits_list": request.POST.get("benefits_list", ""),
+                    "legal_clauses": request.POST.get("legal_clauses", ""),
+                },
+            )
         sponsor = sponsor_form.save()
 
         # Rebuild sponsor_info from structured fields
@@ -3326,17 +3412,17 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
         contract.legal_clauses = request.POST.get("legal_clauses", "")
         contract.save()
         messages.success(request, "Contract updated.")
-        return redirect(reverse("manage_composer") + "?step=6")
+        return redirect(self._step_url(6))
 
     def _handle_download_pdf(self, request, data, contract, sponsor):
         """Return the contract as a PDF download."""
         from apps.sponsors.contracts import render_contract_to_pdf_response
 
         try:
-            return render_contract_to_pdf_response(request, contract)
-        except (RuntimeError, OSError, ImportError):
-            messages.error(request, "Failed to generate the contract PDF.")
-            return redirect(reverse("manage_composer") + "?step=6")
+            return render_contract_to_pdf_response(request, contract, as_attachment=True)
+        except (RuntimeError, OSError, ImportError) as exc:
+            messages.error(request, _contract_render_error_message(exc, "Failed to generate the contract PDF."))
+            return redirect(self._step_url(6))
 
     def _handle_download_docx(self, request, data, contract, sponsor):
         """Return the contract as a DOCX download."""
@@ -3344,9 +3430,9 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
 
         try:
             return render_contract_to_docx_response(request, contract)
-        except (RuntimeError, OSError, ImportError):
-            messages.error(request, "Failed to generate the contract DOCX.")
-            return redirect(reverse("manage_composer") + "?step=6")
+        except (RuntimeError, OSError, ImportError) as exc:
+            messages.error(request, _contract_render_error_message(exc, "Failed to generate the contract DOCX."))
+            return redirect(self._step_url(6))
 
     def _handle_finish(self, request, data, contract, sponsor):
         """Clear session and redirect to sponsorship detail without sending email."""
@@ -3355,20 +3441,31 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
         return redirect(reverse("manage_sponsorship_detail", args=[data["sponsorship_id"]]))
 
     def _render_contract_files(self, contract):
-        """Generate PDF and DOCX bytes from a contract.
+        """Render the contract PDF (required) and DOCX (attached when it renders).
 
-        Returns:
-            Tuple of (pdf_bytes, docx_bytes). Either may be None if generation fails.
+        Raises:
+            ContractRenderError: The PDF could not be generated; the message says why.
 
         """
-        from apps.sponsors.contracts import render_contract_to_docx_file, render_contract_to_pdf_file
+        from apps.sponsors.contracts import (
+            ContractRenderError,
+            render_contract_to_docx_file,
+            render_contract_to_pdf_file,
+        )
 
-        pdf_bytes = None
-        docx_bytes = None
-        with contextlib.suppress(OSError, RuntimeError, ImportError):
+        try:
             pdf_bytes = render_contract_to_pdf_file(contract)
-        with contextlib.suppress(OSError, RuntimeError, ImportError):
+        except ContractRenderError:
+            raise
+        except (OSError, RuntimeError, ImportError) as exc:
+            logger.exception("Contract PDF rendering failed for contract %s", contract.pk)
+            msg = "The contract PDF could not be generated. The error has been logged."
+            raise ContractRenderError(msg) from exc
+        docx_bytes = None
+        try:
             docx_bytes = render_contract_to_docx_file(contract)
+        except (OSError, RuntimeError, ImportError):
+            logger.exception("Contract DOCX rendering failed for contract %s; sending the PDF only", contract.pk)
         return pdf_bytes, docx_bytes
 
     def _collect_recipients(self, sponsor, extra_to):
@@ -3378,17 +3475,14 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
             emails = list(dict.fromkeys([*emails, extra_to]))
         return emails
 
-    def _attach_contract_files(self, email, sponsor, pdf_bytes, docx_bytes):
+    def _attach_contract_files(self, email, contract, pdf_bytes, docx_bytes):
         """Attach PDF and/or DOCX contract files to an EmailMessage."""
-        sponsor_slug = sponsor.name.replace(" ", "-").replace(".", "")
+        from apps.sponsors.contracts import DOCX_CONTENT_TYPE, contract_filename
+
         if pdf_bytes:
-            email.attach(f"sponsorship-contract-{sponsor_slug}.pdf", pdf_bytes, "application/pdf")
+            email.attach(contract_filename(contract, "pdf"), pdf_bytes, "application/pdf")
         if docx_bytes:
-            email.attach(
-                f"sponsorship-contract-{sponsor_slug}.docx",
-                docx_bytes,
-                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            )
+            email.attach(contract_filename(contract, "docx"), docx_bytes, DOCX_CONTENT_TYPE)
 
     @transaction.atomic
     def _finalize_and_send_contract(self, contract, sponsor, email):
@@ -3404,33 +3498,37 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
         pdf_bytes, docx_bytes = self._render_contract_files(contract)
         if not pdf_bytes:
             return False
-        self._attach_contract_files(email, sponsor, pdf_bytes, docx_bytes)
+        self._attach_contract_files(email, contract, pdf_bytes, docx_bytes)
         contract.set_final_version(pdf_bytes, docx_bytes)
         if email.send() != 1:
             msg = "The email backend did not send the contract."
             raise SMTPException(msg)
         return True
 
-    def _handle_send_proposal_with_contract(self, request, data, contract, sponsor):
+    def _handle_send_proposal_with_contract(self, request, data, contract, sponsor):  # noqa: C901, PLR0911 - validates recipients, renders, then finalizes and sends atomically
         """Finalize and send together so a delivery failure leaves a retryable draft."""
+        from apps.sponsors.contracts import ContractRenderError
+
         recipients_form = ComposerRecipientsForm(request.POST)
         if not recipients_form.is_valid():
             for field in ("extra_to", "cc_email", "bcc_email"):
                 for error in recipients_form.errors.get(field, []):
-                    messages.error(request, error)
-            return redirect(reverse("manage_composer") + "?step=6")
+                    messages.error(request, f"{recipients_form.fields[field].label}: {error}")
+            return redirect(self._step_url(6))
 
         verified_emails = sponsor.verified_emails()
         if not verified_emails:
             # Extras alone can never be the sole recipient of a sponsor proposal.
-            messages.error(request, "No verified sponsor emails to send to.")
-            return redirect(reverse("manage_composer") + "?step=6")
+            messages.error(
+                request,
+                f"No contact of {sponsor.name} has an email address verified on a python.org account, so the "
+                "proposal was not sent. PSF addresses can only be added alongside a verified contact.",
+            )
+            return redirect(self._step_url(6))
 
         emails = self._collect_recipients(sponsor, recipients_form.cleaned_data["extra_to"])
 
-        subject = (
-            request.POST.get("email_subject", "").strip() or "Sponsorship Proposal from the Python Software Foundation"
-        )
+        subject = request.POST.get("email_subject", "").strip() or COMPOSER_DEFAULT_SUBJECT
         body = (
             request.POST.get("email_body", "").strip()
             or f"Please find the attached sponsorship agreement for {sponsor.name}."
@@ -3451,13 +3549,16 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
             sent = self._finalize_and_send_contract(contract, sponsor, email)
         except InvalidStatusError as exc:
             messages.error(request, str(exc))
-            return redirect(reverse("manage_composer") + "?step=6")
+            return redirect(self._step_url(6))
+        except ContractRenderError as exc:
+            messages.error(request, f"{exc} The contract was not sent.")
+            return redirect(self._step_url(6))
         except (SMTPException, OSError):
             messages.error(request, "The contract could not be sent. Please try again.")
-            return redirect(reverse("manage_composer") + "?step=6")
+            return redirect(self._step_url(6))
         if not sent:
             messages.error(request, "PDF generation failed. The contract was not sent.")
-            return redirect(reverse("manage_composer") + "?step=6")
+            return redirect(self._step_url(6))
 
         _log_email_notification(request, contract.sponsorship, email, tag="composer_proposal")
         request.session.pop("composer", None)
@@ -3470,15 +3571,15 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
         if not form.is_valid():
             error = next(iter(form.errors.get("internal_email", [])), "Please enter a valid email address.")
             messages.error(request, error)
-            return redirect(reverse("manage_composer") + "?step=6")
+            return redirect(self._step_url(6))
 
         internal_email = form.cleaned_data["internal_email"]
         if not _send_internal_review_email(request, sponsor, contract, internal_email):
             messages.error(request, "The contract could not be sent. Please try again.")
-            return redirect(reverse("manage_composer") + "?step=6")
+            return redirect(self._step_url(6))
 
         messages.success(request, f"Contract sent to {internal_email} for internal review.")
-        return redirect(reverse("manage_composer") + "?step=6")
+        return redirect(self._step_url(6))
 
 
 class ComposerContractPreviewView(SponsorshipAdminRequiredMixin, View):
@@ -3501,8 +3602,8 @@ class ComposerContractPreviewView(SponsorshipAdminRequiredMixin, View):
 
         try:
             return render_contract_to_pdf_response(request, contract)
-        except (RuntimeError, OSError, ImportError):
-            messages.error(request, "Failed to generate the contract document.")
+        except (RuntimeError, OSError, ImportError) as exc:
+            messages.error(request, _contract_render_error_message(exc, "Failed to generate the contract document."))
             return redirect(reverse("manage_composer") + "?step=6")
 
 

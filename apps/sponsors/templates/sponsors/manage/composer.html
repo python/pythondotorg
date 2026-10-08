@@ -1,4 +1,5 @@
 {% extends "sponsors/manage/_base.html" %}
+{% load humanize %}
 
 {% block page_title %}Sponsorship Composer | Sponsor Management{% endblock %}
 
@@ -89,10 +90,19 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
+        width: 100%;
         padding: 10px 16px;
         cursor: pointer;
+        border: none;
         border-bottom: 1px solid #f0f0f0;
+        background: #fff;
+        font-family: inherit;
+        text-align: left;
         transition: background 0.1s;
+    }
+    .sponsor-card:focus-visible {
+        outline: 2px solid #3776ab;
+        outline-offset: -2px;
     }
     .sponsor-card:hover {
         background: #f0f6fc;
@@ -101,7 +111,7 @@
         background: #e8f0fe;
         border-left: 3px solid #3776ab;
     }
-    .sponsor-card:last-child {
+    .sponsor-form:last-child .sponsor-card {
         border-bottom: none;
     }
     .sponsor-card .sponsor-name {
@@ -426,6 +436,18 @@
         color: #777;
         margin: 0 0 12px;
     }
+    .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+    }
+    .required { color: #c0392b; }
 </style>
 
 <!-- Step indicator -->
@@ -442,7 +464,9 @@
 
     <div class="composer-step-line {% if step >= 2 %}completed{% endif %}"></div>
 
-    {% if step > 2 %}
+    {% if step > 2 and data.sponsorship_id %}
+        <span class="composer-step completed"><span class="step-num">2</span> Package</span>
+    {% elif step > 2 %}
         <a href="{% url 'manage_composer' %}?step=2" class="composer-step completed">
             <span class="step-num">2</span> Package
         </a>
@@ -454,7 +478,9 @@
 
     <div class="composer-step-line {% if step >= 3 %}completed{% endif %}"></div>
 
-    {% if step > 3 %}
+    {% if step > 3 and data.sponsorship_id %}
+        <span class="composer-step completed"><span class="step-num">3</span> Benefits</span>
+    {% elif step > 3 %}
         <a href="{% url 'manage_composer' %}?step=3" class="composer-step completed">
             <span class="step-num">3</span> Benefits
         </a>
@@ -466,7 +492,9 @@
 
     <div class="composer-step-line {% if step >= 4 %}completed{% endif %}"></div>
 
-    {% if step > 4 %}
+    {% if step > 4 and data.sponsorship_id %}
+        <span class="composer-step completed"><span class="step-num">4</span> Terms</span>
+    {% elif step > 4 %}
         <a href="{% url 'manage_composer' %}?step=4" class="composer-step completed">
             <span class="step-num">4</span> Terms
         </a>
@@ -478,7 +506,9 @@
 
     <div class="composer-step-line {% if step >= 5 %}completed{% endif %}"></div>
 
-    {% if step > 5 %}
+    {% if step > 5 and data.sponsorship_id %}
+        <span class="composer-step completed"><span class="step-num">5</span> Review &amp; Create</span>
+    {% elif step > 5 %}
         <a href="{% url 'manage_composer' %}?step=5" class="composer-step completed">
             <span class="step-num">5</span> Review &amp; Create
         </a>
@@ -497,12 +527,13 @@
     {% endif %}
 </div>
 
-{% if messages %}
-{% for message in messages %}
-<div class="manage-alert manage-alert-{% if message.tags %}{{ message.tags }}{% else %}info{% endif %}">
-    {{ message }}
+{% if composer_sponsor and step > 1 %}
+<div class="manage-alert manage-alert-info" style="display:flex;gap:8px;align-items:center;">
+    <span>Composing a sponsorship for <strong>{{ composer_sponsor.name }}</strong>{% if composer_sponsor.city %} ({{ composer_sponsor.city }}){% endif %}</span>
+    {% if not data.sponsorship_id %}
+    <a href="{% url 'manage_composer' %}?step=1" style="margin-left:auto;font-size:12px;">Change sponsor</a>
+    {% endif %}
 </div>
-{% endfor %}
 {% endif %}
 
 <!-- ═══════════════════════════════════════════ -->
@@ -514,84 +545,131 @@
         <h2>Select a Sponsor</h2>
     </div>
 
-    <!-- Search (live filter) -->
-    <div style="margin-bottom:20px;">
-        <input type="text" id="sponsor-live-search" value="{{ search_query }}" placeholder="Start typing to filter sponsors..."
-               style="width:100%;padding:10px 14px;border:1px solid #ccc;border-radius:4px;font-size:14px;box-sizing:border-box;"
+    <!-- Search: Enter searches every sponsor on the server; typing filters the loaded list -->
+    <form method="get" action="{% url 'manage_composer' %}" role="search" style="display:flex;gap:8px;margin-bottom:6px;">
+        <input type="hidden" name="step" value="1">
+        <input type="search" name="q" id="sponsor-live-search" aria-label="Search sponsors" value="{{ search_query }}" placeholder="Search all sponsors by name and press Enter..."
+               style="flex:1;padding:10px 14px;border:1px solid #ccc;border-radius:4px;font-size:14px;box-sizing:border-box;"
                autocomplete="off" autofocus>
-    </div>
+        <button type="submit" class="btn btn-secondary">Search</button>
+    </form>
+    <p style="font-size:12px;color:#777;margin:0 0 14px;">
+        {% if sponsor_total > sponsor_search_limit %}
+        Showing the first {{ sponsor_search_limit }} of {{ sponsor_total }} sponsors{% if search_query %} matching "{{ search_query }}"{% endif %}. Search to find others.
+        {% elif search_query %}
+        {{ sponsor_total }} sponsor{{ sponsor_total|pluralize }} matching "{{ search_query }}".
+        {% endif %}
+        {% if search_query %}<a href="{% url 'manage_composer' %}?step=1">Show all</a>{% endif %}
+    </p>
 
     <!-- Sponsor list -->
     {% if sponsors %}
     <div class="sponsor-list" id="sponsor-list">
         {% for s in sponsors %}
-        <form method="post" style="display:contents;" class="sponsor-form" data-name="{{ s.name|lower }}">
+        <form method="post" class="sponsor-form" data-name="{{ s.name|lower }}" style="margin:0;">
             {% csrf_token %}
             <input type="hidden" name="action" value="select_sponsor">
             <input type="hidden" name="sponsor_id" value="{{ s.pk }}">
-            <div class="sponsor-card {% if data.sponsor_id == s.pk %}selected{% endif %}"
-                 onclick="this.closest('form').submit();">
-                <div class="sponsor-name">{{ s.name }}</div>
-                <div class="sponsor-meta">
-                    {% if s.city %}{{ s.city }}{% endif %}{% if s.country %}, {{ s.country }}{% endif %}
-                </div>
-            </div>
+            <button type="submit" class="sponsor-card {% if data.sponsor_id == s.pk %}selected{% endif %}">
+                <span class="sponsor-name">{{ s.name }}</span>
+                <span class="sponsor-meta">
+                    {{ s.city }}{% if s.city and s.country %}, {% endif %}{% if s.country %}{{ s.country.name }}{% endif %}
+                </span>
+            </button>
         </form>
         {% endfor %}
     </div>
+    <p id="sponsor-filter-empty" hidden style="font-size:13px;color:#777;margin:-10px 0 20px;">
+        None of the sponsors listed above match. Press Enter to search all sponsors.
+    </p>
     <script>
     (function() {
         var input = document.getElementById('sponsor-live-search');
         var forms = document.querySelectorAll('.sponsor-form');
+        var empty = document.getElementById('sponsor-filter-empty');
         input.addEventListener('input', function() {
             var q = this.value.toLowerCase();
+            var visible = 0;
             forms.forEach(function(f) {
-                f.style.display = (!q || f.dataset.name.indexOf(q) !== -1) ? '' : 'none';
+                f.hidden = !!q && f.dataset.name.indexOf(q) === -1;
+                if (!f.hidden) visible++;
             });
+            empty.hidden = visible > 0;
         });
     })();
     </script>
     {% elif search_query %}
     <div class="empty-state" style="padding:24px;">
-        <p>No sponsors found matching "{{ search_query }}".</p>
+        <p>No sponsors found matching "{{ search_query }}". Create it below.</p>
     </div>
     {% endif %}
 
     <!-- Create new sponsor -->
-    <div class="collapse-section" id="new-sponsor-section">
-        <div class="collapse-header" onclick="this.parentElement.classList.toggle('open');">
+    {% for dup in form.duplicate_sponsors %}
+    <form method="post" id="select-dup-{{ dup.pk }}">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="select_sponsor">
+        <input type="hidden" name="sponsor_id" value="{{ dup.pk }}">
+    </form>
+    {% endfor %}
+    <div class="collapse-section{% if form.errors %} open{% endif %}" id="new-sponsor-section">
+        <button type="button" class="collapse-header" style="width:100%;border:none;font-family:inherit;text-align:left;"
+                aria-expanded="{% if form.errors %}true{% else %}false{% endif %}"
+                onclick="var s=this.parentElement;s.classList.toggle('open');this.setAttribute('aria-expanded', s.classList.contains('open'));">
             <span class="collapse-arrow" style="display:inline-block;font-size:12px;transition:transform 0.2s;">&#9654;</span>
             Create New Sponsor
-        </div>
+        </button>
         <div class="collapse-body">
             <form method="post" class="manage-form">
                 {% csrf_token %}
-                <input type="hidden" name="action" value="create_sponsor">
 
                 {% if form.errors %}
                 <div class="form-errors">
                     <strong>Please correct the errors below:</strong>
                     <ul>
-                    {% for field, errors in form.errors.items %}
-                        {% for error in errors %}
-                        <li>{{ field }}: {{ error }}</li>
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                        <li>{{ field.label }}: {{ error }}</li>
                         {% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+
+                {% if form.duplicate_sponsors %}
+                <div class="manage-alert manage-alert-warning">
+                    Existing sponsor{{ form.duplicate_sponsors|length|pluralize }} with this name:
+                    <ul style="margin:6px 0 0;">
+                    {% for dup in form.duplicate_sponsors %}
+                        <li style="margin-bottom:4px;">
+                            <a href="{% url 'manage_sponsor_edit' dup.pk %}" target="_blank" rel="noopener noreferrer">{{ dup.name }}{% if dup.city %} ({{ dup.city }}){% endif %}</a>
+                            <button type="submit" form="select-dup-{{ dup.pk }}" class="btn btn-sm btn-secondary" style="margin-left:6px;">Use this sponsor</button>
+                        </li>
                     {% endfor %}
                     </ul>
                 </div>
                 {% endif %}
 
+                <p style="font-size:12px;color:#777;margin:0 0 12px;"><span style="color:#c0392b;">*</span> Required</p>
                 {% for field in form %}
+                {% if field.name != "allow_duplicate" %}
                 <div class="form-group">
-                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    <label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} <span style="color:#c0392b;">*</span>{% endif %}</label>
                     {{ field }}
                     {% if field.help_text %}<span class="helptext">{{ field.help_text }}</span>{% endif %}
                     {% if field.errors %}<div class="field-errors">{{ field.errors.0 }}</div>{% endif %}
                 </div>
+                {% endif %}
                 {% endfor %}
+                {% if form.duplicate_sponsors %}
+                <div class="form-group">
+                    <label style="display:inline-flex;align-items:center;gap:6px;font-weight:400;">{{ form.allow_duplicate }} {{ form.allow_duplicate.label }}</label>
+                </div>
+                {% endif %}
 
                 <div style="display:flex;gap:8px;">
-                    <button type="submit" class="btn btn-primary">Create & Continue</button>
+                    <button type="submit" name="action" value="create_sponsor" class="btn btn-primary">Create &amp; Continue</button>
                     <button type="submit" name="action" value="create_sponsor_only" class="btn btn-secondary" style="border:1px solid #ccc !important;">Create Only</button>
                 </div>
             </form>
@@ -621,24 +699,27 @@
 
     <form method="post" id="package-form">
         {% csrf_token %}
-        <input type="hidden" name="package_id" id="package-id-input" value="">
+        <input type="hidden" name="composer_sponsor_id" value="{{ data.sponsor_id }}">
+        <input type="hidden" name="package_id" id="package-id-input" value="{% if data.custom_package %}custom{% elif data.package_id %}{{ data.package_id }}{% endif %}">
         <input type="hidden" name="year" value="{{ selected_year }}">
 
         <div class="package-cards">
             {% for pkg in packages %}
             <div class="package-card {% if data.package_id == pkg.pk %}selected{% endif %}"
-                 data-pkg-id="{{ pkg.pk }}"
-                 onclick="selectPackage('{{ pkg.pk }}');">
+                 data-pkg-id="{{ pkg.pk }}" role="button" tabindex="0"
+                 onclick="selectPackage('{{ pkg.pk }}');"
+                 onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectPackage('{{ pkg.pk }}');}">
                 <div class="pkg-name">{{ pkg.name }}</div>
-                <div class="pkg-price">${{ pkg.sponsorship_amount|floatformat:"0" }}</div>
-                <div class="pkg-benefits-count">{{ pkg.benefits.count }} benefits</div>
+                <div class="pkg-price">${{ pkg.sponsorship_amount|default:0|intcomma }}</div>
+                <div class="pkg-benefits-count">{{ pkg.benefit_count }} benefits</div>
             </div>
             {% endfor %}
 
             <!-- Custom option -->
             <div class="package-card custom-pkg {% if data.custom_package %}selected{% endif %}"
-                 data-pkg-id="custom"
-                 onclick="selectPackage('custom');">
+                 data-pkg-id="custom" role="button" tabindex="0"
+                 onclick="selectPackage('custom');"
+                 onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectPackage('custom');}">
                 <div class="pkg-name">Custom</div>
                 <div class="pkg-price" style="color:#b8860b;">A la carte</div>
                 <div class="pkg-benefits-count">Build from scratch</div>
@@ -675,9 +756,10 @@ function selectPackage(pkgId) {
 
     <form method="post" id="benefits-form">
         {% csrf_token %}
+        <input type="hidden" name="composer_sponsor_id" value="{{ data.sponsor_id }}">
         <div id="benefit-hidden-inputs">
             {% for b in selected_benefits %}
-            <input type="hidden" name="benefit_ids" value="{{ b.pk }}">
+            <input type="hidden" name="benefit_ids" value="{{ b.pk }}" id="input-{{ b.pk }}">
             {% endfor %}
         </div>
 
@@ -694,7 +776,7 @@ function selectPackage(pkgId) {
                 <div class="benefits-col-body" id="available-benefits">
                     {% for group in benefits_by_program %}
                     <div class="benefit-group" data-program="{{ group.program.name }}">
-                        <div class="benefit-group-label" style="cursor:pointer;user-select:none;" onclick="var body=this.nextElementSibling;body.style.display=body.style.display==='none'?'':'none';this.querySelector('.collapse-arrow').textContent=body.style.display==='none'?'&#9656;':'&#9662;';"><span class="collapse-arrow" style="font-size:10px;margin-right:4px;">&#9662;</span>{{ group.program.name }} <span style="font-size:11px;opacity:0.6;font-weight:400;">({{ group.benefits|length }})</span></div>
+                        <div class="benefit-group-label" style="cursor:pointer;user-select:none;" onclick="var body=this.nextElementSibling;body.style.display=body.style.display==='none'?'':'none';this.querySelector('.collapse-arrow').textContent=body.style.display==='none'?'&#9656;':'&#9662;';"><span class="collapse-arrow" style="font-size:10px;margin-right:4px;">&#9662;</span>{{ group.program.name }} <span style="font-size:11px;opacity:0.6;font-weight:400;">(<span class="group-count">{{ group.benefits|length }}</span>)</span></div>
                         <div class="benefit-group-items">
                         {% for b in group.benefits %}
                         <div class="benefit-item" id="avail-{{ b.pk }}"
@@ -706,7 +788,7 @@ function selectPackage(pkgId) {
                                 <span class="benefit-name">{{ b.name }}</span>
                                 {% if b.description %}<span title="{{ b.description }}" style="cursor:help;color:#999;font-size:12px;margin-left:4px;">?</span>{% endif %}
                                 {% if b.internal_value %}
-                                <span class="benefit-value">${{ b.internal_value|floatformat:"0" }}</span>
+                                <span class="benefit-value">${{ b.internal_value|intcomma }}</span>
                                 {% endif %}
                                 <span class="benefit-tags">
                                     {% if b.new %}<span class="tag tag-green">New</span>{% endif %}
@@ -739,7 +821,7 @@ function selectPackage(pkgId) {
                             <span class="benefit-name">{{ b.name }}</span>
                             {% if b.description %}<span title="{{ b.description }}" style="cursor:help;color:#999;font-size:12px;margin-left:4px;">?</span>{% endif %}
                             {% if b.internal_value %}
-                            <span class="benefit-value">${{ b.internal_value|floatformat:"0" }}</span>
+                            <span class="benefit-value">${{ b.internal_value|intcomma }}</span>
                             {% endif %}
                         </div>
                         <div class="benefit-action">
@@ -755,7 +837,7 @@ function selectPackage(pkgId) {
                 </div>
                 <div class="benefits-total">
                     <span>Total Internal Value</span>
-                    <span id="total-value">${{ total_value|floatformat:"0" }}</span>
+                    <span id="total-value">${{ total_value|intcomma }}</span>
                 </div>
             </div>
         </div>
@@ -787,10 +869,30 @@ function addBenefitClick(el, id, name, program, value, description, isPackage) {
     addBenefit(id, name, program, value, description, isPackage);
 }
 
+function isSelected(id) {
+    return !!document.getElementById('input-' + id);
+}
+
+// Available list = benefits not yet selected that match the filter; group counts exclude selected ones.
+function refreshAvailable() {
+    var query = (document.getElementById('benefit-search').value || '').toLowerCase();
+    document.querySelectorAll('#available-benefits .benefit-group').forEach(function(grp) {
+        var remaining = 0;
+        var visible = 0;
+        grp.querySelectorAll('.benefit-item').forEach(function(item) {
+            var selected = isSelected(item.id.replace('avail-', ''));
+            var match = !query || (item.getAttribute('data-name') || '').indexOf(query) !== -1;
+            item.style.display = (!selected && match) ? '' : 'none';
+            if (!selected) remaining++;
+            if (!selected && match) visible++;
+        });
+        grp.querySelector('.group-count').textContent = remaining;
+        grp.style.display = visible ? '' : 'none';
+    });
+}
+
 function addBenefit(id, name, program, value, description, isPackage) {
-    // Hide from available
-    var avail = document.getElementById('avail-' + id);
-    if (avail) avail.style.display = 'none';
+    if (isSelected(id)) return;
 
     // Add hidden input
     var inp = document.createElement('input');
@@ -799,6 +901,7 @@ function addBenefit(id, name, program, value, description, isPackage) {
     inp.value = id;
     inp.id = 'input-' + id;
     document.getElementById('benefit-hidden-inputs').appendChild(inp);
+    refreshAvailable();
 
     // Add to selected list
     var sel = document.getElementById('selected-benefits');
@@ -862,13 +965,12 @@ function removeBenefit(id, value) {
         }
     }
 
-    // Show in available
-    var avail = document.getElementById('avail-' + id);
-    if (avail) avail.style.display = '';
+    if (!isSelected(id)) return;
 
     // Remove hidden input
     var inp = document.getElementById('input-' + id);
     if (inp) inp.remove();
+    refreshAvailable();
 
     // Remove from selected
     if (selEl) selEl.remove();
@@ -878,26 +980,11 @@ function removeBenefit(id, value) {
     updateTotal();
 }
 
-function filterBenefits(query) {
-    query = query.toLowerCase();
-    document.querySelectorAll('#available-benefits .benefit-item').forEach(function(item) {
-        var name = item.getAttribute('data-name') || '';
-        if (item.style.display === 'none' && !query) return;
-        if (name.indexOf(query) !== -1 || !query) {
-            // Only show if not already selected
-            var id = item.id.replace('avail-', '');
-            var inp = document.getElementById('input-' + id);
-            if (!inp) item.style.display = '';
-        } else {
-            item.style.display = 'none';
-        }
-    });
-    // Show/hide group labels
-    document.querySelectorAll('#available-benefits .benefit-group').forEach(function(grp) {
-        var visible = grp.querySelectorAll('.benefit-item:not([style*="display: none"])').length > 0;
-        grp.style.display = visible ? '' : 'none';
-    });
+function filterBenefits() {
+    refreshAvailable();
 }
+
+refreshAvailable();
 </script>
 {% endif %}
 
@@ -912,6 +999,7 @@ function filterBenefits(query) {
 
     <form method="post" class="manage-form">
         {% csrf_token %}
+        <input type="hidden" name="composer_sponsor_id" value="{{ data.sponsor_id }}">
 
         {% if form.errors %}
         <div class="form-errors">
@@ -920,12 +1008,10 @@ function filterBenefits(query) {
             {% for error in form.non_field_errors %}
                 <li>{{ error }}</li>
             {% endfor %}
-            {% for field, errors in form.errors.items %}
-                {% if field != '__all__' %}
-                {% for error in errors %}
-                <li>{{ field }}: {{ error }}</li>
+            {% for field in form %}
+                {% for error in field.errors %}
+                <li>{{ field.label }}: {{ error }}</li>
                 {% endfor %}
-                {% endif %}
             {% endfor %}
             </ul>
         </div>
@@ -937,14 +1023,26 @@ function filterBenefits(query) {
                 <label for="id_fee">{{ form.fee.label }}</label>
                 {{ form.fee }}
                 {% if form.fee.errors %}<div class="field-errors">{{ form.fee.errors.0 }}</div>{% endif %}
+                {% if total_internal_value or package_amount %}
                 {% if total_internal_value %}
                 <div style="margin-top:8px;font-size:12px;color:#888;">
-                    Internal benefit cost: <strong style="color:#555;">${{ total_internal_value|floatformat:"0" }}</strong>
+                    Internal benefit cost: <strong style="color:#555;">${{ total_internal_value|intcomma }}</strong>
                     <span style="font-size:10px;color:#aaa;margin-left:4px;">(staff only)</span>
                 </div>
+                {% endif %}
+                {% if package_amount %}
+                <div style="margin-top:4px;font-size:12px;color:#888;">
+                    Package list price: <strong style="color:#555;">${{ package_amount|intcomma }}</strong>
+                </div>
+                {% endif %}
                 <!-- Fee adjustment buttons -->
                 <div style="display:flex;gap:4px;margin-top:8px;flex-wrap:wrap;" id="fee-btns">
+                    {% if total_internal_value %}
                     <button type="button" class="date-quick-btn" onclick="document.getElementById('id_fee').value={{ total_internal_value }};checkFeeWarning();">Match internal cost</button>
+                    {% endif %}
+                    {% if package_amount %}
+                    <button type="button" class="date-quick-btn" onclick="document.getElementById('id_fee').value={{ package_amount }};checkFeeWarning();">Match list price</button>
+                    {% endif %}
                     <span style="width:1px;background:#ddd;margin:0 4px;align-self:stretch;"></span>
                     <button type="button" class="date-quick-btn" style="font-size:10px;padding:2px 6px;color:#999;" onclick="nudgeFee(-0.10);">-10%</button>
                     <button type="button" class="date-quick-btn" style="font-size:10px;padding:2px 6px;color:#999;" onclick="nudgeFee(-0.05);">-5%</button>
@@ -954,7 +1052,7 @@ function filterBenefits(query) {
                 <!-- Fee warning -->
                 <div id="fee-warning" style="display:none;margin-top:8px;padding:8px 12px;border-radius:4px;font-size:12px;"></div>
                 <script>
-                var internalCost = {{ total_internal_value }};
+                var internalCost = {{ total_internal_value|default:"0" }};
                 var packageCost = {{ package_amount|default:"0" }};
                 var feeInput = document.getElementById('id_fee');
 
@@ -1097,11 +1195,6 @@ function filterBenefits(query) {
                 </label>
                 {% if form.renewal.help_text %}<span class="helptext">{{ form.renewal.help_text }}</span>{% endif %}
             </div>
-            <div class="form-group">
-                <label for="id_notes">{{ form.notes.label }}</label>
-                {{ form.notes }}
-                {% if form.notes.errors %}<div class="field-errors">{{ form.notes.errors.0 }}</div>{% endif %}
-            </div>
         </fieldset>
 
         <div class="composer-actions">
@@ -1131,7 +1224,7 @@ function filterBenefits(query) {
             {% if sponsor.city %}
             <div class="summary-row">
                 <span class="label">Location</span>
-                <span class="value">{{ sponsor.city }}{% if sponsor.country %}, {{ sponsor.country }}{% endif %}</span>
+                <span class="value">{{ sponsor.city }}{% if sponsor.country %}, {{ sponsor.country.name }}{% endif %}</span>
             </div>
             {% endif %}
             {% endif %}
@@ -1169,7 +1262,7 @@ function filterBenefits(query) {
                             {% if b.pk in package_benefit_ids %}<span style="font-size:9px;color:#3776ab;font-weight:600;margin-left:4px;">Pkg</span>{% endif %}
                             {% if b.description %}<span title="{{ b.description }}" style="cursor:help;color:#999;font-size:12px;margin-left:4px;">?</span>{% endif %}
                         </span>
-                        <span>${{ b.internal_value|default:"0"|floatformat:"0" }}</span>
+                        <span>${{ b.internal_value|default:0|intcomma }}</span>
                     </li>
                     {% endfor %}
                 </ul>
@@ -1178,7 +1271,7 @@ function filterBenefits(query) {
             <div class="summary-row" style="margin-top:8px;border-top:2px solid #e8e8e8;padding-top:8px;">
                 <span class="label" style="font-weight:700;">Total Internal Value</span>
                 <span class="value">
-                    ${{ total_value|floatformat:"0" }}
+                    ${{ total_value|intcomma }}
                     <span style="font-size:10px;color:#aaa;margin-left:4px;">(staff only)</span>
                 </span>
             </div>
@@ -1188,7 +1281,7 @@ function filterBenefits(query) {
             <h3>Terms</h3>
             <div class="summary-row">
                 <span class="label">Fee</span>
-                <span class="value">${{ data.fee|floatformat:"0" }}</span>
+                <span class="value">${{ data.fee|intcomma }}</span>
             </div>
             <div class="summary-row">
                 <span class="label">Start Date</span>
@@ -1202,12 +1295,6 @@ function filterBenefits(query) {
                 <span class="label">Renewal</span>
                 <span class="value">{% if data.renewal %}Yes{% else %}No{% endif %}</span>
             </div>
-            {% if data.notes %}
-            <div style="margin-top:8px;">
-                <div class="label" style="font-size:12px;color:#666;margin-bottom:4px;">Notes</div>
-                <div style="font-size:13px;color:#333;white-space:pre-wrap;background:#f7f8fa;padding:10px;border-radius:4px;">{{ data.notes }}</div>
-            </div>
-            {% endif %}
         </div>
     </div>
 
@@ -1215,6 +1302,7 @@ function filterBenefits(query) {
     <div style="margin-top:24px;text-align:center;">
         <form method="post">
             {% csrf_token %}
+            <input type="hidden" name="composer_sponsor_id" value="{{ data.sponsor_id }}">
             <button type="submit" class="btn btn-primary" style="font-size:16px;padding:12px 32px;background:#4caf50 !important;"
                     onclick="return confirm('Create the sponsorship and draft contract? This cannot be undone.');">
                 Create Sponsorship &amp; Draft Contract
@@ -1252,6 +1340,7 @@ function filterBenefits(query) {
         <form method="post">
             {% csrf_token %}
             <input type="hidden" name="action" value="save_contract">
+            <input type="hidden" name="composer_sponsor_id" value="{{ data.sponsor_id }}">
 
             <!-- Hidden fields: rebuilt from structured data on save -->
             <input type="hidden" name="sponsor_info" id="sponsor-info-hidden" value="{{ contract_sponsor_info }}">
@@ -1263,12 +1352,12 @@ function filterBenefits(query) {
                     <div style="font-size:12px;font-weight:600;text-transform:uppercase;color:#999;margin-bottom:8px;">Sponsor Information</div>
                     <div style="background:#f7f8fa;border:1px solid #e8e8e8;border-radius:6px;padding:16px;">
                         <div style="margin-bottom:10px;">
-                            <label style="font-size:11px;font-weight:600;color:#666;display:block;margin-bottom:2px;">Sponsor Name</label>
+                            <span style="font-size:11px;font-weight:600;color:#666;display:block;margin-bottom:2px;">Sponsor Name</span>
                             <div style="font-size:13px;padding:8px 10px;background:#eee;border:1px solid #ddd;border-radius:4px;color:#555;">{{ sponsor.name }}</div>
                         </div>
                         <div style="margin-bottom:10px;">
-                            <label for="si-description" style="font-size:11px;font-weight:600;color:#666;display:block;margin-bottom:2px;">Description</label>
-                            <textarea name="si_description" id="si-description" rows="2" style="width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;box-sizing:border-box;resize:vertical;">{{ si_form.description.value|default:"" }}</textarea>
+                            <label for="si-description" style="font-size:11px;font-weight:600;color:#666;display:block;margin-bottom:2px;">Description <span class="required" aria-hidden="true">*</span></label>
+                            <textarea name="si_description" id="si-description" rows="2" required style="width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;box-sizing:border-box;resize:vertical;">{{ si_form.description.value|default:"" }}</textarea>
                             {% if si_form.description.errors %}<div class="field-errors">{{ si_form.description.errors.0 }}</div>{% endif %}
                         </div>
                         <div style="margin-bottom:10px;">
@@ -1277,32 +1366,42 @@ function filterBenefits(query) {
                             {% if si_form.landing_page_url.errors %}<div class="field-errors">{{ si_form.landing_page_url.errors.0 }}</div>{% endif %}
                         </div>
                         <div style="margin-bottom:10px;">
-                            <label for="si-phone" style="font-size:11px;font-weight:600;color:#666;display:block;margin-bottom:2px;">Phone</label>
-                            <input type="text" name="si_phone" id="si-phone" value="{{ si_form.primary_phone.value|default:'' }}" style="width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;box-sizing:border-box;">
+                            <label for="si-phone" style="font-size:11px;font-weight:600;color:#666;display:block;margin-bottom:2px;">Phone <span class="required" aria-hidden="true">*</span></label>
+                            <input type="text" name="si_phone" id="si-phone" required value="{{ si_form.primary_phone.value|default:'' }}" style="width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;box-sizing:border-box;">
                             {% if si_form.primary_phone.errors %}<div class="field-errors">{{ si_form.primary_phone.errors.0 }}</div>{% endif %}
                         </div>
-                        <div style="font-size:11px;font-weight:600;color:#666;margin-bottom:4px;">Mailing Address</div>
+                        <div style="font-size:11px;font-weight:600;color:#666;margin-bottom:4px;">Mailing Address <span style="font-weight:400;color:#999;">(fields marked <span class="required">*</span> are required)</span></div>
                         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
                             <div>
-                                <input type="text" name="si_address1" id="si-address1" value="{{ si_form.mailing_address_line_1.value|default:'' }}" placeholder="Address line 1" style="width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;box-sizing:border-box;">
+                                <label for="si-address1" class="sr-only">Address line 1 (required)</label>
+                                <input type="text" name="si_address1" id="si-address1" required value="{{ si_form.mailing_address_line_1.value|default:'' }}" placeholder="Address line 1 *" style="width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;box-sizing:border-box;">
                                 {% if si_form.mailing_address_line_1.errors %}<div class="field-errors">{{ si_form.mailing_address_line_1.errors.0 }}</div>{% endif %}
                             </div>
                             <div>
+                                <label for="si-address2" class="sr-only">Address line 2</label>
                                 <input type="text" name="si_address2" id="si-address2" value="{{ si_form.mailing_address_line_2.value|default:'' }}" placeholder="Address line 2" style="width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;box-sizing:border-box;">
                             </div>
                             <div>
-                                <input type="text" name="si_city" id="si-city" value="{{ si_form.city.value|default:'' }}" placeholder="City" style="width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;box-sizing:border-box;">
+                                <label for="si-city" class="sr-only">City (required)</label>
+                                <input type="text" name="si_city" id="si-city" required value="{{ si_form.city.value|default:'' }}" placeholder="City *" style="width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;box-sizing:border-box;">
                                 {% if si_form.city.errors %}<div class="field-errors">{{ si_form.city.errors.0 }}</div>{% endif %}
                             </div>
                             <div>
+                                <label for="si-state" class="sr-only">State/Province</label>
                                 <input type="text" name="si_state" id="si-state" value="{{ si_form.state.value|default:'' }}" placeholder="State/Province" style="width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;box-sizing:border-box;">
                             </div>
                             <div>
-                                <input type="text" name="si_postal" id="si-postal" value="{{ si_form.postal_code.value|default:'' }}" placeholder="Postal code" style="width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;box-sizing:border-box;">
+                                <label for="si-postal" class="sr-only">Postal code (required)</label>
+                                <input type="text" name="si_postal" id="si-postal" required value="{{ si_form.postal_code.value|default:'' }}" placeholder="Postal code *" style="width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;box-sizing:border-box;">
                                 {% if si_form.postal_code.errors %}<div class="field-errors">{{ si_form.postal_code.errors.0 }}</div>{% endif %}
                             </div>
                             <div>
-                                <input type="text" name="si_country" id="si-country" value="{{ si_form.country.value|default:'' }}" placeholder="Country" style="width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;box-sizing:border-box;">
+                                <label for="si-country" class="sr-only">Country (required)</label>
+                                <select name="si_country" id="si-country" required style="width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;box-sizing:border-box;">
+                                    {% for code, label in si_form.fields.country.choices %}
+                                    <option value="{{ code }}"{% if code == si_form.country.value|stringformat:"s" %} selected{% endif %}>{{ label }}{% if not code %} *{% endif %}</option>
+                                    {% endfor %}
+                                </select>
                                 {% if si_form.country.errors %}<div class="field-errors">{{ si_form.country.errors.0 }}</div>{% endif %}
                             </div>
                         </div>
@@ -1313,7 +1412,7 @@ function filterBenefits(query) {
                 <div>
                     <div style="font-size:12px;font-weight:600;text-transform:uppercase;color:#999;margin-bottom:8px;">
                         Sponsor Contacts
-                        <a href="{% url 'manage_contact_create' sponsor_pk=sponsor.pk %}?from_sponsorship={{ data.sponsorship_id }}" style="font-size:11px;font-weight:400;text-transform:none;color:#306998;margin-left:8px;">+ Add Contact</a>
+                        <a href="{% url 'manage_contact_create' sponsor_pk=sponsor.pk %}?next={{ composer_return_url|urlencode }}" style="font-size:11px;font-weight:400;text-transform:none;color:#306998;margin-left:8px;">+ Add Contact</a>
                     </div>
                     <div style="background:#f7f8fa;border:1px solid #e8e8e8;border-radius:6px;padding:16px;">
                         {% for c in sponsor_contacts %}
@@ -1322,7 +1421,7 @@ function filterBenefits(query) {
                                 <strong style="font-size:13px;">{{ c.name }}</strong>
                                 <div style="display:flex;align-items:center;gap:8px;">
                                     {% if c.primary %}<span style="font-size:10px;font-weight:600;color:#fff;background:#306998;padding:2px 6px;border-radius:3px;">PRIMARY</span>{% endif %}
-                                    <a href="{% url 'manage_contact_edit' pk=c.pk %}?from_sponsorship={{ data.sponsorship_id }}" style="font-size:11px;color:#306998;">Edit</a>
+                                    <a href="{% url 'manage_contact_edit' pk=c.pk %}?next={{ composer_return_url|urlencode }}" style="font-size:11px;color:#306998;">Edit</a>
                                 </div>
                             </div>
                             <div style="font-size:12px;color:#666;">
@@ -1334,7 +1433,7 @@ function filterBenefits(query) {
                         {% empty %}
                         <div style="font-size:13px;color:#999;text-align:center;padding:16px;">
                             No contacts on file.
-                            <a href="{% url 'manage_contact_create' sponsor_pk=sponsor.pk %}?from_sponsorship={{ data.sponsorship_id }}" style="color:#306998;">Add one now</a>.
+                            <a href="{% url 'manage_contact_create' sponsor_pk=sponsor.pk %}?next={{ composer_return_url|urlencode }}" style="color:#306998;">Add one now</a>.
                         </div>
                         {% endfor %}
                         {% if sponsor_contacts %}
@@ -1414,11 +1513,13 @@ function filterBenefits(query) {
             <form method="post" style="display:inline;">
                 {% csrf_token %}
                 <input type="hidden" name="action" value="download_docx">
+                <input type="hidden" name="composer_sponsor_id" value="{{ data.sponsor_id }}">
                 <button type="submit" class="btn btn-secondary" style="padding:8px 20px;">Download DOCX</button>
             </form>
             <form method="post" style="display:inline;">
                 {% csrf_token %}
                 <input type="hidden" name="action" value="download_pdf">
+                <input type="hidden" name="composer_sponsor_id" value="{{ data.sponsor_id }}">
                 <button type="submit" class="btn btn-secondary" style="padding:8px 20px;">Download PDF</button>
             </form>
         </div>
@@ -1431,34 +1532,46 @@ function filterBenefits(query) {
         <form method="post">
             {% csrf_token %}
             <input type="hidden" name="action" value="send_proposal">
+            <input type="hidden" name="composer_sponsor_id" value="{{ data.sponsor_id }}">
 
-            <!-- Recipients -->
+            <!-- Recipients: only contacts with a python.org-verified email receive the proposal. -->
             <div style="font-size:12px;font-weight:600;text-transform:uppercase;color:#999;margin-bottom:4px;">To</div>
             <div style="margin-bottom:16px;">
-                {% for c in sponsor_contacts %}
+                {% for c in recipient_contacts %}
                 <div style="font-size:13px;padding:6px 10px;background:#f7f8fa;border-radius:4px;margin-bottom:4px;display:flex;justify-content:space-between;">
                     <span><strong>{{ c.name }}</strong> &lt;{{ c.email }}&gt;</span>
-                    <span style="font-size:11px;color:#999;">{{ c.get_type_display|default:"Contact" }}</span>
+                    <span style="font-size:11px;color:#999;">{{ c.type|default:"Contact" }}</span>
                 </div>
                 {% endfor %}
-                {% if not sponsor_contacts %}
-                <div style="font-size:12px;color:#999;margin-bottom:8px;">No sponsor contacts on file. Send to a PSF team address instead:</div>
-                {% endif %}
-                <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:6px;">
-                    <button type="button" class="date-quick-btn" onclick="var f=document.getElementById('extra-to');f.value='sponsors@python.org';f.style.display='';">sponsors@python.org</button>
-                    <button type="button" class="date-quick-btn" onclick="var f=document.getElementById('extra-to');f.value='loren@python.org';f.style.display='';">loren@python.org</button>
+                {% if unverified_contacts %}
+                <div style="font-size:12px;color:#8a5a00;margin:8px 0 4px;">Will <strong>not</strong> receive this email &mdash; their address is not verified on a python.org account:</div>
+                {% for c in unverified_contacts %}
+                <div style="font-size:13px;padding:6px 10px;background:#fff8e6;border-radius:4px;margin-bottom:4px;display:flex;justify-content:space-between;color:#666;">
+                    <span><s>{{ c.name }} &lt;{{ c.email }}&gt;</s></span>
+                    <span style="font-size:11px;">not verified</span>
                 </div>
-                <input type="email" name="extra_to" id="extra-to" placeholder="name@python.org or name@pyfound.org" style="width:100%;padding:8px 12px;border:1px solid #ccc;border-radius:4px;font-size:13px;box-sizing:border-box;margin-top:6px;{% if sponsor_contacts %}display:none;{% endif %}" pattern=".*@(python\.org|pyfound\.org)$" title="Must be @python.org or @pyfound.org">
+                {% endfor %}
+                {% endif %}
+                {% if not recipient_contacts %}
+                <div style="font-size:12px;color:#c0392b;margin:8px 0;">No contact of {{ sponsor.name }} has a verified email, so the proposal cannot be sent yet. Use internal review below, or have a contact verify their python.org account email.</div>
+                {% endif %}
+                <div style="font-size:12px;color:#999;margin-top:8px;">Optionally add a PSF address to the To line:</div>
+                <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:6px;">
+                    <button type="button" class="date-quick-btn" onclick="var f=document.getElementById('extra-to');f.value='sponsors@python.org';">sponsors@python.org</button>
+                    <button type="button" class="date-quick-btn" onclick="var f=document.getElementById('extra-to');f.value='loren@python.org';">loren@python.org</button>
+                </div>
+                <label for="extra-to" class="sr-only">Additional PSF recipient</label>
+                <input type="email" name="extra_to" id="extra-to" placeholder="name@python.org or name@pyfound.org" style="width:100%;padding:8px 12px;border:1px solid #ccc;border-radius:4px;font-size:13px;box-sizing:border-box;margin-top:6px;" pattern=".*@(python\.org|pyfound\.org)$" title="Must be @python.org or @pyfound.org">
             </div>
 
             <div style="display:flex;gap:16px;margin-bottom:16px;">
                 <div style="flex:1;">
-                    <div style="font-size:12px;font-weight:600;text-transform:uppercase;color:#999;margin-bottom:4px;">CC</div>
-                    <input type="email" name="cc_email" placeholder="cc@python.org" style="width:100%;padding:8px 12px;border:1px solid #ccc;border-radius:4px;font-size:13px;box-sizing:border-box;">
+                    <label for="cc-email" style="font-size:12px;font-weight:600;text-transform:uppercase;color:#999;margin-bottom:4px;display:block;">CC</label>
+                    <input type="email" name="cc_email" id="cc-email" placeholder="cc@python.org" style="width:100%;padding:8px 12px;border:1px solid #ccc;border-radius:4px;font-size:13px;box-sizing:border-box;">
                 </div>
                 <div style="flex:1;">
-                    <div style="font-size:12px;font-weight:600;text-transform:uppercase;color:#999;margin-bottom:4px;">BCC</div>
-                    <input type="email" name="bcc_email" placeholder="bcc@python.org" style="width:100%;padding:8px 12px;border:1px solid #ccc;border-radius:4px;font-size:13px;box-sizing:border-box;">
+                    <label for="bcc-email" style="font-size:12px;font-weight:600;text-transform:uppercase;color:#999;margin-bottom:4px;display:block;">BCC</label>
+                    <input type="email" name="bcc_email" id="bcc-email" placeholder="bcc@python.org" style="width:100%;padding:8px 12px;border:1px solid #ccc;border-radius:4px;font-size:13px;box-sizing:border-box;">
                 </div>
             </div>
 
@@ -1475,7 +1588,7 @@ function filterBenefits(query) {
                 <strong>Attachments:</strong> The contract will be attached as PDF and DOCX. The contract status will change to "Awaiting Signature".
             </div>
 
-            <button type="submit" class="btn btn-gold" style="font-size:14px;padding:10px 24px;" onclick="return confirm('Send the contract? This will finalize the contract and change its status to Awaiting Signature.');">Send with Contract</button>
+            <button type="submit" class="btn btn-gold" style="font-size:14px;padding:10px 24px;"{% if not recipient_contacts %} disabled{% endif %} onclick="return confirm('Send the contract? This will finalize the contract and change its status to Awaiting Signature.');">Send with Contract</button>
         </form>
     </div>
 
@@ -1486,6 +1599,7 @@ function filterBenefits(query) {
         <form method="post">
             {% csrf_token %}
             <input type="hidden" name="action" value="send_internal">
+            <input type="hidden" name="composer_sponsor_id" value="{{ data.sponsor_id }}">
             <div style="display:flex;gap:8px;">
                 <input type="email" name="internal_email" aria-label="Internal reviewer email" placeholder="reviewer@python.org"
                        style="flex:1;padding:8px 12px;border:1px solid #ccc;border-radius:4px;font-size:13px;">
@@ -1496,11 +1610,12 @@ function filterBenefits(query) {
 
     <!-- Finish without sending -->
     <div class="composer-actions">
-        <a href="{% url 'manage_composer' %}?step=5" class="btn btn-secondary">Back to Review</a>
+        <a href="{% url 'manage_sponsorship_detail' pk=sponsorship.pk %}" class="btn btn-secondary">View Sponsorship</a>
         <div class="spacer"></div>
         <form method="post" style="display:inline;">
             {% csrf_token %}
             <input type="hidden" name="action" value="finish">
+            <input type="hidden" name="composer_sponsor_id" value="{{ data.sponsor_id }}">
             <button type="submit" class="btn btn-secondary" style="padding:8px 20px;">
                 Finish (Don't Send)
             </button>

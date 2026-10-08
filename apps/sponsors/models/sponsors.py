@@ -123,7 +123,7 @@ class Sponsor(ContentManageable):
         addr = self.mailing_address_line_1
         if self.mailing_address_line_2:
             addr += f" {self.mailing_address_line_2}"
-        return f"{addr}, {self.city}, {self.state}, {self.country}"
+        return ", ".join(part for part in (addr, self.city, self.state, str(self.country or "")) if part)
 
     @property
     def primary_contact(self):

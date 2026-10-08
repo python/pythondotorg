@@ -58,14 +58,14 @@
                 </td>
                 <td style="text-align:center;">
                     {% if sponsor.contact_count %}
-                    <span class="tag tag-blue" style="font-size:10px;">{{ sponsor.contact_count }}</span>
+                    <a href="{% url 'manage_sponsor_edit' sponsor.pk %}#contacts" class="tag tag-blue" style="font-size:10px;text-decoration:none;">{{ sponsor.contact_count }}</a>
                     {% else %}
                     <span style="color:#ccc;">&mdash;</span>
                     {% endif %}
                 </td>
                 <td style="text-align:center;">
                     {% if sponsor.sponsorship_count %}
-                    <a href="{% url 'manage_sponsorships' %}?search={{ sponsor.name|urlencode }}" class="tag tag-green" style="font-size:10px;text-decoration:none;">{{ sponsor.sponsorship_count }}</a>
+                    <a href="{% url 'manage_sponsorships' %}?sponsor={{ sponsor.pk }}" class="tag tag-green" style="font-size:10px;text-decoration:none;">{{ sponsor.sponsorship_count }}</a>
                     {% else %}
                     <span style="color:#ccc;">&mdash;</span>
                     {% endif %}

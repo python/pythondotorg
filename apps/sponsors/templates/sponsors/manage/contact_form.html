@@ -9,7 +9,9 @@
     {% if from_sponsorship %}
     <a href="{% url 'manage_sponsorship_detail' from_sponsorship %}">{{ sponsor.name }}</a>
     {% else %}
-    <a href="{% url 'manage_sponsorships' %}">Sponsorships</a>
+    <a href="{% url 'manage_sponsors' %}">Sponsors</a>
+    <span class="sep">/</span>
+    <a href="{% url 'manage_sponsor_edit' sponsor.pk %}">{{ sponsor.name }}</a>
     {% endif %}
     <span class="sep">/</span>
     <span class="current">{% if is_create %}Add Contact{% else %}Edit Contact{% endif %}</span>
@@ -27,15 +29,17 @@
         <div class="form-errors">
             <strong>Please correct the errors below:</strong>
             <ul>
-            {% for field, errors in form.errors.items %}
-                {% for error in errors %}<li>{{ field }}: {{ error }}</li>{% endfor %}
+            {% for field in form %}
+                {% for error in field.errors %}<li>{{ field.label }}: {{ error }}</li>{% endfor %}
             {% endfor %}
+            {% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
             </ul>
         </div>
         {% endif %}
 
         <form method="post">
             {% csrf_token %}
+            {% if next_url %}<input type="hidden" name="next" value="{{ next_url }}">{% endif %}
 
             <fieldset class="manage-fieldset">
                 <legend>Contact Info</legend>
@@ -76,10 +80,12 @@
 
             <div style="display:flex;gap:10px;align-items:center;padding-top:8px;">
                 <button type="submit" class="btn btn-primary">{% if is_create %}Add Contact{% else %}Save Changes{% endif %}</button>
-                {% if from_sponsorship %}
+                {% if next_url %}
+                <a href="{{ next_url }}" class="btn btn-secondary">Cancel</a>
+                {% elif from_sponsorship %}
                 <a href="{% url 'manage_sponsorship_detail' from_sponsorship %}" class="btn btn-secondary">Cancel</a>
                 {% else %}
-                <a href="{% url 'manage_sponsorships' %}" class="btn btn-secondary">Cancel</a>
+                <a href="{% url 'manage_sponsor_edit' sponsor.pk %}" class="btn btn-secondary">Cancel</a>
                 {% endif %}
             </div>
         </form>

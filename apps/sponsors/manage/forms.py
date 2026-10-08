@@ -4,8 +4,9 @@ import contextlib
 import re
 
 from django import forms
-from django.core.validators import EmailValidator
+from django.core.validators import EmailValidator, FileExtensionValidator
 from django.utils import timezone
+from django_countries.fields import CountryField
 
 from apps.mailing.forms import BaseEmailTemplateForm, validate_template_syntax
 from apps.sponsors.models import (
@@ -442,8 +443,60 @@ class SponsorshipEditForm(forms.ModelForm):
             )
 
 
-class SponsorEditForm(forms.ModelForm):
+def _sponsor_country_field():
+    """Return a required country select that starts blank instead of preselecting the first country."""
+    return CountryField(blank_label="Select a country").formfield(
+        label="Country", widget=forms.Select(attrs={"style": INPUT_STYLE})
+    )
+
+
+def _allow_duplicate_name_field():
+    return forms.BooleanField(required=False, label="Allow duplicate name")
+
+
+class DuplicateSponsorNameMixin:
+    """Make staff confirm before saving a sponsor name another sponsor already uses.
+
+    Forms using this mixin must declare an ``allow_duplicate`` field. After validation,
+    ``duplicate_sponsors`` lists the existing sponsors with the same name.
+    """
+
+    duplicate_sponsors = ()
+
+    def clean(self):
+        """Reject a new or changed name that matches another sponsor unless allow_duplicate is ticked."""
+        cleaned = super().clean()
+        name = (cleaned.get("name") or "").strip()
+        if name and "name" in self.changed_data and not cleaned.get("allow_duplicate"):
+            duplicates = Sponsor.objects.filter(name__iexact=name)
+            if self.instance.pk:
+                duplicates = duplicates.exclude(pk=self.instance.pk)
+            self.duplicate_sponsors = list(duplicates.order_by("pk")[:5])
+            if self.duplicate_sponsors:
+                self.add_error(
+                    "name",
+                    'A sponsor with this name already exists. Use the existing sponsor, or tick "Allow duplicate '
+                    'name" to save anyway.',
+                )
+        return cleaned
+
+
+class SponsorEditForm(DuplicateSponsorNameMixin, forms.ModelForm):
     """Form for editing sponsor company info."""
+
+    country = _sponsor_country_field()
+    web_logo = forms.ImageField(
+        label="Web logo",
+        help_text="For display on our sponsor webpage. High resolution PNG or JPG, smallest dimension no less than 256px",
+        required=False,
+    )
+    print_logo = forms.FileField(
+        label="Print logo",
+        help_text="For printed materials, signage, and projection. SVG or EPS",
+        required=False,
+        validators=[FileExtensionValidator(["eps", "epsfepsi", "svg", "png"])],
+    )
+    allow_duplicate = _allow_duplicate_name_field()
 
     class Meta:
         """Meta options."""
@@ -460,6 +513,8 @@ class SponsorEditForm(forms.ModelForm):
             "state",
             "postal_code",
             "country",
+            "web_logo",
+            "print_logo",
         ]
         widgets = {
             "name": forms.TextInput(attrs={"style": INPUT_STYLE}),
@@ -471,7 +526,6 @@ class SponsorEditForm(forms.ModelForm):
             "city": forms.TextInput(attrs={"style": INPUT_STYLE}),
             "state": forms.TextInput(attrs={"style": INPUT_STYLE}),
             "postal_code": forms.TextInput(attrs={"style": INPUT_STYLE}),
-            "country": forms.Select(attrs={"style": INPUT_STYLE}),
         }
 
 
@@ -557,9 +611,9 @@ class InternalReviewEmailForm(forms.Form):
 class ComposerRecipientsForm(forms.Form):
     """Optional extra recipients for a sponsor proposal send; each must be an exact PSF-domain address."""
 
-    extra_to = forms.CharField(required=False, max_length=254)
-    cc_email = forms.CharField(required=False, max_length=254)
-    bcc_email = forms.CharField(required=False, max_length=254)
+    extra_to = forms.CharField(required=False, max_length=254, label="Additional To")
+    cc_email = forms.CharField(required=False, max_length=254, label="CC")
+    bcc_email = forms.CharField(required=False, max_length=254, label="BCC")
 
     def clean_extra_to(self):
         """Validate the optional extra "to" address."""
@@ -933,8 +987,11 @@ class ProvidedFileAssetConfigForm(AssetConfigForm):
         return cleaned
 
 
-class ComposerSponsorForm(forms.ModelForm):
+class ComposerSponsorForm(DuplicateSponsorNameMixin, forms.ModelForm):
     """Form for creating a new sponsor inline within the composer wizard."""
+
+    country = _sponsor_country_field()
+    allow_duplicate = _allow_duplicate_name_field()
 
     class Meta:
         """Meta options."""
@@ -948,8 +1005,11 @@ class ComposerSponsorForm(forms.ModelForm):
             ),
             "primary_phone": forms.TextInput(attrs={"style": INPUT_STYLE, "placeholder": "Phone number"}),
             "city": forms.TextInput(attrs={"style": INPUT_STYLE, "placeholder": "City"}),
-            "country": forms.Select(attrs={"style": INPUT_STYLE}),
         }
+
+
+# Sponsorship.sponsorship_fee is a PositiveIntegerField (a 32-bit signed column).
+MAX_SPONSORSHIP_FEE = 2_147_483_647
 
 
 class ComposerTermsForm(forms.Form):
@@ -957,6 +1017,7 @@ class ComposerTermsForm(forms.Form):
 
     fee = forms.IntegerField(
         min_value=0,
+        max_value=MAX_SPONSORSHIP_FEE,
         widget=forms.NumberInput(attrs={"style": INPUT_STYLE, "placeholder": "Sponsorship fee in USD"}),
         label="Sponsorship Fee (USD)",
     )
@@ -972,13 +1033,6 @@ class ComposerTermsForm(forms.Form):
         required=False,
         label="Renewal",
         help_text="Use renewal contract template instead of new sponsorship template.",
-    )
-    notes = forms.CharField(
-        required=False,
-        widget=forms.Textarea(
-            attrs={"rows": 4, "style": INPUT_STYLE + "resize:vertical;", "placeholder": "Internal notes..."}
-        ),
-        label="Notes",
     )
 
     def clean(self):
