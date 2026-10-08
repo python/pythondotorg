@@ -1,0 +1,20 @@
+{% if agreement.signed_at %}
+  <table class="record">
+    <caption>Signature record</caption>
+    <tbody>
+      <tr><th scope="row">Signed by</th><td>{{ agreement.signer_name }}, {{ agreement.signer_title }} ({{ agreement.signer_email }})</td></tr>
+      {% if agreement.signature_method == "offline" %}
+        <tr><th scope="row">Signed</th><td>Outside python.org, {{ agreement.signed_at|date:"F j, Y" }}; recorded by {{ agreement.signature_recorded_by.email }}</td></tr>
+      {% else %}
+        <tr><th scope="row">Signed</th><td>{{ agreement.get_signature_method_display }}, {{ agreement.signed_at|date:"F j, Y, g:i A T" }}</td></tr>
+      {% endif %}
+      {% if agreement.countersigned_at %}
+        <tr><th scope="row">Countersigned by</th><td>{{ agreement.countersigner_name }}, {{ agreement.countersigner_title }}, {{ agreement.countersigned_at|date:"F j, Y" }}</td></tr>
+      {% endif %}
+      <tr><th scope="row">Document</th><td>Revision {{ agreement.revision }}</td></tr>
+      {% for copy in copies %}
+        <tr><th scope="row">{{ copy.get_kind_display }}</th><td><a href="{% url 'agreements:copy_download' agreement.pk copy.kind %}">Download PDF</a></td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endif %}

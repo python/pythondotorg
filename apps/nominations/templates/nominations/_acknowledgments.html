@@ -1,0 +1,42 @@
+{% comment %}
+Acknowledgment checkboxes for a nomination create form, kept out of the main
+field table so the multi-paragraph legal text reads cleanly. Hidden until
+self-nomination is checked (JS in nomination_form.html), but rendered visible
+on redisplay so the flow works without JavaScript.
+{% endcomment %}
+{% if form.acknowledgment_fields %}
+<style>
+    .nomination-acknowledgments { border: 0; margin: 2em 0 0; padding: 0; }
+    /* Legends don't inherit the site's heading styles, so restate them here. */
+    .nomination-acknowledgments > legend {
+        display: block; width: 100%;
+        margin: 0 0 0.75em; padding: 0 0 0.3em;
+        border-bottom: 2px solid var(--election-accent, #0073b7);
+        color: var(--election-accent, #0073b7);
+        font-size: 1.5em; font-weight: bold; line-height: 1.2;
+    }
+    /* Each acknowledgment carries its own preamble, so the checkbox above it
+       needs a hard break or the two blocks read as one paragraph. */
+    .nomination-acknowledgments .acknowledgment + .acknowledgment {
+        margin-top: 1.5em; padding-top: 1.5em; border-top: 1px solid #ddd;
+    }
+    .nomination-acknowledgments .acknowledgment-preamble { margin: 0 0 0.75em; }
+    .nomination-acknowledgments label {
+        display: flex; align-items: flex-start; gap: 0.5em; margin: 0; font-weight: normal;
+    }
+    .nomination-acknowledgments label input[type="checkbox"] { flex: none; margin: 0.3em 0 0; }
+</style>
+<fieldset class="nomination-acknowledgments" id="nomination-acknowledgments"{% if not form.self_nomination.value %} hidden{% endif %}>
+    <legend>Acknowledgments</legend>
+    {% for field in form.acknowledgment_fields %}
+    <div class="acknowledgment{% if field.field.required %} acknowledgment-required{% endif %}">
+        {% if field.help_text %}<p class="acknowledgment-preamble">{{ field.help_text }}</p>{% endif %}
+        <label for="{{ field.id_for_label }}">
+            {{ field }}
+            <span class="acknowledgment-text">{{ field.label }}{% if field.field.required %} <span class="required">*</span>{% endif %}</span>
+        </label>
+        {% if field.errors %}<div class="acknowledgment-errors">{{ field.errors }}</div>{% endif %}
+    </div>
+    {% endfor %}
+</fieldset>
+{% endif %}

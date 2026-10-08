@@ -1,0 +1,124 @@
+from typing import cast
+
+from django.contrib import admin
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
+from django.test import RequestFactory, TestCase
+from django.urls import resolve, reverse
+
+from apps.agreements.admin import TermsAdmin
+from apps.agreements.auth import ADMINISTRATORS
+from apps.agreements.models import CustomContract, Terms, TermsVersion
+from apps.agreements.tests.test_agreements import make_officer, offer_contract
+
+
+class TermsAdminTests(TestCase):
+    def setUp(self) -> None:
+        self.officer = make_officer()
+        self.request = RequestFactory().get("/")
+        self.request.user = self.officer
+        self.admin = TermsAdmin(Terms, admin.site)
+        self.terms = Terms.objects.create(slug="venue", title="Venue terms", is_public=True)
+
+    def test_new_terms_allow_a_slug(self) -> None:
+        form_class = self.admin.get_form(self.request)
+        form = form_class(data={"slug": "sponsor", "title": "Sponsor terms"})
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertEqual(form.save().slug, "sponsor")
+
+    def test_unpublished_terms_allow_slug_changes(self) -> None:
+        form_class = self.admin.get_form(self.request, self.terms)
+        form = form_class(data={"slug": "renamed", "title": "Venue terms"}, instance=self.terms)
+        self.assertTrue(form.is_valid(), form.errors)
+        form.save()
+        self.terms.refresh_from_db()
+        self.assertEqual(self.terms.slug, "renamed")
+
+    def test_published_terms_ignore_submitted_slug_but_allow_metadata_changes(self) -> None:
+        version = TermsVersion.objects.create(terms=self.terms, version="original", markdown="Original terms.")
+        permanent_url = version.get_absolute_url()
+        form_class = self.admin.get_form(self.request, self.terms)
+        form = form_class(
+            data={"slug": "renamed", "title": "Updated title", "is_public": "on", "under_review": "on"},
+            instance=self.terms,
+        )
+        self.assertNotIn("slug", form.fields)
+        self.assertTrue(form.is_valid(), form.errors)
+        form.save()
+        self.terms.refresh_from_db()
+        self.assertEqual(self.terms.slug, "venue")
+        self.assertEqual(self.terms.title, "Updated title")
+        self.assertTrue(self.terms.under_review)
+        self.assertContains(self.client.get(permanent_url), "Original terms.")
+
+
+class CustomContractAdminTests(TestCase):
+    def setUp(self) -> None:
+        self.superuser = get_user_model().objects.create_superuser("admin", "admin@example.org", "password")
+        self.superuser.groups.add(Group.objects.get_or_create(name=ADMINISTRATORS)[0])
+        self.client.force_login(self.superuser)
+
+    def test_even_superusers_cannot_add_contracts_through_admin(self) -> None:
+        url = reverse("admin:agreements_customcontract_add")
+        self.assertEqual(self.client.get(url).status_code, 403)
+        response = self.client.post(
+            url, {"title": "Venue contract", "counterparty_name": "Venue", "body_markdown": "Terms."}
+        )
+        self.assertEqual(response.status_code, 403)
+        self.assertFalse(CustomContract.objects.exists())
+
+    def test_contract_admin_is_view_only_before_and_after_offer(self) -> None:
+        agreement = offer_contract(self.superuser)
+        offered = cast("CustomContract", agreement.subject)
+        draft = CustomContract.objects.create(
+            title="Draft", counterparty_name="Customer", body_markdown="Terms.", created_by=self.superuser
+        )
+        for contract in (draft, offered):
+            with self.subTest(status=contract.status):
+                change_url = reverse("admin:agreements_customcontract_change", args=[contract.pk])
+                self.assertEqual(self.client.get(change_url).status_code, 200)
+                response = self.client.post(
+                    change_url,
+                    {"title": "Changed", "counterparty_name": "Customer", "body_markdown": "Changed terms."},
+                )
+                self.assertEqual(response.status_code, 403)
+                delete_url = reverse("admin:agreements_customcontract_delete", args=[contract.pk])
+                self.assertEqual(self.client.get(delete_url).status_code, 403)
+                self.assertEqual(self.client.post(delete_url, {"post": "yes"}).status_code, 403)
+                contract.refresh_from_db()
+                self.assertNotEqual(contract.title, "Changed")
+        self.client.post(
+            reverse("admin:agreements_customcontract_changelist"),
+            {"action": "delete_selected", "_selected_action": [draft.pk, offered.pk], "post": "yes"},
+        )
+        self.assertEqual(CustomContract.objects.count(), 2)
+        self.assertEqual(CustomContract.objects.get(pk=offered.pk).agreement_id, agreement.pk)
+
+
+class TermsEditorRouteTests(TestCase):
+    def test_edit_version_remains_readable_and_editor_remains_separate(self) -> None:
+        officer = make_officer()
+        terms = Terms.objects.create(slug="venue", title="Venue terms")
+        editor_url = reverse("agreements:terms_edit", args=[terms.slug])
+        self.assertEqual(resolve(editor_url).view_name, "agreements:terms_edit")
+        self.client.force_login(officer)
+        self.assertTemplateUsed(self.client.get(editor_url), "agreements/terms_edit.html")
+        response = self.client.post(
+            editor_url,
+            {
+                "markdown": "Published edit version.",
+                "version": "edit",
+                "notes": "Initial publication.",
+                "action": "publish",
+                "is_public": "on",
+            },
+        )
+        version = terms.versions.get(version="edit")
+        permanent_url = version.get_absolute_url()
+        self.assertNotEqual(editor_url, permanent_url)
+        self.assertEqual(resolve(permanent_url).view_name, "agreements:terms_version")
+        self.assertRedirects(response, permanent_url)
+        self.assertTemplateUsed(self.client.get(editor_url), "agreements/terms_edit.html")
+        self.client.logout()
+        self.assertContains(self.client.get(permanent_url), "Published edit version.")
+        self.assertEqual(self.client.get(editor_url).status_code, 302)

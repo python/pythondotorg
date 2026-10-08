@@ -8,7 +8,6 @@ from django.db import models
 from django.urls import reverse
 from django.utils import timezone
 from markupfield.fields import MarkupField
-from rest_framework.authtoken.models import Token
 from tastypie.models import create_api_key
 
 from apps.users.managers import UserManager
@@ -72,14 +71,6 @@ class User(AbstractUser):
         from apps.sponsors.models import Sponsorship
 
         return Sponsorship.objects.visible_to(self)
-
-    @property
-    def api_v2_token(self):
-        """Return the user's DRF API token key, or empty string if none exists."""
-        try:
-            return Token.objects.get(user=self).key
-        except Token.DoesNotExist:
-            return ""
 
 
 models.signals.post_save.connect(create_api_key, sender=User)
