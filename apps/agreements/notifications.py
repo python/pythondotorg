@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from django.conf import settings
-from django.core.mail import EmailMessage
+from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.urls import reverse
 
@@ -28,7 +28,8 @@ def _send(
 ) -> None:
     subject = " ".join(render_to_string(f"agreements/email/{template}_subject.txt", context).split())
     body = render_to_string(f"agreements/email/{template}.txt", context)
-    email = EmailMessage(subject=subject, body=body, from_email=settings.DEFAULT_FROM_EMAIL, to=[to])
+    email = EmailMultiAlternatives(subject=subject, body=body, from_email=settings.DEFAULT_FROM_EMAIL, to=[to])
+    email.attach_alternative(render_to_string(f"agreements/email/{template}.html", context), "text/html")
     for attachment in attachments:
         email.attach(*attachment)
     email.send()

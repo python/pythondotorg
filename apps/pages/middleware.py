@@ -5,6 +5,7 @@ from http import HTTPStatus
 
 from django import http
 from django.conf import settings
+from sitetree.sitetreeapp import get_sitetree
 
 from apps.pages.models import Page
 from apps.pages.views import PageView
@@ -48,6 +49,10 @@ class PageFallbackMiddleware:
             new_url = f"{scheme}://{request.get_host()}{new_path}"
             return http.HttpResponsePermanentRedirect(new_url)
         if page is not None:
+            # The 404 response was already rendered for this request, and sitetree keys its
+            # per-request state on the request object, so it would keep resolving variables
+            # against that finished 404 context. Reset it so the page renders with its own.
+            get_sitetree().init(context=None)
             response = PageView.as_view()(request, path=full_path)
             if hasattr(response, "render"):
                 response.render()

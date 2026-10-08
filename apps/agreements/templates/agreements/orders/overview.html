@@ -18,7 +18,7 @@
   <div class="po-invite">
     <div class="po-invite-text">
       <h2 class="po-invite-title">{% if program.is_public %}Build your support package{% else %}Prepare a package for a customer{% endif %}</h2>
-      <p>Choose a tier for {% if agreements|length > 1 %}one service or several{% else %}{{ agreements.0.short_name|default:"the service" }}{% endif %}, add any extras, and see your fees as you go. Everything goes on one Order Form, signed once.</p>
+      <p>Choose a tier for {% if agreements|length > 1 %}one agreement family or several{% else %}{{ agreements.0.short_name|default:"the agreement" }}{% endif %}, add any extras, and see your fees as you go. Everything goes on one Order Form, signed once.</p>
     </div>
     <a class="button button-primary po-invite-cta" href="{% url 'agreements:order_create' program.slug %}">{% if program.is_public %}Build a package{% else %}Prepare a package{% endif %}</a>
   </div>
@@ -39,7 +39,7 @@
         </table>
       </div>
       {% if agreement.services %}
-        <p class="agreement-services">Includes {% for service, tiers in agreement.service_rows %}{{ service.name }}{% if tiers %} ({{ tiers }} only){% endif %}{% if not forloop.last %}; {% endif %}{% endfor %}.</p>
+        <p class="agreement-services">Base services available to select: {% for service, tiers in agreement.service_rows %}{{ service.name }}{% if tiers %} ({{ tiers }} only){% endif %}{% if not forloop.last %}; {% endif %}{% endfor %}. Your selection does not change the Service Tier fee.</p>
       {% endif %}
       {% if agreement.addons %}
         <p class="agreement-services">Extras, priced separately: {% for addon in agreement.addons %}{{ addon.name }}{% if not forloop.last %}; {% endif %}{% endfor %}.</p>

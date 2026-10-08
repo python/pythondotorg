@@ -1,0 +1,29 @@
+{% extends "agreements/email/base.html" %}
+{% block title %}Executed: {{ agreement.title }}{% endblock %}
+{% block preheader %}{{ agreement.title }} with {{ agreement.counterparty_name }} has been countersigned. Your copy is attached.{% endblock %}
+
+{% block content %}
+<p style="margin:0 0 16px;">Hello {{ agreement.signer_name }},</p>
+<p style="margin:0 0 24px;">The Python Software Foundation has countersigned your agreement with <strong>{{ agreement.counterparty_name }}</strong>.</p>
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 24px;">
+  <tr>
+    <td style="background-color:#f2f4f6;border-left:4px solid #82b043;border-radius:4px;padding:16px 20px;">
+      <div style="font-size:12px;font-weight:bold;letter-spacing:0.08em;text-transform:uppercase;color:#3d5a1a;">Executed</div>
+      <div style="margin-top:4px;font-size:18px;font-weight:bold;color:#2b5b84;">{{ agreement.title }}</div>
+      <div style="margin-top:4px;font-size:13px;color:#666666;">Reference <span style="font-family:Menlo,Consolas,monospace;color:#444444;">{{ agreement.reference }}</span> &middot; Effective {{ agreement.countersigned_at|date:"F j, Y" }}</div>
+    </td>
+  </tr>
+</table>
+
+<p style="margin:0 0 8px;"><strong>Attached</strong></p>
+<ul style="margin:0 0 24px;padding-left:20px;color:#444444;font-size:14px;line-height:1.7;">
+  <li>Signed copy: <span style="font-family:Menlo,Consolas,monospace;">psf-agreement-{{ agreement.reference }}.pdf</span></li>
+  {% for version in terms_versions %}
+  <li>{{ version.terms.title }}, version {{ version.version }}</li>
+  {% endfor %}
+</ul>
+
+<p style="margin:0 0 16px;font-size:14px;color:#444444;">{% if terms_versions %}The cited terms versions are included so you can retain them even if their online pages are private. {% endif %}Keep these documents for your records.</p>
+<p style="margin:0;">Python Software Foundation</p>
+{% endblock %}

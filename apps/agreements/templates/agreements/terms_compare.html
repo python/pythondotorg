@@ -1,0 +1,51 @@
+{% extends "agreements/base.html" %}
+{% block title %}Compare: {{ terms.title }}{% endblock %}
+{% block crumbs %}
+<li><a href="{% url 'agreements:terms_list' %}">Terms</a><span class="prompt">&gt;&gt;&gt;</span></li>
+<li><a href="{% url 'agreements:terms_edit' terms.slug %}">{{ terms.title }}</a><span class="prompt">&gt;&gt;&gt;</span></li>
+<li>Compare</li>
+{% endblock %}
+
+{% block content %}
+<article class="text">
+  <header class="article-header">
+    <h1 class="page-title">Compare {{ terms.title }}</h1>
+  </header>
+
+  {% if versions|length < 2 %}
+    <p>There is nothing to compare until a second version is published.</p>
+  {% else %}
+    <form method="get" class="sign-form">
+      <div class="field-row">
+        <p>
+          <label for="compare-from">From version</label>
+          <select id="compare-from" name="from">
+            {% for version in versions %}<option value="{{ version.version }}"{% if version == old %} selected{% endif %}>{{ version.version }} ({{ version.published_at|date:"M j, Y" }})</option>{% endfor %}
+          </select>
+        </p>
+        <p>
+          <label for="compare-to">To version</label>
+          <select id="compare-to" name="to">
+            {% for version in versions %}<option value="{{ version.version }}"{% if version == new %} selected{% endif %}>{{ version.version }} ({{ version.published_at|date:"M j, Y" }})</option>{% endfor %}
+          </select>
+        </p>
+      </div>
+      <p class="form-actions"><button type="submit">Compare</button></p>
+    </form>
+
+    {% if old %}
+      <h2>Changes from version {{ old.version }} to version {{ new.version }}</h2>
+      {% if new.notes %}<p><strong>Notes for {{ new.version }}:</strong> {{ new.notes }}</p>{% endif %}
+      {% if diff %}
+        <p>Removed lines are marked with − and added lines with +.</p>
+        <pre class="diff">{% for tag, line in diff %}<span class="{{ tag }}">{{ line }}</span>
+{% endfor %}</pre>
+      {% else %}
+        <p>These versions have identical text.</p>
+      {% endif %}
+    {% else %}
+      <p>Version {{ new.version }} is the first published version, so there is nothing before it. Choose another version to compare.</p>
+    {% endif %}
+  {% endif %}
+</article>
+{% endblock %}

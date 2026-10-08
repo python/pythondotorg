@@ -74,7 +74,9 @@ class SigningRecoveryTests(TestCase):
         )
         url = reverse("agreements:send_link", args=[self.agreement.pk])
         data = {"name": "Invited Signer", "email": "invited@example.com"}
-        with patch("apps.agreements.notifications.EmailMessage.send", side_effect=SMTPException("mail unavailable")):
+        with patch(
+            "apps.agreements.notifications.EmailMultiAlternatives.send", side_effect=SMTPException("mail unavailable")
+        ):
             response = self.client.post(url, data)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(mail.outbox, [])
@@ -126,7 +128,7 @@ class SigningRecoveryTests(TestCase):
         self.client.force_login(self.officer)
         for target, error in (
             ("apps.agreements.notifications.render_pdf", RuntimeError("renderer unavailable")),
-            ("apps.agreements.notifications.EmailMessage.send", SMTPException("mail unavailable")),
+            ("apps.agreements.notifications.EmailMultiAlternatives.send", SMTPException("mail unavailable")),
         ):
             with self.subTest(failure=target):
                 agreement = offer_contract(self.officer, counterparty_account=self.customer)
