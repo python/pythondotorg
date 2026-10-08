@@ -135,8 +135,8 @@ class UserUpdate(LoginRequiredMixin, UpdateView):
         return super().dispatch(*args, **kwargs)
 
     def get_object(self, queryset=None):
-        """Return the current logged-in user."""
-        return User.objects.get(username=self.request.user)
+        """Return a fresh copy of the logged-in user, so invalid input never mutates request.user."""
+        return User.objects.get(pk=self.request.user.pk)
 
 
 class UserDetail(LoginRequiredMixin, DetailView):
