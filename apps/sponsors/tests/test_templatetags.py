@@ -1,3 +1,4 @@
+import string
 from unittest.mock import patch
 
 from django.test import TestCase
@@ -7,6 +8,7 @@ from apps.sponsors.models import SponsorshipBenefit, TieredBenefitConfiguration
 from apps.sponsors.templatetags.sponsors import (
     benefit_name_for_display,
     benefit_quantity_for_package,
+    escape_markdown,
     full_sponsorship,
     list_sponsors,
 )
@@ -88,3 +90,29 @@ class BenefitNameForDisplayTests(TestCase):
 
         self.assertEqual(name, "Modified name")
         mocked_name_for_display.assert_called_once_with(package=package)
+
+
+class EscapePandocMarkdownTests(TestCase):
+    """Unit tests for the boundary escaper that neutralizes sponsor input."""
+
+    def test_backslash_is_doubled(self):
+        # No LaTeX command (\input, \write, ...) can form once every backslash is
+        # itself escaped.
+        self.assertEqual(escape_markdown("\\"), "\\\\")
+
+    def test_every_ascii_punctuation_char_is_escaped(self):
+        for ch in string.punctuation:
+            self.assertEqual(escape_markdown(ch), "\\" + ch)
+
+    def test_latex_command_cannot_form(self):
+        self.assertEqual(escape_markdown(r"\input{x}"), r"\\input\{x\}")
+
+    def test_markdown_image_is_neutralized(self):
+        # ![](url) is what makes Pandoc fetch a URL server-side (SSRF).
+        self.assertEqual(escape_markdown("![](x)"), r"\!\[\]\(x\)")
+
+    def test_letters_digits_and_spaces_are_untouched(self):
+        self.assertEqual(escape_markdown("Acme Corp 123"), "Acme Corp 123")
+
+    def test_non_string_input_is_coerced(self):
+        self.assertEqual(escape_markdown(42), "42")

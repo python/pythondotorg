@@ -20,24 +20,20 @@ jobs:
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
-      - uses: actions/checkout@v6
-
-      - uses: actions/setup-python@v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          python-version-file: '.python-version'
+          persist-credentials: false
 
-      - name: Cache pip
-        uses: actions/cache@v5
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
         with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('pyproject.toml') }}
-          restore-keys: ${{ runner.os }}-pip-
+          version: "0.12.17"
+          enable-cache: true
 
       - name: Install dependencies
-        run: pip install --group dev -e .
+        run: uv sync --locked --group dev
 
       - name: Check for ungenerated migrations
-        run: python manage.py makemigrations --check --dry-run
+        run: uv run --no-sync python manage.py makemigrations --check --dry-run
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/pythonorg
 
@@ -56,7 +52,9 @@ jobs:
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Install platform dependencies
         run: |
@@ -72,24 +70,21 @@ jobs:
           wget https://github.com/jgm/pandoc/releases/download/2.17.1.1/pandoc-2.17.1.1-1-amd64.deb
           sudo dpkg -i pandoc-2.17.1.1-1-amd64.deb
 
-      - uses: actions/setup-python@v6
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
         with:
-          python-version-file: '.python-version'
-
-      - name: Cache pip
-        uses: actions/cache@v5
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('pyproject.toml') }}
-          restore-keys: ${{ runner.os }}-pip-
+          version: "0.12.17"
+          enable-cache: true
 
       - name: Install dependencies
-        run: pip install --group dev -e .
+        run: uv sync --locked --group dev
+
+      - name: Check agreements types
+        run: uv run --no-sync python -m mypy
 
       - name: Run tests
-        run: python -Wd -m coverage run manage.py test -v2
+        run: uv run --no-sync python -Wd -m coverage run manage.py test -v2
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/pythonorg
 
       - name: Check coverage
-        run: coverage report -m --fail-under=75
+        run: uv run --no-sync coverage report -m --fail-under=75

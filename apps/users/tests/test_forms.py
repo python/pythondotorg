@@ -41,7 +41,8 @@ class UsersFormsTestCase(TestCase):
         self.assertFalse(form.is_valid())
         self.assertIn("username", form.errors)
 
-    def test_duplicate_email(self):
+    def test_duplicate_email_does_not_report_the_address_is_taken(self):
+        """Enumeration prevention keeps signup from confirming a known address."""
         user = User.objects.create_user("test1", "test@example.com", "testpass")
         EmailAddress.objects.create(user=user, email="test@example.com")
 
@@ -54,8 +55,8 @@ class UsersFormsTestCase(TestCase):
             }
         )
 
-        self.assertFalse(form.is_valid())
-        self.assertIn("email", form.errors)
+        self.assertTrue(form.is_valid())
+        self.assertNotIn("email", form.errors)
 
     def test_newline_in_username(self):
         # Note that since Django 1.9, forms.CharField().strip is True
@@ -121,8 +122,6 @@ class UserProfileFormTestCase(TestCase):
             {
                 "username": "stanne",
                 "email": "test42@example.com",
-                "search_visibility": 0,
-                "email_privacy": 0,
             },
             instance=User.objects.get(username="stanne"),
         )
@@ -137,8 +136,6 @@ class UserProfileFormTestCase(TestCase):
             {
                 "username": "Test42",
                 "email": "mikael@darktranquillity.com",
-                "search_visibility": 0,
-                "email_privacy": 0,
             },
             instance=User.objects.get(username="stanne"),
         )

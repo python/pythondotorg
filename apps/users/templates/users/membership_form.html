@@ -101,7 +101,7 @@
     </form>
 
     {% if request.user.has_membership %}
-    <form action="{% url 'users:user_membership_delete' user.username %}"
+    <form action="{% url 'users:user_membership_delete' %}"
           method="post"
           class="deletion-form"
           onsubmit="return confirm('Are you sure?');">

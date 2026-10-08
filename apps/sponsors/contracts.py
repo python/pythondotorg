@@ -13,6 +13,10 @@ _dirname = Path(__file__).parent
 DOCXPAGEBREAK_FILTER = str(_dirname / "pandoc_filters" / "pagebreak.py")
 REFERENCE_DOCX = str(_dirname / "reference.docx")
 
+# Disable raw TeX and TeX math so user input can't reach the LaTeX engine as commands
+# or math. The template's own raw TeX uses raw_attribute (`...`{=latex}), which stays on.
+CONTRACT_MARKDOWN_FORMAT = "markdown-raw_tex-tex_math_dollars-tex_math_single_backslash"
+
 
 def _clean_split(text, separator="\n"):
     """Split text by newlines and strip dashes and whitespace from each part."""
@@ -58,7 +62,7 @@ def render_contract_to_pdf_file(contract, **context):
     """Convert the contract markdown to a PDF file and return its bytes."""
     with tempfile.NamedTemporaryFile(), tempfile.NamedTemporaryFile(suffix=".pdf") as pdf_file:
         markdown = render_markdown_from_template(contract, **context)
-        pypandoc.convert_text(markdown, "pdf", outputfile=pdf_file.name, format="md")
+        pypandoc.convert_text(markdown, "pdf", outputfile=pdf_file.name, format=CONTRACT_MARKDOWN_FORMAT)
         return pdf_file.read()
 
 
@@ -82,7 +86,7 @@ def render_contract_to_docx_file(contract, **context):
             markdown,
             "docx",
             outputfile=docx_file.name,
-            format="md",
+            format=CONTRACT_MARKDOWN_FORMAT,
             filters=[DOCXPAGEBREAK_FILTER],
             extra_args=["--reference-doc", REFERENCE_DOCX],
         )

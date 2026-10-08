@@ -41,7 +41,7 @@ class TemplateProcessorsTestCase(TestCase):
             "account": {
                 "label": "Your Account",
                 "urls": [
-                    {"url": reverse("users:user_detail", args=["foo"]), "label": "View profile"},
+                    {"url": reverse("users:user_detail"), "label": "View profile"},
                     {"url": reverse("users:user_profile_edit"), "label": "Edit profile"},
                     {"url": reverse("account_change_password"), "label": "Change password"},
                 ],
@@ -70,7 +70,7 @@ class TemplateProcessorsTestCase(TestCase):
             "account": {
                 "label": "Your Account",
                 "urls": [
-                    {"url": reverse("users:user_detail", args=["foo"]), "label": "View profile"},
+                    {"url": reverse("users:user_detail"), "label": "View profile"},
                     {"url": reverse("users:user_profile_edit"), "label": "Edit profile"},
                     {"url": reverse("account_change_password"), "label": "Change password"},
                 ],
