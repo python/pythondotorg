@@ -2,8 +2,6 @@
 
 {% block page_title %}{% if is_create %}New Sponsor{% else %}Edit {{ object.name }}{% endif %} | Sponsor Management{% endblock %}
 
-{% with active_tab="sponsorships" %}
-
 {% block manage_breadcrumbs %}
 <div class="manage-crumbs">
     <a href="{% url 'manage_dashboard' %}">Dashboard</a>
@@ -115,5 +113,3 @@
 
     </div>
 {% endblock %}
-
-{% endwith %}

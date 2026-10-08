@@ -2,8 +2,6 @@
 
 {% block page_title %}{% if is_create %}Add{% else %}Edit{% endif %} {{ type_label }} | Sponsor Management{% endblock %}
 
-{% with active_tab="benefits" %}
-
 {% block topbar_actions %}{% endblock %}
 
 {% block manage_breadcrumbs %}
@@ -69,5 +67,3 @@
         </form>
     </div>
 {% endblock %}
-
-{% endwith %}

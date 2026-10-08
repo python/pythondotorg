@@ -2,8 +2,6 @@
 
 {% block page_title %}Packages | Sponsor Management{% endblock %}
 
-{% with active_tab="packages" %}
-
 {% block topbar_actions %}
     <a href="{% url 'manage_package_create' %}{% if filter_year %}?year={{ filter_year }}{% endif %}" class="btn btn-sm btn-primary">+ New Package</a>
 {% endblock %}
@@ -62,5 +60,3 @@
     </div>
     {% endfor %}
 {% endblock %}
-
-{% endwith %}

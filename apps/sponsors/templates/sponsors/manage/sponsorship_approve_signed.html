@@ -2,8 +2,6 @@
 
 {% block page_title %}Approve with Signed Contract | {{ sponsorship.sponsor.name }}{% endblock %}
 
-{% with active_tab="sponsorships" %}
-
 {% block manage_breadcrumbs %}
 <div class="manage-crumbs">
     <a href="{% url 'manage_dashboard' %}">Dashboard</a>
@@ -206,5 +204,3 @@
         </form>
     </div>
 {% endblock %}
-
-{% endwith %}

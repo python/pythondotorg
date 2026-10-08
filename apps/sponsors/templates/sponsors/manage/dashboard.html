@@ -2,8 +2,6 @@
 
 {% block page_title %}Sponsor Dashboard | Python Software Foundation{% endblock %}
 
-{% with active_tab="dashboard" %}
-
 {% block topbar_actions %}
     <a href="{% url 'manage_current_year' %}" class="btn btn-sm btn-secondary" style="gap:6px;">{% if current_year %}{{ current_year }} &#9662;{% else %}Set Year &#9662;{% endif %}</a>
 {% endblock %}
@@ -383,5 +381,3 @@
     </div>
     {% endif %}
 {% endblock %}
-
-{% endwith %}

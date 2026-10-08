@@ -2,8 +2,6 @@
 
 {% block page_title %}Benefits | Sponsor Management{% endblock %}
 
-{% with active_tab="benefits" %}
-
 {% block topbar_actions %}
     <a href="{% url 'manage_benefit_create' %}{% if filter_year %}?year={{ filter_year }}{% endif %}" class="btn btn-sm btn-primary">+ New Benefit</a>
 {% endblock %}
@@ -122,5 +120,3 @@
     </div>
     {% endif %}
 {% endblock %}
-
-{% endwith %}

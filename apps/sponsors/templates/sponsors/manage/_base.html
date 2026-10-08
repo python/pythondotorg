@@ -115,6 +115,11 @@
         background: #f7f8fa;
         color: #3776ab;
     }
+    .manage-nav-more .manage-nav-dropdown a.active {
+        color: #3776ab;
+        font-weight: 700;
+        background: #f7f8fa;
+    }
     .manage-navbar-right {
         margin-left: auto;
         display: flex;
@@ -738,24 +743,26 @@
 
 <div class="manage-wrap">
     <!-- Unified navigation bar -->
-    <nav class="manage-navbar">
+    {% load sponsors_manage %}
+    {% manage_nav_section as active_tab %}
+    <nav class="manage-navbar" aria-label="Sponsor management">
         <a href="{% url 'manage_dashboard' %}" class="manage-navbar-brand"><span>Sponsors</span> Mgmt</a>
         <div class="manage-nav">
-            <a href="{% url 'manage_dashboard' %}" class="{% if active_tab == 'dashboard' %}active{% endif %}">Dashboard</a>
-            <a href="{% url 'manage_sponsorships' %}" class="{% if active_tab == 'sponsorships' %}active{% endif %}">Sponsorships</a>
-            <a href="{% url 'manage_composer' %}?new=1" class="{% if active_tab == 'composer' %}active{% endif %}">Composer</a>
-            <a href="{% url 'manage_benefit_list' %}" class="{% if active_tab == 'benefits' %}active{% endif %}">Benefits</a>
-            <a href="{% url 'manage_packages' %}" class="{% if active_tab == 'packages' %}active{% endif %}">Packages</a>
-            <a href="{% url 'manage_notification_templates' %}" class="{% if active_tab == 'notifications' %}active{% endif %}">Notifications</a>
+            <a href="{% url 'manage_dashboard' %}"{% if active_tab == 'dashboard' %} class="active" aria-current="page"{% endif %}>Dashboard</a>
+            <a href="{% url 'manage_sponsorships' %}"{% if active_tab == 'sponsorships' %} class="active" aria-current="page"{% endif %}>Sponsorships</a>
+            <a href="{% url 'manage_composer' %}?new=1"{% if active_tab == 'composer' %} class="active" aria-current="page"{% endif %}>Composer</a>
+            <a href="{% url 'manage_benefit_list' %}"{% if active_tab == 'benefits' %} class="active" aria-current="page"{% endif %}>Benefits</a>
+            <a href="{% url 'manage_packages' %}"{% if active_tab == 'packages' %} class="active" aria-current="page"{% endif %}>Packages</a>
+            <a href="{% url 'manage_notification_templates' %}"{% if active_tab == 'notifications' %} class="active" aria-current="page"{% endif %}>Notifications</a>
             <div class="manage-nav-more" style="position:relative;">
-                <a href="#" class="{% if active_tab == 'clone' or active_tab == 'guide' %}active{% endif %}" onclick="event.preventDefault();this.parentElement.classList.toggle('open');">More &#9662;</a>
-                <div class="manage-nav-dropdown">
-                    <a href="{% url 'manage_finances' %}">Finances</a>
-                    <a href="{% url 'manage_sponsors' %}">Sponsors</a>
-                    <a href="{% url 'manage_legal_clauses' %}">Legal Clauses</a>
-                    <a href="{% url 'manage_assets' %}">Assets</a>
-                    <a href="{% url 'manage_clone_year' %}">Clone Year</a>
-                    <a href="{% url 'manage_guide' %}">Guide</a>
+                <a href="#manage-nav-more-menu" id="manage-nav-more-toggle" role="button" aria-expanded="false" aria-controls="manage-nav-more-menu"{% if active_tab|is_more_section %} class="active"{% endif %}>More &#9662;</a>
+                <div class="manage-nav-dropdown" id="manage-nav-more-menu">
+                    <a href="{% url 'manage_finances' %}"{% if active_tab == 'finances' %} class="active" aria-current="page"{% endif %}>Finances</a>
+                    <a href="{% url 'manage_sponsors' %}"{% if active_tab == 'sponsors' %} class="active" aria-current="page"{% endif %}>Sponsors</a>
+                    <a href="{% url 'manage_legal_clauses' %}"{% if active_tab == 'legal_clauses' %} class="active" aria-current="page"{% endif %}>Legal Clauses</a>
+                    <a href="{% url 'manage_assets' %}"{% if active_tab == 'assets' %} class="active" aria-current="page"{% endif %}>Assets</a>
+                    <a href="{% url 'manage_clone_year' %}"{% if active_tab == 'clone' %} class="active" aria-current="page"{% endif %}>Clone Year</a>
+                    <a href="{% url 'manage_guide' %}"{% if active_tab == 'guide' %} class="active" aria-current="page"{% endif %}>Guide</a>
                 </div>
             </div>
         </div>
@@ -763,6 +770,39 @@
             {% block topbar_actions %}{% endblock %}
         </div>
     </nav>
+    <script nonce="{{ request.csp_nonce }}">
+    // "More" dropdown: toggle on click or Space, close on Escape, outside click, or focus leaving it
+    (function() {
+        var toggle = document.getElementById('manage-nav-more-toggle');
+        var wrapper = toggle.parentElement;
+        function setOpen(open) {
+            wrapper.classList.toggle('open', open);
+            toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        }
+        toggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            setOpen(!wrapper.classList.contains('open'));
+        });
+        toggle.addEventListener('keydown', function(e) {
+            if (e.key === ' ') {
+                e.preventDefault();
+                setOpen(!wrapper.classList.contains('open'));
+            }
+        });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && wrapper.classList.contains('open')) {
+                setOpen(false);
+                toggle.focus();
+            }
+        });
+        document.addEventListener('click', function(e) {
+            if (!wrapper.contains(e.target)) setOpen(false);
+        });
+        wrapper.addEventListener('focusout', function(e) {
+            if (e.relatedTarget && !wrapper.contains(e.relatedTarget)) setOpen(false);
+        });
+    })();
+    </script>
 
     <!-- Breadcrumbs (sub-pages only) -->
     {% block manage_breadcrumbs %}{% endblock %}

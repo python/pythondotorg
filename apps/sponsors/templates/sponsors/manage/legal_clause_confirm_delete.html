@@ -2,8 +2,6 @@
 
 {% block page_title %}Delete {{ object.internal_name }} | Sponsor Management{% endblock %}
 
-{% with active_tab="more" %}
-
 {% block manage_breadcrumbs %}
 <div class="manage-crumbs">
     <a href="{% url 'manage_dashboard' %}">Dashboard</a>
@@ -40,5 +38,3 @@
         </form>
     </div>
 {% endblock %}
-
-{% endwith %}

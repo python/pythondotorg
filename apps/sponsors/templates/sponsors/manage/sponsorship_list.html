@@ -2,8 +2,6 @@
 
 {% block page_title %}Sponsorships | Sponsor Management{% endblock %}
 
-{% with active_tab="sponsorships" %}
-
 {% block manage_content %}
     {% load sponsors_manage %}
     <!-- Combined toolbar: status pills + filters + actions in one bar -->
@@ -234,5 +232,3 @@ function validateBulkAction() {
 })();
 </script>
 {% endblock %}
-
-{% endwith %}

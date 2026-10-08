@@ -2,8 +2,6 @@
 
 {% block page_title %}Notify {{ sponsorship.sponsor.name }} | Sponsorship Management{% endblock %}
 
-{% with active_tab="sponsorships" %}
-
 {% block manage_breadcrumbs %}
 <div class="manage-crumbs">
     <a href="{% url 'manage_dashboard' %}">Dashboard</a>
@@ -123,5 +121,3 @@
     </form>
 </div>
 {% endblock %}
-
-{% endwith %}

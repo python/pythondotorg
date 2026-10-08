@@ -2,8 +2,6 @@
 
 {% block page_title %}{% if is_create %}New Package{% else %}Edit {{ object.name }}{% endif %} | Sponsor Management{% endblock %}
 
-{% with active_tab="packages" %}
-
 {% block topbar_actions %}{% endblock %}
 
 {% block manage_breadcrumbs %}
@@ -137,5 +135,3 @@
         {% endif %}
     </div>
 {% endblock %}
-
-{% endwith %}

@@ -2,8 +2,6 @@
 
 {% block page_title %}Sync {{ benefit.short_name }} | Sponsor Management{% endblock %}
 
-{% with active_tab="benefits" %}
-
 {% block manage_breadcrumbs %}
 <div class="manage-crumbs">
     <a href="{% url 'manage_dashboard' %}">Dashboard</a>
@@ -114,5 +112,3 @@
         {% endif %}
     </div>
 {% endblock %}
-
-{% endwith %}

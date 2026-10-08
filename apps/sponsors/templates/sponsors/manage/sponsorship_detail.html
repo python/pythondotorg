@@ -2,8 +2,6 @@
 
 {% block page_title %}{{ sponsorship.sponsor.name }} | Sponsorship Review{% endblock %}
 
-{% with active_tab="sponsorships" %}
-
 {% block manage_breadcrumbs %}
 <div class="manage-crumbs">
     <a href="{% url 'manage_dashboard' %}">Dashboard</a>
@@ -685,5 +683,3 @@ function toggleComm(row) {
 </script>
 
 {% endblock %}
-
-{% endwith %}
