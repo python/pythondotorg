@@ -33,11 +33,6 @@ urlpatterns = [
         name="update_sponsorship_assets",
     ),
     path(
-        "sponsorships/<int:pk>/provided-assets/",
-        views.ProvidedSponsorshipAssetsView.as_view(),
-        name="view_provided_sponsorship_assets",
-    ),
-    path(
         "sponsorships/<int:pk>/",
         views.SponsorshipDetailView.as_view(),
         name="sponsorship_application_detail",
