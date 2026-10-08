@@ -4,6 +4,7 @@ from django.conf import settings
 from django.contrib.admin.models import ADDITION, CHANGE, LogEntry
 from django.contrib.contenttypes.models import ContentType
 from django.core.cache import cache
+from django.core.cache.utils import make_template_fragment_key
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 
@@ -222,7 +223,7 @@ class RefreshSponsorshipsCache:
     def notify(self, *args, **kwargs):
         """Delete the cached sponsors list to force a refresh."""
         # clean up cached used by "sponsors/partials/sponsors-list.html"
-        cache.delete("CACHED_SPONSORS_LIST")
+        cache.delete(make_template_fragment_key("SPONSORS_PAGE_LIST"))
 
 
 class AssetCloseToDueDateNotificationToSponsors(BaseEmailSponsorshipNotification):
