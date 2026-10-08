@@ -1,4 +1,10 @@
-"""Use case classes orchestrating sponsorship business logic with notifications."""
+"""Use case classes orchestrating sponsorship business logic with notifications.
+
+Use cases (UCs) are an indirection layer that triggers sponsorship business rules,
+keeping core logic and state management out of the views.
+"""
+
+from abc import ABC, abstractmethod
 
 from django.db import transaction
 
@@ -14,8 +20,11 @@ from apps.sponsors.models import (
 )
 
 
-class BaseUseCaseWithNotifications:
-    """Base class providing notification dispatch for use case implementations."""
+class BaseUseCaseWithNotifications(ABC):
+    """Abstract base class for use cases.
+
+    Holds the list of notifications the use case dispatches when needed.
+    """
 
     notifications = []
 
@@ -30,8 +39,15 @@ class BaseUseCaseWithNotifications:
 
     @classmethod
     def build(cls):
-        """Construct the use case with its default notification list."""
+        """Construct the use case with its default notification list.
+
+        Factory method; override to handle complex setup or dependency injection.
+        """
         return cls(cls.notifications)
+
+    @abstractmethod
+    def execute(self, *args, **kwargs):
+        """Run the use case's business rules."""
 
 
 class CreateSponsorshipApplicationUseCase(BaseUseCaseWithNotifications):
@@ -118,7 +134,12 @@ class SendContractUseCase(BaseUseCaseWithNotifications):
 
 
 class ExecuteExistingContractUseCase(BaseUseCaseWithNotifications):
-    """Execute a contract with an already-signed document file."""
+    """Execute a contract using a document the sponsor signed outside the app.
+
+    Backs the admin "approve signed sponsorship" action: the contract is created on
+    approval and executed immediately, bypassing the usual status checks. Any other
+    active sponsorship of the same sponsor is marked as overlapped by this one.
+    """
 
     notifications = [
         notifications.ExecutedExistingContractLogger(),
@@ -146,7 +167,11 @@ class ExecuteExistingContractUseCase(BaseUseCaseWithNotifications):
 
 
 class ExecuteContractUseCase(ExecuteExistingContractUseCase):
-    """Execute a contract that was previously sent for signature."""
+    """Execute a contract that was previously sent for signature.
+
+    PSF staff upload the signed contract; this flags the contract as executed
+    and the corresponding sponsorship as finalized.
+    """
 
     notifications = [
         notifications.ExecutedContractLogger(),

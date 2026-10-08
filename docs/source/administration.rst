@@ -106,6 +106,13 @@ they represent:
 :contract.py: The `Contract` model which is used to generate the final contract document and other
               support models;
 
+Regular users interact with the sponsors app in two places: the application flow
+(benefit selection at ``/sponsors/application/``, then the form at
+``/sponsors/application/new/``) and the sponsorship dashboard at ``/users/sponsorships/``,
+where sponsors view their sponsorships, update sponsor information, and upload required
+assets. Everything else is done through the admin action buttons on the ``Sponsorship``
+and ``Contract`` models.
+
 Agreements
 ----------
 
