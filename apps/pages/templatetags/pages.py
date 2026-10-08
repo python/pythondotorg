@@ -10,10 +10,10 @@ from django.utils.html import mark_safe
 register = template.Library()
 
 _MONTH = r"(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?"
-# A board resolution is a <blockquote> followed by a vote line with its date, e.g.
-# "Approved; 9-0-1, 2026-08-12", "Denied 3-4-0, December 2, 2014", "Approved ... 8 June 2015."
+# A board resolution is a <blockquote> followed by a paragraph with its vote date, e.g.
+# "Approved; 9-0-1, 2026-08-12", "Declined 3-4-0, December 2, 2014", "September 4, 2018".
 _RESOLUTION_RE = re.compile(
-    r"<blockquote>(?P<body>(?:(?!<blockquote>).)*?</blockquote>\s*<p>(?:Approved|Denied)\b[^<]*?)"
+    r"<blockquote>(?P<body>(?:(?!<blockquote>).)*?</blockquote>\s*<p>[^<]*?)"
     rf"(?P<date>\d{{4}}-\d\d-\d\d|{_MONTH}\s+\d{{1,2}},?\s+\d{{4}}|\d{{1,2}}\s+{_MONTH},?\s+\d{{4}})",
     re.DOTALL,
 )
