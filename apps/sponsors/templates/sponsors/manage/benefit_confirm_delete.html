@@ -23,12 +23,17 @@
             Are you sure you want to delete <strong>{{ object.name }}</strong>
             ({{ object.program.name }}, {{ object.year }})?
         </p>
+        <p style="font-size:13px;color:#555;">
+            This removes the benefit from the {{ object.year }} catalog, its packages, and the application form,
+            and deletes its feature configurations.
+        </p>
 
-        {% if object.related_sponsorships.count %}
+        {% if related_sponsorships_count %}
         <div class="manage-alert manage-alert-warning" style="margin-bottom:20px;">
-            This benefit is referenced by <strong>{{ object.related_sponsorships.count }}</strong>
-            sponsorship{{ object.related_sponsorships.count|pluralize }}. Deleting it will remove the
-            benefit from those sponsorships.
+            <strong>{{ related_sponsorships_count }}</strong> sponsorship{{ related_sponsorships_count|pluralize }}
+            already include{{ related_sponsorships_count|pluralize:"s," }} this benefit. They keep their own copy
+            (name, value, and assets), but the copy is no longer linked to a catalog benefit, so
+            &ldquo;Sync to Sponsorships&rdquo; can't update it afterwards.
         </div>
         {% endif %}
 

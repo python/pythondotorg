@@ -37,11 +37,11 @@ This is the PSF's internal sponsorship management UI. It lives at <a href="{% ur
 </p>
 
 <p style="font-size:13px;line-height:1.8;color:#444;">
-Access requires an active account in the <strong>Sponsorship Admin</strong> group or an active superuser account. Group members do not need staff status or individual model permissions. Staff status alone does not grant access. If you receive a 403, ask an administrator to check your account and group membership in <a href="/admin/" style="color:#3776ab;">Django Admin</a>.
+Access requires an active account in the <strong>Sponsorship Admin</strong> group or an active superuser account. Group members do not need staff status or individual model permissions. Staff status alone does not grant access. If you receive a 403, ask a PSF superuser to check your account and group membership.
 </p>
 
 <p style="font-size:13px;line-height:1.8;color:#444;">
-The navigation bar at the top gives you tabs for Dashboard, Sponsorships, Composer, Benefits, Packages, and Notifications. The "More" dropdown has Clone Year and this guide.
+The navigation bar at the top gives you tabs for Dashboard, Sponsorships, Composer, Benefits, Packages, and Notifications. The "More" dropdown has Finances, Sponsors, Legal Clauses, Assets, Clone Year, and this guide.
 </p>
 </div>
 
@@ -206,14 +206,20 @@ Contract content (sponsor info, benefits list, legal clauses) is editable in ste
 </p>
 
 <p style="font-size:13px;line-height:1.8;color:#444;">
-When creating or editing a benefit, you set its name, description, internal value, program, year, and whether it's package-only. After saving, you can add <strong>feature configurations</strong> that control how the benefit behaves:
+When creating or editing a benefit, you set its name, description, internal value, program, year, packages, legal clauses, conflicting benefits, and whether it's package-only. After saving, you can add <strong>feature configurations</strong> that control how the benefit behaves:
 </p>
 
 <ul style="font-size:13px;line-height:2;color:#444;padding-left:20px;">
 <li><strong>Logo Placement</strong> &mdash; where the sponsor's logo appears (footer, sidebar, downloads page, etc.)</li>
-<li><strong>Tiered Benefit</strong> &mdash; quantity varies by package level (e.g., 1 blog post for Maintaining, 3 for Visionary)</li>
-<li><strong>Required Asset</strong> &mdash; the sponsor must upload something (logo files, ad copy, etc.)</li>
+<li><strong>Tiered Benefit</strong> &mdash; quantity varies by package level (e.g., 1 blog post for Maintaining, 3 for Visionary); one tier per package</li>
+<li><strong>Email Targetable</strong> &mdash; marks the benefit as reaching sponsors' email audiences (one per benefit)</li>
+<li><strong>Required assets</strong> (image, text, response) &mdash; the sponsor must upload or answer something (logo files, ad copy, etc.)</li>
+<li><strong>Provided assets</strong> (text, file) &mdash; something the PSF gives the sponsor; tick Shared to give every sponsor the same text or file</li>
 </ul>
+
+<p style="font-size:13px;line-height:1.8;color:#444;">
+Asset internal names must be unique per sponsor or sponsorship across all asset types, because each sponsor holds one asset per internal name.
+</p>
 
 <p style="font-size:13px;line-height:1.8;color:#444;">
 <a href="{% url 'manage_packages' %}" style="color:#3776ab;">Packages</a> are the sponsorship tiers (Visionary, Sustainability, Maintaining, etc.). Each package has a name, year, fee amount, and a set of included benefits. Create and edit packages from the Packages tab.
@@ -370,12 +376,12 @@ On the <a href="{% url 'manage_sponsorships' %}" style="color:#3776ab;">Sponsors
 <h3 style="font-size:16px;font-weight:700;color:#e74c3c;border-bottom:2px solid #e74c3c;padding-bottom:6px;">What's Still in Django Admin</h3>
 
 <p style="font-size:13px;line-height:1.8;color:#444;">
-Some things haven't been moved into this UI yet. For these, go to <a href="/admin/sponsors/" style="color:#3776ab;">/admin/sponsors/</a>:
+Some things haven't been moved into this UI yet. Only PSF staff with Django Admin access can change these; if you don't have it, ask a superuser:
 </p>
 
 <ul style="font-size:13px;line-height:2;color:#444;padding-left:20px;">
 <li><strong>Benefit ordering</strong> &mdash; drag-to-reorder benefits within a program. The manage UI shows them in order but doesn't let you rearrange</li>
-<li><strong>Benefit conflicts</strong> &mdash; configuring which benefits are mutually exclusive (M2M relationship in the admin)</li>
+<li><strong>Package ordering</strong> &mdash; the display order of packages on the application form</li>
 <li><strong>Sponsorship program management</strong> &mdash; adding or editing programs (Foundation, PyCon, PyPI, etc.)</li>
 <li><strong>Advanced import/export</strong> &mdash; django-import-export for bulk data operations</li>
 </ul>

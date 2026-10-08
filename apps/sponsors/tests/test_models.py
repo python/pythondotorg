@@ -817,7 +817,7 @@ class SponsorBenefitModelTests(TestCase):
         self.assertEqual("desc", benefit_2023.description)
         self.assertEqual(benefit.program, benefit_2023.program)
         self.assertFalse(benefit_2023.package_only)
-        self.assertTrue(benefit_2023.new)
+        self.assertFalse(benefit_2023.new)
         self.assertTrue(benefit_2023.unavailable)
         self.assertTrue(benefit_2023.standalone)
         self.assertEqual("internal desc", benefit_2023.internal_description)

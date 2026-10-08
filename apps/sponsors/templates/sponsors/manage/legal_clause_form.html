@@ -17,13 +17,15 @@
         <h2 style="font-size:18px;font-weight:700;color:#1a1a2e;margin:0 0 4px;">
             {% if is_create %}Create Legal Clause{% else %}Edit Legal Clause{% endif %}
         </h2>
-        {% if not is_create and benefit_count %}
+        {% if not is_create and linked_benefits %}
         <p style="font-size:13px;color:#777;margin:0 0 20px;">
-            Used by <span style="color:#e74c3c;">{{ benefit_count }} benefit{{ benefit_count|pluralize }}</span>
+            Used by {{ linked_benefits|length }} benefit{{ linked_benefits|length|pluralize }}:
+            {% for benefit in linked_benefits %}<a href="{% url 'manage_benefit_edit' benefit.pk %}" style="color:#3776ab;">{{ benefit.short_name }} ({{ benefit.year }})</a>{% if not forloop.last %}, {% endif %}{% endfor %}.
+            Link or unlink benefits from each benefit's edit page.
         </p>
         {% else %}
         <p style="font-size:13px;color:#777;margin:0 0 20px;">
-            {% if is_create %}Legal clause text that gets pulled into contracts via benefit associations.{% endif %}
+            Legal clause text that gets pulled into contracts via benefit associations. Link it to benefits from each benefit's edit page.
         </p>
         {% endif %}
 

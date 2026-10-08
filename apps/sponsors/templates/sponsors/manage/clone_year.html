@@ -15,6 +15,8 @@
         <h2 style="font-size:18px;font-weight:700;color:#1a1a2e;margin:0 0 4px;">Clone Year Configuration</h2>
         <p style="font-size:13px;color:#777;margin:0 0 24px;">
             Copy all packages and benefits from one year to another. Existing items in the target year won't be duplicated.
+            Cloned benefits start without the &ldquo;New this year&rdquo; flag, and asset due dates move to the target year
+            (Feb 29 becomes Feb 28 in non-leap years).
         </p>
 
         {% if form.errors %}
@@ -102,5 +104,17 @@
                 <a href="{% url 'manage_dashboard' %}" class="btn btn-secondary" style="margin-left:8px;">Cancel</a>
             </div>
         </form>
+        <script nonce="{{ request.csp_nonce }}">
+        // Reload the preview for the newly chosen source year, keeping the target year
+        (function() {
+            var source = document.getElementById('id_source_year');
+            var target = document.getElementById('id_target_year');
+            source.addEventListener('change', function() {
+                var params = new URLSearchParams({source_year: source.value});
+                if (target.value) params.set('target_year', target.value);
+                window.location.search = params.toString();
+            });
+        })();
+        </script>
     </div>
 {% endblock %}

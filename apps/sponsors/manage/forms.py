@@ -64,8 +64,25 @@ def year_choices():
     return [(y, str(y)) for y in range(current + 2, 2021, -1)]
 
 
+class YearTaggedCheckboxSelectMultiple(forms.CheckboxSelectMultiple):
+    """Checkbox list that tags each option with its object's year so the page can filter by year."""
+
+    def create_option(self, name, value, label, selected, index, subindex=None, attrs=None):  # noqa: PLR0913 - Django ChoiceWidget.create_option signature
+        """Add a ``data-year`` attribute taken from the option's model instance."""
+        option = super().create_option(name, value, label, selected, index, subindex=subindex, attrs=attrs)
+        instance = getattr(value, "instance", None)
+        if instance is not None:
+            option["attrs"]["data-year"] = instance.year
+        return option
+
+
 class SponsorshipBenefitManageForm(forms.ModelForm):
-    """Form for creating and editing sponsorship benefits."""
+    """Form for creating and editing sponsorship benefits.
+
+    Packages and conflicting benefits from every year are rendered, tagged with
+    their year, so the page can show only the selected year's options. ``clean``
+    rejects choices that belong to a different year than the benefit.
+    """
 
     class Meta:
         """Meta options."""
@@ -85,6 +102,8 @@ class SponsorshipBenefitManageForm(forms.ModelForm):
             "capacity",
             "soft_capacity",
             "year",
+            "legal_clauses",
+            "conflicts",
         ]
         widgets = {
             "name": forms.TextInput(
@@ -102,35 +121,51 @@ class SponsorshipBenefitManageForm(forms.ModelForm):
                     "style": "width:100%;padding:8px 12px;border:1px solid #ccc;border-radius:4px;font-size:14px;resize:vertical;",
                 }
             ),
-            "packages": forms.CheckboxSelectMultiple(),
+            "packages": YearTaggedCheckboxSelectMultiple(),
+            "conflicts": YearTaggedCheckboxSelectMultiple(),
+            "legal_clauses": forms.CheckboxSelectMultiple(),
             "year": forms.Select(
                 attrs={"style": "padding:8px 12px;border:1px solid #ccc;border-radius:4px;font-size:14px;"}
             ),
         }
 
     def __init__(self, *args, **kwargs):
-        """Initialize form with year choices and package filtering."""
+        """Initialize form with year choices, a default year, and year-tagged related choices."""
         super().__init__(*args, **kwargs)
         self.fields["year"].widget = forms.Select(
             choices=[("", "---"), *year_choices()],
             attrs={"style": "padding:8px 12px;border:1px solid #ccc;border-radius:4px;font-size:14px;"},
         )
-        # Filter packages to bound year, instance year, initial year, or current year
-        filter_year = None
-        if self.is_bound and self.data.get("year"):
-            with contextlib.suppress(ValueError):
-                filter_year = int(self.data["year"])
-        if not filter_year and self.instance and self.instance.year:
-            filter_year = self.instance.year
-        elif not filter_year and self.initial.get("year"):
-            filter_year = self.initial["year"]
-        if not filter_year:
+        if not self.instance.pk and not self.initial.get("year"):
             with contextlib.suppress(SponsorshipCurrentYear.DoesNotExist):
-                filter_year = SponsorshipCurrentYear.get_year()
-        if filter_year:
-            self.fields["packages"].queryset = SponsorshipPackage.objects.filter(year=filter_year).order_by(
-                "-sponsorship_amount"
-            )
+                self.initial["year"] = SponsorshipCurrentYear.get_year()
+
+        self.fields["packages"].queryset = SponsorshipPackage.objects.filter(year__isnull=False).order_by(
+            "-year", "-sponsorship_amount"
+        )
+        conflicts = (
+            SponsorshipBenefit.objects.filter(year__isnull=False)
+            .select_related("program")
+            .order_by("-year", "program__order", "order")
+        )
+        if self.instance.pk:
+            conflicts = conflicts.exclude(pk=self.instance.pk)
+        self.fields["conflicts"].queryset = conflicts
+        self.fields["conflicts"].label_from_instance = lambda benefit: f"{benefit.program.name} > {benefit.name}"
+        self.fields["legal_clauses"].queryset = LegalClause.objects.order_by("order")
+        self.fields["legal_clauses"].label_from_instance = lambda clause: clause.internal_name
+
+    def clean(self):
+        """Reject packages and conflicts that belong to a different year than the benefit."""
+        cleaned = super().clean()
+        year = cleaned.get("year")
+        if year:
+            for field in ("packages", "conflicts"):
+                other_year = [obj for obj in cleaned.get(field) or [] if obj.year != year]
+                if other_year:
+                    names = ", ".join(str(obj) for obj in other_year)
+                    self.add_error(field, f"Not part of {year}: {names}. Untick them or change the year.")
+        return cleaned
 
 
 class SponsorshipPackageManageForm(forms.ModelForm):
@@ -180,7 +215,9 @@ class SponsorshipPackageManageForm(forms.ModelForm):
         )
         filter_year = None
         if self.is_bound and self.data.get(self.add_prefix("year")):
-            filter_year = self.data.get(self.add_prefix("year"))
+            # Malformed years leave the benefit list empty; the year field reports the error
+            with contextlib.suppress(TypeError, ValueError):
+                filter_year = int(self.data.get(self.add_prefix("year")))
         elif self.instance and self.instance.year:
             filter_year = self.instance.year
         elif self.initial.get("year"):
@@ -197,6 +234,17 @@ class SponsorshipPackageManageForm(forms.ModelForm):
             )
         if self.instance and self.instance.pk:
             self.initial.setdefault("benefits", self.instance.benefits.values_list("pk", flat=True))
+
+    def clean(self):
+        """Reject a slug already used by another package in the same year."""
+        cleaned = super().clean()
+        slug = cleaned.get("slug")
+        year = cleaned.get("year")
+        if slug and year:
+            duplicates = SponsorshipPackage.objects.filter(slug=slug, year=year).exclude(pk=self.instance.pk)
+            if duplicates.exists():
+                self.add_error("slug", f'Another {year} package already uses the slug "{slug}".')
+        return cleaned
 
     def _save_m2m(self):
         """Persist reverse benefit associations after the package is saved."""
@@ -278,10 +326,8 @@ class BenefitFilterForm(forms.Form):
         super().__init__(*args, **kwargs)
         benefit_years = SponsorshipBenefit.objects.values_list("year", flat=True).distinct().order_by("-year")
         self.fields["year"].choices = [("", "All years")] + [(y, str(y)) for y in benefit_years if y]
-        if selected_year:
-            self.fields["package"].queryset = SponsorshipPackage.objects.filter(year=selected_year)
-        else:
-            self.fields["package"].queryset = SponsorshipPackage.objects.all()
+        packages = SponsorshipPackage.objects.order_by("-year", "-sponsorship_amount")
+        self.fields["package"].queryset = packages.filter(year=selected_year) if selected_year else packages
 
 
 class CurrentYearForm(forms.ModelForm):
@@ -611,7 +657,62 @@ class SponsorContactForm(forms.ModelForm):
 # ── Benefit Feature Configuration Forms ──
 
 
-class LogoPlacementConfigForm(forms.ModelForm):
+class BenefitConfigForm(forms.ModelForm):
+    """Base form for a feature configuration, bound to the benefit it configures."""
+
+    def __init__(self, *args, benefit, **kwargs):
+        """Attach the benefit before validation so checks against its other configurations work."""
+        super().__init__(*args, **kwargs)
+        self.benefit = benefit
+        self.instance.benefit = benefit
+
+    def _other_configs(self, model_cls):
+        """Return the benefit's other configurations of the given type."""
+        return model_cls.objects.filter(benefit=self.benefit).exclude(pk=self.instance.pk)
+
+
+_ASSET_CONFIG_MODELS = (
+    RequiredImgAssetConfiguration,
+    RequiredTextAssetConfiguration,
+    RequiredResponseAssetConfiguration,
+    ProvidedTextAssetConfiguration,
+    ProvidedFileAssetConfiguration,
+)
+
+
+class AssetConfigForm(BenefitConfigForm):
+    """Base form for asset configurations."""
+
+    def clean(self):
+        """Reject an internal name that another asset type already uses for the same owner.
+
+        Sponsors and sponsorships hold one asset per internal name, so two asset
+        types sharing a name would read and write the same stored value.
+        Duplicates within one type are rejected by the model's unique constraint.
+        """
+        cleaned = super().clean()
+        internal_name = cleaned.get("internal_name")
+        related_to = cleaned.get("related_to")
+        if internal_name and related_to:
+            for model_cls in _ASSET_CONFIG_MODELS:
+                if model_cls is self._meta.model:
+                    continue
+                clash = (
+                    model_cls.objects.filter(internal_name=internal_name, related_to=related_to)
+                    .select_related("benefit")
+                    .first()
+                )
+                if clash:
+                    self.add_error(
+                        "internal_name",
+                        f'"{internal_name}" is already used by a {clash._meta.verbose_name.lower()} on '  # noqa: SLF001 - Django _meta API access
+                        f'"{clash.benefit.name}" ({clash.benefit.year}). Pick a different internal name.',
+                    )
+                    break
+        return cleaned
+
+
+class LogoPlacementConfigForm(BenefitConfigForm):
     """Form for LogoPlacementConfiguration."""
 
     class Meta:
@@ -625,7 +726,7 @@ class LogoPlacementConfigForm(forms.ModelForm):
         }
 
 
-class TieredBenefitConfigForm(forms.ModelForm):
+class TieredBenefitConfigForm(BenefitConfigForm):
     """Form for TieredBenefitConfiguration."""
 
     class Meta:
@@ -639,8 +740,24 @@ class TieredBenefitConfigForm(forms.ModelForm):
             "display_label": forms.TextInput(attrs={"style": INPUT_STYLE}),
         }
 
+    def __init__(self, *args, **kwargs):
+        """Limit package choices to the benefit's year, keeping an already-saved package selectable."""
+        super().__init__(*args, **kwargs)
+        packages = SponsorshipPackage.objects.filter(year=self.benefit.year)
+        if self.instance.package_id:
+            packages |= SponsorshipPackage.objects.filter(pk=self.instance.package_id)
+        self.fields["package"].queryset = packages.order_by("-sponsorship_amount")
 
-class EmailTargetableConfigForm(forms.ModelForm):
+    def clean_package(self):
+        """Allow only one tier per package on a benefit."""
+        package = self.cleaned_data["package"]
+        if package and self._other_configs(TieredBenefitConfiguration).filter(package=package).exists():
+            msg = f"{package} already has a tier on this benefit. Edit that configuration instead."
+            raise forms.ValidationError(msg)
+        return package
+
+
+class EmailTargetableConfigForm(BenefitConfigForm):
     """Form for EmailTargetableConfiguration (no extra fields)."""
 
     class Meta:
@@ -649,8 +766,16 @@ class EmailTargetableConfigForm(forms.ModelForm):
         model = EmailTargetableConfiguration
         fields = []
 
+    def clean(self):
+        """Allow a single email targetable configuration per benefit."""
+        cleaned = super().clean()
+        if self._other_configs(EmailTargetableConfiguration).exists():
+            msg = "This benefit already has an Email Targetable configuration."
+            raise forms.ValidationError(msg)
+        return cleaned
 
-class RequiredImgAssetConfigForm(forms.ModelForm):
+
+class RequiredImgAssetConfigForm(AssetConfigForm):
     """Form for RequiredImgAssetConfiguration."""
 
     class Meta:
@@ -680,9 +805,25 @@ class RequiredImgAssetConfigForm(forms.ModelForm):
             "max_height": forms.NumberInput(attrs={"style": INPUT_STYLE}),
         }
 
+    def clean(self):
+        """Require each minimum dimension to be no larger than its maximum."""
+        cleaned = super().clean()
+        for low, high in (("min_width", "max_width"), ("min_height", "max_height")):
+            low_value, high_value = cleaned.get(low), cleaned.get(high)
+            if low_value is not None and high_value is not None and low_value > high_value:
+                self.add_error(high, f"Must be at least the {self.fields[low].label.lower()} ({low_value}).")
+        return cleaned
 
-class RequiredTextAssetConfigForm(forms.ModelForm):
+
+class RequiredTextAssetConfigForm(AssetConfigForm):
     """Form for RequiredTextAssetConfiguration."""
+
+    max_length = forms.IntegerField(
+        required=False,
+        min_value=1,
+        help_text="Limit to length of the input, empty means unlimited",
+        widget=forms.NumberInput(attrs={"style": INPUT_STYLE}),
+    )
 
     class Meta:
         """Meta options."""
@@ -695,11 +836,10 @@ class RequiredTextAssetConfigForm(forms.ModelForm):
             "label": forms.TextInput(attrs={"style": INPUT_STYLE}),
             "help_text": forms.TextInput(attrs={"style": INPUT_STYLE}),
             "due_date": forms.DateInput(attrs={"type": "date", "style": INPUT_STYLE}),
-            "max_length": forms.NumberInput(attrs={"style": INPUT_STYLE}),
         }
 
 
-class RequiredResponseAssetConfigForm(forms.ModelForm):
+class RequiredResponseAssetConfigForm(AssetConfigForm):
     """Form for RequiredResponseAssetConfiguration."""
 
     class Meta:
@@ -716,36 +856,55 @@ class RequiredResponseAssetConfigForm(forms.ModelForm):
         }
 
 
-class ProvidedTextAssetConfigForm(forms.ModelForm):
+class ProvidedTextAssetConfigForm(AssetConfigForm):
     """Form for ProvidedTextAssetConfiguration."""
 
     class Meta:
         """Meta options."""
 
         model = ProvidedTextAssetConfiguration
-        fields = ["related_to", "internal_name", "label", "help_text", "shared"]
+        fields = ["related_to", "internal_name", "label", "help_text", "shared", "shared_text"]
+        labels = {"shared": "Shared with every sponsor", "shared_text": "Shared text"}
+        help_texts = {"shared_text": "Shown to every sponsor when Shared is checked."}
         widgets = {
             "related_to": forms.Select(attrs={"style": INPUT_STYLE}),
             "internal_name": forms.TextInput(attrs={"style": INPUT_STYLE}),
             "label": forms.TextInput(attrs={"style": INPUT_STYLE}),
             "help_text": forms.TextInput(attrs={"style": INPUT_STYLE}),
+            "shared_text": forms.Textarea(attrs={"rows": 5, "style": INPUT_STYLE + "resize:vertical;"}),
         }
 
+    def clean(self):
+        """Require the shared text when the asset is shared."""
+        cleaned = super().clean()
+        if cleaned.get("shared") and not cleaned.get("shared_text"):
+            self.add_error("shared_text", "Enter the text to share, or uncheck Shared.")
+        return cleaned
 
-class ProvidedFileAssetConfigForm(forms.ModelForm):
+
+class ProvidedFileAssetConfigForm(AssetConfigForm):
     """Form for ProvidedFileAssetConfiguration."""
 
     class Meta:
         """Meta options."""
 
         model = ProvidedFileAssetConfiguration
-        fields = ["related_to", "internal_name", "label", "help_text", "shared"]
+        fields = ["related_to", "internal_name", "label", "help_text", "shared", "shared_file"]
+        labels = {"shared": "Shared with every sponsor", "shared_file": "Shared file"}
+        help_texts = {"shared_file": "Offered to every sponsor when Shared is checked."}
         widgets = {
             "related_to": forms.Select(attrs={"style": INPUT_STYLE}),
             "internal_name": forms.TextInput(attrs={"style": INPUT_STYLE}),
             "label": forms.TextInput(attrs={"style": INPUT_STYLE}),
             "help_text": forms.TextInput(attrs={"style": INPUT_STYLE}),
         }
+
+    def clean(self):
+        """Require the shared file when the asset is shared."""
+        cleaned = super().clean()
+        if cleaned.get("shared") and not cleaned.get("shared_file"):
+            self.add_error("shared_file", "Upload the file to share, or uncheck Shared.")
+        return cleaned
 
 
 class ComposerSponsorForm(forms.ModelForm):

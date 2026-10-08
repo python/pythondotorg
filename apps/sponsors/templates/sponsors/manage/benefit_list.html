@@ -30,9 +30,22 @@
                     {% endfor %}
                 </select>
             </div>
+            <div class="filter-field">
+                <label for="filter-package">Package</label>
+                <select name="package" id="filter-package">
+                    <option value="">All packages</option>
+                    {% for package in filter_form.package.field.queryset %}
+                    <option value="{{ package.pk }}" {% if package.pk|slugify == filter_package %}selected{% endif %}>{% if filter_year %}{{ package.name }}{% else %}{{ package }}{% endif %}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="filter-field">
+                <label for="filter-search">Name</label>
+                <input type="search" name="search" id="filter-search" value="{{ filter_search }}" placeholder="Search benefit names">
+            </div>
             <div class="filter-actions">
                 <button type="submit" class="btn btn-sm btn-secondary">Filter</button>
-                {% if filter_year or filter_program or filter_package %}
+                {% if filter_year or filter_program or filter_package or filter_search %}
                 <a href="{% url 'manage_benefit_list' %}" class="btn btn-sm btn-secondary">Clear</a>
                 {% endif %}
             </div>
@@ -41,8 +54,13 @@
 
     <!-- Results count -->
     <div style="font-size:13px;color:#777;margin-bottom:16px;">
-        Showing {{ benefits|length }} benefit{{ benefits|length|pluralize }}
+        {% if invalid_year %}
+        &ldquo;{{ filter_year }}&rdquo; is not a valid year.
+        {% else %}
+        {{ paginator.count }} benefit{{ paginator.count|pluralize }}
         {% if filter_year %} for <strong>{{ filter_year }}</strong>{% endif %}
+        {% if filter_search %} matching &ldquo;{{ filter_search }}&rdquo;{% endif %}
+        {% endif %}
     </div>
 
     {% if benefits %}
@@ -103,11 +121,11 @@
     {% if is_paginated %}
     <div style="display:flex;justify-content:center;gap:4px;margin-top:20px;">
         {% if page_obj.has_previous %}
-        <a href="?page={{ page_obj.previous_page_number }}{% if filter_year %}&year={{ filter_year }}{% endif %}{% if filter_program %}&program={{ filter_program }}{% endif %}" class="btn btn-sm btn-secondary">&larr; Prev</a>
+        <a href="?page={{ page_obj.previous_page_number }}{% if filter_query %}&{{ filter_query }}{% endif %}" class="btn btn-sm btn-secondary">&larr; Prev</a>
         {% endif %}
         <span style="padding:6px 12px;font-size:13px;color:#555;">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
         {% if page_obj.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}{% if filter_year %}&year={{ filter_year }}{% endif %}{% if filter_program %}&program={{ filter_program }}{% endif %}" class="btn btn-sm btn-secondary">Next &rarr;</a>
+        <a href="?page={{ page_obj.next_page_number }}{% if filter_query %}&{{ filter_query }}{% endif %}" class="btn btn-sm btn-secondary">Next &rarr;</a>
         {% endif %}
     </div>
     {% endif %}

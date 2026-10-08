@@ -84,21 +84,33 @@
             </fieldset>
 
             <div style="display:flex;gap:10px;align-items:center;padding-top:8px;">
-                <button type="submit" class="btn btn-primary">Sync {{ eligible|length }} Sponsorship{{ eligible|length|pluralize }}</button>
+                <button type="submit" class="btn btn-primary" id="sync-submit">Sync {{ eligible|length }} Sponsorship{{ eligible|length|pluralize }}</button>
                 <a href="{% url 'manage_benefit_edit' benefit.pk %}" class="btn btn-secondary">Cancel</a>
             </div>
         </form>
 
-        <script>
+        <script nonce="{{ request.csp_nonce }}">
         (function() {
             var selectAll = document.getElementById('select-all');
-            if (selectAll) {
-                selectAll.addEventListener('change', function() {
-                    var boxes = document.querySelectorAll('.row-select');
-                    for (var i = 0; i < boxes.length; i++) {
-                        boxes[i].checked = selectAll.checked;
-                    }
-                });
+            var boxes = document.querySelectorAll('.row-select');
+            var submit = document.getElementById('sync-submit');
+            function updateCount() {
+                var count = 0;
+                for (var i = 0; i < boxes.length; i++) {
+                    if (boxes[i].checked) count++;
+                }
+                submit.textContent = 'Sync ' + count + ' Sponsorship' + (count === 1 ? '' : 's');
+                submit.disabled = count === 0;
+                selectAll.checked = count === boxes.length;
+            }
+            selectAll.addEventListener('change', function() {
+                for (var i = 0; i < boxes.length; i++) {
+                    boxes[i].checked = selectAll.checked;
+                }
+                updateCount();
+            });
+            for (var i = 0; i < boxes.length; i++) {
+                boxes[i].addEventListener('change', updateCount);
             }
         })();
         </script>

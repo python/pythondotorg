@@ -17,7 +17,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.core.mail import EmailMessage
 from django.db import transaction
-from django.db.models import Count, Q, Sum
+from django.db.models import Count, Prefetch, Q, Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -67,6 +67,7 @@ from apps.sponsors.models import (
     SponsorshipNotificationLog,
     SponsorshipPackage,
     SponsorshipProgram,
+    TieredBenefitConfiguration,
 )
 from apps.sponsors.models.enums import AssetsRelatedTo
 from pydotorg.mixins import GroupRequiredMixin, LoginRequiredMixin
@@ -237,14 +238,14 @@ class ManageDashboardView(SponsorshipAdminRequiredMixin, TemplateView):
 
 
 class BenefitListView(SponsorshipAdminRequiredMixin, ListView):
-    """List benefits with filtering by year, program, package."""
+    """List benefits with filtering by year, program, package, and name."""
 
     template_name = "sponsors/manage/benefit_list.html"
     context_object_name = "benefits"
     paginate_by = 50
 
     def get_queryset(self):
-        """Return benefits filtered by year, program, and package."""
+        """Return benefits filtered by year, program, package, and name search."""
         qs = (
             SponsorshipBenefit.objects.select_related("program")
             .prefetch_related("packages")
@@ -254,9 +255,12 @@ class BenefitListView(SponsorshipAdminRequiredMixin, ListView):
         self.filter_year = self.request.GET.get("year", "")
         self.filter_program = self.request.GET.get("program", "")
         self.filter_package = self.request.GET.get("package", "")
+        self.filter_search = self.request.GET.get("search", "").strip()
+        self.invalid_year = False
 
         if self.filter_year:
             year = _int_or_none(self.filter_year)
+            self.invalid_year = year is None
             qs = qs.filter(year=year) if year is not None else qs.none()
         if self.filter_program:
             program = _int_or_none(self.filter_program)
@@ -264,10 +268,12 @@ class BenefitListView(SponsorshipAdminRequiredMixin, ListView):
         if self.filter_package:
             package = _int_or_none(self.filter_package)
             qs = qs.filter(packages__id=package) if package is not None else qs.none()
+        if self.filter_search:
+            qs = qs.filter(name__icontains=self.filter_search)
         return qs
 
     def get_context_data(self, **kwargs):
-        """Return context with benefit filter form."""
+        """Return context with benefit filter form and the filters to carry across pages."""
         context = super().get_context_data(**kwargs)
         context["filter_form"] = BenefitFilterForm(
             self.request.GET,
@@ -276,6 +282,11 @@ class BenefitListView(SponsorshipAdminRequiredMixin, ListView):
         context["filter_year"] = self.filter_year
         context["filter_program"] = self.filter_program
         context["filter_package"] = self.filter_package
+        context["filter_search"] = self.filter_search
+        context["invalid_year"] = self.invalid_year
+        filter_params = self.request.GET.copy()
+        filter_params.pop("page", None)
+        context["filter_query"] = filter_params.urlencode()
         return context
 
 
@@ -347,6 +358,12 @@ class BenefitDeleteView(SponsorshipAdminRequiredMixin, DeleteView):
         year = self.object.year
         return reverse("manage_benefit_list") + (f"?year={year}" if year else "")
 
+    def get_context_data(self, **kwargs):
+        """Return context with the number of sponsorships holding a copy of this benefit."""
+        context = super().get_context_data(**kwargs)
+        context["related_sponsorships_count"] = self.object.related_sponsorships.count()
+        return context
+
 
 class BenefitSyncView(SponsorshipAdminRequiredMixin, View):
     """Sync a SponsorshipBenefit template to its related SponsorBenefit instances."""
@@ -401,8 +418,10 @@ class LegalClauseListView(SponsorshipAdminRequiredMixin, ListView):
     context_object_name = "clauses"
 
     def get_queryset(self):
-        """Return clauses ordered by position."""
-        return LegalClause.objects.all().order_by("order")
+        """Return clauses ordered by position, with the benefits that use them."""
+        return LegalClause.objects.prefetch_related(
+            Prefetch("benefits", queryset=SponsorshipBenefit.objects.order_by("-year", "name"))
+        ).order_by("order")
 
 
 class LegalClauseCreateView(SponsorshipAdminRequiredMixin, CreateView):
@@ -437,10 +456,10 @@ class LegalClauseUpdateView(SponsorshipAdminRequiredMixin, UpdateView):
         return reverse("manage_legal_clauses")
 
     def get_context_data(self, **kwargs):
-        """Return context with benefit count."""
+        """Return context with the benefits that use this clause."""
         context = super().get_context_data(**kwargs)
         context["is_create"] = False
-        context["benefit_count"] = self.object.benefits.count()
+        context["linked_benefits"] = self.object.benefits.select_related("program").order_by("-year", "name")
         return context
 
 
@@ -812,10 +831,37 @@ class PackageUpdateView(SponsorshipAdminRequiredMixin, UpdateView):
 
 
 class PackageDeleteView(SponsorshipAdminRequiredMixin, DeleteView):
-    """Delete a sponsorship package."""
+    """Delete a sponsorship package that no sponsorship uses.
+
+    Deleting a package clears it from its sponsorships and cascades to its
+    tiered benefit configurations, so deletion is refused while sponsorships
+    still reference it.
+    """
 
     model = SponsorshipPackage
     template_name = "sponsors/manage/package_confirm_delete.html"
+
+    def get_context_data(self, **kwargs):
+        """Return context with the sponsorships and tiered configurations tied to the package."""
+        context = super().get_context_data(**kwargs)
+        context["package_sponsorships"] = self.object.sponsorship_set.select_related("sponsor").order_by(
+            "-year", "sponsor__name"
+        )
+        context["tiered_configs"] = TieredBenefitConfiguration.objects.filter(package=self.object).select_related(
+            "benefit"
+        )
+        return context
+
+    def form_valid(self, form):
+        """Refuse to delete a package that sponsorships still reference."""
+        in_use = self.object.sponsorship_set.count()
+        if in_use:
+            messages.error(
+                self.request,
+                f'"{self.object.name}" is used by {in_use} sponsorship(s). Move them to another package first.',
+            )
+            return redirect(reverse("manage_package_delete", args=[self.object.pk]))
+        return super().form_valid(form)
 
     def get_success_url(self):
         """Return URL to package list after deletion."""
@@ -830,10 +876,22 @@ class CloneYearView(SponsorshipAdminRequiredMixin, FormView):
     template_name = "sponsors/manage/clone_year.html"
     form_class = CloneYearForm
 
+    def get_initial(self):
+        """Return initial years from query parameters, set when the source year select changes."""
+        initial = super().get_initial()
+        for field in ("source_year", "target_year"):
+            year = _int_or_none(self.request.GET.get(field))
+            if year is not None:
+                initial[field] = year
+        return initial
+
     def get_context_data(self, **kwargs):
-        """Return context with source year preview data."""
+        """Return context with a preview of the selected (or default) source year."""
         context = super().get_context_data(**kwargs)
-        source_year = _int_or_none(self.request.GET.get("source_year"))
+        form = context["form"]
+        source_year = _int_or_none(form["source_year"].value())
+        if source_year is None and form.fields["source_year"].choices:
+            source_year = _int_or_none(form.fields["source_year"].choices[0][0])
         if source_year is not None:
             context["preview_benefits"] = (
                 SponsorshipBenefit.objects.filter(year=source_year)
@@ -2208,7 +2266,7 @@ class BenefitConfigAddView(SponsorshipAdminRequiredMixin, View):
 
     def get(self, request, pk, config_type):
         """Render the add configuration form."""
-        form = self.form_cls()
+        form = self.form_cls(benefit=self.benefit)
         context = {
             "benefit": self.benefit,
             "form": form,
@@ -2219,11 +2277,9 @@ class BenefitConfigAddView(SponsorshipAdminRequiredMixin, View):
 
     def post(self, request, pk, config_type):
         """Create the configuration and redirect to benefit edit."""
-        form = self.form_cls(request.POST, request.FILES)
+        form = self.form_cls(request.POST, request.FILES, benefit=self.benefit)
         if form.is_valid():
-            config = form.save(commit=False)
-            config.benefit = self.benefit
-            config.save()
+            form.save()
             messages.success(request, f"{self.type_label} configuration added.")
             return redirect(reverse("manage_benefit_edit", args=[self.benefit.pk]))
         context = {
@@ -2250,7 +2306,7 @@ class BenefitConfigEditView(SponsorshipAdminRequiredMixin, View):
 
     def get(self, request, pk):
         """Render the edit configuration form."""
-        form = self.form_cls(instance=self.config)
+        form = self.form_cls(instance=self.config, benefit=self.config.benefit)
         context = {
             "benefit": self.config.benefit,
             "form": form,
@@ -2262,7 +2318,7 @@ class BenefitConfigEditView(SponsorshipAdminRequiredMixin, View):
 
     def post(self, request, pk):
         """Update the configuration and redirect to benefit edit."""
-        form = self.form_cls(request.POST, request.FILES, instance=self.config)
+        form = self.form_cls(request.POST, request.FILES, instance=self.config, benefit=self.config.benefit)
         if form.is_valid():
             form.save()
             messages.success(request, f"{self.type_label} configuration updated.")

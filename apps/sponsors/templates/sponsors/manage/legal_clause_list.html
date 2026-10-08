@@ -22,7 +22,7 @@
                 <th style="width:40px;text-align:center;">Order</th>
                 <th>Internal Name</th>
                 <th style="width:40%;">Clause Text</th>
-                <th style="text-align:center;">Benefits</th>
+                <th>Benefits</th>
                 <th style="width:80px;text-align:center;">Move</th>
                 <th style="width:80px;text-align:right;">Actions</th>
             </tr>
@@ -39,10 +39,12 @@
                 <td style="font-size:12px;color:#555;max-width:400px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
                     {{ clause.clause|truncatechars:120 }}
                 </td>
-                <td style="text-align:center;">
-                    {% with bc=clause.benefits.count %}
-                    {% if bc %}<span class="tag tag-blue">{{ bc }}</span>{% else %}<span style="color:#ccc;">&mdash;</span>{% endif %}
-                    {% endwith %}
+                <td style="font-size:12px;">
+                    {% for benefit in clause.benefits.all %}
+                    <a href="{% url 'manage_benefit_edit' benefit.pk %}" style="color:#3776ab;text-decoration:none;">{{ benefit.short_name }}</a> <span style="color:#999;">({{ benefit.year }})</span>{% if not forloop.last %}<br>{% endif %}
+                    {% empty %}
+                    <span style="color:#ccc;">&mdash;</span>
+                    {% endfor %}
                 </td>
                 <td style="text-align:center;">
                     <div style="display:flex;gap:2px;justify-content:center;">

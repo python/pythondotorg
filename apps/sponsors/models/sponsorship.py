@@ -578,7 +578,8 @@ class SponsorshipBenefit(OrderedModel):
             "description": self.description,
             "program": self.program,
             "package_only": self.package_only,
-            "new": self.new,
+            # "New this year" describes the source year, not the cloned one
+            "new": False,
             "unavailable": self.unavailable,
             "standalone": self.standalone,
             "internal_description": self.internal_description,
