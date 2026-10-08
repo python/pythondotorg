@@ -2,8 +2,10 @@ import datetime
 
 from django.conf import settings
 from django.test import TestCase
+from django.utils import timezone
 
-from apps.nominations.models import DEFAULT_ACCENT_COLOR, Election, ElectionKind, Nomination
+from apps.nominations.models import DEFAULT_ACCENT_COLOR, Election, ElectionKind, Nomination, Nominee
+from apps.users.factories import UserFactory
 
 
 class ElectionKindModelTests(TestCase):
@@ -51,6 +53,85 @@ class ElectionAccentColorTests(TestCase):
 
         self.assertIsNone(self.election.kind)
         self.assertEqual(self.election.accent_color, DEFAULT_ACCENT_COLOR)
+
+
+class EndorsementWindowTests(TestCase):
+    """``endorsements_open`` must be independent of the nomination window."""
+
+    def _election(self, **extra):
+        return Election.objects.create(name="2026 Board Election", date=datetime.date(2026, 12, 1), **extra)
+
+    def test_closed_when_only_one_date_set(self):
+        now = timezone.now()
+        self.assertFalse(self._election(endorsements_open_at=now - datetime.timedelta(days=1)).endorsements_open)
+        self.assertFalse(self._election(endorsements_close_at=now + datetime.timedelta(days=1)).endorsements_open)
+
+    def test_open_between_dates(self):
+        now = timezone.now()
+        election = self._election(
+            endorsements_open_at=now - datetime.timedelta(days=1),
+            endorsements_close_at=now + datetime.timedelta(days=1),
+        )
+        self.assertTrue(election.endorsements_open)
+        # The nomination window is untouched by the endorsement window.
+        self.assertFalse(election.nominations_open)
+
+
+class NominationEditableWindowTests(TestCase):
+    """``editable()`` follows the endorsement window for endorsements only."""
+
+    def setUp(self):
+        self.nominator = UserFactory()
+        self.nominee_user = UserFactory(first_name="Grace", last_name="Hopper")
+
+    def _election(self, **extra):
+        return Election.objects.create(name="2026 Board Election", date=datetime.date(2026, 12, 1), **extra)
+
+    def _nomination(self, election, **extra):
+        nominee = Nominee.objects.create(user=self.nominee_user, election=election, accepted=True, approved=True)
+        return Nomination.objects.create(
+            election=election,
+            nominator=self.nominator,
+            nominee=nominee,
+            name="Grace Hopper",
+            email="grace@example.com",
+            nomination_statement="A strong candidate.",
+            **extra,
+        )
+
+    def test_endorsement_editable_during_endorsement_window(self):
+        now = timezone.now()
+        election = self._election(
+            nominations_open_at=now - datetime.timedelta(days=10),
+            nominations_close_at=now - datetime.timedelta(days=5),
+            endorsements_open_at=now - datetime.timedelta(days=1),
+            endorsements_close_at=now + datetime.timedelta(days=1),
+        )
+        nomination = self._nomination(election, is_endorsement=True)
+        self.assertTrue(nomination.editable(self.nominator))
+        self.assertTrue(nomination.editable(self.nominee_user))
+
+    def test_endorsement_not_editable_after_endorsement_window(self):
+        now = timezone.now()
+        election = self._election(
+            endorsements_open_at=now - datetime.timedelta(days=2),
+            endorsements_close_at=now - datetime.timedelta(days=1),
+        )
+        nomination = self._nomination(election, is_endorsement=True)
+        self.assertFalse(nomination.editable(self.nominator))
+        self.assertFalse(nomination.editable(self.nominee_user))
+
+    def test_legacy_nomination_ignores_endorsement_window(self):
+        now = timezone.now()
+        election = self._election(
+            nominations_open_at=now - datetime.timedelta(days=10),
+            nominations_close_at=now - datetime.timedelta(days=5),
+            endorsements_open_at=now - datetime.timedelta(days=1),
+            endorsements_close_at=now + datetime.timedelta(days=1),
+        )
+        nomination = self._nomination(election)
+        self.assertFalse(nomination.editable(self.nominator))
+        self.assertFalse(nomination.editable(self.nominee_user))
 
 
 class MarkupSanitizationTests(TestCase):
