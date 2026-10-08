@@ -58,6 +58,7 @@ urlpatterns = [
     path("community/", include("apps.community.urls", namespace="community")),
     path("community/microbit/", TemplateView.as_view(template_name="community/microbit.html"), name="microbit"),
     path("events/", include("apps.events.urls", namespace="events")),
+    path("agreements/", include("apps.agreements.urls")),
     path("jobs/", include("apps.jobs.urls", namespace="jobs")),
     path("sponsors/", include("apps.sponsors.urls")),
     path("success-stories/", include("apps.successstories.urls")),

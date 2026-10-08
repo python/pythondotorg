@@ -529,7 +529,7 @@ class SponsorshipAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
     ]
     list_filter = [SponsorshipStatusListFilter, "package", "year", TargetableEmailBenefitsFilter]
     actions = ["send_notifications"]
-    resource_class = SponsorshipResource
+    resource_classes = [SponsorshipResource]
     fieldsets = [
         (
             "Sponsorship Data",

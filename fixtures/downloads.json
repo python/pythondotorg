@@ -48,6 +48,18 @@
     }
 },
 {
+    "model": "downloads.os",
+    "pk": 5,
+    "fields": {
+      "created": "2026-04-09T17:02:24.294Z",
+      "updated": "2026-04-09T17:02:24.296Z",
+      "creator": 1,
+      "last_modified_by": null,
+      "name": "iOS",
+      "slug": "ios"
+    }
+},
+{
     "model": "downloads.release",
     "pk": 1,
     "fields": {
@@ -63365,6 +63377,31 @@
         "md5_sum": "3eb6b0c0c03a81c8444300c00724cac5",
         "filesize": 29272204,
         "download_button": false
+    }
+  },
+  {
+    "model": "downloads.releasefile",
+    "pk": 3892,
+    "fields": {
+      "created": "2025-08-06T21:13:43.786Z",
+      "updated": "2025-08-06T21:13:43.788Z",
+      "creator": null,
+      "last_modified_by": null,
+      "name": "iOS XCframework",
+      "slug": "3140-rc1-iOS-XCframework",
+      "os": 5,
+      "release": 729,
+      "description": "",
+      "is_source": false,
+      "url": "https://www.python.org/ftp/python/3.14.0/Python-3.14.0rc1-iOS-XCframework.tar.gz",
+      "gpg_signature_file": "",
+      "sigstore_signature_file": "https://www.python.org/ftp/python/3.14.0/Python-3.14.0rc1-iOS-XCframework.tar.gz.sig",
+      "sigstore_cert_file": "https://www.python.org/ftp/python/3.14.0/Python-3.14.0rc1-iOS-XCframework.tar.gz.crt",
+      "sigstore_bundle_file": "https://www.python.org/ftp/python/3.14.0/Python-3.14.0rc1-iOS-XCframework.tar.gz.sigstore",
+      "sbom_spdx2_file": "",
+      "md5_sum": "3eb6b0c0c03a81c8444300c00724cac5",
+      "filesize": 29272204,
+      "download_button": false
     }
 }
 ]

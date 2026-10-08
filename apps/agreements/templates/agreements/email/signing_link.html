@@ -1,0 +1,41 @@
+{% extends "agreements/email/base.html" %}
+{% block title %}Please sign: {{ agreement.title }}{% endblock %}
+{% block preheader %}{{ agreement.title }} for {{ agreement.counterparty_name }} is ready for your signature.{% endblock %}
+
+{% block content %}
+<p style="margin:0 0 16px;">Hello {{ link.name }},</p>
+<p style="margin:0 0 24px;">The Python Software Foundation has prepared the following for <strong>{{ agreement.counterparty_name }}</strong> to sign:</p>
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 28px;">
+  <tr>
+    <td style="background-color:#f2f4f6;border-left:4px solid #3776ab;border-radius:4px;padding:16px 20px;">
+      <div style="font-size:18px;font-weight:bold;color:#2b5b84;">{{ agreement.title }}</div>
+      <div style="margin-top:4px;font-size:13px;color:#666666;">Reference <span style="font-family:Menlo,Consolas,monospace;color:#444444;">{{ agreement.reference }}</span></div>
+    </td>
+  </tr>
+</table>
+
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 24px;">
+  <tr>
+    <td style="border-radius:4px;background-color:#3776ab;">
+      <a href="{{ url }}" style="display:inline-block;padding:13px 28px;font-family:Arial,Helvetica,sans-serif;font-size:16px;font-weight:bold;color:#ffffff;text-decoration:none;border-radius:4px;">Review and sign</a>
+    </td>
+  </tr>
+</table>
+
+<p style="margin:0 0 24px;font-size:13px;line-height:1.5;color:#666666;">Button not working? Paste this link into your browser:<br>
+<a href="{{ url }}" style="color:#3776ab;word-break:break-all;">{{ url }}</a></p>
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 16px;">
+  <tr>
+    <td style="background-color:#fff7dc;border:1px solid #ffd343;border-radius:4px;padding:12px 16px;font-size:14px;line-height:1.5;color:#444444;">
+      The link works once and expires on <strong>{{ link.expires_at|date:"F j, Y" }}</strong>. Your name, title, email, the time, and your IP address are recorded with your signature.
+    </td>
+  </tr>
+</table>
+
+<p style="margin:0 0 16px;font-size:14px;color:#444444;">If you would rather sign through DocuSign or on paper, reply to this email.</p>
+<p style="margin:0;">Python Software Foundation</p>
+{% endblock %}
+
+{% block footer %}If you weren't expecting this, you can ignore it.{% endblock %}

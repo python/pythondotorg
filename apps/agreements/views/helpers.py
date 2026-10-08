@@ -1,0 +1,85 @@
+"""View helpers shared by agreement pages and domain apps."""
+
+from __future__ import annotations
+
+import difflib
+from typing import TYPE_CHECKING, Any, cast
+
+from allauth.account.adapter import get_adapter
+from django.http import Http404, HttpResponse
+from django.shortcuts import get_object_or_404
+
+from apps.agreements import documents, workflow
+from apps.agreements.auth import can_prepare, is_administrator
+from apps.agreements.forms.signing import CountersignForm, DeclineForm, SignedCopyForm, SignForm, SigningLinkForm
+from apps.agreements.models import Agreement
+
+if TYPE_CHECKING:
+    from uuid import UUID
+
+    from django.forms import BaseForm
+    from django.http import HttpRequest
+
+    from apps.users.models import User
+
+
+def signature_of(request: HttpRequest, form: SignForm) -> workflow.Signature:
+    """Build an online ``Signature`` from a valid ``SignForm``."""
+    return workflow.Signature(
+        name=form.cleaned_data["signer_name"],
+        title=form.cleaned_data["signer_title"],
+        email=cast("User", request.user).email,
+        ip=get_adapter().get_client_ip(request),
+        user_agent=request.headers.get("user-agent", ""),
+    )
+
+
+def action_forms(request: HttpRequest, agreement: Agreement, **bound: BaseForm | None) -> dict[str, Any]:
+    """Return the forms ``agreements/_actions.html`` shows to this user, bound ones taking precedence."""
+    user = request.user
+    administrator = is_administrator(user)
+    seen = {"document_sha256": agreement.document_sha256}
+    forms: dict[str, BaseForm] = {}
+    if agreement.status == Agreement.Status.OFFERED:
+        if agreement.is_counterparty(user):
+            forms["sign_form"] = SignForm(initial={**seen, "signer_name": cast("User", user).get_full_name()})
+        if administrator or agreement.is_counterparty(user):
+            forms["copy_form"] = SignedCopyForm(initial=seen)
+        if administrator:
+            forms["link_form"] = SigningLinkForm()
+    elif agreement.status == Agreement.Status.SIGNED and administrator:
+        forms["countersign_form"] = CountersignForm(initial={"name": cast("User", user).get_full_name()})
+        forms["decline_form"] = DeclineForm()
+    forms.update({name: form for name, form in bound.items() if form is not None})
+    return {
+        **forms,
+        "agreement": agreement,
+        "can_prepare": can_prepare(user),
+        "is_administrator": administrator,
+        "can_withdraw": agreement.status == Agreement.Status.OFFERED
+        and (administrator or agreement.is_counterparty(user)),
+        "copies": agreement.signed_copies.defer("content").select_related("uploaded_by"),
+        "links": agreement.signing_links.all() if administrator else (),
+    }
+
+
+def _agreement_or_404(request: HttpRequest, pk: UUID) -> Agreement:
+    agreement = get_object_or_404(Agreement.objects.select_related("counterparty_account"), pk=pk)
+    if not agreement.can_view(request.user):
+        raise Http404
+    return agreement
+
+
+def file_response(content: bytes, fmt: str, filename: str) -> HttpResponse:
+    """Return a PSF-prefixed PDF or DOCX download that caches must not keep."""
+    response = HttpResponse(content, content_type=documents.CONTENT_TYPES[fmt])
+    response["Content-Disposition"] = f'attachment; filename="psf-{filename}.{fmt}"'
+    response["Cache-Control"] = "private, no-store"
+    return response
+
+
+def _diff(old: str, new: str) -> list[tuple[str, str]]:
+    """Unified diff lines, each tagged ``add``, ``del``, ``hunk``, or ``""`` for context."""
+    tags = {"+": "add", "-": "del", "@": "hunk"}
+    lines = difflib.unified_diff(old.splitlines(), new.splitlines(), lineterm="", n=2)
+    return [(tags.get(line[:1], ""), line) for line in list(lines)[2:]]

@@ -1,5 +1,8 @@
 """DRF serializers for the downloads API."""
 
+import copy
+
+from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework import serializers
 
 from apps.downloads.models import OS, Release, ReleaseFile
@@ -39,6 +42,24 @@ class ReleaseSerializer(serializers.HyperlinkedModelSerializer):
 
 class ReleaseFileSerializer(serializers.HyperlinkedModelSerializer):
     """Serializer for release file data."""
+
+    def validate(self, attrs):
+        """Validate release-file URL relationships."""
+        attrs = super().validate(attrs)
+        release_file = self._release_file_for_validation(attrs)
+        try:
+            release_file.clean()
+        except DjangoValidationError as exc:
+            raise serializers.ValidationError(exc.message_dict) from exc
+        return attrs
+
+    def _release_file_for_validation(self, attrs):
+        if self.instance is None:
+            return ReleaseFile(**attrs)
+        release_file = copy.copy(self.instance)
+        for attr, value in attrs.items():
+            setattr(release_file, attr, value)
+        return release_file
 
     class Meta:
         """Meta configuration for ReleaseFileSerializer."""

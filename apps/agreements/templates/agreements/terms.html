@@ -1,0 +1,46 @@
+{% extends "agreements/base.html" %}
+{% block title %}{{ terms.title }}{% endblock %}
+{% block crumbs %}<li>{{ terms.title }}</li>{% endblock %}
+
+{% block sidebar %}
+<div class="sidebar-widget contents-widget">
+  <h2 class="widget-title">Contents</h2>
+  <ul class="section-nav menu">
+    {% for anchor, title in toc %}<li><a href="#{{ anchor }}">{{ title }}</a></li>{% endfor %}
+  </ul>
+</div>
+{% endblock %}
+
+{% block content %}
+<article class="text">
+  <header class="article-header">
+    <h1 class="page-title">{{ terms.title }}</h1>
+  </header>
+  <p class="terms-meta">
+    <span>Version {{ shown.version }}, published {{ shown.published_at|date:"F j, Y" }}</span>
+    <span class="downloads">Download:
+      {% if token %}
+        <a href="{% url 'agreements:sign_link_terms_download' token shown.pk 'pdf' %}">PDF</a> · <a href="{% url 'agreements:sign_link_terms_download' token shown.pk 'docx' %}">DOCX</a>
+      {% else %}
+        <a href="{% url 'agreements:terms_version_download' terms.slug shown.version 'pdf' %}">PDF</a> · <a href="{% url 'agreements:terms_version_download' terms.slug shown.version 'docx' %}">DOCX</a>
+      {% endif %}
+      {% if can_edit %} · <a href="{% url 'agreements:terms_edit' terms.slug %}">Edit</a> · <a href="{% url 'agreements:terms_compare' terms.slug %}?to={{ shown.version }}">Compare versions</a>{% endif %}
+    </span>
+  </p>
+  <p class="terms-meta">
+    <span>Permanent address: <a href="{{ shown.permanent_url }}">{{ shown.permanent_url }}</a></span>
+  </p>
+
+  {% if not is_current %}
+    <div class="user-feedback level-notice">
+      <p>This is an earlier version. It applies only to documents that cite it.{% if can_read_current %} <a href="{{ terms.get_absolute_url }}">Read the current version</a>.{% endif %}</p>
+    </div>
+  {% endif %}
+  {% if terms.under_review %}
+    <div class="user-feedback level-notice"><p><strong>Draft for attorney review.</strong> This text may change before it is offered.</p></div>
+  {% endif %}
+
+  <div class="agreement-text">{{ html|safe }}</div>
+  {% block after_terms %}{% endblock %}
+</article>
+{% endblock %}

@@ -619,6 +619,26 @@ class ContractModelTests(TestCase):
         self.assertTrue(contract.document_docx.name)
         self.assertEqual(contract.status, Contract.AWAITING_SIGNATURE)
 
+    def test_final_document_path_includes_unguessable_token(self):
+        contract = baker.make_recipe("apps.sponsors.tests.empty_contract", sponsorship__sponsor__name="foo")
+
+        contract.set_final_version(b"pdf binary content", b"docx binary content")
+        contract.refresh_from_db()
+
+        # A random 32-char hex token is appended before the extension, so the path
+        # can no longer be guessed from the (uppercased) sponsor name.
+        self.assertRegex(contract.document.name, r"sponsors/contracts/SoW: FOO-[0-9a-f]{32}\.pdf$")
+        self.assertRegex(contract.document_docx.name, r"sponsors/contracts/docx/SoW: FOO-[0-9a-f]{32}\.docx$")
+
+    def test_each_send_uses_a_distinct_token(self):
+        first = baker.make_recipe("apps.sponsors.tests.empty_contract", sponsorship__sponsor__name="foo")
+        second = baker.make_recipe("apps.sponsors.tests.empty_contract", sponsorship__sponsor__name="foo")
+
+        first.set_final_version(b"pdf binary content")
+        second.set_final_version(b"pdf binary content")
+
+        self.assertNotEqual(first.document.name, second.document.name)
+
     def test_raise_invalid_status_exception_if_not_draft(self):
         contract = baker.make_recipe("apps.sponsors.tests.empty_contract", status=Contract.AWAITING_SIGNATURE)
 
@@ -1260,3 +1280,40 @@ class EmailTargetableConfigurationTest(TestCase):
         repeated, created = config.clone(benefit)
         self.assertFalse(created)
         self.assertEqual(new_cfg.pk, repeated.pk)
+
+
+class PolymorphicDeletionTests(TestCase):
+    def test_sponsorship_deletion_cascades_mixed_features_and_assets(self):
+        sponsorship, retained = baker.make(Sponsorship, _quantity=2)
+        benefit = baker.make(SponsorBenefit, sponsorship=sponsorship)
+        text_feature = baker.make(RequiredTextAsset, sponsor_benefit=benefit)
+        img_feature = baker.make(RequiredImgAsset, sponsor_benefit=benefit)
+        text_asset = TextAsset.objects.create(content_object=sponsorship, internal_name="text")
+        img_asset = ImgAsset.objects.create(content_object=sponsorship, internal_name="image")
+        retained_asset = TextAsset.objects.create(content_object=retained, internal_name="text")
+        retained_feature = baker.make(
+            RequiredTextAsset, sponsor_benefit=baker.make(SponsorBenefit, sponsorship=retained)
+        )
+
+        Sponsorship.objects.filter(pk=sponsorship.pk).delete()
+
+        self.assertFalse(SponsorBenefit.objects.filter(pk=benefit.pk).exists())
+        for obj in (text_feature, img_feature, text_asset, img_asset):
+            with self.subTest(model=type(obj).__name__):
+                self.assertFalse(type(obj).objects.filter(pk=obj.pk).exists())
+        self.assertFalse(BenefitFeature.objects.filter(pk__in=[text_feature.pk, img_feature.pk]).exists())
+        self.assertTrue(Sponsorship.objects.filter(pk=retained.pk).exists())
+        self.assertTrue(TextAsset.objects.filter(pk=retained_asset.pk).exists())
+        self.assertTrue(RequiredTextAsset.objects.filter(pk=retained_feature.pk).exists())
+
+    def test_benefit_deletion_cascades_mixed_configurations(self):
+        benefit = baker.make(SponsorshipBenefit)
+        text_config = baker.make(RequiredTextAssetConfiguration, benefit=benefit)
+        img_config = baker.make(RequiredImgAssetConfiguration, benefit=benefit)
+        retained = baker.make(RequiredTextAssetConfiguration)
+
+        benefit.delete()
+
+        self.assertFalse(RequiredTextAssetConfiguration.objects.filter(pk=text_config.pk).exists())
+        self.assertFalse(RequiredImgAssetConfiguration.objects.filter(pk=img_config.pk).exists())
+        self.assertTrue(RequiredTextAssetConfiguration.objects.filter(pk=retained.pk).exists())

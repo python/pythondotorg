@@ -2,9 +2,10 @@
 
 import io
 import zipfile
-from tempfile import NamedTemporaryFile
+from functools import wraps
 
 from django.contrib import messages
+from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -23,6 +24,24 @@ from apps.sponsors.forms import (
 from apps.sponsors.models import BenefitFeature, EmailTargetable, SponsorshipCurrentYear
 
 
+def require_change_permission(view):
+    """Require the model's change permission for a custom admin view.
+
+    ``AdminSite.admin_view`` only checks that the user is active staff, so the
+    custom action URLs registered in ``admin.py`` must enforce the per-model
+    permission themselves.
+    """
+
+    @wraps(view)
+    def wrapper(model_admin, request, *args, **kwargs):
+        if not model_admin.has_change_permission(request):
+            raise PermissionDenied
+        return view(model_admin, request, *args, **kwargs)
+
+    return wrapper
+
+
+@require_change_permission
 def preview_contract_view(model_admin, request, pk):
     """Render a contract preview as PDF or DOCX based on the format query parameter."""
     contract = get_object_or_404(model_admin.get_queryset(request), pk=pk)
@@ -35,6 +54,7 @@ def preview_contract_view(model_admin, request, pk):
     return response
 
 
+@require_change_permission
 def reject_sponsorship_view(model_admin, request, pk):
     """Handle rejection of a sponsorship application with confirmation."""
     sponsorship = get_object_or_404(model_admin.get_queryset(request), pk=pk)
@@ -54,6 +74,7 @@ def reject_sponsorship_view(model_admin, request, pk):
     return render(request, "sponsors/admin/reject_application.html", context=context)
 
 
+@require_change_permission
 def approve_sponsorship_view(model_admin, request, pk):
     """Approves a sponsorship and create an empty contract."""
     sponsorship = get_object_or_404(model_admin.get_queryset(request), pk=pk)
@@ -62,6 +83,7 @@ def approve_sponsorship_view(model_admin, request, pk):
         "start_date": sponsorship.start_date,
         "end_date": sponsorship.end_date,
         "sponsorship_fee": sponsorship.sponsorship_fee,
+        "renewal": sponsorship.renewal,
     }
 
     form = SponsorshipReviewAdminForm(initial=initial, force_required=True)
@@ -89,6 +111,7 @@ def approve_sponsorship_view(model_admin, request, pk):
     return render(request, "sponsors/admin/approve_application.html", context=context)
 
 
+@require_change_permission
 def approve_signed_sponsorship_view(model_admin, request, pk):
     """Approves a sponsorship and execute contract for existing file."""
     sponsorship = get_object_or_404(model_admin.get_queryset(request), pk=pk)
@@ -97,6 +120,7 @@ def approve_signed_sponsorship_view(model_admin, request, pk):
         "start_date": sponsorship.start_date,
         "end_date": sponsorship.end_date,
         "sponsorship_fee": sponsorship.sponsorship_fee,
+        "renewal": sponsorship.renewal,
     }
 
     form = SignedSponsorshipReviewAdminForm(initial=initial, force_required=True)
@@ -124,6 +148,7 @@ def approve_signed_sponsorship_view(model_admin, request, pk):
     return render(request, "sponsors/admin/approve_application.html", context=context)
 
 
+@require_change_permission
 def send_contract_view(model_admin, request, pk):
     """Send a finalized contract to the sponsor for signature."""
     contract = get_object_or_404(model_admin.get_queryset(request), pk=pk)
@@ -148,6 +173,7 @@ def send_contract_view(model_admin, request, pk):
     return render(request, "sponsors/admin/send_contract.html", context=context)
 
 
+@require_change_permission
 def rollback_to_editing_view(model_admin, request, pk):
     """Roll back a sponsorship to editing status with confirmation."""
     sponsorship = get_object_or_404(model_admin.get_queryset(request), pk=pk)
@@ -171,6 +197,7 @@ def rollback_to_editing_view(model_admin, request, pk):
     )
 
 
+@require_change_permission
 def unlock_view(model_admin, request, pk):
     """Unlock a sponsorship to allow editing with confirmation."""
     sponsorship = get_object_or_404(model_admin.get_queryset(request), pk=pk)
@@ -194,17 +221,28 @@ def unlock_view(model_admin, request, pk):
     )
 
 
+@require_change_permission
 def lock_view(model_admin, request, pk):
-    """Lock a sponsorship to prevent further editing."""
+    """Lock a sponsorship to prevent further editing with confirmation."""
     sponsorship = get_object_or_404(model_admin.get_queryset(request), pk=pk)
 
-    sponsorship.locked = True
-    sponsorship.save()
+    if request.method.upper() == "POST" and request.POST.get("confirm") == "yes":
+        sponsorship.locked = True
+        sponsorship.save(update_fields=["locked"])
+        model_admin.message_user(request, "Sponsorship is now locked!", messages.SUCCESS)
 
-    redirect_url = reverse("admin:sponsors_sponsorship_change", args=[sponsorship.pk])
-    return redirect(redirect_url)
+        redirect_url = reverse("admin:sponsors_sponsorship_change", args=[sponsorship.pk])
+        return redirect(redirect_url)
+
+    context = {"sponsorship": sponsorship}
+    return render(
+        request,
+        "sponsors/admin/lock.html",
+        context=context,
+    )
 
 
+@require_change_permission
 def execute_contract_view(model_admin, request, pk):
     """Execute a contract by uploading the signed document."""
     contract = get_object_or_404(model_admin.get_queryset(request), pk=pk)
@@ -235,6 +273,7 @@ def execute_contract_view(model_admin, request, pk):
     return render(request, "sponsors/admin/execute_contract.html", context=context)
 
 
+@require_change_permission
 def nullify_contract_view(model_admin, request, pk):
     """Nullify a contract with confirmation."""
     contract = get_object_or_404(model_admin.get_queryset(request), pk=pk)
@@ -259,6 +298,7 @@ def nullify_contract_view(model_admin, request, pk):
     return render(request, "sponsors/admin/nullify_contract.html", context=context)
 
 
+@require_change_permission
 @transaction.atomic
 def update_related_sponsorships(model_admin, request, pk):
     """Update all related SponsorBenefit from a SponsorshipBenefit.
@@ -289,6 +329,7 @@ def update_related_sponsorships(model_admin, request, pk):
     return render(request, "sponsors/admin/update_related_sponsorships.html", context=context)
 
 
+@require_change_permission
 def list_uploaded_assets(model_admin, request, pk):
     """List and export assets uploaded by the user."""
     sponsorship = get_object_or_404(model_admin.get_queryset(request), pk=pk)
@@ -297,6 +338,7 @@ def list_uploaded_assets(model_admin, request, pk):
     return render(request, "sponsors/admin/list_uploaded_assets.html", context=context)
 
 
+@require_change_permission
 def clone_application_config(model_admin, request):
     """Clone sponsorship application configuration from one year to another."""
     form = CloneApplicationConfigForm()
@@ -407,9 +449,7 @@ def export_assets_as_zipfile(model_admin, request, queryset):
         else:
             suffix = "." + asset.value.name.split(".")[-1]
             prefix = asset.internal_name
-            with NamedTemporaryFile(suffix=suffix, prefix=prefix) as temp_file:
-                temp_file.write(asset.value.read())
-                zip_file.write(temp_file.name, arcname=f"{zipdir}/{prefix}{suffix}")
+            zip_file.writestr(f"{zipdir}/{prefix}{suffix}", asset.value.read())
 
     zip_file.close()
     response = HttpResponse(buffer.getvalue())
