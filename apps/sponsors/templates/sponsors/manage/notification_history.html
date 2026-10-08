@@ -65,8 +65,20 @@
                 <td colspan="6" style="background:#f7f8fa;padding:16px 20px;">
                     <div style="margin-bottom:8px;">
                         <strong style="font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:#999;">To:</strong>
-                        <span style="font-size:13px;">{{ log.recipients }}</span>
+                        <span style="font-size:13px;">{{ log.to_list|join:", " }}</span>
                     </div>
+                    {% if log.cc_list %}
+                    <div style="margin-bottom:8px;">
+                        <strong style="font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:#999;">CC:</strong>
+                        <span style="font-size:13px;">{{ log.cc_list|join:", " }}</span>
+                    </div>
+                    {% endif %}
+                    {% if log.bcc_list %}
+                    <div style="margin-bottom:8px;">
+                        <strong style="font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:#999;">BCC:</strong>
+                        <span style="font-size:13px;">{{ log.bcc_list|join:", " }}</span>
+                    </div>
+                    {% endif %}
                     <div style="margin-bottom:8px;">
                         <strong style="font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:#999;">Subject:</strong>
                         <span style="font-size:13px;">{{ log.subject }}</span>

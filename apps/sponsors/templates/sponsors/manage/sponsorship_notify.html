@@ -86,6 +86,7 @@
                 <label for="{{ form.notification.id_for_label }}">{{ form.notification.label }}</label>
                 {{ form.notification }}
                 {% if form.notification.help_text %}<span class="helptext">{{ form.notification.help_text }}</span>{% endif %}
+                {% if form.notification.errors %}<div class="field-errors">{{ form.notification.errors }}</div>{% endif %}
             </div>
 
             <div style="text-align:center;font-size:12px;color:#999;margin:12px 0;text-transform:uppercase;letter-spacing:1px;">-- or custom content --</div>
@@ -93,10 +94,12 @@
             <div class="form-group">
                 <label for="{{ form.subject.id_for_label }}">{{ form.subject.label }}</label>
                 {{ form.subject }}
+                {% if form.subject.errors %}<div class="field-errors">{{ form.subject.errors }}</div>{% endif %}
             </div>
             <div class="form-group">
                 <label for="{{ form.content.id_for_label }}">{{ form.content.label }}</label>
                 {{ form.content }}
+                {% if form.content.errors %}<div class="field-errors">{{ form.content.errors }}</div>{% endif %}
             </div>
         </fieldset>
 

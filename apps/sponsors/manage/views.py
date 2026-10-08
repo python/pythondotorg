@@ -93,9 +93,16 @@ class SponsorshipAdminRequiredMixin(LoginRequiredMixin, GroupRequiredMixin):
     group_required = "Sponsorship Admin"
     raise_exception = True
 
+    @classmethod
+    def is_sponsorship_admin(cls, user):
+        """Return whether ``user`` is an active superuser or sponsorship admin group member."""
+        if not (user.is_authenticated and user.is_active):
+            return False
+        return user.is_superuser or user.groups.filter(name=cls.group_required).exists()
+
     def check_membership(self, group):
         """Reject inactive accounts before checking the group or superuser role."""
-        return self.request.user.is_active and super().check_membership(group)
+        return self.is_sponsorship_admin(self.request.user)
 
 
 class ManageDashboardView(SponsorshipAdminRequiredMixin, TemplateView):
@@ -1629,13 +1636,16 @@ def _internal_review_attachments(contract):
 def _log_email_notification(request, sponsorship, email, tag):
     """Record a successful send."""
     sent_by = request.user if getattr(request.user, "is_authenticated", False) else None
-    recipients = [*email.to, *(getattr(email, "cc", None) or []), *(getattr(email, "bcc", None) or [])]
     try:
         SponsorshipNotificationLog.objects.create(
             sponsorship=sponsorship,
             subject=email.subject,
             content=email.body,
-            recipients=", ".join(recipients),
+            recipients=SponsorshipNotificationLog.format_recipients(
+                to=email.to,
+                cc=getattr(email, "cc", None) or [],
+                bcc=getattr(email, "bcc", None) or [],
+            ),
             contact_types=tag,
             sent_by=sent_by,
         )
@@ -2458,8 +2468,8 @@ class BulkActionDispatchView(SponsorshipAdminRequiredMixin, View):
             if not selected_ids:
                 messages.warning(request, "No sponsorships selected.")
                 return redirect(reverse("manage_sponsorships"))
-            request.session["bulk_notify_ids"] = selected_ids
-            return redirect(reverse("manage_bulk_notify"))
+            query = urlencode({"selected_ids": selected_ids}, doseq=True)
+            return redirect(f"{reverse('manage_bulk_notify')}?{query}")
 
         if action == "export_assets":
             return BulkAssetExportView.as_view()(request)
@@ -2469,14 +2479,22 @@ class BulkActionDispatchView(SponsorshipAdminRequiredMixin, View):
 
 
 class BulkNotifyView(SponsorshipAdminRequiredMixin, View):
-    """Send a notification to contacts for multiple sponsorships at once."""
+    """Send a notification to contacts for multiple sponsorships at once.
+
+    The selection travels with the page (query string, then hidden ``selected_ids`` inputs),
+    so each open tab previews and sends to exactly the sponsorships it lists.
+    """
+
+    @staticmethod
+    def _selected_sponsorships(raw_ids):
+        """Return the existing sponsorships for the submitted ids."""
+        return list(
+            Sponsorship.objects.select_related("sponsor").filter(pk__in=_safe_int_pks(raw_ids)).order_by("-applied_on")
+        )
 
     def get(self, request):
         """Render the bulk notification form."""
-        ids = request.session.get("bulk_notify_ids", [])
-        sponsorships = list(
-            Sponsorship.objects.select_related("sponsor").filter(pk__in=_safe_int_pks(ids)).order_by("-applied_on")
-        )
+        sponsorships = self._selected_sponsorships(request.GET.getlist("selected_ids"))
         if not sponsorships:
             messages.warning(request, "No sponsorships selected for notification.")
             return redirect(reverse("manage_sponsorships"))
@@ -2491,10 +2509,7 @@ class BulkNotifyView(SponsorshipAdminRequiredMixin, View):
 
     def post(self, request):
         """Preview or send bulk notification."""
-        ids = request.session.get("bulk_notify_ids", [])
-        sponsorships = list(
-            Sponsorship.objects.select_related("sponsor").filter(pk__in=_safe_int_pks(ids)).order_by("-applied_on")
-        )
+        sponsorships = self._selected_sponsorships(request.POST.getlist("selected_ids"))
         if not sponsorships:
             messages.warning(request, "No sponsorships selected for notification.")
             return redirect(reverse("manage_sponsorships"))
@@ -2526,8 +2541,6 @@ class BulkNotifyView(SponsorshipAdminRequiredMixin, View):
                 contact_types=form.cleaned_data["contact_types"],
                 request=request,
             )
-            # Clear session data
-            request.session.pop("bulk_notify_ids", None)
             names = ", ".join(sp.sponsor.name for sp in sponsorships if sp.sponsor)
             if sent:
                 messages.success(request, f"Notification sent to {sent} of {len(sponsorships)} sponsor(s): {names}.")

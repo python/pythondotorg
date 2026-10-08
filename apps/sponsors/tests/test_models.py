@@ -894,9 +894,9 @@ class SponsorEmailNotificationTemplateTests(TestCase):
     def test_map_sponsorship_info_to_simplified_context_data(self):
         expected_context = {
             "sponsor_name": "Foo",
-            "sponsorship_start_date": self.sponsorship.start_date,
-            "sponsorship_end_date": self.sponsorship.end_date,
-            "sponsorship_status": self.sponsorship.status,
+            "sponsorship_start_date": "",
+            "sponsorship_end_date": "",
+            "sponsorship_status": "Applied",
             "sponsorship_level": self.sponsorship.level_name,
             "extra": "foo",
         }

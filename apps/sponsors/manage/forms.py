@@ -7,6 +7,7 @@ from django import forms
 from django.core.validators import EmailValidator
 from django.utils import timezone
 
+from apps.mailing.forms import BaseEmailTemplateForm, validate_template_syntax
 from apps.sponsors.models import (
     SPONSOR_TEMPLATE_HELP_TEXT,
     EmailTargetableConfiguration,
@@ -602,7 +603,7 @@ class SendSponsorshipNotificationManageForm(forms.Form):
     )
 
     def clean(self):
-        """Validate that either a notification template or custom content is provided, not both."""
+        """Require either a template or a complete custom message, with valid template syntax."""
         cleaned_data = super().clean()
         notification = cleaned_data.get("notification")
         subject = cleaned_data.get("subject", "").strip()
@@ -616,6 +617,25 @@ class SendSponsorshipNotificationManageForm(forms.Form):
             msg = "Select a template or use custom content, not both."
             raise forms.ValidationError(msg)
 
+        if notification:
+            # Templates saved before syntax validation existed may not render.
+            for value in (notification.subject, notification.content):
+                try:
+                    validate_template_syntax(value)
+                except forms.ValidationError as e:
+                    self.add_error("notification", f"This template can't be rendered: {e.messages[0]}")
+                    break
+            return cleaned_data
+
+        for field, value in (("subject", subject), ("content", content)):
+            if not value:
+                self.add_error(field, "Custom notifications need both a subject and content.")
+                continue
+            try:
+                validate_template_syntax(value)
+            except forms.ValidationError as e:
+                self.add_error(field, e)
+
         return cleaned_data
 
     def get_notification(self):
@@ -627,7 +647,7 @@ class SendSponsorshipNotificationManageForm(forms.Form):
         return self.cleaned_data.get("notification") or default_notification
 
 
-class NotificationTemplateForm(forms.ModelForm):
+class NotificationTemplateForm(BaseEmailTemplateForm):
     """Form for creating and editing SponsorEmailNotificationTemplate instances."""
 
     class Meta:

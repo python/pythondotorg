@@ -1251,10 +1251,7 @@ class BulkActionDispatchViewTests(SponsorshipReviewTestBase):
             {"action": "send_notification", "selected_ids": [self.sponsorship.pk]},
         )
         self.assertEqual(response.status_code, 302)
-        self.assertIn(reverse("manage_bulk_notify"), response.url)
-        # Check session was set
-        session = self.client.session
-        self.assertEqual(session["bulk_notify_ids"], [str(self.sponsorship.pk)])
+        self.assertEqual(response.url, f"{reverse('manage_bulk_notify')}?selected_ids={self.sponsorship.pk}")
 
     def test_bulk_send_notification_no_selection_warns(self):
         response = self.client.post(
@@ -1282,11 +1279,9 @@ class BulkActionDispatchViewTests(SponsorshipReviewTestBase):
 class BulkNotifyViewTests(SponsorshipReviewTestBase):
     """Test bulk notification view."""
 
-    def _set_session_ids(self):
-        """Store sponsorship IDs in the session for bulk notify."""
-        session = self.client.session
-        session["bulk_notify_ids"] = [str(self.sponsorship.pk)]
-        session.save()
+    def _ids(self):
+        """Return the selection the bulk notify page carries in its query string and form."""
+        return {"selected_ids": [str(self.sponsorship.pk)]}
 
     def test_bulk_notify_requires_auth(self):
         self.client.logout()
@@ -1300,14 +1295,12 @@ class BulkNotifyViewTests(SponsorshipReviewTestBase):
         self.assertIn(reverse("manage_sponsorships"), response.url)
 
     def test_bulk_notify_page_loads(self):
-        self._set_session_ids()
-        response = self.client.get(reverse("manage_bulk_notify"))
+        response = self.client.get(reverse("manage_bulk_notify"), self._ids())
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Bulk Notification")
         self.assertContains(response, "Acme Corp")
 
     def test_bulk_notify_preview(self):
-        self._set_session_ids()
         SponsorContact.objects.create(
             sponsor=self.sponsor, name="Contact", email="c@example.com", phone="555", primary=True
         )
@@ -1321,6 +1314,7 @@ class BulkNotifyViewTests(SponsorshipReviewTestBase):
                 "subject": "Test Subject",
                 "content": "Hello {{ sponsor_name }}",
                 "preview": "1",
+                **self._ids(),
             },
         )
         self.assertEqual(response.status_code, 200)
@@ -1328,7 +1322,6 @@ class BulkNotifyViewTests(SponsorshipReviewTestBase):
         self.assertEqual(response.context["email_preview"].to, ["c@example.com"])
 
     def test_bulk_notify_confirm_sends(self):
-        self._set_session_ids()
         SponsorContact.objects.create(
             sponsor=self.sponsor, name="Contact", email="c@example.com", phone="555", primary=True
         )
@@ -1339,12 +1332,11 @@ class BulkNotifyViewTests(SponsorshipReviewTestBase):
                 "subject": "Test Subject",
                 "content": "Hello {{ sponsor_name }}",
                 "confirm": "1",
+                **self._ids(),
             },
         )
         self.assertEqual(response.status_code, 302)
         self.assertIn(reverse("manage_sponsorships"), response.url)
-        # Session should be cleared
-        self.assertNotIn("bulk_notify_ids", self.client.session)
 
     def test_bulk_notify_post_no_ids_redirects(self):
         response = self.client.post(
@@ -1360,10 +1352,9 @@ class BulkNotifyViewTests(SponsorshipReviewTestBase):
         self.assertIn(reverse("manage_sponsorships"), response.url)
 
     def test_bulk_notify_empty_form_shows_errors(self):
-        self._set_session_ids()
         response = self.client.post(
             reverse("manage_bulk_notify"),
-            {"confirm": "1"},
+            {"confirm": "1", **self._ids()},
         )
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "This field is required")
