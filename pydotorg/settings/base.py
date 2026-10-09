@@ -346,6 +346,11 @@ CONTENT_SECURITY_POLICY_REPORT_ONLY = {
             # Status Page, host included in 'static/js/script.js'
             "https://2p66nmmycsj3.statuspage.io",
         ],
+        "frame-src": [
+            SELF,
+            # Interactive shell on the homepage, see 'templates/python/shell.html'
+            "https://console.python.org",
+        ],
         "frame-ancestors": [SELF],
         "base-uri": [SELF],
         "object-src": ["'none'"],
