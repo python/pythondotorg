@@ -78,6 +78,8 @@ class Election(models.Model):
     )
     nominations_open_at = models.DateTimeField(blank=True, null=True)
     nominations_close_at = models.DateTimeField(blank=True, null=True)
+    endorsements_open_at = models.DateTimeField(blank=True, null=True)
+    endorsements_close_at = models.DateTimeField(blank=True, null=True)
     description = MarkupField(escape_html=False, markup_type="markdown", blank=False, null=True)
     hide_previous_service = models.BooleanField(
         default=False,
@@ -120,6 +122,18 @@ class Election(models.Model):
         """Return True if the current time is within the nomination window."""
         if self.nominations_open_at and self.nominations_close_at:
             return self.nominations_open_at < datetime.datetime.now(datetime.UTC) < self.nominations_close_at
+
+        return False
+
+    @property
+    def endorsements_open(self):
+        """Return True if the current time is within the endorsement window.
+
+        Independent of the nomination window: endorsements can be reopened for
+        already-approved candidates after nominations have closed.
+        """
+        if self.endorsements_open_at and self.endorsements_close_at:
+            return self.endorsements_open_at < datetime.datetime.now(datetime.UTC) < self.endorsements_close_at
 
         return False
 
@@ -280,6 +294,11 @@ class Nomination(models.Model):
     accepted = models.BooleanField(null=False, default=False)
     approved = models.BooleanField(null=False, default=False)
 
+    is_endorsement = models.BooleanField(
+        default=False,
+        help_text="Submitted via the endorsement window for an already-approved candidate.",
+    )
+
     # Candidate acknowledgments collected at submission time; wording and
     # which are mandatory vary per election kind (see the create forms).
     coc_acknowledged = models.BooleanField(default=False)
@@ -324,11 +343,16 @@ class Nomination(models.Model):
         )
 
     def editable(self, user=None):
-        """Return True if the given user can edit this nomination."""
-        if self.nominee and user == self.nominee.user and self.election.nominations_open:
+        """Return True if the given user can edit this nomination.
+
+        Endorsements are gated on the endorsement window rather than the
+        nomination window, which is closed by the time they are submitted.
+        """
+        window_open = self.election.endorsements_open if self.is_endorsement else self.election.nominations_open
+        if self.nominee and user == self.nominee.user and window_open:
             return True
 
-        return bool(user == self.nominator and not (self.accepted or self.approved) and self.election.nominations_open)
+        return bool(user == self.nominator and not (self.accepted or self.approved) and window_open)
 
     def visible(self, user=None):
         """Return True if the nomination is visible to the given user."""

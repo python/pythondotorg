@@ -4,11 +4,12 @@ from django.test import RequestFactory, TestCase
 
 from apps.nominations.forms import (
     BoardNominationCreateForm,
+    EndorsementCreateForm,
     NominationForm,
     PackagingCouncilNominationCreateForm,
 )
-from apps.nominations.models import Election, Nomination
-from apps.nominations.tests.utils import nomination_payload, packaging_council_kind
+from apps.nominations.models import Election, Nomination, Nominee
+from apps.nominations.tests.utils import endorsement_election, nomination_payload, packaging_council_kind
 from apps.users.factories import UserFactory
 
 
@@ -169,3 +170,27 @@ class NominationEditFormTests(TestCase):
         nomination = Nomination(previous_board_service="New Packaging Council member")
         form = NominationForm(instance=nomination, election=self._election())
         self.assertEqual(form.fields["previous_service"].initial, "no")
+
+
+class EndorsementCreateFormTests(TestCase):
+    def setUp(self):
+        self.election = endorsement_election("2026 Board Election")
+        self.request = RequestFactory().get("/")
+        self.request.user = UserFactory(first_name="Ellen", last_name="Endorser")
+        self.candidate = self._nominee(accepted=True, approved=True)
+
+    def _nominee(self, election=None, **flags):
+        return Nominee.objects.create(user=UserFactory(), election=election or self.election, **flags)
+
+    def test_candidates_limited_to_approved_nominees_other_than_requester(self):
+        pending = self._nominee(accepted=True)
+        unaccepted = self._nominee(approved=True)
+        other_election = self._nominee(election=endorsement_election("Other Election"), accepted=True, approved=True)
+        myself = Nominee.objects.create(user=self.request.user, election=self.election, accepted=True, approved=True)
+
+        form = EndorsementCreateForm(request=self.request, election=self.election)
+        queryset = form.fields["nominee"].queryset
+
+        self.assertIn(self.candidate, queryset)
+        for excluded in (pending, unaccepted, other_election, myself):
+            self.assertNotIn(excluded, queryset)
