@@ -322,6 +322,8 @@ CONTENT_SECURITY_POLICY_REPORT_ONLY = {
             NONCE,
             "https://analytics.python.org",
             "https://media.ethicalads.io",
+            # EthicalAds fetches ad decisions as JSONP <script> tags
+            "https://server.ethicalads.io",
             "https://ajax.googleapis.com",
         ],
         "style-src": [
