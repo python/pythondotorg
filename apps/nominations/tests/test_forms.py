@@ -40,6 +40,17 @@ class BoardNominationCreateFormTests(TestCase):
         form = self._form(nomination_payload(self_nomination="on", coc_acknowledged="on"))
         self.assertTrue(form.is_valid(), form.errors)
 
+    def test_self_nomination_requires_account_email(self):
+        self.request.user.email = ""
+        form = self._form(nomination_payload(self_nomination="on", coc_acknowledged="on"))
+        self.assertFalse(form.is_valid())
+        self.assertIn("self_nomination", form.errors)
+
+    def test_third_party_nomination_allowed_without_account_email(self):
+        self.request.user.email = ""
+        form = self._form(nomination_payload())
+        self.assertTrue(form.is_valid(), form.errors)
+
     def test_mission_alignment_is_optional(self):
         form = self._form(nomination_payload(self_nomination="on", coc_acknowledged="on"))
         self.assertTrue(form.is_valid(), form.errors)

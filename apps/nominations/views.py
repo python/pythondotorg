@@ -1,10 +1,13 @@
 """Views for browsing elections, nominees, and managing nominations."""
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
+from django.core.mail import send_mail
 from django.db.models import Q
 from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404
+from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.functional import cached_property
 from django.views import View
@@ -143,11 +146,9 @@ class NominationCreate(LoginRequiredMixin, NominationMixin, CreateView):
         return self.form_classes[election.nomination_form_variant]
 
     def get_success_url(self):
-        """Return the URL for the newly created nomination detail page."""
-        return reverse(
-            "nominations:nomination_detail",
-            kwargs={"election": self.object.election.slug, "pk": self.object.id},
-        )
+        """Send self-nominators to the next-steps page, everyone else to the nomination detail page."""
+        url_name = "nominations:nomination_submitted" if self.object.nominee_id else "nominations:nomination_detail"
+        return reverse(url_name, kwargs={"election": self.object.election.slug, "pk": self.object.id})
 
     def form_valid(self, form):
         """Set nominator, election, and handle self-nomination before saving."""
@@ -164,7 +165,26 @@ class NominationCreate(LoginRequiredMixin, NominationMixin, CreateView):
                 )
             form.instance.nominee = nominee
             form.instance.accepted = True
-        return super().form_valid(form)
+        response = super().form_valid(form)
+        if self.object.nominee_id:
+            self.send_self_nomination_email()
+        return response
+
+    def send_self_nomination_email(self):
+        """Email the self-nominator the same next steps shown on the submitted page."""
+        nomination = self.object
+        context = {
+            "nomination": nomination,
+            "submitted_url": self.request.build_absolute_uri(self.get_success_url()),
+            "nomination_create_url": self.request.build_absolute_uri(
+                reverse("nominations:nomination_create", kwargs={"election": nomination.election.slug})
+            ),
+            "user_nominations_url": self.request.build_absolute_uri(reverse("users:user_nominations_view")),
+        }
+        # subject can't contain newlines, thus strip() call
+        subject = render_to_string("nominations/email/self_nomination_received_subject.txt", context).strip()
+        message = render_to_string("nominations/email/self_nomination_received.txt", context)
+        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [self.request.user.email])
 
     def get_context_data(self, **kwargs):
         """Return context data for the nomination creation page."""
@@ -249,6 +269,29 @@ class NominationAccept(LoginRequiredMixin, NominationMixin, UserPassesTestMixin,
     def get_context_data(self, **kwargs):
         """Return context data for the nomination accept page."""
         return super().get_context_data(**kwargs)
+
+
+class NominationSubmitted(LoginRequiredMixin, NominationMixin, UserPassesTestMixin, DetailView):
+    """Show a self-nominator what happens next and how to gather supporting statements."""
+
+    model = Nomination
+    template_name_suffix = "_submitted"
+    raise_exception = True
+
+    def test_func(self):
+        """Only the candidate who self-nominated may view this page."""
+        nomination = self.get_object()
+        return (
+            nomination.nominator == self.request.user
+            and nomination.nominee is not None
+            and nomination.nominee.user == self.request.user
+        )
+
+    def get_queryset(self):
+        """Return the URL election's nominations with related objects."""
+        return Nomination.objects.filter(election__slug=self.kwargs["election"]).select_related(
+            "election__kind", "nominee__user", "nominator"
+        )
 
 
 class NominationStatementPreview(LoginRequiredMixin, View):
