@@ -52,11 +52,13 @@ def detail(request: HttpRequest, pk: UUID, status: int = 200, **bound: BaseForm 
     agreement = _agreement_or_404(request, pk)
     html, metadata_hidden = documents.render_agreement_preview(documents.final_markdown(agreement))
     forms = action_forms(request, agreement, **bound)
+    # Only order agreements appear under "Your orders"; custom contracts have no list to mark.
+    nav = "queue" if forms["can_prepare"] else "orders" if hasattr(agreement, "order") else None
     context = {
         **forms,
         "html": html,
         "metadata_hidden": metadata_hidden,
-        "nav": "queue" if forms["can_prepare"] else "orders",
+        "nav": nav,
     }
     return render(request, "agreements/detail.html", context, status=status)
 
