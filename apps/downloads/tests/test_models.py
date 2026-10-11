@@ -28,6 +28,10 @@ class DownloadModelTests(BaseDownloadTests):
         self.assertEqual(str(self.osx), "macOS")
         self.assertEqual(str(self.release_275), "Python 2.7.5")
 
+    def test_os_get_absolute_url(self):
+        """OS detail URL reverses with the `slug` kwarg."""
+        self.assertEqual(self.linux.get_absolute_url(), f"/downloads/{self.linux.slug}/")
+
     def test_published(self):
         published_releases = Release.objects.published()
         self.assertEqual(len(published_releases), 7)

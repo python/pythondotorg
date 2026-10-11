@@ -143,6 +143,20 @@ class DownloadViewsTests(BaseDownloadTests):
         response = self.client.get(url)
         self.assertRedirects(response, reverse("download:download"))
 
+    def test_latest_python2_redirects_to_downloads_when_no_latest(self):
+        """Fallback redirect must reverse correctly when no Python 2 is flagged latest."""
+        Release.objects.filter(version=Release.PYTHON2).update(is_latest=False)
+        url = reverse("download:download_latest_python2")
+        response = self.client.get(url)
+        self.assertRedirects(response, reverse("download:download"))
+
+    def test_latest_pymanager_redirects_to_downloads_when_no_latest(self):
+        """No pymanager fixture exists, so this always exercises the fallback."""
+        self.assertIsNone(Release.objects.latest_pymanager())
+        url = reverse("download:download_latest_pymanager")
+        response = self.client.get(url)
+        self.assertRedirects(response, reverse("download:download"))
+
     def test_redirect_page_object_to_release_detail_page(self):
         self.release_275.release_page = None
         self.release_275.save()

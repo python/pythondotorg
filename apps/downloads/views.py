@@ -29,7 +29,7 @@ class DownloadLatestPython2(RedirectView):
 
         if latest_python2:
             return latest_python2.get_absolute_url()
-        return reverse("download")
+        return reverse("download:download")
 
 
 class DownloadLatestPython3(RedirectView):
@@ -48,7 +48,7 @@ class DownloadLatestPython3(RedirectView):
 
         if latest_release:
             return latest_release.get_absolute_url()
-        return reverse("downloads:download")
+        return reverse("download:download")
 
 
 class DownloadLatestPrerelease(RedirectView):
@@ -65,7 +65,7 @@ class DownloadLatestPrerelease(RedirectView):
 
         if latest_prerelease:
             return latest_prerelease.get_absolute_url()
-        return reverse("downloads:download")
+        return reverse("download:download")
 
 
 class DownloadLatestPyManager(RedirectView):
@@ -82,7 +82,7 @@ class DownloadLatestPyManager(RedirectView):
 
         if latest_pymanager:
             return latest_pymanager.get_absolute_url()
-        return reverse("downloads")
+        return reverse("download:download")
 
 
 class DownloadBase:
@@ -267,7 +267,7 @@ class ReleaseFeed(Feed):
     @staticmethod
     def link() -> str:
         """Return the URL to the main downloads page."""
-        return reverse("downloads:download")
+        return reverse("download:download")
 
     def items(self) -> list[dict[str, Any]]:
         """Return the latest Python releases."""

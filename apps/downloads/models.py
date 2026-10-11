@@ -55,7 +55,7 @@ class OS(ContentManageable, NameSlugModel):
 
     def get_absolute_url(self):
         """Return the URL for this OS's download list page."""
-        return reverse("download:download_os_list", kwargs={"os_slug": self.slug})
+        return reverse("download:download_os_list", kwargs={"slug": self.slug})
 
 
 class Release(ContentManageable, NameSlugModel):
