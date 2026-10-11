@@ -719,6 +719,19 @@ yaml = [
 ]
 
 [[package]]
+name = "django-ipware"
+version = "8.0.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django" },
+    { name = "python-ipware" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/41/3a/e90c321c10cdf4c53dbad3cfd28efceb6fc164c3ec2d98cf71f4ae060c04/django_ipware-8.0.0.tar.gz", hash = "sha256:377cc7926ea377d8f544511b019cd32b28060e1c9caa3d0c43c3e5e923560f33", size = 17747, upload-time = "2026-09-22T21:30:47.55Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/ea/58/29dd16630be7516b079d66537ac7725e92720807347558478a1f2a738fb6/django_ipware-8.0.0-py3-none-any.whl", hash = "sha256:63e9e589aa58c37fbcd3f7624d18a08e69d95b03c84bab7e5ad2a12b03f8c4ec", size = 12626, upload-time = "2026-09-22T21:30:46.565Z" },
+]
+
+[[package]]
 name = "django-markupfield"
 version = "2.0.1"
 source = { registry = "https://pypi.org/simple" }
@@ -781,6 +794,21 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/ff/d6/2e50e378fff0408d558f36c4acffc090f9a641fd6e084af9e54d45307efa/django_storages-1.14.6.tar.gz", hash = "sha256:7a25ce8f4214f69ac9c7ce87e2603887f7ae99326c316bc8d2d75375e09341c9", size = 87587, upload-time = "2025-04-02T02:34:55.103Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/1f/21/3cedee63417bc5553eed0c204be478071c9ab208e5e259e97287590194f1/django_storages-1.14.6-py3-none-any.whl", hash = "sha256:11b7b6200e1cb5ffcd9962bd3673a39c7d6a6109e8096f0e03d46fab3d3aabd9", size = 33095, upload-time = "2025-04-02T02:34:53.291Z" },
+]
+
+[[package]]
+name = "django-structlog"
+version = "10.1.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "asgiref" },
+    { name = "django" },
+    { name = "django-ipware" },
+    { name = "structlog" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/6d/18/5826ed903a3ab7c9e21092a2519b477dba1ef48ab9dfee5e101c91ee2663/django_structlog-10.1.0.tar.gz", hash = "sha256:812f61dea873e559511f42c0f3a7cdc36d4472f6cc15460565a97e5cbe06a76d", size = 23303, upload-time = "2026-05-30T23:15:49.473Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/04/96/c635a5b295246f9dd73098986694b2011968a502d5221261a1b0f439586b/django_structlog-10.1.0-py3-none-any.whl", hash = "sha256:450842bfb03887fc14469570769e515d22ea67d753848a25cdbd05405382c090", size = 18461, upload-time = "2026-05-30T23:15:48.118Z" },
 ]
 
 [[package]]
@@ -1658,6 +1686,15 @@ wheels = [
 ]
 
 [[package]]
+name = "python-ipware"
+version = "4.1.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/80/1c/dca9478d5e2c51c5effcc8fbc9903c40c59a8f107d2ef5ea2e4cf53085f0/python_ipware-4.1.1.tar.gz", hash = "sha256:fd6102058e74c29112b4376f8abbae718852c95f8de6965801de88ca9780d22f", size = 40567, upload-time = "2026-10-01T18:44:47.003Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/fb/63/4c5c354d10ec19d6258acc04cb8bbc36ba670019e2ad9c60e8289af9e845/python_ipware-4.1.1-py3-none-any.whl", hash = "sha256:52eedd4cb7bb9e1bb6b9dd92db974e729fe54be22e1389703e21c60344b9f039", size = 27636, upload-time = "2026-10-01T18:44:46.055Z" },
+]
+
+[[package]]
 name = "python-mimeparse"
 version = "2.0.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1719,6 +1756,7 @@ dependencies = [
     { name = "django-pipeline" },
     { name = "django-polymorphic" },
     { name = "django-sitetree" },
+    { name = "django-structlog" },
     { name = "django-tastypie" },
     { name = "django-translation-aliases" },
     { name = "django-waffle" },
@@ -1743,6 +1781,7 @@ dependencies = [
     { name = "python3-openid" },
     { name = "requests" },
     { name = "sorl-thumbnail" },
+    { name = "structlog" },
     { name = "unidecode" },
 ]
 
@@ -1805,6 +1844,7 @@ requires-dist = [
     { name = "django-polymorphic", specifier = "==4.11.7" },
     { name = "django-sitetree", specifier = "==1.18.1" },
     { name = "django-storages", marker = "extra == 'prod'", specifier = "==1.14.6" },
+    { name = "django-structlog", specifier = "==10.1.0" },
     { name = "django-tastypie", specifier = "==0.15.1" },
     { name = "django-translation-aliases", specifier = "==0.1.0" },
     { name = "django-waffle", specifier = "==5.0.0" },
@@ -1831,6 +1871,7 @@ requires-dist = [
     { name = "requests", specifier = ">=2.34.2" },
     { name = "sentry-sdk", extras = ["django"], marker = "extra == 'prod'", specifier = "==2.71.0" },
     { name = "sorl-thumbnail", specifier = "==13.1.0" },
+    { name = "structlog", specifier = "==26.1.0" },
     { name = "unidecode", specifier = "==1.4.0" },
     { name = "whitenoise", marker = "extra == 'prod'", specifier = "==6.12.0" },
 ]
@@ -2165,6 +2206,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/eb/e3/7c1dc7381d9f8ab7d854328ebfa884e62cb3f3d8549ddfd37c7814f42afa/starlette-1.3.1.tar.gz", hash = "sha256:05d0213193f2fbaae60e2ecb593b4add4262ad4e46536b54abe36f11a71724e0", size = 2703240, upload-time = "2026-06-12T09:23:11.602Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/ec/bb/2799cc2ede3ed41131f8975621e7213dfc7ef4acbbaadfa440f32500c370/starlette-1.3.1-py3-none-any.whl", hash = "sha256:c7372aae11c3c3f26a42df7bd626cec2f47d03483d261d369516a615a53714c6", size = 73632, upload-time = "2026-06-12T09:23:10.017Z" },
+]
+
+[[package]]
+name = "structlog"
+version = "26.1.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/5e/89/b4a0bcfdf4f71a3dea31379f095929613d7e4528a0996bca6aa964cd0dca/structlog-26.1.0.tar.gz", hash = "sha256:f63a716cbd1b1291cf7661de7794b455acfa4c43c5bcf1630e6ad5ddc1adb3b7", size = 1459881, upload-time = "2026-06-06T07:33:39.348Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/a9/18/489c97b834dfff9cf2fc2507cede4bcd4b11e67f84bc462acd1992496f86/structlog-26.1.0-py3-none-any.whl", hash = "sha256:e081a26d6c373e6d201eca24eede26d8ffab07f88f477822e679183428d3d91e", size = 73764, upload-time = "2026-06-06T07:33:38.046Z" },
 ]
 
 [[package]]
