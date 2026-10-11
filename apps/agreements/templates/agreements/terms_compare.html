@@ -1,6 +1,7 @@
 {% extends "agreements/base.html" %}
 {% block title %}Compare: {{ terms.title }}{% endblock %}
 {% block crumbs %}
+<li><a href="{% url 'agreements:queue' %}">Agreements</a><span class="prompt">&gt;&gt;&gt;</span></li>
 <li><a href="{% url 'agreements:terms_list' %}">Terms</a><span class="prompt">&gt;&gt;&gt;</span></li>
 <li><a href="{% url 'agreements:terms_edit' terms.slug %}">{{ terms.title }}</a><span class="prompt">&gt;&gt;&gt;</span></li>
 <li>Compare</li>

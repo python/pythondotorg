@@ -1,0 +1,25 @@
+{% load agreements %}
+{# One navigation for every agreements page; `nav` marks the current item. #}
+<nav class="section-navigation sidebar-widget" aria-label="Agreements">
+  <ul class="section-nav menu">
+    {% if token %}
+      <li><a href="{% url 'agreements:sign_link' token %}">Agreement to sign</a></li>
+    {% else %}
+      <li class="{% if nav == 'programs' %}current_item selected{% endif %}"><a href="{% url 'agreements:program_list' %}">Programs</a></li>
+      {% if user.is_authenticated %}
+        <li class="{% if nav == 'orders' %}current_item selected{% endif %}"><a href="{% url 'agreements:order_list' %}">Your orders</a></li>
+      {% endif %}
+    {% endif %}
+  </ul>
+</nav>
+{% if not token and user|can_prepare_agreements %}
+  <nav class="sidebar-widget staff-nav" aria-labelledby="staff-nav-title">
+    <h2 class="widget-title" id="staff-nav-title">PSF staff</h2>
+    <ul class="section-nav menu">
+      <li class="{% if nav == 'queue' %}current_item selected{% endif %}"><a href="{% url 'agreements:queue' %}">Agreements</a></li>
+      <li class="{% if nav == 'staff' %}current_item selected{% endif %}"><a href="{% url 'agreements:staff_orders' %}">All orders</a></li>
+      <li class="{% if nav == 'custom' %}current_item selected{% endif %}"><a href="{% url 'agreements:custom_create' %}">New contract</a></li>
+      <li class="{% if nav == 'terms' %}current_item selected{% endif %}"><a href="{% url 'agreements:terms_list' %}">Terms</a></li>
+    </ul>
+  </nav>
+{% endif %}

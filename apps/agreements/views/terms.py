@@ -75,6 +75,7 @@ def terms(request: HttpRequest, slug: str, version: str | None = None) -> HttpRe
     """Read one published version of terms; without a version, the current one."""
     terms, shown = _readable_terms(request, slug, version)
     html, toc = documents.render_html(shown.markdown)
+    staff = can_prepare(request.user)
     response = render(
         request,
         "agreements/terms.html",
@@ -84,8 +85,9 @@ def terms(request: HttpRequest, slug: str, version: str | None = None) -> HttpRe
             "is_current": shown == terms.current_version,
             "html": html,
             "toc": toc,
-            "can_edit": can_prepare(request.user),
-            "can_read_current": terms.is_public or can_prepare(request.user),
+            "can_edit": staff,
+            "can_read_current": terms.is_public or staff,
+            "nav": "terms" if staff else "programs",
         },
     )
     return _terms_cache(request, response, terms)

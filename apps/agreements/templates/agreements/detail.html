@@ -3,8 +3,17 @@
 {% block title %}{{ agreement.title }}: {{ agreement.counterparty_name }}{% endblock %}
 
 {% block crumbs %}
-{% if can_prepare %}<li><a href="{% url 'agreements:queue' %}">Agreements</a><span class="prompt">&gt;&gt;&gt;</span></li>{% endif %}
-<li>{{ agreement.counterparty_name }}</li>
+{% if can_prepare %}
+  <li><a href="{% url 'agreements:queue' %}">Agreements</a><span class="prompt">&gt;&gt;&gt;</span></li>
+  <li>{{ agreement.counterparty_name }}</li>
+{% elif agreement.order %}
+  <li><a href="{% url 'agreements:program_list' %}">Programs</a><span class="prompt">&gt;&gt;&gt;</span></li>
+  <li><a href="{% url 'agreements:order_list' %}">Your orders</a><span class="prompt">&gt;&gt;&gt;</span></li>
+  <li><a href="{{ agreement.order.get_absolute_url }}">{{ agreement.order.legal_name }}</a><span class="prompt">&gt;&gt;&gt;</span></li>
+  <li>Agreement</li>
+{% else %}
+  <li>{{ agreement.counterparty_name }}</li>
+{% endif %}
 {% endblock %}
 
 {% block content %}
