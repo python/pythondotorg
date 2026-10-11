@@ -86,6 +86,7 @@ def terms(request: HttpRequest, slug: str, version: str | None = None) -> HttpRe
             "toc": toc,
             "can_edit": can_prepare(request.user),
             "can_read_current": terms.is_public or can_prepare(request.user),
+            "nav": "terms",
         },
     )
     return _terms_cache(request, response, terms)

@@ -51,11 +51,12 @@ def detail(request: HttpRequest, pk: UUID, status: int = 200, **bound: BaseForm 
     """Review an agreement and act on it."""
     agreement = _agreement_or_404(request, pk)
     html, metadata_hidden = documents.render_agreement_preview(documents.final_markdown(agreement))
+    forms = action_forms(request, agreement, **bound)
     context = {
-        **action_forms(request, agreement, **bound),
+        **forms,
         "html": html,
         "metadata_hidden": metadata_hidden,
-        "nav": "queue",
+        "nav": "queue" if forms["can_prepare"] else "orders",
     }
     return render(request, "agreements/detail.html", context, status=status)
 
