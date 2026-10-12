@@ -513,6 +513,22 @@ class OrderBuilderTests(TestCase):
         studio_opening_tag = page.split('id="family-studio"', 1)[1].split(">", 1)[0]
         self.assertNotIn("data-services-follow-tier", studio_opening_tag)
 
+    def test_overview_scales_response_targets_across_the_whole_program(self) -> None:
+        definition = deepcopy(self.program.definition)
+        definition["agreements"][0]["tiers"][0]["response_targets"] = [
+            "4 Business Hours",
+            "1 Business Day",
+            "2 Business Days",
+            "Next quarter",
+        ]
+        definition["agreements"][1]["tiers"][0]["response_targets"][0] = "4 Business Days"
+        Program.objects.filter(pk=self.program.pk).update(definition=definition)
+        response = self.client.get(reverse("agreements:program_detail", args=[self.program.slug]))
+        (_, studio), (_, workshop) = response.context["families"]
+        self.assertEqual([row["cells"][0]["bar"] for row in studio], [12.5, 25.0, 50.0, None])
+        self.assertEqual(workshop[0]["cells"][0]["bar"], 100.0)
+        self.assertContains(response, "Next quarter")
+
     def test_selected_services_persist_and_render_without_unselected_scope(self) -> None:
         response = self.client.post(
             self.url,

@@ -2,10 +2,6 @@
 
 /* ---------- Program list and overview ---------- */
 
-.agreement-orders .tier-table { margin: 0.5em 0 1.3125em; }
-.agreement-orders .tier-table th,
-.agreement-orders .tier-table td { padding: 0.45em 0.6em; border-bottom: 1px solid #e6e8ea; }
-.agreement-orders .tier-table thead th { background-color: #e6e8ea; color: #444; font-family: SourceSansProBold, Arial, sans-serif; }
 .agreement-orders .agreement-summary { border-top: 5px solid #caccce; padding-top: 0.5em; margin-top: 1.75em; }
 .agreement-orders .agreement-summary h2 { margin-top: 0.25em; }
 .agreement-orders .agreement-services { color: #666; font-size: 0.9em; }
@@ -26,9 +22,79 @@
 .program-overview .po-tagline { margin-bottom: 0.5em; }
 .program-overview .po-table-wrap { max-width: 100%; overflow-x: auto; }
 .program-overview .po-terms { font-size: 0.9em; color: #666; }
+.program-overview .po-list-title { margin: 1em 0 0.15em; font-size: 1.0625em; }
+.program-overview .agreement-services { margin-bottom: 0.4em; }
+.program-overview .po-list { margin: 0 0 1em; font-size: 0.9375em; line-height: 1.5; }
+.program-overview .po-list dt { margin-top: 0.5em; border: 0; font-family: SourceSansProBold, Arial, sans-serif; color: #222; }
+.program-overview .po-list dd { margin: 0; padding: 0; border: 0; color: #555; }
+.program-overview .po-list-note { margin-left: 0.35em; font-family: SourceSansProRegular, Arial, sans-serif; font-size: 0.9em; color: #2b5b84; }
+
+/* Tier comparison: plan columns, with response targets drawn to one program-wide scale. */
+.program-overview .po-plans {
+  --po-blue: #3776ab;
+  --po-blue-dark: #2b5b84;
+  --po-blue-quiet: #a9c4dc;
+  --po-yellow: #ffd343;
+  --po-line: #e6e8ea;
+  --po-col: #f3f8fc;
+  width: 100%;
+  margin: 0.75em 0 1.75em;
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-variant-numeric: tabular-nums;
+}
+.program-overview .po-plans tr { background: none; }
+.program-overview .po-plans :is(th, td) { padding: 0.55em 0.9em; background: none; border: 0; text-align: left; vertical-align: middle; transition: background-color 180ms cubic-bezier(0.22, 1, 0.36, 1); }
+.program-overview .po-plans tbody th { width: 30%; padding-left: 0; font-family: SourceSansProRegular, Arial, sans-serif; color: #444; }
+.program-overview .po-plans thead :is(th, td) { border-bottom: 1px solid #caccce; }
+.program-overview .po-plan { padding-top: 0.85em; padding-bottom: 0.9em; border-top: 3px solid var(--po-line); vertical-align: bottom; transition: background-color 180ms cubic-bezier(0.22, 1, 0.36, 1), border-color 180ms cubic-bezier(0.22, 1, 0.36, 1); }
+.program-overview .po-plan-name { display: block; font-family: SourceSansProBold, Arial, sans-serif; font-size: 0.9375em; color: var(--po-blue-dark); }
+.program-overview .po-plan-fee { display: block; margin-top: 0.1em; font-family: SourceSansProBold, Arial, sans-serif; font-size: 1.75em; line-height: 1.1; color: #222; }
+.program-overview .po-plan-unit { display: block; margin-top: 0.15em; font-family: SourceSansProRegular, Arial, sans-serif; font-size: 0.875em; line-height: 1.3; color: #666; }
+.program-overview .po-requests :is(th, td) { padding-block: 0.75em; border-bottom: 1px solid var(--po-line); }
+.program-overview .po-requests td { font-family: SourceSansProBold, Arial, sans-serif; font-size: 1.125em; color: #222; }
+.program-overview .po-group th { padding: 1.5em 0 0.4em; font-family: SourceSansProBold, Arial, sans-serif; color: #222; }
+.program-overview .po-group-note { margin-left: 0.4em; font-family: SourceSansProRegular, Arial, sans-serif; font-size: 0.875em; color: #666; }
+.program-overview .po-severity :is(th, td) { padding-block: 0.6em; border-top: 1px solid var(--po-line); }
+.program-overview .po-sev { margin-left: 0.3em; padding: 0.1em 0.4em; border-radius: 3px; background-color: #eef1f4; color: #555; font-family: SourceSansProBold, Arial, sans-serif; font-size: 0.75em; vertical-align: 0.1em; }
+.program-overview .po-target { display: block; color: #333; font-size: 0.9375em; white-space: nowrap; }
+.program-overview .po-bar { display: block; width: 100%; height: 6px; margin-top: 0.4em; border-radius: 3px; overflow: hidden; }
+.program-overview .po-bar-track { fill: #eef1f4; }
+.program-overview .po-bar-fill { fill: var(--po-blue); transition: fill 180ms cubic-bezier(0.22, 1, 0.36, 1); }
+
+/* Pointing at any cell in a tier lights that tier's whole column and quiets the others. */
+.program-overview .po-plans:has(:is(thead th, td):hover) .po-bar-fill { fill: var(--po-blue-quiet); }
+.program-overview .po-plans:has(tr > :nth-child(2):is(th, td):hover) tr > :nth-child(2),
+.program-overview .po-plans:has(tr > :nth-child(3):is(th, td):hover) tr > :nth-child(3),
+.program-overview .po-plans:has(tr > :nth-child(4):is(th, td):hover) tr > :nth-child(4),
+.program-overview .po-plans:has(tr > :nth-child(5):is(th, td):hover) tr > :nth-child(5),
+.program-overview .po-plans:has(tr > :nth-child(6):is(th, td):hover) tr > :nth-child(6) { background-color: var(--po-col); }
+.program-overview .po-plans:has(tr > :nth-child(2):is(th, td):hover) tr > :nth-child(2) .po-bar-fill,
+.program-overview .po-plans:has(tr > :nth-child(3):is(th, td):hover) tr > :nth-child(3) .po-bar-fill,
+.program-overview .po-plans:has(tr > :nth-child(4):is(th, td):hover) tr > :nth-child(4) .po-bar-fill,
+.program-overview .po-plans:has(tr > :nth-child(5):is(th, td):hover) tr > :nth-child(5) .po-bar-fill,
+.program-overview .po-plans:has(tr > :nth-child(6):is(th, td):hover) tr > :nth-child(6) .po-bar-fill { fill: var(--po-blue-dark); }
+.program-overview .po-plans:has(tr > :nth-child(2):is(th, td):hover) thead tr > :nth-child(2),
+.program-overview .po-plans:has(tr > :nth-child(3):is(th, td):hover) thead tr > :nth-child(3),
+.program-overview .po-plans:has(tr > :nth-child(4):is(th, td):hover) thead tr > :nth-child(4),
+.program-overview .po-plans:has(tr > :nth-child(5):is(th, td):hover) thead tr > :nth-child(5),
+.program-overview .po-plans:has(tr > :nth-child(6):is(th, td):hover) thead tr > :nth-child(6) { border-top-color: var(--po-yellow); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .program-overview .po-bar-fill { transform-box: fill-box; transform-origin: left center; animation: po-bar-grow 720ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+  .program-overview .po-severity:nth-child(4) .po-bar-fill { animation-delay: 70ms; }
+  .program-overview .po-severity:nth-child(5) .po-bar-fill { animation-delay: 140ms; }
+  .program-overview .po-severity:nth-child(6) .po-bar-fill { animation-delay: 210ms; }
+}
+@keyframes po-bar-grow { from { transform: scaleX(0); } }
 
 @media (max-width: 40em) {
   .program-overview .po-invite { grid-template-columns: minmax(0, 1fr); }
+  .program-overview .po-plans :is(th, td) { padding-inline: 0.45em; }
+  .program-overview .po-plans tbody th { width: 34%; padding-left: 0; line-height: 1.25; }
+  .program-overview .po-plan-fee { font-size: 1.25em; }
+  .program-overview .po-target { font-size: 0.875em; white-space: normal; line-height: 1.25; }
   .program-overview .po-invite-cta { justify-self: start; }
 }
 
@@ -37,10 +103,6 @@
 .agreement-orders .order-meta { color: #666; }
 .agreement-orders .order-orgs { color: #666; font-size: 0.95em; }
 .agreement-orders .num { font-variant-numeric: tabular-nums; }
-
-@media (max-width: 800px) {
-  .agreement-orders .tier-table { display: block; overflow-x: auto; }
-}
 
 /* ================================================================
    Package builder (order form)

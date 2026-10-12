@@ -23,26 +23,66 @@
     <a class="button button-primary po-invite-cta" href="{% url 'agreements:order_create' program.slug %}">{% if program.is_public %}Build a package{% else %}Prepare a package{% endif %}</a>
   </div>
 
-  {% for agreement in agreements %}
+  {% for agreement, ladder in families %}
     <section class="agreement-summary po-family" aria-labelledby="po-{{ agreement.slug }}">
       <h2 id="po-{{ agreement.slug }}">{{ agreement.short_name }}</h2>
       {% if agreement.tagline %}<p class="po-tagline">{{ agreement.tagline }}</p>{% endif %}
       <div class="po-table-wrap">
-        <table class="tier-table">
+        <table class="po-plans">
           <caption class="screen-reader-text">{{ agreement.short_name }} service tiers</caption>
-          <thead><tr><th scope="col">Service tier</th><th scope="col" class="num">Annual fee</th><th scope="col">Critical (P1) response</th><th scope="col" class="num">Requests a year</th></tr></thead>
+          <thead>
+            <tr>
+              <td class="po-corner"></td>
+              {% for tier in agreement.tiers %}
+                <th scope="col" class="po-plan">
+                  <span class="po-plan-name">{{ tier.name }}</span>
+                  <span class="po-plan-fee">{{ tier.annual_fee|money }}</span>
+                  <span class="po-plan-unit">a year</span>
+                </th>
+              {% endfor %}
+            </tr>
+          </thead>
           <tbody>
-            {% for tier in agreement.tiers %}
-              <tr><th scope="row">{{ tier.name }}</th><td class="num">{{ tier.annual_fee|money }}</td><td>{{ tier.response_targets.0 }}</td><td class="num">{{ tier.fair_use }}</td></tr>
+            <tr class="po-requests">
+              <th scope="row">Requests a year</th>
+              {% for tier in agreement.tiers %}<td>{{ tier.fair_use }}</td>{% endfor %}
+            </tr>
+            <tr class="po-group">
+              <th scope="colgroup" colspan="{{ agreement.tiers|length|add:1 }}">First response <span class="po-group-note">in business time; a shorter bar is a faster reply</span></th>
+            </tr>
+            {% for row in ladder %}
+              <tr class="po-severity">
+                <th scope="row">{{ row.name }} <span class="po-sev">{{ row.code }}</span></th>
+                {% for cell in row.cells %}
+                  <td>
+                    <span class="po-target">{{ cell.target }}</span>
+                    {% if cell.bar is not None %}<svg class="po-bar" viewBox="0 0 100 1" preserveAspectRatio="none" aria-hidden="true" focusable="false"><rect class="po-bar-track" width="100" height="1"/><rect class="po-bar-fill" width="{{ cell.bar|stringformat:'.1f' }}" height="1"/></svg>{% endif %}
+                  </td>
+                {% endfor %}
+              </tr>
             {% endfor %}
           </tbody>
         </table>
       </div>
       {% if agreement.services %}
-        <p class="agreement-services">Base services available to select: {% for service, tiers in agreement.service_rows %}{{ service.name }}{% if tiers %} ({{ tiers }} only){% endif %}{% if not forloop.last %}; {% endif %}{% endfor %}. Your selection does not change the Service Tier fee.</p>
+        <h3 class="po-list-title">Base services</h3>
+        <p class="agreement-services">Included in the Service Tier fee. Every base service your tier offers is selected when you build a package.</p>
+        <dl class="po-list">
+          {% for service, tiers in agreement.service_rows %}
+            <dt>{{ service.name }} <span class="po-list-note">{% if tiers %}{{ tiers }} only{% else %}Every tier{% endif %}</span></dt>
+            {% if service.description %}<dd>{{ service.description }}</dd>{% endif %}
+          {% endfor %}
+        </dl>
       {% endif %}
       {% if agreement.addons %}
-        <p class="agreement-services">Extras, priced separately: {% for addon in agreement.addons %}{{ addon.name }}{% if not forloop.last %}; {% endif %}{% endfor %}.</p>
+        <h3 class="po-list-title">Extras</h3>
+        <p class="agreement-services">Priced separately and added to the same Order Form.</p>
+        <dl class="po-list">
+          {% for addon in agreement.addons %}
+            <dt>{{ addon.name }}{% if addon.price_summary %} <span class="po-list-note">{{ addon.price_summary }}</span>{% endif %}</dt>
+            {% if addon.description %}<dd>{{ addon.description }}</dd>{% endif %}
+          {% endfor %}
+        </dl>
       {% endif %}
       <p class="po-terms">Provided under the <a href="{% url 'agreements:terms' agreement.terms_slug %}">{{ agreement.title }}</a>.</p>
     </section>

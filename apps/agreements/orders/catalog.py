@@ -22,6 +22,8 @@ RESPONSE_TARGET_COUNT = 4
 CURRENCY_WHOLE_DIGITS = 16
 CURRENCY_DECIMAL_PLACES = 2
 CHOICE_PAIR_SIZE = 2
+HOURS_PER_BUSINESS_DAY = 8
+BUSINESS_TIME = re.compile(r"^\s*(\d+)\s+business\s+(hour|day)s?\s*$", re.IGNORECASE)
 
 RULE_FIELDS = {
     "fixed": {"amount"},
@@ -43,6 +45,15 @@ class Tier:
     response_targets: tuple[str, str, str, str]
     fair_use: int
     includes: str = ""
+
+
+def business_hours(target: str) -> int | None:
+    """Convert a response target such as "2 Business Days" to Coverage Window hours, if it has that form."""
+    match = BUSINESS_TIME.match(target)
+    if not match:
+        return None
+    count = int(match[1])
+    return count * HOURS_PER_BUSINESS_DAY if match[2].lower() == "day" else count
 
 
 @dataclass(frozen=True)
