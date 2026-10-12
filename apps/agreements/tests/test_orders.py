@@ -501,6 +501,18 @@ class OrderBuilderTests(TestCase):
         self.assertEqual(order.agreements.get(agreement="workshop").tier, "max")
         self.assertEqual(order.customer_account, self.user)
 
+    def test_new_packages_preselect_only_services_the_default_tier_offers(self) -> None:
+        page = self.client.get(self.url).content.decode()
+        self.assertIn('id="studio-service-access" name="studio-services" value="access" checked', page)
+        self.assertIn('id="studio-service-planning" name="studio-services" value="planning">', page)
+        self.assertIn("data-services-follow-tier", page)
+
+        order = make_order(self.user, {"studio": {"tier": "plus", "services": []}}, program=self.program)
+        page = self.client.get(reverse("agreements:order_edit", args=[order.pk])).content.decode()
+        self.assertIn('id="studio-service-access" name="studio-services" value="access">', page)
+        studio_opening_tag = page.split('id="family-studio"', 1)[1].split(">", 1)[0]
+        self.assertNotIn("data-services-follow-tier", studio_opening_tag)
+
     def test_selected_services_persist_and_render_without_unselected_scope(self) -> None:
         response = self.client.post(
             self.url,
