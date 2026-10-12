@@ -1,5 +1,5 @@
 {% load agreements %}{% with agreement=aform.agreement tier_options=aform.tier_options %}
-<section class="pb-family{% if show_errors and aform.errors %} has-error{% endif %}" id="family-{{ slug }}" data-family="{{ slug }}" data-family-name="{{ agreement.short_name }}" data-family-title="{{ agreement.title }}" data-default-tier="{{ agreement.default_tier }}" aria-labelledby="family-{{ slug }}-title">
+<section class="pb-family{% if show_errors and aform.errors %} has-error{% endif %}" id="family-{{ slug }}" data-family="{{ slug }}" data-family-name="{{ agreement.short_name }}" data-family-title="{{ agreement.title }}" data-default-tier="{{ agreement.default_tier }}"{% if aform.services_follow_tier %} data-services-follow-tier{% endif %} aria-labelledby="family-{{ slug }}-title">
   <header class="pb-family-head">
     <div class="pb-family-intro">
       <h3 class="pb-family-title" id="family-{{ slug }}-title">{{ agreement.short_name }}</h3>
@@ -35,7 +35,7 @@
 
   <fieldset class="pb-group pb-base-services" id="{{ slug }}-services" aria-describedby="{{ slug }}-services-help{% if show_errors and aform.services.errors %} {{ slug }}-services-errors{% endif %}">
     <legend>Base services<span class="screen-reader-text"> for {{ agreement.short_name }}</span></legend>
-    <p class="pb-help" id="{{ slug }}-services-help">Select only the base services you want. Selecting none is allowed. The Service Tier fee stays the same regardless of your base-service selection.</p>
+    <p class="pb-help" id="{{ slug }}-services-help">Every base service your tier offers starts selected. Deselect any you don't need; the Service Tier fee stays the same either way.</p>
     {% if show_errors and aform.services.errors %}<div id="{{ slug }}-services-errors">{{ aform.services.errors }}</div>{% endif %}
     <div class="pb-fields">
       {% for service, tiers in agreement.service_rows %}

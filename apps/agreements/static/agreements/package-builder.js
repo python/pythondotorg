@@ -31,6 +31,7 @@
       include: el.querySelector(".pb-include-input"),
       radios: $$(".pb-tier-input", el),
       services: $$(".pb-base-service", el),
+      servicesFollowTier: "servicesFollowTier" in el.dataset,
       extraGroup,
       extras: extraGroup ? $$(".pb-extra", extraGroup) : [],
     };
@@ -134,6 +135,8 @@
       const allowedTiers = row.dataset.serviceTiers.split(" ").filter(Boolean);
       const available = !allowedTiers.length || allowedTiers.includes(serviceTierKey);
       const box = serviceBox(row);
+      // Base services the customer hasn't edited track what the chosen tier offers.
+      if (tier && family.servicesFollowTier && !box.dataset.edited) box.checked = available;
       row.hidden = !available && !box.checked;
       box.disabled = !tier || (!available && !box.checked);
       const conflict = Boolean(tier) && !available && box.checked;
@@ -815,6 +818,8 @@
       } else if (target.classList.contains("pb-tier-input") && !family.include.checked) {
         family.include.checked = true;
         announce(`${family.name} added at the ${tierColumn(target).dataset.tierName} tier.`);
+      } else if (target.closest(".pb-base-service")) {
+        target.dataset.edited = "true";
       }
     } else if (target.name !== "discount") {
       return;
