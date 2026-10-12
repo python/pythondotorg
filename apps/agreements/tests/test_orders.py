@@ -375,6 +375,22 @@ class StaffHandlingTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertIn("next=" + url, cast("HttpResponseRedirect", response).url)
 
+    def test_staff_see_add_on_follow_ups_that_customers_do_not(self) -> None:
+        definition = deepcopy(self.program.definition)
+        definition["agreements"][1]["addons"][3]["staff_note"] = "Record the units in the scheduling system."
+        Program.objects.filter(pk=self.program.pk).update(definition=definition)
+        order = make_order(
+            self.customer,
+            {"workshop": {"tier": "basic", "addons": {"batch": {"units": 12}}}},
+            program=self.program,
+        )
+        url = order.get_absolute_url()
+        self.assertContains(
+            self.client.get(url), "Batch preparation · Units: 12. Record the units in the scheduling system."
+        )
+        self.client.force_login(self.customer)
+        self.assertNotContains(self.client.get(url), "Record the units")
+
     def post(self, **overrides: Any) -> _MonkeyPatchedWSGIResponse:
         return self.client.post(
             reverse("agreements:order_create", args=[self.program.slug]), payload(["studio"], **overrides)

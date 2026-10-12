@@ -61,6 +61,16 @@
   </table>
   </div>
   <p class="order-orgs">{{ order.catalog.covered_entities_label }}: {{ order.organization_list|join:", " }}</p>
+  {% if staff_followups %}
+    <div class="user-feedback level-notice">
+      <p><strong>Staff follow-up</strong>{% if order.status != "executed" %} once this order is executed{% endif %}:</p>
+      <ul>
+        {% for item in staff_followups %}
+          <li>{{ item.name }}{% for label, value in item.values %} · {{ label }}: {{ value }}{% endfor %}. {{ item.note }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
 
   {% if not order.agreement %}
     <p>Review the Order Form below. It cites the published terms of each agreement, which are part of the contract.{% if can_edit %} <a href="{% url 'agreements:order_edit' order.pk %}">Edit selections</a>{% endif %}</p>

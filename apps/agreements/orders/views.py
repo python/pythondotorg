@@ -305,6 +305,8 @@ def order_detail(request: HttpRequest, pk: UUID, sign_form: SignForm | None = No
     else:
         context["html"], context["metadata_hidden"] = agreement_documents.render_agreement_preview(markdown)
         context["lines"] = order.agreement_list
+        if context["can_prepare"]:
+            context["staff_followups"] = [item for line in context["lines"] for item in line.staff_followups]
         if order.agreement:
             context.update(action_forms(request, order.agreement))
         elif order.is_customer(user):

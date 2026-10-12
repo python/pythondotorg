@@ -94,6 +94,7 @@ class AddOn:
     pricing: dict[str, Any]
     params: tuple[Param, ...] = ()
     included_in_tiers: tuple[str, ...] = ()
+    staff_note: str = ""
 
 
 @dataclass(frozen=True)
@@ -474,7 +475,7 @@ def _addon(row: dict[str, Any], path: str, tier_keys: set[str]) -> AddOn:
     _object(
         row,
         path,
-        {"key", "name", "description", "price_summary", "params", "included_in_tiers", "pricing"},
+        {"key", "name", "description", "price_summary", "params", "included_in_tiers", "pricing", "staff_note"},
         {"key", "name", "description", "price_summary", "pricing"},
     )
     params = _params(row.get("params", []), f"{path}.params")
@@ -487,6 +488,7 @@ def _addon(row: dict[str, Any], path: str, tier_keys: set[str]) -> AddOn:
         params=params,
         pricing=row["pricing"],
         included_in_tiers=_tier_refs(row.get("included_in_tiers", []), f"{path}.included_in_tiers", tier_keys),
+        staff_note=_text(row.get("staff_note", ""), f"{path}.staff_note", blank=True),
     )
 
 

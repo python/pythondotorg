@@ -254,6 +254,18 @@ class OrderLine(models.Model):
         """Return the selected tier's name."""
         return self.agreement_obj.tier(self.tier).name
 
+    @property
+    def staff_followups(self) -> list[dict[str, Any]]:
+        """Pair each selected add-on that has a staff note with its chosen parameter values."""
+        followups = []
+        for addon in self.agreement_obj.addons:
+            chosen = self.addons.get(addon.key)
+            if chosen is None or not addon.staff_note:
+                continue
+            values = [(param.label, chosen[param.key]) for param in addon.params if param.key in chosen]
+            followups.append({"name": addon.name, "note": addon.staff_note, "values": values})
+        return followups
+
     @cached_property
     def cited_terms(self) -> TermsVersion | None:
         """Return the fixed version after offering or the current draft candidate."""
