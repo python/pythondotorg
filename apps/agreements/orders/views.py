@@ -101,7 +101,7 @@ def _response_ladders(agreements: list[Agreement]) -> list[list[dict[str, Any]]]
                 "cells": [
                     {
                         "target": tier.response_targets[index],
-                        "bar": round(100 * tier_hours[index] / slowest, 1) if slowest and tier_hours[index] else None,
+                        "bar": round(100 * h / slowest, 1) if slowest and (h := tier_hours[index]) else None,
                     }
                     for tier, tier_hours in zip(agreement.tiers, agreement_hours, strict=True)
                 ],
