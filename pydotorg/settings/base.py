@@ -1,5 +1,6 @@
 """Base Django settings for the python.org project."""
 
+import logging
 from pathlib import Path
 
 from csp.constants import NONCE, SELF, UNSAFE_INLINE
@@ -7,6 +8,7 @@ from decouple import config
 from dj_database_url import parse as dj_database_url_parser
 from django.contrib.messages import constants
 
+from pydotorg.logs import configure_structlog
 from pydotorg.markup import MARKUP_FIELD_TYPES  # noqa: F401 - read by django-markupfield via settings
 from pydotorg.settings.pipeline import PIPELINE  # noqa: F401 - accessed by django-pipeline via settings
 
@@ -158,6 +160,7 @@ MIDDLEWARE = [
     "pydotorg.middleware.AdminNoCaching",
     "pydotorg.middleware.GlobalSurrogateKey",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django_structlog.middlewares.RequestMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "waffle.middleware.WaffleMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
@@ -186,6 +189,7 @@ INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.admindocs",
     "django_celery_beat",
+    "django_structlog",
     "django_translation_aliases",
     "pipeline",
     "sitetree",
@@ -239,21 +243,46 @@ LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "filters": {"require_debug_false": {"()": "django.utils.log.RequireDebugFalse"}},
+    "formatters": {
+        "console": {"()": "pydotorg.logs.console_formatter"},
+        "json": {"()": "pydotorg.logs.json_formatter"},
+    },
     "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "stream": "ext://sys.stdout",
+            "formatter": "console",
+        },
         "mail_admins": {
             "level": "ERROR",
             "filters": ["require_debug_false"],
             "class": "django.utils.log.AdminEmailHandler",
-        }
+        },
     },
+    "root": {"handlers": ["console"], "level": "WARNING"},
     "loggers": {
+        # Replaces Django's default console handler so records reach stdout once, via root.
+        "django": {"handlers": ["mail_admins"], "level": "INFO"},
+        # Emails only; django-structlog's request_failed puts the traceback on stdout with request context.
         "django.request": {
             "handlers": ["mail_admins"],
             "level": "ERROR",
-            "propagate": True,
+            "propagate": False,
         },
+        "django_structlog": {"level": "INFO"},
+        "apps": {"level": "INFO"},
+        "pydotorg": {"level": "INFO"},
+        "celery": {"level": "INFO"},
     },
 }
+
+configure_structlog()
+
+# nginx and gunicorn already log every request; keep only 5xx and request_failed from django-structlog.
+DJANGO_STRUCTLOG_STATUS_DEFAULT_LOG_LEVEL = logging.DEBUG
+DJANGO_STRUCTLOG_STATUS_4XX_LOG_LEVEL = logging.DEBUG
+# Client IPs were never logged; keep it that way.
+DJANGO_STRUCTLOG_IP_LOGGING_ENABLED = False
 
 ### Honeypot
 HONEYPOT_FIELD_NAME = "email_body_text"

@@ -31,6 +31,7 @@ dependencies = [
     "django-pipeline==4.1.0",
     "django-polymorphic==4.11.7",
     "django-sitetree==1.18.1",
+    "django-structlog==10.1.0",
     "django-tastypie==0.15.1",
     "django-translation-aliases==0.1.0",
     "django-waffle==5.0.0",
@@ -55,6 +56,7 @@ dependencies = [
     "python3-openid==3.2.0",
     "requests>=2.34.2",
     "sorl-thumbnail==13.1.0",
+    "structlog==26.1.0",
     "unidecode==1.4.0",
 ]
 [project.optional-dependencies]
