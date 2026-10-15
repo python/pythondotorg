@@ -1,0 +1,36 @@
+{% extends "psf/default.html" %}
+
+{% block page_title %}
+Self-nomination received for {{ nomination.election.name }} Election
+| {{ SITE_INFO.site_name }}
+{% endblock %}
+
+{% block body_attributes %}class="nominations nominations_view"{% endblock %}
+{% block head %}{% include "nominations/_theme.html" with election=nomination.election %}{% endblock %}
+{% block left_sidebar %}{% endblock %}
+{% block content_attributes %}{% endblock %}
+
+{% block content %}
+<article class="text">
+  <header class="article-header">
+    <h1 class="page-title">Your self-nomination for the {{ nomination.election.name }} Election has been received</h1>
+  </header>
+
+  <h2>What you need to know</h2>
+  <ul>
+    <li>Your nomination is already marked as accepted. You don't need to accept it again.</li>
+    <li>You can edit it until nominations close{% if nomination.election.nominations_close_at %} on {{ nomination.election.nominations_close_at|date:"F j, Y, P T" }}{% endif %}.</li>
+    <li>PSF staff will review your nomination before it is published.</li>
+    <li>Approved nominees are listed publicly once nominations close.</li>
+  </ul>
+  <p>
+    <a href="{{ nomination.get_absolute_url }}">View your nomination</a>
+    {% if nomination.election.nominations_open %}| <a href="{{ nomination.get_edit_url }}">Edit it</a>{% endif %}
+    | <a href="{% url 'users:user_nominations_view' %}">See all your nominations</a>
+  </p>
+
+  {% if nomination.election.nominations_open %}
+  {% include "nominations/_supporting_statements.html" %}
+  {% endif %}
+</article>
+{% endblock content %}
