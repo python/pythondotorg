@@ -239,9 +239,10 @@ class DownloadReleaseDetail(DownloadBase, DetailView):
         context["release_files"].extend(list(self.object.files.exclude(os__slug="source").order_by("os__slug", "name")))
 
         # Find the latest release in the feature series (such as 3.14.x)
-        # to show a "superseded by" notice on older releases
+        # to show a "superseded by" notice on older releases.
+        # Unpublished (draft) releases are not yet out, so they can't be superseded.
         version = self.object.get_version()
-        if version and self.object.version == Release.PYTHON3:
+        if version and self.object.is_published and self.object.version == Release.PYTHON3:
             match = re.match(r"^3\.(\d+)", version)
             if match:
                 minor_version = int(match.group(1))
