@@ -12,6 +12,8 @@ from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 from apps.nominations.forms import (
     BoardNominationCreateForm,
+    EndorsementCreateForm,
+    EndorsementEditForm,
     NominationAcceptForm,
     NominationForm,
     PackagingCouncilNominationCreateForm,
@@ -171,6 +173,60 @@ class NominationCreate(LoginRequiredMixin, NominationMixin, CreateView):
         return super().get_context_data(**kwargs)
 
 
+class EndorsementCreate(LoginRequiredMixin, NominationMixin, CreateView):
+    """Endorse a candidate already accepted and approved for an election.
+
+    Separate from ``NominationCreate``: it can only be used while the
+    endorsement window is open, never creates a ``Nominee``, and cannot be
+    used to endorse yourself.
+    """
+
+    model = Nomination
+    template_name = "nominations/nomination_form.html"
+
+    login_message = "Please login to submit an endorsement."
+
+    def get_form_kwargs(self):
+        """Add the request and election to the form kwargs."""
+        kwargs = super().get_form_kwargs()
+        kwargs.update({"request": self.request, "election": self.election})
+        return kwargs
+
+    def get_form_class(self):
+        """Return the endorsement form, 404ing when the endorsement window is not open."""
+        election = self.election
+        if not election.endorsements_open:
+            messages.error(self.request, f"Endorsements for {election.name} Election are not open")
+            msg = f"Endorsements for {election.name} Election are not open"
+            raise Http404(msg)
+
+        return EndorsementCreateForm
+
+    def get_success_url(self):
+        """Return the URL for the newly created endorsement detail page."""
+        return reverse(
+            "nominations:nomination_detail",
+            kwargs={"election": self.object.election.slug, "pk": self.object.id},
+        )
+
+    def form_valid(self, form):
+        """Link the endorsement to the selected candidate before saving."""
+        nominee = form.cleaned_data["nominee"]
+        form.instance.nominator = self.request.user
+        form.instance.election = self.election
+        form.instance.nominee = nominee
+        form.instance.name = nominee.name
+        form.instance.email = nominee.user.email
+        form.instance.is_endorsement = True
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        """Flag the shared nomination form template as rendering an endorsement."""
+        context = super().get_context_data(**kwargs)
+        context["is_endorsement"] = True
+        return context
+
+
 class NominationEdit(LoginRequiredMixin, NominationMixin, UserPassesTestMixin, UpdateView):
     """Edit an existing nomination."""
 
@@ -182,6 +238,13 @@ class NominationEdit(LoginRequiredMixin, NominationMixin, UserPassesTestMixin, U
     def test_func(self):
         """Allow editing only while the nomination is still editable."""
         return self.get_object().editable(self.request.user)
+
+    def get_form_class(self):
+        """Use the endorsement form for endorsements so the candidate stays fixed."""
+        if self.object.is_endorsement:
+            return EndorsementEditForm
+
+        return self.form_class
 
     def get_queryset(self):
         """Fetch the nomination for the URL's election with its kind in one query."""
@@ -222,9 +285,12 @@ class NominationAccept(LoginRequiredMixin, NominationMixin, UserPassesTestMixin,
     raise_exception = True
 
     def test_func(self):
-        """Only allow the nominee to accept while nominations are open."""
+        """Only allow the nominee to accept while the relevant submission window is open."""
         nomination = self.get_object()
-        return self.request.user == nomination.nominee.user and nomination.election.nominations_open
+        window_open = (
+            nomination.election.endorsements_open if nomination.is_endorsement else nomination.election.nominations_open
+        )
+        return self.request.user == nomination.nominee.user and window_open
 
     def get_queryset(self):
         """Fetch the URL election's nomination with the related objects the template renders."""
