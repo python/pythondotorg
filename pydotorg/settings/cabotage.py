@@ -8,6 +8,8 @@ from pydotorg.settings.base import *
 
 DEBUG = TEMPLATE_DEBUG = False
 
+LOGGING["handlers"]["console"]["formatter"] = "json"
+
 DATABASE_CONN_MAX_AGE = 600
 DATABASES["default"]["CONN_MAX_AGE"] = DATABASE_CONN_MAX_AGE
 
