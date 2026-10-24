@@ -36,7 +36,7 @@ dependencies = [
     "django-translation-aliases==0.1.0",
     "django-waffle==5.0.0",
     "django-widget-tweaks==1.5.1",
-    "djangorestframework==3.18.1",
+    "djangorestframework==3.18.2",
     "docutils==0.22.4",
     "elasticsearch>=7,<8",
     "feedparser==6.0.14",
