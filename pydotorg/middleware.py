@@ -16,7 +16,7 @@ class AdminNoCaching:
         response = self.get_response(request)
         if any(
             request.path_info == root or request.path_info.startswith(root + "/")
-            for root in ("/admin", "/sponsors/manage", "/sponsors/documents")
+            for root in ("/admin", "/sponsors/manage", "/sponsors/documents", "/sponsors/assets")
         ):
             add_never_cache_headers(response)
         return response

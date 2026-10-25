@@ -54,6 +54,7 @@ class ManagementCacheTests(SimpleTestCase):
             "/sponsors/manage/sponsorships/export/",
             "/sponsors/manage/sponsorships/1/export-assets/",
             "/sponsors/documents/sponsors/contracts/signed/example.pdf/",
+            "/sponsors/assets/sponsors-app-assets/example.pdf/",
         ):
             with self.subTest(path=path):
                 response = StreamingHttpResponse(iter([b"private"]), headers={"Cache-Control": "public, max-age=3600"})
