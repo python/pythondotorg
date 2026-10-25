@@ -359,7 +359,7 @@
                 {% if contract.status == 'awaiting signature' %}
                 <a href="{% url 'manage_contract_send' sponsorship.pk %}" class="btn btn-sm btn-primary">Send</a>
                 {% endif %}
-                {% if 'executed' in contract.next_status %}
+                {% if 'executed' in contract.next_status and sponsorship.status == 'approved' %}
                 <a href="{% url 'manage_contract_execute' sponsorship.pk %}" class="btn btn-sm btn-secondary">Upload Signed</a>
                 {% endif %}
                 {% if 'nullified' in contract.next_status %}

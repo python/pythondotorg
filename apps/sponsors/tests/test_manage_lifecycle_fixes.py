@@ -132,6 +132,21 @@ class InvalidStateActionTests(SponsorshipReviewTestBase):
             response = self.client.get(reverse(name, args=[self.sponsorship.pk]))
             self.assertEqual(response.status_code, 302)
 
+    def test_execute_refuses_unapproved_sponsorship_with_sendable_contract(self):
+        self.assertEqual(self.sponsorship.status, Sponsorship.APPLIED)
+        contract = Contract.new(self.sponsorship)
+        Contract.objects.filter(pk=contract.pk).update(status=Contract.AWAITING_SIGNATURE)
+        url = reverse("manage_contract_execute", args=[self.sponsorship.pk])
+        detail = self.client.get(reverse("manage_sponsorship_detail", args=[self.sponsorship.pk]))
+        self.assertNotContains(detail, url)
+        self.assertEqual(self.client.get(url).status_code, 302)
+        upload = SimpleUploadedFile("signed.pdf", b"%PDF-1.4\n%%EOF", content_type="application/pdf")
+        self.assertEqual(self.client.post(url, {"signed_document": upload}).status_code, 302)
+        self.sponsorship.refresh_from_db()
+        contract.refresh_from_db()
+        self.assertEqual(self.sponsorship.status, Sponsorship.APPLIED)
+        self.assertEqual(contract.status, Contract.AWAITING_SIGNATURE)
+
     def test_reject_message_says_no_email_sent_yet(self):
         response = self.client.post(
             reverse("manage_sponsorship_reject", args=[self.sponsorship.pk]), {"action": "reject_notify"}, follow=True

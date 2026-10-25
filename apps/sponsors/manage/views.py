@@ -1005,7 +1005,18 @@ def _regenerate_blocker(sponsorship, contract):
 
 
 def _executable_contract_or_redirect(request, sponsorship):
-    """Return ``(contract, None)`` when the contract can be executed, else ``(None, redirect)`` with an error."""
+    """Return ``(contract, None)`` when the contract can be executed, else ``(None, redirect)`` with an error.
+
+    Execution finalizes the sponsorship, so it must already be approved; an applied sponsorship
+    goes through approve-signed instead.
+    """
+    if sponsorship.status != Sponsorship.APPROVED:
+        messages.error(
+            request,
+            f"Can't execute the contract of {with_article(sponsorship.get_status_display())} sponsorship. "
+            "Approve it first, or use Approve with Signed Contract.",
+        )
+        return None, redirect(reverse("manage_sponsorship_detail", args=[sponsorship.pk]))
     try:
         contract = sponsorship.contract
     except Contract.DoesNotExist:
