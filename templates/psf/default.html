@@ -3,6 +3,7 @@
 {% extends "base.html" %}
 {% load boxes %}
 {% load banners %}
+{% load pages %}
 
 {# TODO: Try to deduplicate this and templates/pages/default.html. #}
 {% block page_title %}{{ page.title }} | Python Software Foundation{% endblock %}
@@ -52,7 +53,7 @@
             <h1 class="page-title">{{ page.title }}</h1>
         </header>
 
-        {{ page.content }}
+        {{ page.content|resolution_anchors }}
 
     </article>
 {% endblock content %}

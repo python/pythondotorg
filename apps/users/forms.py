@@ -19,14 +19,7 @@ class UserProfileForm(ModelForm):
             "last_name",
             "email",
             "bio",
-            "search_visibility",
-            "email_privacy",
-            "public_profile",
         ]
-        widgets = {
-            "search_visibility": forms.RadioSelect,
-            "email_privacy": forms.RadioSelect,
-        }
 
     def clean_username(self):
         """Validate that the username is unique (case-insensitive)."""

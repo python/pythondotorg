@@ -57,6 +57,8 @@ web_1       | Quit the server with CONTROL-C.
 
 You can view these results in your local web browser at: <http://localhost:8000>
 
+Emails sent by the site (account verification, nomination confirmations, etc.) are caught by [Mailpit](https://mailpit.axllent.org/) and can be read at <http://localhost:8025>.
+
 To reset your local environment, run:
 
 ```

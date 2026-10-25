@@ -5,7 +5,7 @@
 {% block crumbs %}
 <li><a href="{% url 'agreements:program_list' %}">Programs</a><span class="prompt">&gt;&gt;&gt;</span></li>
 {% if nav == "staff" %}
-  <li><a href="{% url 'agreements:staff_orders' %}">Orders</a><span class="prompt">&gt;&gt;&gt;</span></li>
+  <li><a href="{% url 'agreements:staff_orders' %}">All orders</a><span class="prompt">&gt;&gt;&gt;</span></li>
 {% else %}
   <li><a href="{% url 'agreements:order_list' %}">Your orders</a><span class="prompt">&gt;&gt;&gt;</span></li>
 {% endif %}

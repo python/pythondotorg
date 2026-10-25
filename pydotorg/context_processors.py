@@ -51,7 +51,7 @@ def user_nav_bar_links(request):
             "account": {
                 "label": "Your Account",
                 "urls": [
-                    {"url": reverse("users:user_detail", args=[user.username]), "label": "View profile"},
+                    {"url": reverse("users:user_detail"), "label": "View profile"},
                     {"url": reverse("users:user_profile_edit"), "label": "Edit profile"},
                     {"url": reverse("account_change_password"), "label": "Change password"},
                 ],

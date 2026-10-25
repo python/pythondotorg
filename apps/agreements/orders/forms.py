@@ -196,7 +196,12 @@ class AgreementForm(forms.Form):
         cast("forms.MultipleChoiceField", self.fields["services"]).choices = [
             (service.key, service.name) for service in agreement.services
         ]
-        self.initial["services"] = line.services if line else []
+        # New packages start with every base service the tier offers; the builder keeps unedited
+        # services in step with tier changes.
+        self.services_follow_tier = line is None and not self.is_bound
+        self.initial["services"] = (
+            line.services if line else [service.key for service in agreement.services_at(self.initial["tier"])]
+        )
         if staff:
             self.fields["special_terms"] = forms.CharField(
                 required=False,

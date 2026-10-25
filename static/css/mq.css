@@ -814,6 +814,10 @@ html[xmlns] .slides { display: block; }
   .with-supernav .super-navigation {
     display: none; }
 
+  /* Box sanitization strips inline styles; OS detection reveals the matching panel. */
+  .super-navigation [class^="download-os-"] {
+    display: none; }
+
   /*
    * This is super cool. Uses two arrays to spit out a bunch of repetitive rulesets.
    * Associative array example borrowed from https://github.com/nex3/sass/issues/132#issuecomment-4335097

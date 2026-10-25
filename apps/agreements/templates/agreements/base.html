@@ -4,7 +4,7 @@
 {% block page_title %}{% block title %}Agreements{% endblock %} | Python Software Foundation{% endblock %}
 {% block og_title %}PSF Agreements{% endblock %}
 
-{% block body_attributes %}class="psf agreements"{% endblock %}
+{% block body_attributes %}class="psf agreements default-page"{% endblock %}
 
 {% block section-logo %}<a href="/psf-landing/"><img class="psf-logo" src="{{ STATIC_URL }}img/psf-logo.png" alt="Python Software Foundation"></a>{% endblock %}
 
@@ -27,17 +27,7 @@
 
 {% block left_sidebar %}
 <aside class="left-sidebar">
+  {% include "agreements/_nav.html" %}
   {% block sidebar %}{% endblock %}
-  {% if user|can_prepare_agreements %}
-    <div class="section-navigation sidebar-widget">
-      <ul class="section-nav menu" role="menu">
-        <li class="{% if nav == 'queue' %}current_item selected{% endif %}" role="menuitem"><a href="{% url 'agreements:queue' %}">Agreements</a></li>
-        <li class="{% if nav == 'custom' %}current_item selected{% endif %}" role="menuitem"><a href="{% url 'agreements:custom_create' %}">New contract</a></li>
-        <li class="{% if nav == 'terms' %}current_item selected{% endif %}" role="menuitem"><a href="{% url 'agreements:terms_list' %}">Terms</a></li>
-        <li role="menuitem"><a href="{% url 'agreements:program_list' %}">Programs</a></li>
-        <li role="menuitem"><a href="{% url 'agreements:staff_orders' %}">Orders</a></li>
-      </ul>
-    </div>
-  {% endif %}
 </aside>
 {% endblock left_sidebar %}

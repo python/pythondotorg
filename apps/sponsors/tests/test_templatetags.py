@@ -4,12 +4,13 @@ from unittest.mock import patch
 from django.test import TestCase
 from model_bakery import baker
 
-from apps.sponsors.models import SponsorshipBenefit, TieredBenefitConfiguration
+from apps.sponsors.models import Sponsor, SponsorshipBenefit, TieredBenefitConfiguration
 from apps.sponsors.templatetags.sponsors import (
     benefit_name_for_display,
     benefit_quantity_for_package,
     escape_markdown,
     full_sponsorship,
+    ideal_size,
     list_sponsors,
 )
 
@@ -90,6 +91,28 @@ class BenefitNameForDisplayTests(TestCase):
 
         self.assertEqual(name, "Modified name")
         mocked_name_for_display.assert_called_once_with(package=package)
+
+
+class IdealSizeFilterTests(TestCase):
+    def test_scales_width_to_fit_ideal_area(self):
+        class Image:
+            width = 400
+            height = 200
+
+        # int(400 * sqrt(20000 / 80000)) = int(400 * 0.5) = 200
+        self.assertEqual(ideal_size(Image(), 200), 200)
+
+    def test_no_file_associated_is_sized_as_square(self):
+        logo = Sponsor(web_logo="").web_logo
+
+        # int(250 * sqrt(25000 / 62500)) = 158, same as a square logo
+        self.assertEqual(ideal_size(logo, 250), 158)
+
+    def test_file_missing_from_storage_is_sized_as_square(self):
+        logo = Sponsor(web_logo="sponsor_web_logos/does-not-exist.png").web_logo
+
+        # int(300 * sqrt(30000 / 90000)) = 173, same as a square logo
+        self.assertEqual(ideal_size(logo, 300), 173)
 
 
 class EscapePandocMarkdownTests(TestCase):

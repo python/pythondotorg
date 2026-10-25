@@ -42,7 +42,7 @@
             </p>
         </form>
 
-        <form action="{% url 'users:user_delete' user.username %}"
+        <form action="{% url 'users:user_delete' %}"
               method="post"
               class="deletion-form"
               onsubmit="return confirm('Are you sure? There is no way to get back your account.');">

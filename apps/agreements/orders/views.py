@@ -24,6 +24,7 @@ from apps.agreements.documents import sha256
 from apps.agreements.forms.signing import SignForm
 from apps.agreements.models import Order, OrderLine, Program
 from apps.agreements.orders import documents
+from apps.agreements.orders.catalog import business_hours
 from apps.agreements.orders.forms import OrderBuilder
 from apps.agreements.orders.pricing import build_quote, money
 from apps.agreements.registry import get_kind
@@ -36,9 +37,11 @@ if TYPE_CHECKING:
     from django.db.models import QuerySet
     from django.http import HttpRequest, HttpResponse
 
+    from apps.agreements.orders.catalog import Agreement
     from apps.users.models import User
 
 KIND = "order"
+SEVERITIES = (("Critical", "P1"), ("High", "P2"), ("Medium", "P3"), ("Low", "P4"))
 
 
 def _orders() -> QuerySet[Order]:
@@ -86,6 +89,29 @@ def _program_or_404(request: HttpRequest, slug: str) -> Program:
     return get_object_or_404(Program.visible_to(request.user), slug=slug)
 
 
+def _response_ladders(agreements: list[Agreement]) -> list[list[dict[str, Any]]]:
+    """Scale every response target against the slowest one in the program, so agreements compare too."""
+    hours = [[[business_hours(target) for target in tier.response_targets] for tier in a.tiers] for a in agreements]
+    slowest = max((h for agreement in hours for tier in agreement for h in tier if h), default=0)
+    return [
+        [
+            {
+                "name": name,
+                "code": code,
+                "cells": [
+                    {
+                        "target": tier.response_targets[index],
+                        "bar": round(100 * h / slowest, 1) if slowest and (h := tier_hours[index]) else None,
+                    }
+                    for tier, tier_hours in zip(agreement.tiers, agreement_hours, strict=True)
+                ],
+            }
+            for index, (name, code) in enumerate(SEVERITIES)
+        ]
+        for agreement, agreement_hours in zip(agreements, hours, strict=True)
+    ]
+
+
 @never_cache
 @require_GET
 def program_list(request: HttpRequest) -> HttpResponse:
@@ -113,6 +139,7 @@ def program_detail(request: HttpRequest, slug: str) -> HttpResponse:
             "program": program,
             "catalog": program.catalog,
             "agreements": agreements,
+            "families": list(zip(agreements, _response_ladders(agreements), strict=True)),
             "under_review": any(agreement.terms.under_review for agreement in agreements),
             "orders": _order_rows(_own_orders(request.user).filter(program=program)[:5]),
             "nav": "programs",

@@ -122,8 +122,6 @@ class UserProfileFormTestCase(TestCase):
             {
                 "username": "stanne",
                 "email": "test42@example.com",
-                "search_visibility": 0,
-                "email_privacy": 0,
             },
             instance=User.objects.get(username="stanne"),
         )
@@ -138,8 +136,6 @@ class UserProfileFormTestCase(TestCase):
             {
                 "username": "Test42",
                 "email": "mikael@darktranquillity.com",
-                "search_visibility": 0,
-                "email_privacy": 0,
             },
             instance=User.objects.get(username="stanne"),
         )

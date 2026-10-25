@@ -22,14 +22,15 @@ services:
      test: ["CMD", "redis-cli","ping"]
      interval: 1s
 
-  maildev:
-    image: maildev/maildev:2.1.0
+  mailpit:
+    image: axllent/mailpit:v1.27
     ports:
-      - "127.0.0.1:1080:1080"
-      - "127.0.0.1:1025:1025"
+      - "8025:8025"
 
   web:
-    build: .
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
     image: pythondotorg:docker-compose
     command: uv run python manage.py runserver 0.0.0.0:8000
     volumes:
@@ -39,13 +40,16 @@ services:
     environment:
       DATABASE_URL: postgresql://pythondotorg:pythondotorg@postgres:5432/pythondotorg
       DJANGO_SETTINGS_MODULE: pydotorg.settings.local
-      EMAIL_HOST: maildev
-      EMAIL_PORT: "1025"
+      EMAIL_BACKEND: django.core.mail.backends.smtp.EmailBackend
+      EMAIL_HOST: mailpit
+      EMAIL_PORT: 1025
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
+      mailpit:
+        condition: service_started
 
   worker:
     image: pythondotorg:docker-compose
@@ -55,8 +59,13 @@ services:
     environment:
       DATABASE_URL: postgresql://pythondotorg:pythondotorg@postgres:5432/pythondotorg
       DJANGO_SETTINGS_MODULE: pydotorg.settings.local
+      EMAIL_BACKEND: django.core.mail.backends.smtp.EmailBackend
+      EMAIL_HOST: mailpit
+      EMAIL_PORT: 1025
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
+      mailpit:
+        condition: service_started

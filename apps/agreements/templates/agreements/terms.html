@@ -1,6 +1,16 @@
 {% extends "agreements/base.html" %}
 {% block title %}{{ terms.title }}{% endblock %}
-{% block crumbs %}<li>{{ terms.title }}</li>{% endblock %}
+{% block crumbs %}
+{% if token %}
+  <li><a href="{% url 'agreements:sign_link' token %}">Agreement to sign</a><span class="prompt">&gt;&gt;&gt;</span></li>
+{% elif can_edit %}
+  <li><a href="{% url 'agreements:queue' %}">Agreements</a><span class="prompt">&gt;&gt;&gt;</span></li>
+  <li><a href="{% url 'agreements:terms_list' %}">Terms</a><span class="prompt">&gt;&gt;&gt;</span></li>
+{% else %}
+  <li><a href="{% url 'agreements:program_list' %}">Programs</a><span class="prompt">&gt;&gt;&gt;</span></li>
+{% endif %}
+<li>{{ terms.title }}</li>
+{% endblock %}
 
 {% block sidebar %}
 <div class="sidebar-widget contents-widget">

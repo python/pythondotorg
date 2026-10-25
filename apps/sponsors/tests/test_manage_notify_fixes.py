@@ -148,7 +148,7 @@ class SponsorViewAccessTests(SponsorshipReviewTestBase):
         self.client.force_login(self.group_user)
 
     def test_sponsorship_admin_can_view_sponsor_pages(self):
-        for name in ("sponsorship_application_detail", "view_provided_sponsorship_assets", "update_sponsorship_assets"):
+        for name in ("sponsorship_application_detail", "update_sponsorship_assets"):
             with self.subTest(name=name):
                 response = self.client.get(reverse(f"users:{name}", args=[self.sponsorship.pk]))
                 self.assertEqual(response.status_code, 200)

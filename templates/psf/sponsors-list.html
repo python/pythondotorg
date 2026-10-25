@@ -4,6 +4,18 @@
 {% block page_title %}Python Software Foundation Sponsors | Python Software Foundation{% endblock %}
 {% block og_title %}Python Software Foundation Sponsors{% endblock %}
 
+{% block head %}
+{{ block.super }}
+{# EthicalAds renders the sponsor logos below; no other page has ad placements. #}
+{% if not request.disable_tracking %}
+<script async
+        src="https://media.ethicalads.io/media/client/v1.4.0/ethicalads.min.js"
+        integrity="sha256-U3hKDidudIaxBDEzwGJApJgPEf2mWk6cfMWghrAa6i0= sha384-UcmsCqcNRSLW/dV3Lo1oCi2/VaurXbib6p4HyUEOeIa/4OpsrnucrugAefzVZJfI sha512-q4t1L4xEjGV2R4hzqCa41P8jrgFUS8xTb8rdNv4FGvw7FpydVj/kkxBJHOiaoxHa8olCcx1Slk9K+3sNbsM4ug=="
+        crossorigin="anonymous"
+></script>
+{% endif %}
+{% endblock head %}
+
 {% block content %}
 
 <article class="text">

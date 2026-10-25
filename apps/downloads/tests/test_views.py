@@ -1,3 +1,4 @@
+import datetime as dt
 from unittest import mock
 
 from django.conf import settings
@@ -81,6 +82,20 @@ class DownloadViewsTests(BaseDownloadTests):
                 self.assertEqual(response.context["latest_in_series"], latest_release)
                 self.assertContains(response, "has been superseded by")
                 self.assertContains(response, latest_release.name)
+
+    def test_download_release_detail_draft_not_superseded(self):
+        """Test that an unpublished (draft) release does not show a superseded notice."""
+        draft = Release.objects.create(
+            version=Release.PYTHON3,
+            name="Python 3.10.20",
+            is_published=False,
+            release_date=dt.datetime.fromisoformat("2025-12-02T00:00Z"),
+        )
+        url = reverse("download:download_release_detail", kwargs={"release_slug": draft.slug})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn("latest_in_series", response.context)
+        self.assertNotContains(response, "has been superseded by")
 
     def test_download_os_list(self):
         url = reverse("download:download_os_list", kwargs={"slug": self.linux.slug})
