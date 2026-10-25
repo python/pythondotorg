@@ -2305,6 +2305,7 @@ class ComposerStep6Tests(SponsorManageTestBase):
         # Contract should be awaiting signature
         self.contract.refresh_from_db()
         self.assertEqual(self.contract.status, Contract.AWAITING_SIGNATURE)
+        self.assertEqual(self.contract.sent_on, timezone.now().date())
 
         # Session should be cleared
         self.assertNotIn("composer", self.client.session)

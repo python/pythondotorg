@@ -3522,6 +3522,8 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
         if email.send() != 1:
             msg = "The email backend did not send the contract."
             raise SMTPException(msg)
+        contract.sent_on = tz.now().date()
+        contract.save(update_fields=["sent_on"])
         return True
 
     def _handle_send_proposal_with_contract(self, request, data, contract, sponsor):  # noqa: C901, PLR0911 - validates recipients, renders, then finalizes and sends atomically
