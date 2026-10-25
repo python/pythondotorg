@@ -154,6 +154,15 @@ class DashboardViewTests(SponsorManageTestBase):
         response = self.client.get(reverse("manage_dashboard"))
         self.assertEqual(response.context["selected_year"], self.year)
 
+    def test_unsponsored_lists_sponsors_when_a_sponsorship_lost_its_sponsor(self):
+        sponsored = Sponsor.objects.create(name="Sponsored Co")
+        idle = Sponsor.objects.create(name="Idle Co")
+        Sponsorship.objects.create(sponsor=sponsored, submited_by=self.staff_user, year=self.year)
+        Sponsorship.objects.create(sponsor=None, submited_by=self.staff_user, year=self.year)
+        response = self.client.get(reverse("manage_dashboard") + f"?year={self.year}")
+        self.assertEqual(list(response.context["unsponsored"]), [idle])
+        self.assertEqual(response.context["unsponsored_count"], 1)
+
 
 class BenefitViewTests(SponsorManageTestBase):
     """Test benefit CRUD views."""

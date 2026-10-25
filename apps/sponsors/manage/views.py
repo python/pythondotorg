@@ -211,9 +211,12 @@ class ManageDashboardView(SponsorshipAdminRequiredMixin, TemplateView):
         )
         recently_expired = recently_expired_qs.select_related("sponsor", "package").order_by("-end_date")[:10]
 
-        # Sponsors without a sponsorship for this year
+        # Sponsors without a sponsorship for this year. NULL sponsor ids (deleted sponsors)
+        # must be dropped: SQL NOT IN over a subquery containing NULL matches no rows.
         unsponsored_qs = (
-            Sponsor.objects.exclude(pk__in=year_sponsorships.values_list("sponsor_id", flat=True))
+            Sponsor.objects.exclude(
+                pk__in=year_sponsorships.filter(sponsor__isnull=False).values_list("sponsor_id", flat=True)
+            )
             if selected_year
             else Sponsor.objects.none()
         )
