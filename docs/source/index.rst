@@ -44,7 +44,7 @@ Apps at a glance
    ``events``, ``jobs``, ``community``, ``companies``, ``work_groups``
 
 **Core**
-   ``downloads``, ``sponsors``, ``nominations``, ``users``, ``mailing``
+   ``downloads`` (:doc:`API documentation <downloads_api>`), ``sponsors``, ``nominations``, ``users``, ``mailing``
 
 **Base**
    ``cms`` — shared model mixins (``ContentManageable``, ``NameSlugModel``,
@@ -87,6 +87,7 @@ migrations. See :doc:`contributing` for PR expectations.
    contributing
    administration
    commands
+   downloads_api
 
 :Source code: https://github.com/python/pythondotorg
 :Issue tracker: https://github.com/python/pythondotorg/issues
