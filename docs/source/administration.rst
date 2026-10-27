@@ -119,6 +119,14 @@ short. Limits of 100 characters or fewer render as a single-line input; longer l
 textarea. Changes to a configuration reach existing sponsorships after running "Update related
 sponsorships" on the sponsorship benefit in the admin.
 
+Required text assets whose internal name contains ``job-listing`` or ``job-posting`` (case and
+``_``/``-`` insensitive, configurable with the ``SPONSOR_JOB_POSTINGS_ASSET_MARKERS`` environment
+variable) ask sponsors for one job per row (title, optional location, link) instead of a markdown
+textarea; the configured help text is replaced by row instructions. Sponsors can add as many rows
+as they need. Rows are stored in the same text asset, one job per line, as
+``Title | Location | URL`` (or ``Title | URL`` without a location), which PyCon-site's sponsor sync
+parses. Existing markdown values are pre-filled as rows where a link can be recovered.
+
 Agreements
 ----------
 
