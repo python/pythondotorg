@@ -6,6 +6,8 @@ from django.db.models import UniqueConstraint
 from django.urls import reverse
 from polymorphic.models import PolymorphicModel
 
+from apps.sponsors.job_postings import HELP_TEXT as JOB_POSTINGS_HELP_TEXT
+from apps.sponsors.job_postings import JobPostingsField, is_job_postings_asset
 from apps.sponsors.models.assets import FileAsset, ImgAsset, Response, ResponseAsset, TextAsset
 from apps.sponsors.models.enums import (
     AssetsRelatedTo,
@@ -711,11 +713,14 @@ class RequiredTextAsset(RequiredAssetMixin, BaseRequiredTextAsset, BenefitFeatur
         """Return a CharField configured for this required text asset.
 
         ``max_length`` is enforced and announced in the help text. Short limits get a
-        single-line input, other limits a small textarea.
+        single-line input, other limits a small textarea. Job listing assets get a
+        one-job-per-row field instead of a free-form textarea.
         """
         help_text = kwargs.pop("help_text", self.help_text)
         label = kwargs.pop("label", self.label)
         required = kwargs.pop("required", False)
+        if is_job_postings_asset(self.internal_name):
+            return JobPostingsField(required=required, help_text=JOB_POSTINGS_HELP_TEXT, label=label, **kwargs)
         max_length = self.max_length
         attrs = {"placeholder": self.placeholder} if self.placeholder else {}
         if max_length is None:
