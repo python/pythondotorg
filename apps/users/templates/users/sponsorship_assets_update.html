@@ -37,13 +37,14 @@
         {% csrf_token %}
 
         <h2>Required Assets</h2>
-        {{ form.as_p }}
+        {{ form.as_div }}
 
         <div class="form-actions">
           <input class="btn" type="submit" name="submit-btn" value="Save"/>
         </div>
 
       </form>
+      {{ form.media }}
     {% endif %}
   </div>
 {% endblock %}
