@@ -3915,3 +3915,17 @@ span.highlighted {
   font-size: 75%; }
 #update-sponsorship-assets .form-actions {
   margin: 0.5em 0; }
+#update-sponsorship-assets form > div:not(.form-actions) {
+  margin-bottom: 1.5em; }
+#update-sponsorship-assets .job-postings-table {
+  width: 100%;
+  border-collapse: collapse; }
+  #update-sponsorship-assets .job-postings-table th, #update-sponsorship-assets .job-postings-table td {
+    padding: 0.25em 0.5em 0.25em 0;
+    text-align: left;
+    vertical-align: middle; }
+  #update-sponsorship-assets .job-postings-table input {
+    width: 100%;
+    box-sizing: border-box; }
+  #update-sponsorship-assets .job-postings-table button {
+    margin-bottom: 0; }
