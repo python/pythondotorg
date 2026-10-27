@@ -86,16 +86,21 @@
         top: 0;
         z-index: 1;
     }
-    .sponsor-card {
+    /* Scoped under .sponsor-list to outrank the site-wide button[type=submit] rules in style.css. */
+    .sponsor-list .sponsor-card {
         display: flex;
         align-items: center;
         justify-content: space-between;
         width: 100%;
+        margin: 0;
         padding: 10px 16px;
         cursor: pointer;
         border: none;
         border-bottom: 1px solid #f0f0f0;
+        border-radius: 0;
         background: #fff;
+        box-shadow: none;
+        text-shadow: none;
         font-family: inherit;
         text-align: left;
         transition: background 0.1s;
@@ -108,14 +113,15 @@
         outline: 2px solid #3776ab;
         outline-offset: -2px;
     }
-    .sponsor-card:hover {
+    .sponsor-list .sponsor-card:hover,
+    .sponsor-list .sponsor-card:active {
         background: #f0f6fc;
     }
-    .sponsor-card.selected {
+    .sponsor-list .sponsor-card.selected {
         background: #e8f0fe;
         border-left: 3px solid #3776ab;
     }
-    .sponsor-form:last-child .sponsor-card {
+    .sponsor-list .sponsor-form:last-child .sponsor-card {
         border-bottom: none;
     }
     .sponsor-card .sponsor-name {
