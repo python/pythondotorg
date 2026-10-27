@@ -1,0 +1,22 @@
+<div class="job-postings" data-job-postings data-job-postings-id="{{ widget.attrs.id|default:'' }}">
+  <table class="job-postings-table">
+    <thead>
+      <tr>
+        <th scope="col"><span class="screen-reader-text">Job number</span></th>
+        <th scope="col">Job title</th>
+        <th scope="col">Location <small>(optional)</small></th>
+        <th scope="col">Link to job posting</th>
+        <th scope="col"><span class="screen-reader-text">Remove</span></th>
+      </tr>
+    </thead>
+    <tbody data-job-postings-rows>
+      {% for row in widget.value %}
+        {% include "sponsors/widgets/job_postings_row.html" with index=forloop.counter0 number=forloop.counter %}
+      {% endfor %}
+    </tbody>
+  </table>
+  <template data-job-postings-template>
+    {% include "sponsors/widgets/job_postings_row.html" with row=None index="" number="" %}
+  </template>
+  <button type="button" class="button" data-job-postings-add hidden>Add another job</button>
+</div>
