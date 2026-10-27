@@ -5,11 +5,13 @@ import os
 from celery import Celery
 from celery.signals import setup_logging
 from django.core import management
+from django_structlog.celery.steps import DjangoStructLogInitStep
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "pydotorg.settings.local")
 
 app = Celery("pydotorg")
 app.config_from_object("django.conf:settings", namespace="CELERY")
+app.steps["worker"].add(DjangoStructLogInitStep)
 
 
 @setup_logging.connect

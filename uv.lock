@@ -811,6 +811,11 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/04/96/c635a5b295246f9dd73098986694b2011968a502d5221261a1b0f439586b/django_structlog-10.1.0-py3-none-any.whl", hash = "sha256:450842bfb03887fc14469570769e515d22ea67d753848a25cdbd05405382c090", size = 18461, upload-time = "2026-05-30T23:15:48.118Z" },
 ]
 
+[package.optional-dependencies]
+celery = [
+    { name = "celery" },
+]
+
 [[package]]
 name = "django-stubs"
 version = "6.1.1"
@@ -1756,7 +1761,7 @@ dependencies = [
     { name = "django-pipeline" },
     { name = "django-polymorphic" },
     { name = "django-sitetree" },
-    { name = "django-structlog" },
+    { name = "django-structlog", extra = ["celery"] },
     { name = "django-tastypie" },
     { name = "django-translation-aliases" },
     { name = "django-waffle" },
@@ -1844,7 +1849,7 @@ requires-dist = [
     { name = "django-polymorphic", specifier = "==4.11.7" },
     { name = "django-sitetree", specifier = "==1.18.1" },
     { name = "django-storages", marker = "extra == 'prod'", specifier = "==1.14.6" },
-    { name = "django-structlog", specifier = "==10.1.0" },
+    { name = "django-structlog", extras = ["celery"], specifier = "==10.1.0" },
     { name = "django-tastypie", specifier = "==0.15.1" },
     { name = "django-translation-aliases", specifier = "==0.1.0" },
     { name = "django-waffle", specifier = "==5.0.0" },
