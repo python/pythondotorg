@@ -215,9 +215,15 @@ class BaseRequiredTextAsset(BaseRequiredAsset):
     )
     max_length = models.IntegerField(
         default=None,
-        help_text="Limit to length of the input, empty means unlimited",
+        help_text="Maximum number of characters sponsors may enter, empty means unlimited",
         null=True,
         blank=True,
+    )
+    placeholder = models.CharField(
+        max_length=256,
+        default="",
+        blank=True,
+        help_text="Example text shown in the empty input, e.g. 'Acme Corp is a…'",
     )
 
     class Meta(BaseRequiredAsset.Meta):
@@ -688,7 +694,8 @@ class RequiredImgAsset(RequiredAssetMixin, BaseRequiredImgAsset, BenefitFeature)
 class RequiredTextAsset(RequiredAssetMixin, BaseRequiredTextAsset, BenefitFeature):
     """Required text asset feature that sponsors must provide."""
 
-    TEXTAREA_MIN_LENGTH = 256
+    SINGLE_LINE_MAX_LENGTH = 100
+    LIMITED_TEXTAREA_ROWS = 4
 
     class Meta(BaseRequiredTextAsset.Meta, BenefitFeature.Meta):
         """Meta configuration for RequiredTextAsset."""
@@ -701,15 +708,27 @@ class RequiredTextAsset(RequiredAssetMixin, BaseRequiredTextAsset, BenefitFeatur
         return "Require text"
 
     def as_form_field(self, **kwargs):
-        """Return a CharField configured for this required text asset."""
+        """Return a CharField configured for this required text asset.
+
+        ``max_length`` is enforced and announced in the help text. Short limits get a
+        single-line input, other limits a small textarea.
+        """
         help_text = kwargs.pop("help_text", self.help_text)
         label = kwargs.pop("label", self.label)
         required = kwargs.pop("required", False)
         max_length = self.max_length
-        widget = forms.TextInput
-        if max_length is None or max_length > self.TEXTAREA_MIN_LENGTH:
-            widget = forms.Textarea
-        return forms.CharField(required=required, help_text=help_text, label=label, widget=widget, **kwargs)
+        attrs = {"placeholder": self.placeholder} if self.placeholder else {}
+        if max_length is None:
+            widget = forms.Textarea(attrs=attrs)
+        elif max_length <= self.SINGLE_LINE_MAX_LENGTH:
+            widget = forms.TextInput(attrs=attrs)
+        else:
+            widget = forms.Textarea(attrs={**attrs, "rows": self.LIMITED_TEXTAREA_ROWS})
+        if max_length is not None:
+            help_text = " ".join(filter(None, [help_text, f"Up to {max_length} characters."]))
+        return forms.CharField(
+            required=required, max_length=max_length, help_text=help_text, label=label, widget=widget, **kwargs
+        )
 
 
 class RequiredResponseAsset(RequiredAssetMixin, BaseRequiredResponseAsset, BenefitFeature):
