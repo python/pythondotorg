@@ -410,17 +410,19 @@ class SponsorshipApproveSignedForm(SponsorshipApproveForm):
 
 
 class SponsorshipEditForm(forms.ModelForm):
-    """Form for editing sponsorship details (package, fee, year)."""
+    """Form for editing sponsorship details (package, fee, year, period)."""
 
     class Meta:
         """Meta options."""
 
         model = Sponsorship
-        fields = ["package", "sponsorship_fee", "year"]
+        fields = ["package", "sponsorship_fee", "year", "start_date", "end_date"]
         widgets = {
             "package": forms.Select(attrs={"style": INPUT_STYLE}),
             "sponsorship_fee": forms.NumberInput(attrs={"style": INPUT_STYLE}),
             "year": forms.NumberInput(attrs={"style": "width:120px;" + INPUT_STYLE}),
+            "start_date": forms.DateInput(attrs={"type": "date", "style": INPUT_STYLE}, format="%Y-%m-%d"),
+            "end_date": forms.DateInput(attrs={"type": "date", "style": INPUT_STYLE}, format="%Y-%m-%d"),
         }
         help_texts = {
             "package": (
@@ -442,6 +444,15 @@ class SponsorshipEditForm(forms.ModelForm):
             self.fields["package"].queryset = SponsorshipPackage.objects.filter(year=filter_year).order_by(
                 "-sponsorship_amount"
             )
+
+    def clean(self):
+        """Require the end date to fall after the start date when both are set."""
+        cleaned = super().clean()
+        start = cleaned.get("start_date")
+        end = cleaned.get("end_date")
+        if start and end and end <= start:
+            self.add_error("end_date", "End date must be after start date.")
+        return cleaned
 
 
 def _sponsor_country_field():

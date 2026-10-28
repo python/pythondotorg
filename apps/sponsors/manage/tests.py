@@ -8,9 +8,10 @@ from tempfile import TemporaryDirectory
 from unittest import mock
 
 from allauth.account.models import EmailAddress
-from django.contrib.admin.models import LogEntry
+from django.contrib.admin.models import CHANGE, LogEntry
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group, Permission
+from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import PermissionDenied
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.http import HttpResponse
@@ -544,6 +545,34 @@ class SponsorshipDetailViewTests(SponsorshipReviewTestBase):
         response = self.client.get(reverse("manage_sponsorship_detail", args=[self.sponsorship.pk]))
         self.assertTrue(response.context["can_reject"])
 
+    def test_history_lists_sponsorship_and_contract_entries_newest_first(self):
+        contract = Contract.new(self.sponsorship)
+        other = Sponsorship.objects.create(sponsor=self.sponsor, submited_by=self.staff_user, year=self.year)
+        now = timezone.now()
+        for obj, message, minutes_ago in [
+            (self.sponsorship, "Sponsorship Approval", 30),
+            (contract, "Contract Sent", 20),
+            (self.sponsorship, "Notification 'Welcome' was sent", 10),
+            (other, "Another sponsorship", 5),
+        ]:
+            entry = LogEntry.objects.log_action(
+                user_id=self.staff_user.pk,
+                content_type_id=ContentType.objects.get_for_model(type(obj)).pk,
+                object_id=obj.pk,
+                object_repr=str(obj),
+                action_flag=CHANGE,
+                change_message=message,
+            )
+            LogEntry.objects.filter(pk=entry.pk).update(action_time=now - datetime.timedelta(minutes=minutes_ago))
+
+        response = self.client.get(reverse("manage_sponsorship_detail", args=[self.sponsorship.pk]))
+
+        history = [(e.change_message, e.is_contract) for e in response.context["history"]]
+        self.assertEqual(
+            history,
+            [("Notification 'Welcome' was sent", False), ("Contract Sent", True), ("Sponsorship Approval", False)],
+        )
+
 
 class SponsorshipApproveViewTests(SponsorshipReviewTestBase):
     """Test approval workflow."""
@@ -704,6 +733,25 @@ class SponsorshipBenefitManagementTests(SponsorshipReviewTestBase):
             SponsorBenefit.objects.filter(sponsorship=self.sponsorship, sponsorship_benefit=self.benefit).exists()
         )
 
+    def test_removed_package_benefits_are_listed_and_readding_keeps_package_source(self):
+        extra = SponsorshipBenefit.objects.create(name="Booth", program=self.program, year=self.year)
+        SponsorBenefit.new_copy(extra, sponsorship=self.sponsorship, added_by_user=True)
+        detail_url = reverse("manage_sponsorship_detail", args=[self.sponsorship.pk])
+
+        response = self.client.get(detail_url)
+
+        self.assertEqual(response.context["removed_benefits"], [self.benefit])
+        options = {o.pk: (o.included, o.removed_from_package) for o in response.context["benefit_options"]}
+        self.assertEqual(options, {self.benefit.pk: (False, True), extra.pk: (True, False)})
+
+        self.client.post(
+            reverse("manage_sponsorship_add_benefit", args=[self.sponsorship.pk]), {"benefit": self.benefit.pk}
+        )
+
+        readded = SponsorBenefit.objects.get(sponsorship=self.sponsorship, sponsorship_benefit=self.benefit)
+        self.assertFalse(readded.added_by_user)
+        self.assertEqual(self.client.get(detail_url).context["removed_benefits"], [])
+
 
 class SponsorshipEditViewTests(SponsorshipReviewTestBase):
     """Test sponsorship and sponsor edit views."""
@@ -719,6 +767,35 @@ class SponsorshipEditViewTests(SponsorshipReviewTestBase):
         form = response.context["form"]
         pkg_years = set(form.fields["package"].queryset.values_list("year", flat=True))
         self.assertEqual(pkg_years, {self.year})
+
+    def test_sponsorship_edit_sets_period_and_rejects_end_before_start(self):
+        url = reverse("manage_sponsorship_edit", args=[self.sponsorship.pk])
+        data = {"package": self.package.pk, "sponsorship_fee": 150000}
+
+        response = self.client.post(url, {**data, "start_date": "2030-06-01", "end_date": "2030-01-01"})
+
+        self.assertIn("end_date", response.context["form"].errors)
+        self.client.post(url, {**data, "start_date": "2030-01-01", "end_date": "2030-12-31"})
+        self.sponsorship.refresh_from_db()
+        self.assertEqual(
+            (self.sponsorship.start_date, self.sponsorship.end_date),
+            (datetime.date(2030, 1, 1), datetime.date(2030, 12, 31)),
+        )
+
+    def test_sponsorship_date_change_with_contract_asks_to_regenerate(self):
+        Contract.new(self.sponsorship)
+        url = reverse("manage_sponsorship_edit", args=[self.sponsorship.pk])
+        response = self.client.post(
+            url,
+            {
+                "package": self.package.pk,
+                "sponsorship_fee": 150000,
+                "start_date": "2030-01-01",
+                "end_date": "2030-12-31",
+            },
+            follow=True,
+        )
+        self.assertIn("Regenerate the contract", " ".join(str(m) for m in response.context["messages"]))
 
     def test_sponsor_edit_loads(self):
         response = self.client.get(

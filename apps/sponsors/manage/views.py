@@ -15,7 +15,8 @@ from smtplib import SMTPException
 
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.admin.models import ADDITION, CHANGE
+from django.contrib.admin.models import ADDITION, CHANGE, LogEntry
+from django.contrib.contenttypes.models import ContentType
 from django.core.mail import EmailMessage
 from django.db import transaction
 from django.db.models import Count, F, OuterRef, Prefetch, Q, Subquery, Sum
@@ -1132,9 +1133,24 @@ class SponsorshipDetailView(SponsorshipAdminRequiredMixin, DetailView):
         context["required_assets"] = required_assets
         context["assets_submitted"] = _flag_required_assets(required_assets)
         context["assets_total"] = len(required_assets)
-        # Benefit add form (only when editable)
+        # Package benefits this sponsorship no longer has (the admin's "Removed by User").
+        removed = sp.user_customizations["removed_by_user"] if sp.package_id else set()
+        context["removed_benefits"] = sorted(removed, key=lambda b: (b.program.order, b.order))
         if sp.open_for_editing:
-            context["add_benefit_form"] = AddBenefitToSponsorshipForm(sponsorship=sp)
+            context["edit_form"] = SponsorshipEditForm(instance=sp)
+            # The picker lists the whole year so staff can see why a benefit can't be added again.
+            included_ids = {b.sponsorship_benefit_id for b in context["benefits"]}
+            removed_ids = {b.pk for b in removed}
+            options = list(
+                SponsorshipBenefit.objects.filter(year=sp.year)
+                .select_related("program")
+                .order_by("program__order", "order")
+            )
+            for option in options:
+                option.included = option.pk in included_ids
+                option.removed_from_package = option.pk in removed_ids
+            context["benefit_options"] = options
+        context["history"] = _sponsorship_history(sp)
         # Contracts originally created for this sponsorship, later detached.
         context["historical_contracts"] = sp.contract_history.filter(status=Contract.OUTDATED).order_by("-last_update")
         # Financial breakdown by program
@@ -1182,6 +1198,34 @@ def _flag_required_assets(required_assets):
             elif (asset.due_date - today).days <= ASSET_DUE_SOON_DAYS:
                 asset.due_state = "soon"
     return submitted
+
+
+SPONSORSHIP_HISTORY_LIMIT = 100
+
+
+def _sponsorship_history(sponsorship):
+    """Return admin log entries for the sponsorship and its contracts, newest first.
+
+    This is the same record the Django admin "History" page shows: status changes, edits,
+    notifications sent from the admin, and contract events.
+    """
+    contract_ids = Contract.objects.filter(
+        Q(sponsorship=sponsorship) | Q(original_sponsorship=sponsorship)
+    ).values_list("pk", flat=True)
+    sponsorship_type = ContentType.objects.get_for_model(Sponsorship)
+    contract_type = ContentType.objects.get_for_model(Contract)
+    entries = (
+        LogEntry.objects.filter(
+            Q(content_type=sponsorship_type, object_id=str(sponsorship.pk))
+            | Q(content_type=contract_type, object_id__in=[str(pk) for pk in contract_ids])
+        )
+        .select_related("user")
+        .order_by("-action_time")[:SPONSORSHIP_HISTORY_LIMIT]
+    )
+    history = list(entries)
+    for entry in history:
+        entry.is_contract = entry.content_type_id == contract_type.pk
+    return history
 
 
 class SponsorshipApproveView(SponsorshipAdminRequiredMixin, UpdateView):
@@ -1607,14 +1651,17 @@ class SponsorshipEditView(SponsorshipAdminRequiredMixin, UpdateView):
             add_log_entry(self.request, sp, CHANGE, f"Changed {labels} in sponsor management")
         self.object = sp
         messages.success(self.request, "Sponsorship updated.")
+        has_contract = Contract.objects.filter(sponsorship=sp).exists()
         if package_changed:
             old_name = previous_package.name if previous_package else "no package"
             messages.warning(
                 self.request,
                 f"Package changed from {old_name} to {sp.level_name}, but the benefits were not changed. "
                 "The sponsorship is now marked as a custom package; review its benefits"
-                + (" and regenerate the contract." if Contract.objects.filter(sponsorship=sp).exists() else "."),
+                + (" and regenerate the contract." if has_contract else "."),
             )
+        if has_contract and {"start_date", "end_date"} & set(changed):
+            messages.warning(self.request, "Dates changed. Regenerate the contract so it shows the new dates.")
         return redirect(reverse("manage_sponsorship_detail", args=[sp.pk]))
 
 
@@ -1691,7 +1738,8 @@ class SponsorshipAddBenefitView(SponsorshipAdminRequiredMixin, View):
         form = AddBenefitToSponsorshipForm(request.POST, sponsorship=sp)
         if form.is_valid():
             benefit = form.cleaned_data["benefit"]
-            SponsorBenefit.new_copy(benefit, sponsorship=sp, added_by_user=True)
+            in_package = sp.package_id is not None and sp.package.benefits.filter(pk=benefit.pk).exists()
+            SponsorBenefit.new_copy(benefit, sponsorship=sp, added_by_user=not in_package)
             add_log_entry(request, sp, CHANGE, f'Added benefit "{benefit.name}"')
             messages.success(request, f'Added "{benefit.name}" to sponsorship.')
         else:
