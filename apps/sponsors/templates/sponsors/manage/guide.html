@@ -41,7 +41,7 @@ Access requires an active account in the <strong>Sponsorship Admin</strong> grou
 </p>
 
 <p style="font-size:13px;line-height:1.8;color:#444;">
-The navigation bar at the top gives you tabs for Dashboard, Sponsorships, Composer, Benefits, Packages, and Notifications. The "More" dropdown has Finances, Sponsors, Legal Clauses, Assets, Clone Year, and this guide.
+The navigation bar at the top gives you tabs for Dashboard, Sponsorships, Composer, Benefits, Packages, and Notifications. The "More" dropdown has Finances, Sponsors, Programs, Legal Clauses, Assets, Clone Year, Active Year, and this guide.
 </p>
 </div>
 
@@ -54,7 +54,7 @@ The <a href="{% url 'manage_dashboard' %}" style="color:#3776ab;">Dashboard</a> 
 </p>
 
 <p style="font-size:13px;line-height:1.8;color:#444;">
-Year pills across the top let you switch between years. The yellow dot marks the <strong>Active Year</strong>, which is the year used as the default throughout the UI (the Composer pulls benefits and packages from it, new sponsorships default to it, etc.). Change the active year from the Dashboard using the "Set Active Year" button, or go to <a href="{% url 'manage_current_year' %}" style="color:#3776ab;">/sponsors/manage/current-year/</a> directly.
+Year pills across the top let you switch between years. The yellow dot marks the <strong>Active Year</strong>, which is the year used as the default throughout the UI (the Composer pulls benefits and packages from it, new sponsorships default to it, etc.). Change it under <strong>More &rarr; Active Year</strong> or with the Dashboard's "Set Active Year" button. It normally moves to the next year after PyCon US: from June 1, every sponsor management page shows a reminder until it's changed. Programs (PyCon US, Foundation, PyPI, ...) and the order benefits are grouped in are managed under <strong>More &rarr; <a href="{% url 'manage_programs' %}" style="color:#3776ab;">Programs</a></strong>.
 </p>
 
 <div class="manage-alert manage-alert-info">
@@ -100,7 +100,7 @@ Go to <a href="{% url 'manage_sponsorships' %}" style="color:#3776ab;">Sponsorsh
 </div>
 
 <div class="manage-alert manage-alert-info">
-The detail page also shows the sponsor's company info, contacts, benefits, contract status, and a notification history. Most actions branch off from this page.
+The detail page also shows the sponsor's company info, contacts, benefits, contract status, and a notification history. Most actions branch off from this page. The timeline at the top shows the applied, approved, rejected, and finalized dates. <strong>Edit</strong> on the Sponsorship card changes the package, fee, and start/end dates in place while the sponsorship is unlocked. The Benefits section lists any benefits removed from the standard package, with an <strong>Add back</strong> button, and the add-benefit search shows every benefit for the year, marking those already on the sponsorship. <strong>History</strong> at the bottom is the same record as the Django admin's History page: status changes, edits, notifications sent from the admin, and contract events.
 </div>
 </div>
 
@@ -119,7 +119,7 @@ Here's what each step does:
 <div class="manage-fieldset" style="background:#f7f8fa;">
 <legend>Step 1: Pick a Sponsor</legend>
 <p style="font-size:13px;line-height:1.8;color:#444;">
-Search for an existing sponsor by name (live search, shows top 50 results) or create a new one inline. If you landed here from a sponsor's detail page, the sponsor is pre-selected and you skip straight to step 2.
+Search for an existing sponsor by name (the list filters as you type and shows every sponsor, most recently sponsored first) or create a new one inline. If you landed here from a sponsor's detail page, the sponsor is pre-selected and you skip straight to step 2. A sponsor can only have one applied or approved sponsorship at a time: those sponsors show an "Applied in progress" or "Approved in progress" badge, and picking one stops you here with a link to the existing sponsorship.
 </p>
 </div>
 
@@ -206,7 +206,7 @@ Contract content (sponsor info, benefits list, legal clauses) is editable in ste
 </p>
 
 <p style="font-size:13px;line-height:1.8;color:#444;">
-When creating or editing a benefit, you set its name, description, internal value, program, year, packages, legal clauses, conflicting benefits, and whether it's package-only. After saving, you can add <strong>feature configurations</strong> that control how the benefit behaves:
+When creating or editing a benefit, you set its name, description, internal value, program, year, packages, and flags such as package-only and standalone; each field shows the same help text as the Django admin. Legal clauses and conflicting benefits live in the collapsed <strong>Contract &amp; Application Rules</strong> section at the bottom, which opens by itself when the benefit has any. In the composer, the <strong>?</strong> next to a benefit shows its description: hover or tab to it, or click it to keep it open. After saving, you can add <strong>feature configurations</strong> that control how the benefit behaves:
 </p>
 
 <ul style="font-size:13px;line-height:2;color:#444;padding-left:20px;">
@@ -223,6 +223,10 @@ Asset internal names must be unique per sponsor or sponsorship across all asset 
 
 <p style="font-size:13px;line-height:1.8;color:#444;">
 <a href="{% url 'manage_packages' %}" style="color:#3776ab;">Packages</a> are the sponsorship tiers (Visionary, Sustainability, Maintaining, etc.). Each package has a name, year, fee amount, and a set of included benefits. Create and edit packages from the Packages tab.
+</p>
+
+<p style="font-size:13px;line-height:1.8;color:#444;">
+<a href="{% url 'manage_programs' %}" style="color:#3776ab;">Programs</a> (under More) group benefits: PyCon US 2027, Foundation, PyPI, and so on. Create and rename them there, and use the arrows to set the order benefit groups appear in. Programs whose name includes an earlier year than the Active Year are tucked into a collapsed "Past-year programs" section; a program can only be deleted once no benefit uses it.
 </p>
 
 <p style="font-size:13px;line-height:1.8;color:#444;">
@@ -247,7 +251,7 @@ Send emails to sponsor contacts from two places: the sponsorship detail page ("N
 </p>
 
 <p style="font-size:13px;line-height:1.8;color:#444;">
-The notification form lets you write a subject and body, pick which contact roles receive it (Primary, Administrative, Accounting, Manager), and preview the rendered email before sending.
+The notification form lets you write a subject and body, pick which contact roles receive it (Primary, Administrative, Accounting, Manager), and preview the rendered email before sending. On a single sponsorship, each role lists the contacts it covers, and the line under the roles shows exactly who will receive the email. Someone holding several roles is emailed once.
 </p>
 
 <p style="font-size:13px;line-height:1.8;color:#444;">
@@ -263,7 +267,7 @@ The notification form lets you write a subject and body, pick which contact role
 </ul>
 
 <p style="font-size:13px;line-height:1.8;color:#444;">
-<strong>Reusable templates:</strong> Go to <a href="{% url 'manage_notification_templates' %}" style="color:#3776ab;">Notifications</a> in the nav to create, edit, and delete saved templates. These show up as quick-fill options in the notification form so you don't have to rewrite common emails. The <a href="{% url 'manage_notification_history' %}" style="color:#3776ab;">History</a> tab shows every notification sent, who it went to, and when.
+<strong>Reusable templates:</strong> Go to <a href="{% url 'manage_notification_templates' %}" style="color:#3776ab;">Notifications</a> in the nav to create, edit, duplicate, and delete saved templates. Give each template a <strong>Year</strong> (leave it blank for one you reuse every year) instead of putting the year in its name. The list shows this year's, last year's and evergreen templates, newest first; pick "All years" or a specific year to see older ones. Its <strong>Last Sent</strong> column shows when each template last went out and to how many sponsorships. <strong>Duplicate</strong> copies a template and opens the copy for editing. Templates show up as quick-fill options in the notification form, current year first. The <a href="{% url 'manage_notification_history' %}" style="color:#3776ab;">History</a> tab shows every notification sent, who it went to, and when.
 </p>
 </div>
 
@@ -334,6 +338,10 @@ The <a href="{% url 'manage_assets' %}" style="color:#3776ab;">Asset Browser</a>
 <p style="font-size:13px;line-height:1.8;color:#444;">
 Filter by asset type (text, image, file, response), related object (sponsor vs sponsorship), submission status, or search by internal name. Assets from expired or rejected sponsorships are automatically hidden. Companies with missing assets show a <strong>"Send Reminder"</strong> button that links to the notification page for that sponsorship.
 </p>
+
+<p style="font-size:13px;line-height:1.8;color:#444;">
+On a sponsorship's detail page, the <strong>Required Assets</strong> section (collapsed by default) shows what the sponsor submitted: text and answers inline, images as a thumbnail with <strong>View</strong> and <strong>Download</strong> links. Pending assets past their due date are marked <strong>Overdue</strong> in red; ones due within 14 days are marked <strong>Due soon</strong>. Use <strong>Upload</strong> / <strong>Replace</strong> on a row, or <strong>Upload Assets</strong> in the section header, to submit assets on the sponsor's behalf. They are saved exactly as if the sponsor had submitted them, and the change is recorded in the sponsorship's admin history.
+</p>
 </div>
 
 <!-- Finances -->
@@ -345,14 +353,17 @@ The <a href="{% url 'manage_finances' %}" style="color:#3776ab;">Finances</a> (u
 </p>
 
 <ul style="font-size:13px;line-height:2;color:#444;padding-left:20px;">
+<li><strong>Booked so far</strong> &mdash; approved and finalized revenue for the current sponsorship year compared with what last year's (eventually finalized) sponsorships had booked by the same date. Applications not yet approved are listed separately, with the total if they were all approved</li>
+<li><strong>Cumulative revenue vs prior years</strong> &mdash; each year's bookings added up month by month, lined up on the same point in the sales cycle, so you can see whether this year is ahead or behind. A dashed line shows the current year including unapproved applications</li>
 <li><strong>Summary cards</strong> &mdash; total revenue, finalized revenue, approved (pending), sponsorship count with average deal size</li>
-<li><strong>Revenue by package</strong> &mdash; horizontal bar chart showing income by package tier with deal counts</li>
-<li><strong>Year-over-year</strong> &mdash; compare total revenue across all years at a glance</li>
+<li><strong>Revenue trend</strong> &mdash; revenue per year; the current year also shows approved and applied revenue, earlier years count finalized revenue only</li>
+<li><strong>Revenue by package</strong> &mdash; income by package tier for the selected year, and a stacked bar per year showing the package mix</li>
+<li><strong>Revenue allocated by program</strong> &mdash; an <em>estimate</em> that splits each fee across programs in proportion to its benefits' internal values; the real split depends on how the invoice is allocated</li>
 <li><strong>Sponsorship detail table</strong> &mdash; every sponsorship for the selected year with fee, internal value, margin percentage, and period</li>
 </ul>
 
 <p style="font-size:13px;line-height:1.8;color:#444;">
-Only approved and finalized sponsorships are counted toward revenue. Applied and rejected sponsorships are excluded.
+Rejected sponsorships are never counted. For past years only finalized sponsorships count, since anything not finalized by now won't be.
 </p>
 </div>
 
@@ -366,7 +377,7 @@ On the <a href="{% url 'manage_sponsorships' %}" style="color:#3776ab;">Sponsors
 
 <ul style="font-size:13px;line-height:2;color:#444;padding-left:20px;">
 <li><strong>Export CSV</strong> &mdash; download selected sponsorships as a CSV file. You can also export the full filtered list (without selecting rows) using the "Export CSV" button in the filter bar</li>
-<li><strong>Export Assets (ZIP)</strong> &mdash; download all submitted assets for selected sponsorships in a single ZIP file. You can also export assets for a single sponsorship from its detail page</li>
+<li><strong>Export Assets (ZIP)</strong> &mdash; download all submitted assets for selected sponsorships in a single ZIP file. A single sponsorship's detail page has the same as "Download all (ZIP)", and each file asset can be downloaded on its own</li>
 <li><strong>Bulk Notify</strong> &mdash; send a notification to all contacts of the selected sponsorships at once. Same form as single notify, but it fans out to every selected sponsor</li>
 </ul>
 </div>
