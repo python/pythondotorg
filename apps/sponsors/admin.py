@@ -1153,6 +1153,20 @@ class ContractModelAdmin(admin.ModelAdmin):
 class SponsorEmailNotificationTemplateAdmin(BaseEmailTemplateAdmin):
     """Admin for managing sponsor email notification templates."""
 
+    list_display = ["internal_name", "year", "subject"]
+    list_filter = ["year"]
+    fieldsets = (
+        (None, {"fields": ("internal_name", "year")}),
+        ("Email template", {"fields": ("subject", "content")}),
+        (
+            "Timestamps",
+            {
+                "classes": ("collapse",),
+                "fields": ("created_at", "updated_at"),
+            },
+        ),
+    )
+
     def get_form(self, request, obj=None, **kwargs):
         """Add sponsor-specific help text to the content field."""
         help_texts = {

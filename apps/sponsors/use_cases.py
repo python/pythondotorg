@@ -256,6 +256,7 @@ class SendSponsorshipNotificationUseCase(BaseUseCaseWithNotifications):
                     sent_by = request.user
                 SponsorshipNotificationLog.objects.create(
                     sponsorship=sponsorship,
+                    template=notification if notification.pk else None,
                     subject=getattr(email, "subject", ""),
                     content=getattr(email, "body", ""),
                     recipients=", ".join(getattr(email, "to", [])),

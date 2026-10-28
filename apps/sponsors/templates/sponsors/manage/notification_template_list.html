@@ -18,30 +18,58 @@
 </div>
 
 <div class="manage-section">
-    <div class="manage-section-header">
+    <div class="manage-section-header" style="flex-wrap:wrap;gap:12px;">
         <h2>Notification Templates <span class="badge">{{ templates|length }}</span></h2>
-        <a href="{% url 'manage_notification_template_create' %}" class="btn btn-primary">New Template</a>
+        <form method="get" style="display:flex;gap:8px;align-items:center;">
+            <select name="year" aria-label="Year" onchange="this.form.submit()">
+                <option value="" {% if not filter_year %}selected{% endif %}>Recent years</option>
+                <option value="all" {% if filter_year == "all" %}selected{% endif %}>All years</option>
+                {% for year in year_choices %}
+                <option value="{{ year }}" {% if filter_year == year|stringformat:"s" %}selected{% endif %}>{{ year }}</option>
+                {% endfor %}
+            </select>
+            <a href="{% url 'manage_notification_template_create' %}" class="btn btn-primary">New Template</a>
+        </form>
     </div>
+    {% if hidden_count %}
+    <p style="font-size:13px;color:#5f6368;margin:0 0 12px;">Showing this year, last year and evergreen templates. {{ hidden_count }} older template{{ hidden_count|pluralize }} hidden &mdash; <a href="?year=all" style="color:#3776ab;">show all years</a>.</p>
+    {% endif %}
 
     {% if templates %}
     <table class="manage-table">
         <thead>
             <tr>
                 <th>Name</th>
+                <th style="width:80px;">Year</th>
                 <th>Subject</th>
+                <th>Last Sent</th>
                 <th>Updated</th>
-                <th style="width:120px;">Actions</th>
+                <th style="width:170px;">Actions</th>
             </tr>
         </thead>
         <tbody>
             {% for tpl in templates %}
             <tr>
                 <td><a href="{% url 'manage_notification_template_edit' tpl.pk %}" style="font-weight:500;color:#1a1a2e;text-decoration:none;">{{ tpl.internal_name }}</a></td>
+                <td style="color:#5f6368;">{% if tpl.year %}{{ tpl.year }}{% else %}Evergreen{% endif %}</td>
                 <td style="color:#555;">{{ tpl.subject|truncatewords:10 }}</td>
-                <td style="font-size:12px;color:#999;">{{ tpl.updated_at|date:"M j, Y H:i" }}</td>
+                <td style="font-size:12px;color:#5f6368;">
+                    {% if tpl.last_sent %}
+                    {{ tpl.last_sent|date:"M j, Y" }}{% if tpl.last_sent_count %} ({{ tpl.last_sent_count }} sponsorship{{ tpl.last_sent_count|pluralize }}){% endif %}
+                    {% else %}
+                    Never
+                    {% endif %}
+                </td>
+                <td style="font-size:12px;color:#5f6368;">{{ tpl.updated_at|date:"M j, Y H:i" }}</td>
                 <td>
-                    <a href="{% url 'manage_notification_template_edit' tpl.pk %}" class="btn btn-xs btn-secondary">Edit</a>
-                    <a href="{% url 'manage_notification_template_delete' tpl.pk %}" class="btn btn-xs btn-danger">Delete</a>
+                    <div style="display:flex;gap:6px;align-items:center;">
+                        <a href="{% url 'manage_notification_template_edit' tpl.pk %}" class="btn btn-xs btn-secondary">Edit</a>
+                        <form method="post" action="{% url 'manage_notification_template_duplicate' tpl.pk %}" style="margin:0;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-xs btn-secondary" style="margin:0;">Duplicate</button>
+                        </form>
+                        <a href="{% url 'manage_notification_template_delete' tpl.pk %}" class="btn btn-xs btn-danger">Delete</a>
+                    </div>
                 </td>
             </tr>
             {% endfor %}
@@ -49,7 +77,7 @@
     </table>
     {% else %}
     <div class="empty-state">
-        <p>No notification templates yet.</p>
+        <p>No notification templates {% if filter_year %}for this year{% else %}yet{% endif %}.</p>
         <a href="{% url 'manage_notification_template_create' %}" class="btn btn-primary">Create your first template</a>
     </div>
     {% endif %}

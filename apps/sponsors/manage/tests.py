@@ -8,7 +8,7 @@ from tempfile import TemporaryDirectory
 from unittest import mock
 
 from allauth.account.models import EmailAddress
-from django.contrib.admin.models import CHANGE, LogEntry
+from django.contrib.admin.models import ADDITION, CHANGE, LogEntry
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
@@ -1187,6 +1187,39 @@ class NotificationTemplateListViewTests(SponsorManageTestBase):
         self.assertEqual(response.status_code, 302)
         self.assertIn("login", response.url)
 
+    def test_list_defaults_to_current_and_last_year_plus_evergreen(self):
+        evergreen = SponsorEmailNotificationTemplate.objects.create(
+            internal_name="Evergreen Tpl", subject="S", content="C"
+        )
+        old = SponsorEmailNotificationTemplate.objects.create(
+            internal_name="Two Years Ago", year=self.year - 2, subject="S", content="C"
+        )
+        last = SponsorEmailNotificationTemplate.objects.create(
+            internal_name="Last Year Tpl", year=self.year - 1, subject="S", content="C"
+        )
+        current = SponsorEmailNotificationTemplate.objects.create(
+            internal_name="Current Year Tpl", year=self.year, subject="S", content="C"
+        )
+        url = reverse("manage_notification_templates")
+
+        response = self.client.get(url)
+        self.assertEqual(list(response.context["templates"]), [current, last, evergreen])
+        self.assertEqual(response.context["hidden_count"], 1)
+        everything = self.client.get(url, {"year": "all"})
+        self.assertEqual(list(everything.context["templates"]), [current, last, old, evergreen])
+
+    def test_list_specific_year_filter(self):
+        old_year = SponsorEmailNotificationTemplate.objects.create(
+            internal_name="Old Year Tpl", year=self.year - 1, subject="S", content="C"
+        )
+        current = SponsorEmailNotificationTemplate.objects.create(
+            internal_name="Current Year Tpl", year=self.year, subject="S", content="C"
+        )
+        response = self.client.get(reverse("manage_notification_templates"), {"year": str(self.year - 1)})
+        templates = list(response.context["templates"])
+        self.assertIn(old_year, templates)
+        self.assertNotIn(current, templates)
+
 
 class NotificationTemplateCreateViewTests(SponsorManageTestBase):
     """Test notification template creation."""
@@ -1278,6 +1311,52 @@ class NotificationTemplateDeleteViewTests(SponsorManageTestBase):
         self.assertIn("login", response.url)
         # Template still exists
         self.assertTrue(SponsorEmailNotificationTemplate.objects.filter(pk=self.template.pk).exists())
+
+
+class NotificationTemplateDuplicateViewTests(SponsorManageTestBase):
+    """Test notification template duplication."""
+
+    def setUp(self):
+        super().setUp()
+        self.client.login(username="staff", password="pass")
+        self.template = SponsorEmailNotificationTemplate.objects.create(
+            internal_name="Original", year=2026, subject="Subject", content="Content"
+        )
+
+    def test_duplicate_creates_copy_and_redirects_to_its_edit_page(self):
+        response = self.client.post(reverse("manage_notification_template_duplicate", args=[self.template.pk]))
+        self.assertEqual(response.status_code, 302)
+        copy = SponsorEmailNotificationTemplate.objects.get(internal_name="Original (copy)")
+        self.assertEqual(copy.year, 2026)
+        self.assertEqual(copy.subject, "Subject")
+        self.assertEqual(copy.content, "Content")
+        self.assertEqual(response.url, reverse("manage_notification_template_edit", args=[copy.pk]))
+        # The original is untouched.
+        self.template.refresh_from_db()
+        self.assertEqual(self.template.internal_name, "Original")
+
+    def test_duplicate_logs_addition(self):
+        self.client.post(reverse("manage_notification_template_duplicate", args=[self.template.pk]))
+        copy = SponsorEmailNotificationTemplate.objects.get(internal_name="Original (copy)")
+        log_exists = LogEntry.objects.filter(
+            content_type=ContentType.objects.get_for_model(SponsorEmailNotificationTemplate),
+            object_id=copy.pk,
+            action_flag=ADDITION,
+        ).exists()
+        self.assertTrue(log_exists)
+
+    def test_duplicate_requires_auth(self):
+        self.client.logout()
+        response = self.client.post(reverse("manage_notification_template_duplicate", args=[self.template.pk]))
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("login", response.url)
+        self.assertFalse(SponsorEmailNotificationTemplate.objects.filter(internal_name="Original (copy)").exists())
+
+    def test_duplicate_denied_for_non_group_user(self):
+        self.client.login(username="anon", password="pass")
+        response = self.client.post(reverse("manage_notification_template_duplicate", args=[self.template.pk]))
+        self.assertEqual(response.status_code, 403)
+        self.assertFalse(SponsorEmailNotificationTemplate.objects.filter(internal_name="Original (copy)").exists())
 
 
 class SponsorshipExportViewTests(SponsorshipReviewTestBase):

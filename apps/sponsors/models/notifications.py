@@ -1,7 +1,12 @@
 """Email notification template models for sponsor communications."""
 
+import re
+
 from django.conf import settings
+from django.contrib.admin.models import CHANGE, LogEntry
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django.db.models import Count, Max
 from django.template import Context
 from django.utils import timezone
 
@@ -17,6 +22,28 @@ SPONSOR_TEMPLATE_HELP_TEXT = (
     "  <pre>{{ sponsorship_status }}</pre>"
 )
 
+_NAME_LEADING_YEAR_RE = re.compile(r"^\s*(\d{4})\b")
+# A leading number outside this range is part of the name, not a year.
+_PLAUSIBLE_YEARS = range(1901, 2100)
+
+
+def year_from_name(name):
+    """Return the leading 4-digit year parsed from a template name, or ``None``.
+
+    Only a year at the very start of the name counts (prod names look like "2026 Final
+    Sponsor Email"); years mentioned elsewhere in the name are intentionally ignored.
+    """
+    match = _NAME_LEADING_YEAR_RE.match(name or "")
+    if not match:
+        return None
+    year = int(match.group(1))
+    return year if year in _PLAUSIBLE_YEARS else None
+
+
+# Historical sends recorded only as a Django admin LogEntry (before SponsorshipNotificationLog
+# had a ``template`` FK) use this fixed message, written by notifications.SendSponsorNotificationLogger.
+_LOG_ENTRY_MESSAGE_RE = re.compile(r"^Notification '(?P<name>.+)' was sent to contacts: ")
+
 
 #################################
 # Sponsor Email Notifications
@@ -28,6 +55,13 @@ class SponsorEmailNotificationTemplate(BaseEmailTemplate):
 
         verbose_name = "Sponsor Email Notification Template"
         verbose_name_plural = "Sponsor Email Notification Templates"
+        ordering = ["-year", "internal_name"]
+
+    year = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        help_text="Leave blank for an evergreen template usable across years.",
+    )
 
     # Notifications go out as plain-text email, so values like "Code & Supply" must not be
     # HTML-escaped. The result is a plain str (not SafeString) so any HTML page that shows it,
@@ -76,6 +110,68 @@ class SponsorEmailNotificationTemplate(BaseEmailTemplate):
             context={"sponsorship": sponsorship},
         )
 
+    @classmethod
+    def get_last_sent_stats(cls):
+        """Return ``{template_id: {"last_sent": datetime, "sponsorship_count": int}}``.
+
+        Combines two sources of truth, keeping the most recent per template:
+
+        - ``SponsorshipNotificationLog`` rows with a ``template`` FK set — the reliable
+          source for sends made since that field was added.
+        - Admin ``LogEntry`` entries written by ``notifications.SendSponsorNotificationLogger``,
+          matched by the template's ``internal_name`` against their fixed message format. This
+          is the only record of sends made before the FK existed, so it is the fallback for
+          historical data. Both lookups are single aggregated queries, not one per template.
+          Renaming a template breaks the match for its pre-FK sends; that is an accepted
+          limitation of reading an audit trail that only recorded the name as free text.
+        """
+        stats = {}
+
+        fk_rows = (
+            cls.objects.filter(notification_logs__isnull=False)
+            .values("id")
+            .annotate(
+                last_sent=Max("notification_logs__sent_at"),
+                sponsorship_count=Count("notification_logs__sponsorship", distinct=True),
+            )
+        )
+        for row in fk_rows:
+            stats[row["id"]] = {"last_sent": row["last_sent"], "sponsorship_count": row["sponsorship_count"]}
+
+        ids_by_name = {}
+        for template_id, name in cls.objects.values_list("id", "internal_name"):
+            ids_by_name.setdefault(name, []).append(template_id)
+
+        sponsorship_ct = ContentType.objects.filter(app_label="sponsors", model="sponsorship").first()
+        if sponsorship_ct is None:
+            return stats
+
+        fallback = {}
+        log_rows = LogEntry.objects.filter(
+            content_type=sponsorship_ct,
+            action_flag=CHANGE,
+            change_message__startswith="Notification '",
+        ).values_list("change_message", "action_time", "object_id")
+        for message, action_time, object_id in log_rows:
+            match = _LOG_ENTRY_MESSAGE_RE.match(message)
+            if not match:
+                continue
+            name = match.group("name")
+            entry = fallback.setdefault(name, {"last_sent": action_time, "sponsorship_ids": set()})
+            entry["last_sent"] = max(entry["last_sent"], action_time)
+            entry["sponsorship_ids"].add(object_id)
+
+        for name, entry in fallback.items():
+            for template_id in ids_by_name.get(name, ()):
+                existing = stats.get(template_id)
+                if existing is None or entry["last_sent"] > existing["last_sent"]:
+                    stats[template_id] = {
+                        "last_sent": entry["last_sent"],
+                        "sponsorship_count": len(entry["sponsorship_ids"]),
+                    }
+
+        return stats
+
 
 class SponsorshipNotificationLog(models.Model):
     """Persisted record of every notification sent to a sponsorship."""
@@ -84,6 +180,14 @@ class SponsorshipNotificationLog(models.Model):
         "sponsors.Sponsorship",
         on_delete=models.CASCADE,
         related_name="notification_logs",
+    )
+    template = models.ForeignKey(
+        "sponsors.SponsorEmailNotificationTemplate",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="notification_logs",
+        help_text="The template this was sent from, if it was sent from a saved template.",
     )
     subject = models.CharField(max_length=500)
     content = models.TextField(blank=True)

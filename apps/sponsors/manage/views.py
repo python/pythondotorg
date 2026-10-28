@@ -2210,8 +2210,43 @@ class NotificationTemplateListView(SponsorshipAdminRequiredMixin, ListView):
     context_object_name = "templates"
 
     def get_queryset(self):
-        """Return templates ordered by most recently updated."""
-        return SponsorEmailNotificationTemplate.objects.order_by("-updated_at")
+        """Return templates newest year first (evergreen last).
+
+        By default only the current and previous sponsorship years (plus evergreen templates) are
+        listed; ``?year=all`` lists everything and ``?year=<n>`` a single year.
+        """
+        qs = SponsorEmailNotificationTemplate.objects.order_by(F("year").desc(nulls_last=True), "-updated_at")
+        self.filter_year = self.request.GET.get("year", "")
+        self.hidden_count = 0
+        if self.filter_year == "all":
+            return qs
+        if self.filter_year:
+            year = _int_or_none(self.filter_year)
+            return qs.filter(year=year) if year is not None else qs.none()
+        try:
+            oldest_shown = SponsorshipCurrentYear.get_year() - 1
+        except SponsorshipCurrentYear.DoesNotExist:
+            return qs
+        self.hidden_count = qs.filter(year__lt=oldest_shown).count()
+        return qs.filter(Q(year__gte=oldest_shown) | Q(year__isnull=True))
+
+    def get_context_data(self, **kwargs):
+        """Return context with the year filter, available years, and last-sent stats."""
+        context = super().get_context_data(**kwargs)
+        context["filter_year"] = self.filter_year
+        context["hidden_count"] = self.hidden_count
+        context["year_choices"] = list(
+            SponsorEmailNotificationTemplate.objects.exclude(year__isnull=True)
+            .values_list("year", flat=True)
+            .distinct()
+            .order_by("-year")
+        )
+        stats = SponsorEmailNotificationTemplate.get_last_sent_stats()
+        for tpl in context["templates"]:
+            tpl_stats = stats.get(tpl.pk, {})
+            tpl.last_sent = tpl_stats.get("last_sent")
+            tpl.last_sent_count = tpl_stats.get("sponsorship_count")
+        return context
 
 
 NOTIFICATION_TEMPLATE_VARS = [
@@ -2273,6 +2308,23 @@ class NotificationTemplateDeleteView(SponsorshipAdminRequiredMixin, DeleteView):
         """Return URL to template list after deletion."""
         messages.success(self.request, f'Template "{self.object.internal_name}" deleted.')
         return reverse("manage_notification_templates")
+
+
+class NotificationTemplateDuplicateView(SponsorshipAdminRequiredMixin, View):
+    """Duplicate a notification template and redirect to the copy's edit page."""
+
+    def post(self, request, pk):
+        """Create a copy of the template and redirect to it."""
+        template = get_object_or_404(SponsorEmailNotificationTemplate, pk=pk)
+        duplicate = SponsorEmailNotificationTemplate.objects.create(
+            internal_name=f"{template.internal_name} (copy)",
+            year=template.year,
+            subject=template.subject,
+            content=template.content,
+        )
+        add_log_entry(request, duplicate, ADDITION, f"Duplicated from '{template.internal_name}'")
+        messages.success(request, f'Created "{duplicate.internal_name}" as a copy of "{template.internal_name}".')
+        return redirect(reverse("manage_notification_template_edit", args=[duplicate.pk]))
 
 
 class NotificationHistoryView(SponsorshipAdminRequiredMixin, ListView):

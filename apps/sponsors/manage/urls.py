@@ -151,6 +151,11 @@ urlpatterns = [
         views.NotificationTemplateDeleteView.as_view(),
         name="manage_notification_template_delete",
     ),
+    path(
+        "notifications/<int:pk>/duplicate/",
+        views.NotificationTemplateDuplicateView.as_view(),
+        name="manage_notification_template_duplicate",
+    ),
     # Guide
     path("guide/", views.GuideView.as_view(), name="manage_guide"),
 ]

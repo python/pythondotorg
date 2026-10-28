@@ -3,6 +3,8 @@ from datetime import timedelta
 
 from django import forms
 from django.conf import settings
+from django.contrib.admin.models import CHANGE, LogEntry
+from django.contrib.contenttypes.models import ContentType
 from django.core.cache import cache
 from django.core.mail import EmailMessage
 from django.db import IntegrityError
@@ -28,9 +30,11 @@ from apps.sponsors.models import (
     Sponsor,
     SponsorBenefit,
     SponsorContact,
+    SponsorEmailNotificationTemplate,
     Sponsorship,
     SponsorshipBenefit,
     SponsorshipCurrentYear,
+    SponsorshipNotificationLog,
     SponsorshipPackage,
     TextAsset,
     TieredBenefit,
@@ -44,6 +48,7 @@ from apps.sponsors.models.benefits import (
     RequiredAssetMixin,
 )
 from apps.sponsors.models.enums import AssetsRelatedTo, LogoPlacementChoices, PublisherChoices
+from apps.sponsors.models.notifications import year_from_name
 
 
 class SponsorshipBenefitModelTests(TestCase):
@@ -925,6 +930,118 @@ class SponsorEmailNotificationTemplateTests(TestCase):
         SponsorContact.objects.all().delete()
         email = self.notification.get_email_message(self.sponsorship, to_primary=True, to_manager=True)
         self.assertIsNone(email)
+
+
+class YearFromNameTests(TestCase):
+    """Test the leading-year parser used to backfill notification template years."""
+
+    def test_leading_year_parsed(self):
+        self.assertEqual(year_from_name("2026 Final Sponsor Email"), 2026)
+
+    def test_year_elsewhere_in_name_is_ignored(self):
+        self.assertIsNone(year_from_name("PyCon US 2022 Sponsor email"))
+
+    def test_no_year_returns_none(self):
+        self.assertIsNone(year_from_name("Sponsor Booth Selection Reminder"))
+
+    def test_out_of_range_leading_number_is_ignored(self):
+        self.assertIsNone(year_from_name("1899 Old Template"))
+        self.assertIsNone(year_from_name("2150 Future Template"))
+
+    def test_blank_name_returns_none(self):
+        self.assertIsNone(year_from_name(""))
+        self.assertIsNone(year_from_name(None))
+
+
+class NotificationTemplateLastSentStatsTests(TestCase):
+    """Test SponsorEmailNotificationTemplate.get_last_sent_stats."""
+
+    def setUp(self):
+        self.template = baker.make(SponsorEmailNotificationTemplate, internal_name="Launch Email")
+        self.sponsorship = baker.make(Sponsorship, sponsor__name="Acme")
+        self.other_sponsorship = baker.make(Sponsorship, sponsor__name="Beta")
+        self.user = baker.make(settings.AUTH_USER_MODEL)
+        self.sponsorship_ct = ContentType.objects.get_for_model(Sponsorship)
+
+    def _log_admin_send(self, sponsorship, internal_name=None):
+        """Create an admin LogEntry in the exact format SendSponsorNotificationLogger writes."""
+        name = internal_name or self.template.internal_name
+        return LogEntry.objects.log_action(
+            user_id=self.user.id,
+            content_type_id=self.sponsorship_ct.pk,
+            object_id=sponsorship.pk,
+            object_repr=str(sponsorship),
+            action_flag=CHANGE,
+            change_message=f"Notification '{name}' was sent to contacts: primary",
+        )
+
+    def test_no_sends_returns_empty_stats(self):
+        self.assertEqual(SponsorEmailNotificationTemplate.get_last_sent_stats(), {})
+
+    def test_fk_logged_send_is_counted(self):
+        sent_at = timezone.now() - timedelta(days=1)
+        SponsorshipNotificationLog.objects.create(
+            sponsorship=self.sponsorship,
+            template=self.template,
+            subject="Subj",
+            recipients="a@example.com",
+            contact_types="primary",
+            sent_at=sent_at,
+        )
+        stats = SponsorEmailNotificationTemplate.get_last_sent_stats()
+        self.assertEqual(stats[self.template.pk]["last_sent"], sent_at)
+        self.assertEqual(stats[self.template.pk]["sponsorship_count"], 1)
+
+    def test_admin_log_fallback_used_when_no_fk_rows(self):
+        self._log_admin_send(self.sponsorship)
+        self._log_admin_send(self.other_sponsorship)
+        stats = SponsorEmailNotificationTemplate.get_last_sent_stats()
+        self.assertEqual(stats[self.template.pk]["sponsorship_count"], 2)
+        self.assertIsNotNone(stats[self.template.pk]["last_sent"])
+
+    def test_admin_log_fallback_ignores_other_templates(self):
+        other_template = baker.make(SponsorEmailNotificationTemplate, internal_name="Other Email")
+        self._log_admin_send(self.sponsorship, internal_name=other_template.internal_name)
+        stats = SponsorEmailNotificationTemplate.get_last_sent_stats()
+        self.assertNotIn(self.template.pk, stats)
+        self.assertIn(other_template.pk, stats)
+
+    def test_newest_wins_between_fk_log_and_admin_fallback(self):
+        old_time = timezone.now() - timedelta(days=30)
+        new_time = timezone.now()
+        SponsorshipNotificationLog.objects.create(
+            sponsorship=self.sponsorship,
+            template=self.template,
+            subject="Old send",
+            recipients="a@example.com",
+            contact_types="primary",
+            sent_at=old_time,
+        )
+        entry = self._log_admin_send(self.other_sponsorship)
+        LogEntry.objects.filter(pk=entry.pk).update(action_time=new_time)
+
+        stats = SponsorEmailNotificationTemplate.get_last_sent_stats()
+        self.assertEqual(stats[self.template.pk]["last_sent"], new_time)
+        # The newer source (the fallback) wins outright, including its own count.
+        self.assertEqual(stats[self.template.pk]["sponsorship_count"], 1)
+
+    def test_fk_log_wins_when_newer_than_admin_fallback(self):
+        old_time = timezone.now() - timedelta(days=30)
+        new_time = timezone.now()
+        entry = self._log_admin_send(self.other_sponsorship)
+        LogEntry.objects.filter(pk=entry.pk).update(action_time=old_time)
+        SponsorshipNotificationLog.objects.create(
+            sponsorship=self.sponsorship,
+            template=self.template,
+            subject="New send",
+            recipients="a@example.com",
+            contact_types="primary",
+            sent_at=new_time,
+        )
+
+        stats = SponsorEmailNotificationTemplate.get_last_sent_stats()
+        self.assertEqual(stats[self.template.pk]["last_sent"], new_time)
+        self.assertEqual(stats[self.template.pk]["sponsorship_count"], 1)
 
 
 ###########

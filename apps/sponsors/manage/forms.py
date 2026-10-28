@@ -5,6 +5,7 @@ import re
 
 from django import forms
 from django.core.validators import EmailValidator, FileExtensionValidator
+from django.db.models import Case, F, IntegerField, Value, When
 from django.utils import timezone
 from django_countries.fields import CountryField
 
@@ -640,6 +641,39 @@ class ComposerRecipientsForm(forms.Form):
         return _validate_optional_psf_email(self.cleaned_data.get("bcc_email"))
 
 
+class NotificationTemplateChoiceField(forms.ModelChoiceField):
+    """ModelChoiceField that labels each notification template with its year for clarity."""
+
+    def label_from_instance(self, obj):
+        """Return the label prefixed with the template's year, or "Evergreen" if it has none."""
+        prefix = str(obj.year) if obj.year else "Evergreen"
+        return f"{prefix} — {obj.internal_name}"
+
+
+def _notification_template_choice_queryset():
+    """Order notification templates with the current year's first, then evergreen, then by year descending.
+
+    Used to offer the most relevant quick-fill choices first in the single and bulk notify forms.
+    """
+    try:
+        current_year = SponsorshipCurrentYear.get_year()
+    except SponsorshipCurrentYear.DoesNotExist:
+        current_year = None
+
+    qs = SponsorEmailNotificationTemplate.objects.all()
+    if current_year is None:
+        return qs.order_by(F("year").desc(nulls_last=True), "internal_name")
+
+    return qs.annotate(
+        _choice_rank=Case(
+            When(year=current_year, then=Value(0)),
+            When(year__isnull=True, then=Value(1)),
+            default=Value(2),
+            output_field=IntegerField(),
+        )
+    ).order_by("_choice_rank", "-year", "internal_name")
+
+
 class SendSponsorshipNotificationManageForm(forms.Form):
     """Form for sending email notifications to sponsorship contacts from the manage UI."""
 
@@ -649,8 +683,8 @@ class SendSponsorshipNotificationManageForm(forms.Form):
         widget=forms.CheckboxSelectMultiple,
         label="Send to contact types",
     )
-    notification = forms.ModelChoiceField(
-        queryset=SponsorEmailNotificationTemplate.objects.all(),
+    notification = NotificationTemplateChoiceField(
+        queryset=SponsorEmailNotificationTemplate.objects.none(),
         help_text="Select an existing notification template, or write custom content below.",
         required=False,
         label="Template",
@@ -667,6 +701,11 @@ class SendSponsorshipNotificationManageForm(forms.Form):
         required=False,
         help_text=SPONSOR_TEMPLATE_HELP_TEXT,
     )
+
+    def __init__(self, *args, **kwargs):
+        """Order the template choices with the current sponsorship year's templates first."""
+        super().__init__(*args, **kwargs)
+        self.fields["notification"].queryset = _notification_template_choice_queryset()
 
     def clean(self):
         """Require either a template or a complete custom message, with valid template syntax."""
@@ -720,15 +759,24 @@ class NotificationTemplateForm(BaseEmailTemplateForm):
         """Meta options."""
 
         model = SponsorEmailNotificationTemplate
-        fields = ["internal_name", "subject", "content"]
+        fields = ["internal_name", "year", "subject", "content"]
         widgets = {
             "internal_name": forms.TextInput(attrs={"style": INPUT_STYLE}),
+            "year": forms.NumberInput(attrs={"style": INPUT_STYLE, "placeholder": "Evergreen"}),
             "subject": forms.TextInput(attrs={"style": INPUT_STYLE}),
             "content": forms.Textarea(attrs={"rows": 12, "style": INPUT_STYLE + "resize:vertical;"}),
         }
         help_texts = {
             "content": SPONSOR_TEMPLATE_HELP_TEXT,
+            "year": "Leave blank for an evergreen template usable across years.",
         }
+
+    def __init__(self, *args, **kwargs):
+        """Default new templates to the current sponsorship year."""
+        super().__init__(*args, **kwargs)
+        if not self.instance.pk and not self.initial.get("year"):
+            with contextlib.suppress(SponsorshipCurrentYear.DoesNotExist):
+                self.initial["year"] = SponsorshipCurrentYear.get_year()
 
 
 class SponsorContactForm(forms.ModelForm):
