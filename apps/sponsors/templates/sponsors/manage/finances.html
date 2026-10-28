@@ -115,7 +115,7 @@
                     </a>
                 </td>
                 <td>
-                    {% if sp.package %}<span class="tag tag-blue" style="font-size:10px;">{{ sp.package.name }}</span>{% else %}<span class="tag tag-gray" style="font-size:10px;">Custom</span>{% endif %}
+                    {% if sp.package %}<span class="package-name">{{ sp.package.name }}</span>{% else %}<span class="package-name" style="color:#5f6368;">Custom</span>{% endif %}
                 </td>
                 <td style="text-align:center;">
                     {% if sp.status == 'approved' %}<span class="tag tag-gold" style="font-size:10px;">Approved</span>

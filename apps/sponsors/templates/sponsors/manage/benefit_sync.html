@@ -63,7 +63,7 @@
                                 </a>
                             </td>
                             <td>
-                                {% if sp.package %}<span class="tag tag-blue">{{ sp.package.name }}</span>{% else %}<span style="color:#ccc;">&mdash;</span>{% endif %}
+                                {% if sp.package %}<span class="package-name">{{ sp.package.name }}</span>{% else %}<span style="color:#ccc;">&mdash;</span>{% endif %}
                             </td>
                             <td>{{ sp.year|default:"&mdash;" }}</td>
                             <td style="text-align:center;">

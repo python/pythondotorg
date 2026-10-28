@@ -86,7 +86,7 @@
                         <td>
                             {% if asset.owner_type == "sponsorship" and asset.resolved_owner %}
                             <a href="{% url 'manage_sponsorship_detail' asset.resolved_owner.pk %}" style="text-decoration:none;">
-                                {% if asset.resolved_owner.package %}<span class="tag tag-gold" style="font-size:10px;">{{ asset.resolved_owner.package.name }}</span>{% endif %}
+                                {% if asset.resolved_owner.package %}<span class="package-name" style="font-size:12px;">{{ asset.resolved_owner.package.name }}</span>{% endif %}
                                 {% if asset.resolved_owner.status == 'applied' %}<span class="tag tag-blue" style="font-size:10px;">Applied</span>
                                 {% elif asset.resolved_owner.status == 'approved' %}<span class="tag tag-gold" style="font-size:10px;">Approved</span>
                                 {% elif asset.resolved_owner.status == 'finalized' %}<span class="tag tag-green" style="font-size:10px;">Finalized</span>

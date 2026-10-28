@@ -91,10 +91,9 @@
                         {% if sp.sponsor %}{{ sp.sponsor.name }}{% else %}Unknown{% endif %}
                     </a>
                     {% if sp.for_modified_package %}<span class="tag tag-gold" style="margin-left:4px;">Custom</span>{% endif %}
-                    {% if sp.renewal %}<span class="tag tag-blue" style="margin-left:4px;">Renewal</span>{% endif %}
                 </td>
                 <td>
-                    {% if sp.package %}<a href="{% url 'manage_package_edit' sp.package.pk %}" class="tag tag-blue" style="text-decoration:none;">{{ sp.package.name }}</a>{% else %}<span style="color:#ccc;">&mdash;</span>{% endif %}
+                    {% if sp.package %}<a href="{% url 'manage_package_edit' sp.package.pk %}" class="package-name">{{ sp.package.name }}</a>{% else %}<span style="color:#ccc;">&mdash;</span>{% endif %}
                 </td>
                 <td style="text-align:right;font-variant-numeric:tabular-nums;">
                     {% if sp.sponsorship_fee is not None %}<span style="font-weight:600;">${{ sp.sponsorship_fee|floatformat:"0g" }}</span>{% else %}<span style="color:#ccc;">&mdash;</span>{% endif %}
