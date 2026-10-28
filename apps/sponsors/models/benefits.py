@@ -1,11 +1,14 @@
 """Benefit feature and configuration models for the sponsors app."""
 
 from django import forms
+from django.core.exceptions import ValidationError
 from django.db import IntegrityError, models, transaction
 from django.db.models import UniqueConstraint
 from django.urls import reverse
 from polymorphic.models import PolymorphicModel
 
+from apps.sponsors.job_postings import HELP_TEXT as JOB_POSTINGS_HELP_TEXT
+from apps.sponsors.job_postings import JobPostingsField, is_job_postings_asset
 from apps.sponsors.models.assets import FileAsset, ImgAsset, Response, ResponseAsset, TextAsset
 from apps.sponsors.models.enums import (
     AssetsRelatedTo,
@@ -215,9 +218,15 @@ class BaseRequiredTextAsset(BaseRequiredAsset):
     )
     max_length = models.IntegerField(
         default=None,
-        help_text="Limit to length of the input, empty means unlimited",
+        help_text="Maximum number of characters sponsors may enter, empty means unlimited",
         null=True,
         blank=True,
+    )
+    placeholder = models.CharField(
+        max_length=256,
+        default="",
+        blank=True,
+        help_text="Example text shown in the empty input, e.g. 'Acme Corp is a…'",
     )
 
     class Meta(BaseRequiredAsset.Meta):
@@ -685,10 +694,35 @@ class RequiredImgAsset(RequiredAssetMixin, BaseRequiredImgAsset, BenefitFeature)
         )
 
 
+def _normalize_text(value):
+    return (value or "").replace("\r\n", "\n").strip()
+
+
+class _TextAssetField(forms.CharField):
+    """CharField that keeps accepting an unchanged initial value longer than ``max_length``.
+
+    Admins can add or lower a limit after a sponsor already submitted. Without this, the
+    stored value would fail validation on every later save of the whole assets form.
+    New or edited input is still held to the limit.
+    """
+
+    def run_validators(self, value):
+        """Run validators, ignoring the length limit when the value is unchanged."""
+        try:
+            super().run_validators(value)
+        except ValidationError as exc:
+            if _normalize_text(value) != _normalize_text(self.initial):
+                raise
+            errors = [error for error in exc.error_list if error.code != "max_length"]
+            if errors:
+                raise ValidationError(errors) from exc
+
+
 class RequiredTextAsset(RequiredAssetMixin, BaseRequiredTextAsset, BenefitFeature):
     """Required text asset feature that sponsors must provide."""
 
-    TEXTAREA_MIN_LENGTH = 256
+    SINGLE_LINE_MAX_LENGTH = 100
+    LIMITED_TEXTAREA_ROWS = 4
 
     class Meta(BaseRequiredTextAsset.Meta, BenefitFeature.Meta):
         """Meta configuration for RequiredTextAsset."""
@@ -701,15 +735,31 @@ class RequiredTextAsset(RequiredAssetMixin, BaseRequiredTextAsset, BenefitFeatur
         return "Require text"
 
     def as_form_field(self, **kwargs):
-        """Return a CharField configured for this required text asset."""
+        """Return a CharField configured for this required text asset.
+
+        ``max_length`` is enforced on new input (an unchanged stored value that is
+        already longer still saves) and announced in the help text. Short limits get a
+        single-line input, other limits a small textarea. Job listing assets get a
+        one-job-per-row field instead of a free-form textarea.
+        """
         help_text = kwargs.pop("help_text", self.help_text)
         label = kwargs.pop("label", self.label)
         required = kwargs.pop("required", False)
+        if is_job_postings_asset(self.internal_name):
+            return JobPostingsField(required=required, help_text=JOB_POSTINGS_HELP_TEXT, label=label, **kwargs)
         max_length = self.max_length
-        widget = forms.TextInput
-        if max_length is None or max_length > self.TEXTAREA_MIN_LENGTH:
-            widget = forms.Textarea
-        return forms.CharField(required=required, help_text=help_text, label=label, widget=widget, **kwargs)
+        attrs = {"placeholder": self.placeholder} if self.placeholder else {}
+        if max_length is None:
+            widget = forms.Textarea(attrs=attrs)
+        elif max_length <= self.SINGLE_LINE_MAX_LENGTH:
+            widget = forms.TextInput(attrs=attrs)
+        else:
+            widget = forms.Textarea(attrs={**attrs, "rows": self.LIMITED_TEXTAREA_ROWS})
+        if max_length is not None:
+            help_text = " ".join(filter(None, [help_text, f"Up to {max_length} characters."]))
+        return _TextAssetField(
+            required=required, max_length=max_length, help_text=help_text, label=label, widget=widget, **kwargs
+        )
 
 
 class RequiredResponseAsset(RequiredAssetMixin, BaseRequiredResponseAsset, BenefitFeature):

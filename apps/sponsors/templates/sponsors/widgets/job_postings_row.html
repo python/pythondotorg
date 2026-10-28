@@ -1,0 +1,21 @@
+<tr data-job-postings-row>
+  <th scope="row" data-job-postings-number>{{ number }}</th>
+  <td>
+    <input type="text" name="{{ widget.name }}__title" value="{{ row.title|default:'' }}" placeholder="e.g. Senior Python Engineer"
+      data-job-postings-input="title"{% if widget.attrs.id and number %} id="{{ widget.attrs.id }}_{{ index }}_title"{% endif %}
+      aria-label="Job {{ number }} title">
+  </td>
+  <td>
+    <input type="text" name="{{ widget.name }}__location" value="{{ row.location|default:'' }}" placeholder="e.g. Remote"
+      data-job-postings-input="location"{% if widget.attrs.id and number %} id="{{ widget.attrs.id }}_{{ index }}_location"{% endif %}
+      aria-label="Job {{ number }} location">
+  </td>
+  <td>
+    <input type="url" name="{{ widget.name }}__url" value="{{ row.url|default:'' }}" placeholder="e.g. https://example.com/jobs/123"
+      data-job-postings-input="url"{% if widget.attrs.id and number %} id="{{ widget.attrs.id }}_{{ index }}_url"{% endif %}
+      aria-label="Job {{ number }} link">
+  </td>
+  <td>
+    <button type="button" class="button" data-job-postings-remove hidden aria-label="Remove job {{ number }}">Remove</button>
+  </td>
+</tr>

@@ -4,6 +4,7 @@ from datetime import timedelta
 from django import forms
 from django.conf import settings
 from django.core.cache import cache
+from django.core.exceptions import ValidationError
 from django.core.mail import EmailMessage
 from django.db import IntegrityError
 from django.test import TestCase, override_settings
@@ -1233,22 +1234,50 @@ class RequiredTextAssetTests(TestCase):
         issubclass(RequiredTextAsset, classes)
 
     def test_build_form_field_from_input(self):
-        text_asset = baker.make(RequiredTextAsset, _fill_optional=True)
+        text_asset = baker.make(RequiredTextAsset, _fill_optional=True, max_length=None, placeholder="")
         field = text_asset.as_form_field()
         self.assertIsInstance(field, forms.CharField)
         self.assertIsInstance(field.widget, forms.Textarea)
+        self.assertIsNone(field.max_length)
         self.assertFalse(field.required)
         self.assertEqual(text_asset.help_text, field.help_text)
         self.assertEqual(text_asset.label, field.label)
+        self.assertNotIn("placeholder", field.widget.attrs)
 
-    def test_build_form_field_from_input_with_max_length(self):
-        text_asset = baker.make(RequiredTextAsset, _fill_optional=True, max_length=256)
+    def test_build_form_field_enforcing_max_length_with_placeholder(self):
+        text_asset = baker.make(
+            RequiredTextAsset,
+            _fill_optional=True,
+            help_text="2-3 sentences about your company.",
+            max_length=250,
+            placeholder="Acme Corp is a…",
+        )
         field = text_asset.as_form_field()
-        self.assertIsInstance(field, forms.CharField)
+
+        self.assertIsInstance(field.widget, forms.Textarea)
+        self.assertEqual("2-3 sentences about your company. Up to 250 characters.", field.help_text)
+        self.assertEqual("Acme Corp is a…", field.widget.attrs["placeholder"])
+        self.assertEqual("250", field.widget.attrs["maxlength"])
+        self.assertEqual("a" * 250, field.clean("a" * 250))
+        with self.assertRaises(ValidationError):
+            field.clean("a" * 251)
+
+    def test_max_length_still_accepts_unchanged_value_saved_before_the_limit(self):
+        text_asset = baker.make(RequiredTextAsset, _fill_optional=True, max_length=250)
+        stored = "line\n" * 100
+        field = text_asset.as_form_field(required=True, initial=stored)
+
+        submitted = stored.replace("\n", "\r\n")
+        self.assertEqual(submitted.strip(), field.clean(submitted))
+        with self.assertRaises(ValidationError):
+            field.clean(submitted + "more")
+
+    def test_build_single_line_form_field_for_short_max_length(self):
+        text_asset = baker.make(RequiredTextAsset, _fill_optional=True, help_text="", max_length=100)
+        field = text_asset.as_form_field()
+
         self.assertIsInstance(field.widget, forms.TextInput)
-        self.assertFalse(field.required)
-        self.assertEqual(text_asset.help_text, field.help_text)
-        self.assertEqual(text_asset.label, field.label)
+        self.assertEqual("Up to 100 characters.", field.help_text)
 
 
 class RequiredImgAssetTests(TestCase):
