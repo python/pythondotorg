@@ -3929,3 +3929,5 @@ span.highlighted {
     box-sizing: border-box; }
   #update-sponsorship-assets .job-postings-table button {
     margin-bottom: 0; }
+#update-sponsorship-assets .job-postings [hidden] {
+  display: none; }
