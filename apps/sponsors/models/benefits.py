@@ -1,6 +1,7 @@
 """Benefit feature and configuration models for the sponsors app."""
 
 from django import forms
+from django.core.exceptions import ValidationError
 from django.db import IntegrityError, models, transaction
 from django.db.models import UniqueConstraint
 from django.urls import reverse
@@ -693,6 +694,30 @@ class RequiredImgAsset(RequiredAssetMixin, BaseRequiredImgAsset, BenefitFeature)
         )
 
 
+def _normalize_text(value):
+    return (value or "").replace("\r\n", "\n").strip()
+
+
+class _TextAssetField(forms.CharField):
+    """CharField that keeps accepting an unchanged initial value longer than ``max_length``.
+
+    Admins can add or lower a limit after a sponsor already submitted. Without this, the
+    stored value would fail validation on every later save of the whole assets form.
+    New or edited input is still held to the limit.
+    """
+
+    def run_validators(self, value):
+        """Run validators, ignoring the length limit when the value is unchanged."""
+        try:
+            super().run_validators(value)
+        except ValidationError as exc:
+            if _normalize_text(value) != _normalize_text(self.initial):
+                raise
+            errors = [error for error in exc.error_list if error.code != "max_length"]
+            if errors:
+                raise ValidationError(errors) from exc
+
+
 class RequiredTextAsset(RequiredAssetMixin, BaseRequiredTextAsset, BenefitFeature):
     """Required text asset feature that sponsors must provide."""
 
@@ -712,7 +737,8 @@ class RequiredTextAsset(RequiredAssetMixin, BaseRequiredTextAsset, BenefitFeatur
     def as_form_field(self, **kwargs):
         """Return a CharField configured for this required text asset.
 
-        ``max_length`` is enforced and announced in the help text. Short limits get a
+        ``max_length`` is enforced on new input (an unchanged stored value that is
+        already longer still saves) and announced in the help text. Short limits get a
         single-line input, other limits a small textarea. Job listing assets get a
         one-job-per-row field instead of a free-form textarea.
         """
@@ -731,7 +757,7 @@ class RequiredTextAsset(RequiredAssetMixin, BaseRequiredTextAsset, BenefitFeatur
             widget = forms.Textarea(attrs={**attrs, "rows": self.LIMITED_TEXTAREA_ROWS})
         if max_length is not None:
             help_text = " ".join(filter(None, [help_text, f"Up to {max_length} characters."]))
-        return forms.CharField(
+        return _TextAssetField(
             required=required, max_length=max_length, help_text=help_text, label=label, widget=widget, **kwargs
         )
 
