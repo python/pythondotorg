@@ -27,7 +27,7 @@ HELP_TEXT = (
 )
 
 _MARKDOWN_LINK_RE = re.compile(r"\[(?P<title>[^\]]+)\]\((?P<url>[^)\s]+)\)")
-_URL_RE = re.compile(r"https?://\S+")
+_URL_RE = re.compile(r"https?://\S+", re.IGNORECASE)
 _LEGACY_TITLE_STRIP = " \t-*:|,–—"  # noqa: RUF001 - en/em dashes used as markdown separators
 _url_validator = URLValidator(schemes=["http", "https"])
 
@@ -45,6 +45,19 @@ def is_job_postings_asset(internal_name):
 
 def _row(title="", location="", url=""):
     return {"title": title, "location": location, "url": url}
+
+
+def _single_line(value):
+    """Collapse whitespace, including every ``str.splitlines()`` boundary, to single spaces.
+
+    Each job must serialize to exactly one stored line.
+    """
+    return " ".join(value.split())
+
+
+def _lowercase_scheme(url):
+    scheme, sep, rest = url.partition("://")
+    return f"{scheme.lower()}{sep}{rest}"
 
 
 def _parse_line(line):
@@ -107,7 +120,7 @@ class JobPostingsWidget(forms.Widget):
             columns.append([values] if isinstance(values, str) else values)
         rows = []
         for index in range(max(len(column) for column in columns)):
-            row = _row(*((column[index] if index < len(column) else "").strip() for column in columns))
+            row = _row(*(_single_line(column[index] if index < len(column) else "") for column in columns))
             if any(row.values()):
                 rows.append(row)
         return rows
@@ -162,5 +175,6 @@ class JobPostingsField(forms.Field):
             raise ValidationError(errors)
 
     def clean(self, value):
-        """Return the validated rows as stored text."""
-        return serialize_job_postings(super().clean(value))
+        """Return the validated rows as stored text, with lowercase link schemes."""
+        rows = super().clean(value)
+        return serialize_job_postings([{**row, "url": _lowercase_scheme(row["url"])} for row in rows])
