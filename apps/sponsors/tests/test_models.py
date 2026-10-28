@@ -1262,6 +1262,16 @@ class RequiredTextAssetTests(TestCase):
         with self.assertRaises(ValidationError):
             field.clean("a" * 251)
 
+    def test_max_length_still_accepts_unchanged_value_saved_before_the_limit(self):
+        text_asset = baker.make(RequiredTextAsset, _fill_optional=True, max_length=250)
+        stored = "line\n" * 100
+        field = text_asset.as_form_field(required=True, initial=stored)
+
+        submitted = stored.replace("\n", "\r\n")
+        self.assertEqual(submitted.strip(), field.clean(submitted))
+        with self.assertRaises(ValidationError):
+            field.clean(submitted + "more")
+
     def test_build_single_line_form_field_for_short_max_length(self):
         text_asset = baker.make(RequiredTextAsset, _fill_optional=True, help_text="", max_length=100)
         field = text_asset.as_form_field()
