@@ -33,6 +33,12 @@ urlpatterns = [
     path("legal-clauses/<int:pk>/edit/", views.LegalClauseUpdateView.as_view(), name="manage_legal_clause_edit"),
     path("legal-clauses/<int:pk>/delete/", views.LegalClauseDeleteView.as_view(), name="manage_legal_clause_delete"),
     path("legal-clauses/<int:pk>/move/", views.LegalClauseMoveView.as_view(), name="manage_legal_clause_move"),
+    # Programs
+    path("programs/", views.ProgramListView.as_view(), name="manage_programs"),
+    path("programs/new/", views.ProgramCreateView.as_view(), name="manage_program_create"),
+    path("programs/<int:pk>/edit/", views.ProgramUpdateView.as_view(), name="manage_program_edit"),
+    path("programs/<int:pk>/delete/", views.ProgramDeleteView.as_view(), name="manage_program_delete"),
+    path("programs/<int:pk>/move/", views.ProgramMoveView.as_view(), name="manage_program_move"),
     # Packages
     path("packages/", views.PackageListView.as_view(), name="manage_packages"),
     path("packages/new/", views.PackageCreateView.as_view(), name="manage_package_create"),

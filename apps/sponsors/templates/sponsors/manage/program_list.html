@@ -1,0 +1,41 @@
+{% extends "sponsors/manage/_base.html" %}
+
+{% block page_title %}Programs | Sponsor Management{% endblock %}
+
+{% block manage_breadcrumbs %}
+<div class="manage-crumbs">
+    <a href="{% url 'manage_dashboard' %}">Dashboard</a>
+    <span class="sep">/</span>
+    <span class="current">Programs</span>
+</div>
+{% endblock %}
+
+{% block topbar_actions %}
+    <a href="{% url 'manage_program_create' %}" class="btn btn-sm btn-primary">+ New Program</a>
+{% endblock %}
+
+{% block manage_content %}
+    <p style="font-size:13px;color:#5f6368;margin:0 0 16px;">
+        Programs group benefits (PyCon US, Foundation, PyPI, ...). Their order here is the order benefit groups appear in the composer and on sponsorship pages.
+    </p>
+    {% if programs %}
+    {% include "sponsors/manage/_program_table.html" with rows=programs %}
+    {% elif not past_programs %}
+    <div class="empty-state">
+        <p>No programs defined yet.</p>
+        <a href="{% url 'manage_program_create' %}" class="btn btn-primary">Create First Program</a>
+    </div>
+    {% endif %}
+
+    {% if past_programs %}
+    <div class="manage-section collapsed" style="margin-top:24px;">
+        <div class="manage-section-header collapse-toggle">
+            <h2><span class="collapse-arrow">&#9662;</span> Past-year programs <span class="badge">{{ past_programs|length }}</span></h2>
+        </div>
+        <div class="collapse-body">
+            <p style="font-size:13px;color:#5f6368;margin:0 0 12px;">Programs whose name includes a year before {{ current_year }}. They're kept because older benefits and sponsorships still use them.</p>
+            {% include "sponsors/manage/_program_table.html" with rows=past_programs %}
+        </div>
+    </div>
+    {% endif %}
+{% endblock %}

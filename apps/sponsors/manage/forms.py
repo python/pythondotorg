@@ -1123,6 +1123,20 @@ class LegalClauseForm(forms.ModelForm):
         }
 
 
+class SponsorshipProgramForm(forms.ModelForm):
+    """Form for creating and editing sponsorship programs."""
+
+    class Meta:
+        """Meta options."""
+
+        model = SponsorshipProgram
+        fields = ["name", "description"]
+        widgets = {
+            "name": forms.TextInput(attrs={"style": INPUT_STYLE}),
+            "description": forms.Textarea(attrs={"rows": 3, "style": INPUT_STYLE + "resize:vertical;"}),
+        }
+
+
 class StaffRequiredAssetsForm(SponsorRequiredAssetsForm):
     """The sponsor's required-assets form, for staff uploading on the sponsor's behalf.
 

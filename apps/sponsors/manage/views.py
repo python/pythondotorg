@@ -10,6 +10,7 @@ import csv
 import datetime
 import io
 import logging
+import re
 import zipfile
 from pathlib import Path
 from smtplib import SMTPException
@@ -56,6 +57,7 @@ from apps.sponsors.manage.forms import (
     SponsorshipEditForm,
     SponsorshipFilterForm,
     SponsorshipPackageManageForm,
+    SponsorshipProgramForm,
     StaffRequiredAssetsForm,
 )
 from apps.sponsors.models import (
@@ -509,6 +511,139 @@ class LegalClauseMoveView(SponsorshipAdminRequiredMixin, View):
         elif direction == "down":
             clause.down()
         return redirect(reverse("manage_legal_clauses"))
+
+
+# ── Programs ──────────────────────────────────────────────────────────
+
+
+_YEAR_IN_NAME = re.compile(r"\b(?:19|20)\d{2}\b")
+
+
+def _is_past_year_program(program, current_year):
+    """Return True when the program's name carries a year (e.g. "PyCon US 2025") older than the current one."""
+    years = [int(y) for y in _YEAR_IN_NAME.findall(program.name)]
+    return bool(years) and current_year is not None and max(years) < current_year
+
+
+class ProgramListView(SponsorshipAdminRequiredMixin, ListView):
+    """List sponsorship programs in display order, tucking past-year programs ("PyCon US 2025") away."""
+
+    model = SponsorshipProgram
+    template_name = "sponsors/manage/program_list.html"
+    context_object_name = "programs"
+
+    def get_queryset(self):
+        """Return programs ordered by position, with benefit counts overall and for the current year."""
+        current_year = SponsorshipCurrentYear.get_year()
+        return SponsorshipProgram.objects.annotate(
+            benefit_count=Count("sponsorshipbenefit"),
+            current_benefit_count=Count("sponsorshipbenefit", filter=Q(sponsorshipbenefit__year=current_year)),
+        ).order_by("order")
+
+    def get_context_data(self, **kwargs):
+        """Return context with current and past-year programs split, and the current sponsorship year."""
+        context = super().get_context_data(**kwargs)
+        current_year = SponsorshipCurrentYear.get_year()
+        programs = list(context["programs"])
+        context["programs"] = [p for p in programs if not _is_past_year_program(p, current_year)]
+        context["past_programs"] = [p for p in programs if _is_past_year_program(p, current_year)]
+        context["current_year"] = current_year
+        return context
+
+
+class ProgramCreateView(SponsorshipAdminRequiredMixin, CreateView):
+    """Create a sponsorship program."""
+
+    model = SponsorshipProgram
+    form_class = SponsorshipProgramForm
+    template_name = "sponsors/manage/program_form.html"
+
+    def form_valid(self, form):
+        """Save the program and record who added it."""
+        response = super().form_valid(form)
+        add_log_entry(self.request, self.object, ADDITION, "Created in sponsor management")
+        messages.success(self.request, f'Program "{self.object.name}" created.')
+        return response
+
+    def get_success_url(self):
+        """Return URL to the program list."""
+        return reverse("manage_programs")
+
+
+class ProgramUpdateView(SponsorshipAdminRequiredMixin, UpdateView):
+    """Edit a sponsorship program's name and description."""
+
+    model = SponsorshipProgram
+    form_class = SponsorshipProgramForm
+    template_name = "sponsors/manage/program_form.html"
+
+    def form_valid(self, form):
+        """Save the program and record the change."""
+        response = super().form_valid(form)
+        if form.changed_data:
+            labels = ", ".join(str(form.fields[name].label) for name in form.changed_data)
+            add_log_entry(self.request, self.object, CHANGE, f"Changed {labels} in sponsor management")
+        messages.success(self.request, f'Program "{self.object.name}" updated.')
+        return response
+
+    def get_success_url(self):
+        """Return URL to the program list."""
+        return reverse("manage_programs")
+
+    def get_context_data(self, **kwargs):
+        """Return context with how many benefits use this program."""
+        context = super().get_context_data(**kwargs)
+        context["benefit_count"] = self.object.sponsorshipbenefit_set.count()
+        return context
+
+
+class ProgramDeleteView(SponsorshipAdminRequiredMixin, DeleteView):
+    """Delete a program that no benefit uses.
+
+    Deleting a program cascades to every benefit in it (and their sponsorship copies lose their
+    program), so programs that still have benefits can only be renamed, never deleted, here.
+    """
+
+    model = SponsorshipProgram
+    template_name = "sponsors/manage/program_confirm_delete.html"
+
+    def get_context_data(self, **kwargs):
+        """Return context with the number of benefits blocking deletion."""
+        context = super().get_context_data(**kwargs)
+        context["benefit_count"] = self.object.sponsorshipbenefit_set.count()
+        return context
+
+    def form_valid(self, form):
+        """Refuse to delete a program that still has benefits."""
+        if self.object.sponsorshipbenefit_set.exists():
+            messages.error(self.request, f'"{self.object.name}" still has benefits, so it can\'t be deleted.')
+            return redirect(reverse("manage_program_edit", args=[self.object.pk]))
+        messages.success(self.request, f'Program "{self.object.name}" deleted.')
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        """Return URL to the program list."""
+        return reverse("manage_programs")
+
+
+class ProgramMoveView(SponsorshipAdminRequiredMixin, View):
+    """Move a program up or down; the order sets how programs are grouped everywhere benefits are listed."""
+
+    def post(self, request, pk):
+        """Swap the program with its visible neighbour, skipping hidden past-year programs."""
+        program = get_object_or_404(SponsorshipProgram, pk=pk)
+        direction = request.POST.get("direction")
+        current_year = SponsorshipCurrentYear.get_year()
+        hidden = _is_past_year_program(program, current_year)
+        siblings = [
+            p for p in SponsorshipProgram.objects.order_by("order") if _is_past_year_program(p, current_year) == hidden
+        ]
+        index = next(i for i, p in enumerate(siblings) if p.pk == program.pk)
+        if direction == "up" and index > 0:
+            program.above(siblings[index - 1])
+        elif direction == "down" and index < len(siblings) - 1:
+            program.below(siblings[index + 1])
+        return redirect(reverse("manage_programs"))
 
 
 # ── Asset Browser ─────────────────────────────────────────────────────

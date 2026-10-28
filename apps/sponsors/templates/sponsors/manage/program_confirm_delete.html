@@ -1,0 +1,36 @@
+{% extends "sponsors/manage/_base.html" %}
+
+{% block page_title %}Delete {{ object.name }} | Sponsor Management{% endblock %}
+
+{% block manage_breadcrumbs %}
+<div class="manage-crumbs">
+    <a href="{% url 'manage_dashboard' %}">Dashboard</a>
+    <span class="sep">/</span>
+    <a href="{% url 'manage_programs' %}">Programs</a>
+    <span class="sep">/</span>
+    <span class="current">Delete</span>
+</div>
+{% endblock %}
+
+{% block manage_content %}
+    <div class="manage-form">
+        <h2 style="font-size:18px;font-weight:700;color:#e74c3c;margin:0 0 20px;">Delete Program</h2>
+        {% if benefit_count %}
+        <div class="manage-alert manage-alert-warning" style="margin-bottom:20px;">
+            <strong>"{{ object.name }}"</strong> still has {{ benefit_count }} benefit{{ benefit_count|pluralize }}, so it can't be deleted. Move or delete those benefits first.
+        </div>
+        <a href="{% url 'manage_program_edit' object.pk %}" class="btn btn-secondary">Back</a>
+        {% else %}
+        <div class="manage-alert manage-alert-warning" style="margin-bottom:20px;">
+            Are you sure you want to delete <strong>"{{ object.name }}"</strong>? No benefits use it.
+        </div>
+        <form method="post">
+            {% csrf_token %}
+            <div style="display:flex;gap:10px;">
+                <button type="submit" class="btn btn-danger">Delete Program</button>
+                <a href="{% url 'manage_program_edit' object.pk %}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+        {% endif %}
+    </div>
+{% endblock %}

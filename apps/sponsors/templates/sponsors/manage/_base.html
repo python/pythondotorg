@@ -835,6 +835,7 @@
                 <div class="manage-nav-dropdown" id="manage-nav-more-menu">
                     <a href="{% url 'manage_finances' %}"{% if active_tab == 'finances' %} class="active" aria-current="page"{% endif %}>Finances</a>
                     <a href="{% url 'manage_sponsors' %}"{% if active_tab == 'sponsors' %} class="active" aria-current="page"{% endif %}>Sponsors</a>
+                    <a href="{% url 'manage_programs' %}"{% if active_tab == 'programs' %} class="active" aria-current="page"{% endif %}>Programs</a>
                     <a href="{% url 'manage_legal_clauses' %}"{% if active_tab == 'legal_clauses' %} class="active" aria-current="page"{% endif %}>Legal Clauses</a>
                     <a href="{% url 'manage_assets' %}"{% if active_tab == 'assets' %} class="active" aria-current="page"{% endif %}>Assets</a>
                     <a href="{% url 'manage_clone_year' %}"{% if active_tab == 'clone' %} class="active" aria-current="page"{% endif %}>Clone Year</a>

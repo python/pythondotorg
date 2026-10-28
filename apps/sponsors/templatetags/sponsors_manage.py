@@ -20,13 +20,14 @@ _NAV_SECTIONS = (
     ("manage_finances", "finances"),
     ("manage_sponsor", "sponsors"),
     ("manage_legal_clause", "legal_clauses"),
+    ("manage_program", "programs"),
     ("manage_assets", "assets"),
     ("manage_clone_year", "clone"),
     ("manage_guide", "guide"),
 )
 
 # Sections reached through the navbar's "More" dropdown
-MORE_SECTIONS = frozenset({"finances", "sponsors", "legal_clauses", "assets", "clone", "guide"})
+MORE_SECTIONS = frozenset({"finances", "sponsors", "programs", "legal_clauses", "assets", "clone", "guide"})
 
 
 @register.simple_tag

@@ -3177,6 +3177,49 @@ class BenefitSyncViewTests(SponsorshipReviewTestBase):
         self.assertContains(response, "Sync to Sponsorships")
 
 
+class ProgramViewTests(SponsorManageTestBase):
+    """Programs can be managed, but never deleted while benefits (which would cascade) use them."""
+
+    def setUp(self):
+        super().setUp()
+        self.client.login(username="staff", password="pass")
+
+    def test_program_with_benefits_cannot_be_deleted(self):
+        response = self.client.post(reverse("manage_program_delete", args=[self.program.pk]))
+
+        self.assertRedirects(response, reverse("manage_program_edit", args=[self.program.pk]))
+        self.assertTrue(SponsorshipBenefit.objects.filter(pk=self.benefit.pk).exists())
+
+    def test_create_appends_and_move_reorders(self):
+        self.client.post(reverse("manage_program_create"), {"name": "PyPI", "description": ""})
+        pypi = SponsorshipProgram.objects.get(name="PyPI")
+
+        self.client.post(reverse("manage_program_move", args=[pypi.pk]), {"direction": "up"})
+
+        self.assertEqual(
+            list(SponsorshipProgram.objects.order_by("order").values_list("name", flat=True)), ["PyPI", "Foundation"]
+        )
+
+    def test_past_year_programs_are_tucked_away_and_skipped_when_moving(self):
+        past = SponsorshipProgram.objects.create(name=f"PyCon US {self.year - 1}")
+        current = SponsorshipProgram.objects.create(name=f"PyCon US {self.year}")
+
+        response = self.client.get(reverse("manage_programs"))
+        self.assertEqual(response.context["programs"], [self.program, current])
+        self.assertEqual(response.context["past_programs"], [past])
+
+        # One click moves the current-year program above Foundation, jumping the hidden one in between.
+        self.client.post(reverse("manage_program_move", args=[current.pk]), {"direction": "up"})
+        visible = [p for p in SponsorshipProgram.objects.order_by("order") if p != past]
+        self.assertEqual(visible, [current, self.program])
+
+    def test_unused_program_can_be_deleted(self):
+        unused = SponsorshipProgram.objects.create(name="Unused")
+        response = self.client.post(reverse("manage_program_delete", args=[unused.pk]))
+        self.assertRedirects(response, reverse("manage_programs"))
+        self.assertFalse(SponsorshipProgram.objects.filter(pk=unused.pk).exists())
+
+
 class LegalClauseViewTests(SponsorManageTestBase):
     """Test legal clause CRUD views."""
 
