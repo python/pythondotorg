@@ -102,6 +102,7 @@ class ProgramImportTests(TestCase):
         self.assertEqual(TermsVersion.objects.get(pk=version.pk).markdown, version.markdown)
 
     def test_object_without_program_or_terms_is_rejected(self) -> None:
-        for payload in ({}, {"other": []}):
+        payloads: tuple[dict[str, list[object]], ...] = ({}, {"other": []})
+        for payload in payloads:
             with self.subTest(payload=payload), self.assertRaisesMessage(CommandError, "'program', 'terms', or both"):
                 self.run_import(payload)

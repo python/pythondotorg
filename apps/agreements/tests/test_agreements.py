@@ -335,8 +335,10 @@ class SignedCopyAndCountersignTests(PrivateStorageTestCase):
         copy = SignedCopy.objects.get(agreement=self.agreement)
         self.assertEqual(copy.filename, "signed.pdf")
         self.assertEqual(copy.sha256, hashlib.sha256(PDF).hexdigest())
-        self.assertRegex(copy.file.name, rf"^signed-copies/{self.agreement.pk}/customer-[\w-]{{22}}\.pdf$")
-        with self.storage.open(copy.file.name) as stored:
+        name = copy.file.name
+        assert name is not None
+        self.assertRegex(name, rf"^signed-copies/{self.agreement.pk}/customer-[\w-]{{22}}\.pdf$")
+        with self.storage.open(name) as stored:
             self.assertEqual(stored.read(), PDF)
         with self.assertRaises(ValueError):
             _ = copy.file.url
@@ -356,7 +358,7 @@ class SignedCopyAndCountersignTests(PrivateStorageTestCase):
             )
         self.assertEqual(refresh(self.agreement).status, Agreement.Status.SIGNED)
         customer_copy = SignedCopy.objects.get(agreement=self.agreement)
-        self.assertEqual(self.stored_names(), [PurePosixPath(customer_copy.file.name).name])
+        self.assertEqual(self.stored_names(), [PurePosixPath(str(customer_copy.file.name)).name])
 
     def test_second_copy_of_a_kind_is_refused_without_leaving_its_file(self) -> None:
         earlier = SignedCopy(
@@ -376,7 +378,7 @@ class SignedCopyAndCountersignTests(PrivateStorageTestCase):
                 seen_sha256=self.agreement.document_sha256,
             )
         self.assertEqual(refresh(self.agreement).status, Agreement.Status.OFFERED)
-        self.assertEqual(self.stored_names(), [PurePosixPath(earlier.file.name).name])
+        self.assertEqual(self.stored_names(), [PurePosixPath(str(earlier.file.name)).name])
 
     def test_agreements_are_private(self) -> None:
         self.client.force_login(self.other)

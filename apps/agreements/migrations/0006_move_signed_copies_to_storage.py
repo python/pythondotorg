@@ -11,12 +11,11 @@ from django.db import migrations
 if TYPE_CHECKING:
     from django.apps.registry import Apps
     from django.db.backends.base.schema import BaseDatabaseSchemaEditor
-    from django.db.models.fields.files import FieldFile
 
 CHUNK_SIZE = 20  # copies are up to 20 MB each
 
 
-def _stored_sha256(file: FieldFile) -> str:
+def _stored_sha256(file: Any) -> str:
     digest = hashlib.sha256()
     with file.storage.open(file.name, "rb") as stored:
         for chunk in stored.chunks():
@@ -33,9 +32,11 @@ def _require_stored_hash(copy: Any) -> None:
         raise RuntimeError(msg)
 
 
+# Historical models: SignedCopy here still has the ``content`` column that 0007 drops, so the
+# current model's types don't apply.
 def move_to_storage(apps: Apps, schema_editor: BaseDatabaseSchemaEditor) -> None:
-    copies = apps.get_model("agreements", "SignedCopy").objects.using(schema_editor.connection.alias)
-    written: list[FieldFile] = []
+    copies: Any = apps.get_model("agreements", "SignedCopy").objects.using(schema_editor.connection.alias)
+    written: list[Any] = []
     try:
         for copy in copies.filter(file__isnull=True).iterator(chunk_size=CHUNK_SIZE):
             copy.file.save(f"{copy.kind}.pdf", ContentFile(bytes(copy.content)), save=False)
@@ -51,7 +52,7 @@ def move_to_storage(apps: Apps, schema_editor: BaseDatabaseSchemaEditor) -> None
 
 def restore_to_database(apps: Apps, schema_editor: BaseDatabaseSchemaEditor) -> None:
     """Copy each stored file back into the row. The stored files are kept; delete them by hand if wanted."""
-    copies = apps.get_model("agreements", "SignedCopy").objects.using(schema_editor.connection.alias)
+    copies: Any = apps.get_model("agreements", "SignedCopy").objects.using(schema_editor.connection.alias)
     for copy in copies.filter(content__isnull=True).iterator(chunk_size=CHUNK_SIZE):
         with copy.file.open("rb") as stored:
             content = stored.read()

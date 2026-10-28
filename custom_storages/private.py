@@ -12,8 +12,8 @@ from django.utils.module_loading import import_string
 class LocalPrivateStorage(FileSystemStorage):
     """Keep files outside the publicly served media directory; only ``download_view`` may serve them."""
 
-    root_setting = None
-    download_view = None
+    root_setting: str | None = None
+    download_view: str | None = None
 
     def __init__(self, *args, **kwargs):
         """Reject storage inside public media."""
