@@ -67,6 +67,23 @@ class JobPostingsFieldTests(TestCase):
             ],
         )
 
+    def test_mixed_case_link_scheme_round_trips(self):
+        value = self.clean([{"title": "Engineer", "location": "", "url": "HTTPS://example.com/Jobs/1"}])
+
+        self.assertEqual(value, "Engineer | https://example.com/Jobs/1")
+        self.assertEqual(
+            parse_job_postings("Engineer | Remote | Http://example.com/1"),
+            [{"title": "Engineer", "location": "Remote", "url": "Http://example.com/1"}],
+        )
+
+    def test_line_breaks_inside_a_row_stay_on_one_stored_line(self):
+        rows = [{"title": "Senior\u2028Python\nEngineer", "location": "Remote\r\nEU", "url": "https://example.com/1"}]
+
+        value = self.clean(rows)
+
+        self.assertEqual(value, "Senior Python Engineer | Remote EU | https://example.com/1")
+        self.assertEqual(len(parse_job_postings(value)), 1)
+
     def test_every_job_needs_a_title_and_a_valid_link_without_separator(self):
         rows = [
             {"title": "", "location": "", "url": "https://example.com/1"},
