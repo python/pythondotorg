@@ -9,6 +9,7 @@ from django.utils import timezone
 from django_countries.fields import CountryField
 
 from apps.mailing.forms import BaseEmailTemplateForm, validate_template_syntax
+from apps.sponsors.forms import SponsorRequiredAssetsForm
 from apps.sponsors.models import (
     SPONSOR_TEMPLATE_HELP_TEXT,
     EmailTargetableConfiguration,
@@ -1061,6 +1062,22 @@ class LegalClauseForm(forms.ModelForm):
                 attrs={"rows": 3, "style": INPUT_STYLE + "resize:vertical;", "placeholder": "Internal notes..."}
             ),
         }
+
+
+class StaffRequiredAssetsForm(SponsorRequiredAssetsForm):
+    """The sponsor's required-assets form, for staff uploading on the sponsor's behalf.
+
+    Labels drop the sponsor-facing wording ("Fulfilled, thank you!"); each field
+    carries its ``asset`` so the page can show status and due date itself.
+    """
+
+    def __init__(self, *args, **kwargs):
+        """Build the sponsor form's fields, then relabel them plainly."""
+        super().__init__(*args, **kwargs)
+        for asset in self.required_assets:
+            field = self.fields[self._get_field_name(asset)]
+            field.label = asset.label
+            field.asset = asset
 
 
 # Dispatcher mapping config type slugs to (model, form) tuples

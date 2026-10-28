@@ -8,6 +8,7 @@ from tempfile import TemporaryDirectory
 from unittest import mock
 
 from allauth.account.models import EmailAddress
+from django.contrib.admin.models import LogEntry
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group, Permission
 from django.core.exceptions import PermissionDenied
@@ -39,6 +40,7 @@ from apps.sponsors.models import (
     TextAsset,
 )
 from apps.sponsors.models.enums import AssetsRelatedTo
+from apps.sponsors.tests.utils import get_static_image_file_as_upload
 
 FAKE_PDF_BYTES = b"%PDF-1.4\n1 0 obj\n<< /Type /Catalog >>\nendobj\n%%EOF"
 
@@ -1615,6 +1617,89 @@ class AssetExportViewTests(SponsorshipReviewTestBase):
         )
         self.assertEqual(response.status_code, 302)
         self.assertIn(reverse("manage_sponsorships"), response.url)
+
+
+class SponsorshipAssetsUpdateViewTests(SponsorshipReviewTestBase):
+    """Staff upload required assets on the sponsor's behalf."""
+
+    def _require_asset(self, feature_model, internal_name, **extra):
+        """Create a required asset and its empty generic asset, as benefit configuration does."""
+        benefit = SponsorBenefit.new_copy(self.benefit, sponsorship=self.sponsorship)
+        required = baker.make(
+            feature_model,
+            sponsor_benefit=benefit,
+            internal_name=internal_name,
+            related_to=AssetsRelatedTo.SPONSORSHIP.value,
+            **extra,
+        )
+        asset_model = {RequiredImgAsset: ImgAsset, RequiredTextAsset: TextAsset}[feature_model]
+        asset_model.objects.create(content_object=self.sponsorship, internal_name=internal_name)
+        return required
+
+    def test_staff_upload_saves_image_and_text_and_logs_it(self):
+        logo = self._require_asset(
+            RequiredImgAsset, "logo", min_width=1, max_width=10000, min_height=1, max_height=10000
+        )
+        blurb = self._require_asset(RequiredTextAsset, "blurb", max_length=None)
+        url = reverse("manage_sponsorship_assets", args=[self.sponsorship.pk])
+        with TemporaryDirectory() as media_root, self.settings(MEDIA_ROOT=media_root):
+            response = self.client.post(
+                url, {"logo": get_static_image_file_as_upload("psf-logo.png", "logo.png"), "blurb": "We sponsor!"}
+            )
+            self.assertRedirects(
+                response,
+                reverse("manage_sponsorship_detail", args=[self.sponsorship.pk]),
+                fetch_redirect_response=False,
+            )
+            self.assertTrue(logo.value.name.endswith(".png"))
+        self.assertEqual(blurb.value, "We sponsor!")
+        self.assertTrue(
+            LogEntry.objects.filter(object_id=str(self.sponsorship.pk), change_message__contains="assets").exists()
+        )
+
+    def test_asset_param_limits_page_to_one_asset(self):
+        logo = self._require_asset(
+            RequiredImgAsset, "logo", min_width=1, max_width=10000, min_height=1, max_height=10000
+        )
+        self._require_asset(RequiredTextAsset, "blurb", max_length=None)
+        url = reverse("manage_sponsorship_assets", args=[self.sponsorship.pk])
+        response = self.client.get(f"{url}?asset={logo.pk}")
+        self.assertEqual(list(response.context["form"].fields), ["logo"])
+
+    def test_non_group_staff_denied(self):
+        self._require_asset(RequiredTextAsset, "blurb", max_length=None)
+        self.client.login(username="anon", password="pass")
+        url = reverse("manage_sponsorship_assets", args=[self.sponsorship.pk])
+        self.assertEqual(self.client.post(url, {"blurb": "nope"}).status_code, 403)
+
+    def test_download_serves_one_file_and_only_for_its_sponsorship(self):
+        logo = self._require_asset(
+            RequiredImgAsset, "logo", min_width=1, max_width=10000, min_height=1, max_height=10000
+        )
+        other = Sponsorship.objects.create(sponsor=self.sponsor, submited_by=self.staff_user, year=self.year)
+        content = b"slide bytes"
+        with TemporaryDirectory() as media_root, self.settings(MEDIA_ROOT=media_root):
+            logo.value = SimpleUploadedFile("slide.PNG", content, content_type="image/png")
+            response = self.client.get(
+                reverse("manage_sponsorship_asset_download", args=[self.sponsorship.pk, logo.pk])
+            )
+            self.assertEqual(b"".join(response.streaming_content), content)
+            self.assertEqual(response["Content-Disposition"], 'attachment; filename="acme-corp-logo.png"')
+            foreign = self.client.get(reverse("manage_sponsorship_asset_download", args=[other.pk, logo.pk]))
+            self.assertEqual(foreign.status_code, 404)
+
+    def test_detail_flags_due_dates_only_for_pending_assets(self):
+        today = timezone.localdate()
+        overdue = self._require_asset(RequiredTextAsset, "late", due_date=today - datetime.timedelta(days=1))
+        soon = self._require_asset(RequiredTextAsset, "soon", due_date=today + datetime.timedelta(days=14))
+        later = self._require_asset(RequiredTextAsset, "later", due_date=today + datetime.timedelta(days=15))
+        done = self._require_asset(RequiredTextAsset, "done", due_date=today - datetime.timedelta(days=1))
+        done.value = "Submitted"
+
+        response = self.client.get(reverse("manage_sponsorship_detail", args=[self.sponsorship.pk]))
+
+        states = {asset.pk: asset.due_state for asset in response.context["required_assets"]}
+        self.assertEqual(states, {overdue.pk: "overdue", soon.pk: "soon", later.pk: None, done.pk: None})
 
 
 class BenefitFeatureConfigViewTests(SponsorManageTestBase):

@@ -19,7 +19,7 @@ from django.contrib.admin.models import ADDITION, CHANGE
 from django.core.mail import EmailMessage
 from django.db import transaction
 from django.db.models import Count, F, OuterRef, Prefetch, Q, Subquery, Sum
-from django.http import HttpResponse, QueryDict
+from django.http import FileResponse, Http404, HttpResponse, QueryDict
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone as tz
@@ -53,6 +53,7 @@ from apps.sponsors.manage.forms import (
     SponsorshipEditForm,
     SponsorshipFilterForm,
     SponsorshipPackageManageForm,
+    StaffRequiredAssetsForm,
 )
 from apps.sponsors.models import (
     BenefitFeature,
@@ -78,6 +79,9 @@ from apps.sponsors.utils import with_article
 from pydotorg.mixins import GroupRequiredMixin, LoginRequiredMixin
 
 logger = logging.getLogger(__name__)
+
+# Pending required assets due within this many days are flagged as due soon.
+ASSET_DUE_SOON_DAYS = 14
 
 
 def _int_or_none(value):
@@ -1124,16 +1128,9 @@ class SponsorshipDetailView(SponsorshipAdminRequiredMixin, DetailView):
         if contract and contract.signed_document:
             is_docx = contract.signed_document.name.lower().endswith(".docx")
             context["signed_document_kind"] = "DOCX" if is_docx else "PDF"
-        # Required assets
         required_assets = list(BenefitFeature.objects.required_assets().from_sponsorship(sp))
-        assets_submitted = 0
-        for asset in required_assets:
-            with contextlib.suppress(Exception):
-                val = asset.value
-                if val and (not hasattr(val, "url") or val.url):
-                    assets_submitted += 1
         context["required_assets"] = required_assets
-        context["assets_submitted"] = assets_submitted
+        context["assets_submitted"] = _flag_required_assets(required_assets)
         context["assets_total"] = len(required_assets)
         # Benefit add form (only when editable)
         if sp.open_for_editing:
@@ -1161,6 +1158,30 @@ class SponsorshipDetailView(SponsorshipAdminRequiredMixin, DetailView):
         )
         context["is_expired"] = sp.status == Sponsorship.FINALIZED and sp.end_date and sp.end_date < today
         return context
+
+
+def _flag_required_assets(required_assets):
+    """Set ``submitted`` and ``due_state`` on each required asset and return how many were submitted.
+
+    ``submitted`` is the asset's value (file or text), or None while pending. Pending assets with a
+    due date get ``due_state`` "overdue" or "soon" (due within ASSET_DUE_SOON_DAYS).
+    """
+    submitted = 0
+    today = tz.localdate()
+    for asset in required_assets:
+        asset.submitted = None
+        asset.due_state = None
+        with contextlib.suppress(Exception):
+            val = asset.value
+            if val and (not hasattr(val, "url") or val.url):
+                asset.submitted = val
+                submitted += 1
+        if asset.submitted is None and asset.due_date:
+            if asset.due_date < today:
+                asset.due_state = "overdue"
+            elif (asset.due_date - today).days <= ASSET_DUE_SOON_DAYS:
+                asset.due_state = "soon"
+    return submitted
 
 
 class SponsorshipApproveView(SponsorshipAdminRequiredMixin, UpdateView):
@@ -1377,6 +1398,65 @@ class AssetExportView(SponsorshipAdminRequiredMixin, View):
         response["Content-Type"] = "application/x-zip-compressed"
         response["Content-Disposition"] = f'attachment; filename="{sponsor_name}-assets.zip"'
         return response
+
+
+class SponsorshipAssetDownloadView(SponsorshipAdminRequiredMixin, View):
+    """Download one submitted file asset, named ``<sponsor>-<asset>.<ext>``."""
+
+    def get(self, request, pk, asset_pk):
+        """Stream the file as an attachment, or return to the sponsorship if it can't be read."""
+        sp = get_object_or_404(Sponsorship.objects.select_related("sponsor"), pk=pk)
+        asset = BenefitFeature.objects.required_assets().from_sponsorship(sp).filter(pk=asset_pk).first()
+        if asset is None:
+            raise Http404
+        value = asset.value
+        detail_url = reverse("manage_sponsorship_detail", args=[pk])
+        if not value or not hasattr(value, "open"):
+            messages.warning(request, "That asset has no file to download.")
+            return redirect(detail_url)
+        try:
+            source = value.open("rb")
+        except Exception:  # Storage backends disagree on the error for a missing file.
+            logger.exception("Asset file %s for sponsorship %s is unreadable", value.name, sp.pk)
+            messages.error(request, "The file could not be read from storage.")
+            return redirect(detail_url)
+        sponsor = slugify(sp.sponsor.name if sp.sponsor else "") or f"sponsor-{sp.sponsor_id}"
+        filename = f"{sponsor}-{slugify(asset.internal_name) or asset.pk}{Path(value.name).suffix.lower()}"
+        return FileResponse(source, as_attachment=True, filename=filename)
+
+
+class SponsorshipAssetsUpdateView(SponsorshipAdminRequiredMixin, View):
+    """Upload or replace a sponsorship's required assets on the sponsor's behalf.
+
+    Uses the sponsor portal's form and validation. ``?asset=<pk>`` limits the page to one asset.
+    """
+
+    template_name = "sponsors/manage/sponsorship_assets.html"
+
+    def _form(self, request, sponsorship, **kwargs):
+        asset_pk = _int_or_none(request.GET.get("asset", ""))
+        return StaffRequiredAssetsForm(
+            instance=sponsorship, required_assets_ids=[asset_pk] if asset_pk else [], **kwargs
+        )
+
+    def _render(self, request, sponsorship, form):
+        return render(request, self.template_name, {"sponsorship": sponsorship, "form": form})
+
+    def get(self, request, pk):
+        """Show a field for each required asset (or just the requested one)."""
+        sponsorship = get_object_or_404(Sponsorship.objects.select_related("sponsor"), pk=pk)
+        return self._render(request, sponsorship, self._form(request, sponsorship))
+
+    def post(self, request, pk):
+        """Save the submitted assets, record who did it, and return to the sponsorship."""
+        sponsorship = get_object_or_404(Sponsorship.objects.select_related("sponsor"), pk=pk)
+        form = self._form(request, sponsorship, data=request.POST, files=request.FILES)
+        if not form.is_valid():
+            return self._render(request, sponsorship, form)
+        form.update_assets()
+        add_log_entry(request, sponsorship, CHANGE, "Required assets updated by staff")
+        messages.success(request, "Assets saved.")
+        return redirect(reverse("manage_sponsorship_detail", args=[pk]))
 
 
 class BulkAssetExportView(SponsorshipAdminRequiredMixin, View):

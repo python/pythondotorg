@@ -39,6 +39,17 @@
     .sp-timeline-step.active .step-date { color:#777; }
     .confirm-modal { background:#fff; border:1px solid #e0e0e0; border-radius:6px; padding:20px; margin-top:12px; display:none; }
     .confirm-modal.visible { display:block; }
+    .asset-table td { vertical-align:top; }
+    .asset-file { display:flex; align-items:center; gap:12px; }
+    .asset-thumb { display:block; max-width:120px; max-height:56px; object-fit:contain; background:#fff; border:1px solid #e3e6ea; border-radius:4px; padding:4px; }
+    .asset-file-links { display:flex; gap:12px; font-size:13px; }
+    .asset-text { font-size:13px; color:#3c4043; line-height:1.5; overflow-wrap:anywhere; max-width:60ch; }
+    .asset-text summary { cursor:pointer; }
+    .asset-text[open] summary { color:#5f6368; margin-bottom:6px; }
+    .asset-due { font-size:12px; color:#5f6368; white-space:nowrap; }
+    .asset-due-note { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.3px; }
+    .asset-due-overdue { color:#b3261e; font-weight:600; }
+    .asset-due-soon { color:#8a5300; font-weight:600; }
     @media (max-width: 768px) {
         .sp-header { flex-wrap:wrap; gap:12px; }
         .sp-grid { grid-template-columns:1fr; }
@@ -85,7 +96,6 @@
         {% endif %}
         <a href="{% url 'manage_sponsorship_notify' sponsorship.pk %}" class="btn btn-secondary">Notify</a>
         <a href="{% url 'manage_sponsorship_export' %}?selected_ids={{ sponsorship.pk }}" class="btn btn-secondary" style="font-size:11px;" title="Export this sponsorship as CSV">CSV</a>
-        <a href="{% url 'manage_sponsorship_export_assets' sponsorship.pk %}" class="btn btn-secondary" style="font-size:11px;">Assets</a>
         {% if sponsorship.sponsor %}<a href="{{ sponsorship.detail_url }}" class="btn btn-secondary" style="font-size:11px;" title="View what the sponsor sees">Sponsor View</a>{% endif %}
         {% if can_lock %}
         <form method="post" action="{% url 'manage_sponsorship_lock' sponsorship.pk %}" style="display:inline;">
@@ -461,51 +471,12 @@
 </div>
 {% endif %}
 
-<!-- Required Assets -->
-{% if required_assets %}
-<div class="manage-section">
-    <div class="manage-section-header" style="display:flex;justify-content:space-between;align-items:center;">
-        <h2>Required Assets <span class="badge">{{ assets_submitted }}/{{ assets_total }}</span></h2>
-        {% if assets_submitted > 0 %}
-        <a href="{% url 'manage_sponsorship_export_assets' sponsorship.pk %}" class="btn btn-sm btn-secondary">Export Assets</a>
-        {% endif %}
-    </div>
-    <table class="manage-table">
-        <thead>
-            <tr>
-                <th>Type</th>
-                <th>Benefit</th>
-                <th>Label</th>
-                <th>Due Date</th>
-                <th style="text-align:center;">Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for asset in required_assets %}
-            <tr>
-                <td style="font-size:12px;">{{ asset|title }}</td>
-                <td>{{ asset.sponsor_benefit.name }}</td>
-                <td>{{ asset.label|default:"--" }}</td>
-                <td style="font-size:12px;color:#777;">
-                    {% if asset.due_date %}{{ asset.due_date|date:"M j, Y" }}{% else %}<span style="color:#ccc;">--</span>{% endif %}
-                </td>
-                <td style="text-align:center;">
-                    <span class="tag {% if asset.value and asset.value != None %}tag-green{% else %}tag-gold{% endif %}">
-                        {% if asset.value and asset.value != None %}Submitted{% else %}Pending{% endif %}
-                    </span>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
-{% endif %}
-
 <!-- Benefits table -->
-<div class="manage-section">
-    <div class="manage-section-header">
-        <h2>Benefits <span class="badge">{{ benefits|length }}</span></h2>
+<div class="manage-section collapsed">
+    <div class="manage-section-header collapse-toggle">
+        <h2><span class="collapse-arrow">&#9662;</span> Benefits <span class="badge">{{ benefits|length }}</span></h2>
     </div>
+    <div class="collapse-body">
     {% if benefits %}
     <table class="manage-table">
         <thead>
@@ -622,7 +593,73 @@
         </script>
     </div>
     {% endif %}
+    </div>
 </div>
+
+<!-- Required Assets -->
+{% if required_assets %}
+<div class="manage-section collapsed">
+    <div class="manage-section-header collapse-toggle" style="display:flex;justify-content:space-between;align-items:center;">
+        <h2><span class="collapse-arrow">&#9662;</span> Required Assets <span class="badge">{{ assets_submitted }}/{{ assets_total }}</span></h2>
+        <div style="display:flex;gap:6px;">
+            <a href="{% url 'manage_sponsorship_assets' sponsorship.pk %}" class="btn btn-sm btn-secondary">Upload Assets</a>
+            {% if assets_submitted > 0 %}
+            <a href="{% url 'manage_sponsorship_export_assets' sponsorship.pk %}" class="btn btn-sm btn-secondary">Download all (ZIP)</a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="collapse-body">
+    <table class="manage-table asset-table">
+        <thead>
+            <tr>
+                <th style="width:30%;">Asset</th>
+                <th>Submission</th>
+                <th style="width:110px;">Due</th>
+                <th style="width:80px;"></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for asset in required_assets %}
+            {% with val=asset.submitted %}
+            <tr>
+                <td>
+                    <div style="font-weight:600;color:#1a1a2e;">{{ asset.label|default:asset.internal_name }}</div>
+                    <div style="font-size:12px;color:#5f6368;">{{ asset.sponsor_benefit.name }}</div>
+                </td>
+                <td>
+                    {% if val is None %}
+                    <span class="tag tag-gold">Pending</span>
+                    {% elif val.url %}
+                    <div class="asset-file">
+                        <a href="{{ val.url }}" target="_blank" rel="noopener"><img src="{{ val.url }}" alt="{{ asset.label }}" class="asset-thumb" loading="lazy"></a>
+                        <span class="asset-file-links">
+                            <a href="{{ val.url }}" target="_blank" rel="noopener">View</a>
+                            <a href="{% url 'manage_sponsorship_asset_download' sponsorship.pk asset.pk %}">Download</a>
+                        </span>
+                    </div>
+                    {% elif val == "YES" %}Yes
+                    {% elif val == "NO" %}No
+                    {% elif val|length > 160 %}
+                    <details class="asset-text"><summary>{{ val|truncatechars:160 }}</summary><div>{{ val|urlize|linebreaksbr }}</div></details>
+                    {% else %}
+                    <div class="asset-text">{{ val|urlize|linebreaksbr }}</div>
+                    {% endif %}
+                </td>
+                <td class="asset-due{% if asset.due_state %} asset-due-{{ asset.due_state }}{% endif %}">
+                    {% if asset.due_date %}{{ asset.due_date|date:"M j, Y" }}{% else %}<span style="color:#ccc;">&mdash;</span>{% endif %}
+                    {% if asset.due_state == "overdue" %}<div class="asset-due-note">Overdue</div>{% elif asset.due_state == "soon" %}<div class="asset-due-note">Due soon</div>{% endif %}
+                </td>
+                <td style="text-align:right;">
+                    <a href="{% url 'manage_sponsorship_assets' sponsorship.pk %}?asset={{ asset.pk }}" class="btn btn-xs btn-secondary">{% if val is None %}Upload{% else %}Replace{% endif %}</a>
+                </td>
+            </tr>
+            {% endwith %}
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+</div>
+{% endif %}
 
 <!-- Communication History -->
 <div class="manage-section">

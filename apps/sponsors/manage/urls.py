@@ -92,7 +92,17 @@ urlpatterns = [
         views.ContractRegenerateView.as_view(),
         name="manage_contract_regenerate",
     ),
-    # Asset export
+    # Assets: staff upload, single download, ZIP export
+    path(
+        "sponsorships/<int:pk>/assets/",
+        views.SponsorshipAssetsUpdateView.as_view(),
+        name="manage_sponsorship_assets",
+    ),
+    path(
+        "sponsorships/<int:pk>/assets/<int:asset_pk>/download/",
+        views.SponsorshipAssetDownloadView.as_view(),
+        name="manage_sponsorship_asset_download",
+    ),
     path(
         "sponsorships/<int:pk>/export-assets/",
         views.AssetExportView.as_view(),
