@@ -89,7 +89,7 @@ class FinancesChartDataRegressionTests(ManageRenderingRegressionTestBase):
 
         self.assertIn(self.year, data["yoy_labels"])
         year_index = data["yoy_labels"].index(self.year)
-        self.assertEqual(data["yoy_revenue"][year_index], 50000)
+        self.assertEqual(data["yoy_approved"][year_index], 50000)
 
         self.assertIn("Gold", data["pkg_labels"])
         pkg_index = data["pkg_labels"].index("Gold")

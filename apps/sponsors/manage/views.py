@@ -3,6 +3,7 @@
 Restricted to active Sponsorship Admin group members and active superusers.
 """
 
+import calendar
 import contextlib
 import copy
 import csv
@@ -20,6 +21,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.mail import EmailMessage
 from django.db import transaction
 from django.db.models import Count, F, OuterRef, Prefetch, Q, Subquery, Sum
+from django.db.models.functions import Coalesce, ExtractMonth, ExtractYear
 from django.http import FileResponse, Http404, HttpResponse, QueryDict
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -630,6 +632,24 @@ class FinancesView(SponsorshipAdminRequiredMixin, TemplateView):
 
     template_name = "sponsors/manage/finances.html"
 
+    # Months relative to Jan 1 of the sponsorship year: -12..-1 = Jan..Dec of year-1, 0..11 = Jan..Dec of year.
+    REL_MONTHS = list(range(-12, 12))
+
+    PACKAGE_PALETTE = [
+        "#3776ab",
+        "#b8860b",
+        "#4caf50",
+        "#8bc1e8",
+        "#d4a94f",
+        "#6b8e23",
+        "#8899a6",
+        "#b0d4f1",
+        "#e07b53",
+        "#9b7fb8",
+        "#5f6368",
+        "#d4e8f7",
+    ]
+
     def _package_breakdown(self, year_qs):
         """Return revenue grouped by package tier."""
         rows = (
@@ -641,24 +661,217 @@ class FinancesView(SponsorshipAdminRequiredMixin, TemplateView):
             {"name": r["package__name"] or "Custom", "revenue": r["revenue"] or 0, "count": r["count"]} for r in rows
         ]
 
+    @staticmethod
+    def _counted_status_q(current_year):
+        """Return the Q object for statuses that count toward revenue totals.
+
+        Past years only count finalized sponsorships ("if it's not finalized now, it's not
+        going to be"). The current sponsorship year also counts approved and applied
+        sponsorships, since those still have a real chance of landing.
+        """
+        q = Q(status=Sponsorship.FINALIZED)
+        if current_year is not None:
+            q |= Q(year=current_year, status__in=[Sponsorship.APPLIED, Sponsorship.APPROVED, Sponsorship.FINALIZED])
+        return q
+
+    @staticmethod
+    def _cumulative_series(buckets, months):
+        """Turn a {rel_month: amount} map into a running-total list aligned to `months`.
+
+        Amounts booked before the first requested month are folded into its total, so the
+        series always reflects "everything booked up to and including this point".
+        """
+        items = sorted(buckets.items())
+        series = []
+        running = 0
+        idx = 0
+        for month in months:
+            while idx < len(items) and items[idx][0] <= month:
+                running += items[idx][1]
+                idx += 1
+            series.append(running)
+        return series
+
+    @staticmethod
+    def _month_label(rel_month):
+        """Render a relative month index as e.g. 'Jan Y-1' or 'Jun Y'."""
+        if rel_month < 0:
+            return f"{calendar.month_abbr[rel_month + 13]} Y-1"
+        return f"{calendar.month_abbr[rel_month + 1]} Y"
+
+    def _cumulative_comparison(self, chart_years, current_year):
+        """Cumulative booked revenue by month-relative-to-Jan-1, for the given years.
+
+        Also returns a "so far this year vs same point last year" headline built from
+        `current_year`, independent of which years are actually charted.
+        """
+        query_years = set(chart_years)
+        if current_year is not None:
+            query_years |= {current_year, current_year - 1}
+        if not query_years:
+            return {"months": [], "labels": [], "series": {}, "with_unapproved": None, "headline": None}
+
+        # Applications aren't commitments; counting them would make this year look ahead of last year
+        # (whose applications that never closed are excluded). They are reported separately as pending.
+        status_q = self._counted_status_q(current_year) & ~Q(status=Sponsorship.APPLIED)
+        rows = (
+            Sponsorship.objects.filter(year__in=query_years)
+            .filter(status_q)
+            .annotate(booking_date=Coalesce("approved_on", "finalized_on", "applied_on"))
+            .annotate(rel_month=(ExtractYear("booking_date") - F("year")) * 12 + (ExtractMonth("booking_date") - 1))
+            .values("year", "rel_month")
+            .annotate(amount=Sum("sponsorship_fee", default=0))
+        )
+        buckets = {year: {} for year in query_years}
+        for row in rows:
+            buckets[row["year"]][row["rel_month"]] = row["amount"] or 0
+
+        series = {
+            year: self._until_today(year, self._cumulative_series(buckets.get(year, {}), self.REL_MONTHS))
+            for year in chart_years
+        }
+        return {
+            "months": self.REL_MONTHS,
+            "labels": [self._month_label(m) for m in self.REL_MONTHS],
+            "series": series,
+            "with_unapproved": self._with_unapproved(buckets, current_year) if current_year in chart_years else None,
+            "headline": self._cumulative_headline(buckets, current_year) if current_year is not None else None,
+        }
+
+    @staticmethod
+    def _rel_month_now(year):
+        """Return today's month index relative to Jan 1 of ``year`` (see REL_MONTHS)."""
+        today = tz.now().date()
+        return (today.year - year) * 12 + (today.month - 1)
+
+    def _until_today(self, year, values):
+        """Blank out months that haven't happened yet, so a year's line stops at today."""
+        rel_now = self._rel_month_now(year)
+        return [v if m <= rel_now else None for m, v in zip(self.REL_MONTHS, values, strict=True)]
+
+    def _with_unapproved(self, buckets, current_year):
+        """Return the current year's booked revenue plus its unapproved applications, or None if there are none.
+
+        Drawn as a separate dashed "if every application is approved" line rather than mixed into the comparison.
+        """
+        applied_rows = (
+            Sponsorship.objects.filter(year=current_year, status=Sponsorship.APPLIED)
+            .annotate(rel_month=(ExtractYear("applied_on") - F("year")) * 12 + (ExtractMonth("applied_on") - 1))
+            .values("rel_month")
+            .annotate(amount=Sum("sponsorship_fee", default=0))
+        )
+        booked = buckets.get(current_year, {})
+        combined = dict(booked)
+        for row in applied_rows:
+            combined[row["rel_month"]] = combined.get(row["rel_month"], 0) + (row["amount"] or 0)
+        if combined == booked:
+            return None
+        return self._until_today(current_year, self._cumulative_series(combined, self.REL_MONTHS))
+
+    def _cumulative_headline(self, buckets, current_year):
+        """Return booked revenue so far this year vs the same point last year, plus unapproved applications."""
+        rel_now = self._rel_month_now(current_year)
+        this_year_so_far = self._cumulative_series(buckets.get(current_year, {}), [rel_now])[0]
+        prev_year_so_far = self._cumulative_series(buckets.get(current_year - 1, {}), [rel_now])[0]
+        pct_change = None
+        if prev_year_so_far:
+            pct_change = round((this_year_so_far - prev_year_so_far) / prev_year_so_far * 100, 1)
+        applied_pending = Sponsorship.objects.filter(year=current_year, status=Sponsorship.APPLIED).aggregate(
+            total=Sum("sponsorship_fee", default=0)
+        )["total"]
+        return {
+            "year": current_year,
+            "prev_year": current_year - 1,
+            "this_year_total": this_year_so_far,
+            "prev_year_total": prev_year_so_far,
+            "pct_change": pct_change,
+            "applied_pending": applied_pending,
+            "with_unapproved_total": this_year_so_far + applied_pending,
+        }
+
+    def _package_breakdown_by_year(self, years, current_year):
+        """Return revenue per package per year, applying the current-year-only status rule."""
+        status_q = self._counted_status_q(current_year)
+        rows = (
+            Sponsorship.objects.filter(year__in=years)
+            .filter(status_q)
+            .values("year", "package__name")
+            .annotate(revenue=Sum("sponsorship_fee", default=0))
+        )
+        totals_by_package = {}
+        data = {}
+        for row in rows:
+            name = row["package__name"] or "Custom"
+            data.setdefault(name, {})[row["year"]] = row["revenue"] or 0
+            totals_by_package[name] = totals_by_package.get(name, 0) + (row["revenue"] or 0)
+
+        packages = sorted(data, key=lambda name: -totals_by_package[name])
+        series = {name: [data.get(name, {}).get(year, 0) for year in years] for name in packages}
+        rows = [{"name": name, "values": series[name]} for name in packages]
+        return {"years": years, "packages": packages, "series": series, "rows": rows}
+
+    def _program_allocation(self, qs):
+        """Estimate revenue allocated per program, splitting each fee by benefit internal value.
+
+        Sponsorships with no recorded internal values can't be split, so their full fee is
+        reported as "Unallocated".
+        """
+        sponsorship_fees = dict(qs.values_list("id", "sponsorship_fee"))
+        sponsorship_ids = list(sponsorship_fees)
+
+        benefit_rows = (
+            SponsorBenefit.objects.filter(sponsorship_id__in=sponsorship_ids)
+            .annotate(program_label=Coalesce("program__name", "program_name"))
+            .values("sponsorship_id", "program_label")
+            .annotate(total_internal=Sum("benefit_internal_value", default=0))
+        )
+        per_sponsorship = {}
+        for row in benefit_rows:
+            per_sponsorship.setdefault(row["sponsorship_id"], {})[row["program_label"]] = row["total_internal"] or 0
+
+        allocation = {}
+        no_internal_value_count = 0
+        for sponsorship_id, raw_fee in sponsorship_fees.items():
+            fee = raw_fee or 0
+            programs = per_sponsorship.get(sponsorship_id, {})
+            total_internal = sum(programs.values())
+            if total_internal <= 0:
+                allocation["Unallocated"] = allocation.get("Unallocated", 0) + fee
+                no_internal_value_count += 1
+                continue
+            for program_label, value in programs.items():
+                allocation[program_label] = allocation.get(program_label, 0) + round(fee * value / total_internal)
+
+        rows = sorted(({"name": k, "amount": v} for k, v in allocation.items()), key=lambda r: -r["amount"])
+        return {"rows": rows, "no_internal_value_count": no_internal_value_count}
+
     def get_context_data(self, **kwargs):
         """Return context with financial data for charts."""
         context = super().get_context_data(**kwargs)
 
+        current_year = None
+        with contextlib.suppress(SponsorshipCurrentYear.DoesNotExist):
+            current_year = SponsorshipCurrentYear.get_year()
+
         committed = Q(status__in=[Sponsorship.APPROVED, Sponsorship.FINALIZED])
+        counted = self._counted_status_q(current_year)
         yoy = list(
             Sponsorship.objects.filter(year__isnull=False)
             .exclude(year=0)
             .values("year")
             .annotate(
-                total=Sum("sponsorship_fee", filter=committed, default=0),
+                total=Sum("sponsorship_fee", filter=counted, default=0),
                 finalized=Sum("sponsorship_fee", filter=Q(status=Sponsorship.FINALIZED), default=0),
-                count=Count("id", filter=committed),
+                approved=Sum("sponsorship_fee", filter=Q(status=Sponsorship.APPROVED), default=0),
+                applied=Sum("sponsorship_fee", filter=Q(status=Sponsorship.APPLIED), default=0),
+                count=Count("id", filter=counted),
             )
             .order_by("year")
         )
         for summary in yoy:
-            summary["pending"] = summary["total"] - summary["finalized"]
+            is_current = summary["year"] == current_year
+            summary["approved_shown"] = summary["approved"] if is_current else 0
+            summary["applied_shown"] = summary["applied"] if is_current else 0
             summary["avg"] = summary["total"] // summary["count"] if summary["count"] else 0
         all_years = [summary["year"] for summary in yoy]
 
@@ -704,12 +917,25 @@ class FinancesView(SponsorshipAdminRequiredMixin, TemplateView):
             .order_by("-sponsorship_fee")
         )
 
+        # Cumulative revenue-by-month comparison: selected year plus up to 3 prior years.
+        if selected_year is not None:
+            chart_years = [year for year in range(selected_year - 3, selected_year + 1) if year in all_years]
+        else:
+            chart_years = []
+        cumulative = self._cumulative_comparison(chart_years, current_year)
+
+        # Stacked revenue-by-package-per-year
+        pkg_by_year = self._package_breakdown_by_year(chart_years, current_year)
+
+        # Estimated program allocation for the selected year, following the same counted-status rule.
+        program_allocation = self._program_allocation(Sponsorship.objects.filter(year=selected_year).filter(counted))
+
         # JSON data for Chart.js
         chart_data = {
             "yoy_labels": [s["year"] for s in yoy],
-            "yoy_revenue": [s["total"] for s in yoy],
             "yoy_finalized": [s["finalized"] for s in yoy],
-            "yoy_pending": [s["pending"] for s in yoy],
+            "yoy_approved": [s["approved_shown"] for s in yoy],
+            "yoy_applied": [s["applied_shown"] for s in yoy],
             "yoy_counts": [s["count"] for s in yoy],
             "yoy_avg": [s["avg"] for s in yoy],
             "pkg_labels": [p["name"] for p in by_package],
@@ -722,12 +948,24 @@ class FinancesView(SponsorshipAdminRequiredMixin, TemplateView):
                 status_counts["finalized"],
                 status_counts["rejected"],
             ],
+            "cum_labels": cumulative["labels"],
+            "cum_years": chart_years,
+            "cum_series": cumulative["series"],
+            "cum_with_unapproved": cumulative["with_unapproved"],
+            "cum_current_year": current_year,
+            "pkg_year_years": pkg_by_year["years"],
+            "pkg_year_packages": pkg_by_year["packages"],
+            "pkg_year_series": pkg_by_year["series"],
+            "pkg_year_palette": self.PACKAGE_PALETTE,
+            "program_labels": [r["name"] for r in program_allocation["rows"]],
+            "program_values": [r["amount"] for r in program_allocation["rows"]],
         }
 
         context.update(
             {
                 "years": list(reversed(all_years)),
                 "selected_year": selected_year,
+                "current_sponsorship_year": current_year,
                 "total_revenue": total_revenue,
                 "total_count": total_count,
                 "avg_deal": total_revenue // total_count if total_count else 0,
@@ -738,6 +976,10 @@ class FinancesView(SponsorshipAdminRequiredMixin, TemplateView):
                 "status_counts": status_counts,
                 "sponsorships": sponsorships,
                 "chart_data": chart_data,
+                "cumulative_headline": cumulative["headline"],
+                "chart_years": chart_years,
+                "pkg_by_year": pkg_by_year,
+                "program_allocation": program_allocation,
             }
         )
         return context

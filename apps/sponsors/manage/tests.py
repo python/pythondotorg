@@ -20,7 +20,7 @@ from django.urls import reverse
 from django.utils import timezone
 from model_bakery import baker
 
-from apps.sponsors.manage.views import AssetBrowserView, ManageDashboardView
+from apps.sponsors.manage.views import AssetBrowserView, FinancesView, ManageDashboardView
 from apps.sponsors.models import (
     Contract,
     ImgAsset,
@@ -3407,3 +3407,184 @@ class FinancesViewTests(SponsorshipReviewTestBase):
     def test_dashboard_revenue_links_to_report(self):
         response = self.client.get(reverse("manage_dashboard"))
         self.assertContains(response, "/sponsors/manage/finances/")
+
+
+class FinancesDataHelperTests(SponsorshipReviewTestBase):
+    """Tests for the Finances view's data helper methods: booking dates, current-year rules,
+    package stacking, and program allocation.
+    """
+
+    def setUp(self):
+        super().setUp()
+        self.view = FinancesView()
+
+    def test_booking_date_falls_back_approved_then_finalized_then_applied(self):
+        """Cumulative bucketing uses approved_on, falling back to finalized_on, per sponsorship."""
+        past_year = self.year - 1
+
+        has_approved_on = Sponsorship.objects.create(
+            sponsor=self.sponsor,
+            package=self.package,
+            sponsorship_fee=10000,
+            year=past_year,
+            status=Sponsorship.FINALIZED,
+        )
+        has_approved_on.approved_on = datetime.date(past_year, 3, 10)
+        has_approved_on.finalized_on = datetime.date(past_year, 4, 1)
+        has_approved_on.save(update_fields=["approved_on", "finalized_on"])
+
+        missing_approved_on = Sponsorship.objects.create(
+            sponsor=self.sponsor,
+            package=self.package,
+            sponsorship_fee=20000,
+            year=past_year,
+            status=Sponsorship.FINALIZED,
+        )
+        missing_approved_on.approved_on = None
+        missing_approved_on.finalized_on = datetime.date(past_year, 6, 1)
+        missing_approved_on.save(update_fields=["approved_on", "finalized_on"])
+
+        result = self.view._cumulative_comparison([past_year], current_year=self.year)  # noqa: SLF001 - helper unit test
+        series = result["series"][past_year]
+        months = result["months"]
+
+        self.assertEqual(series[months.index(1)], 0)
+        # Booked by its approved_on month (March), not finalized_on (April).
+        self.assertEqual(series[months.index(2)], 10000)
+        self.assertEqual(series[months.index(4)], 10000)
+        # The second sponsorship has no approved_on, so it books by finalized_on (June).
+        self.assertEqual(series[months.index(5)], 30000)
+
+    def test_unapproved_applications_feed_only_the_dashed_line(self):
+        self.sponsorship.delete()  # the base fixture is itself an application; keep only this test's data
+        approved = Sponsorship.objects.create(
+            sponsor=self.sponsor,
+            package=self.package,
+            sponsorship_fee=10000,
+            year=self.year,
+            status=Sponsorship.APPROVED,
+        )
+        Sponsorship.objects.filter(pk=approved.pk).update(approved_on=datetime.date(self.year - 1, 9, 1))
+        Sponsorship.objects.create(
+            sponsor=self.sponsor, package=self.package, sponsorship_fee=2500, year=self.year, status=Sponsorship.APPLIED
+        )
+
+        result = self.view._cumulative_comparison([self.year], current_year=self.year)  # noqa: SLF001 - helper unit test
+
+        booked = [v for v in result["series"][self.year] if v is not None]
+        dashed = [v for v in result["with_unapproved"] if v is not None]
+        self.assertEqual((booked[-1], dashed[-1]), (10000, 12500))
+        self.assertEqual(
+            (result["headline"]["this_year_total"], result["headline"]["with_unapproved_total"]), (10000, 12500)
+        )
+
+    def test_current_year_counts_applied_and_approved_but_past_year_counts_finalized_only(self):
+        """Approved/applied revenue only counts for the current sponsorship year."""
+        Sponsorship.objects.create(
+            sponsor=self.sponsor,
+            package=self.package,
+            sponsorship_fee=5000,
+            year=self.year,
+            status=Sponsorship.APPROVED,
+        )
+        Sponsorship.objects.create(
+            sponsor=self.sponsor,
+            package=self.package,
+            sponsorship_fee=7000,
+            year=self.year,
+            status=Sponsorship.FINALIZED,
+        )
+        past_year = self.year - 1
+        Sponsorship.objects.create(
+            sponsor=self.sponsor,
+            package=self.package,
+            sponsorship_fee=9000,
+            year=past_year,
+            status=Sponsorship.APPROVED,
+        )
+        Sponsorship.objects.create(
+            sponsor=self.sponsor,
+            package=self.package,
+            sponsorship_fee=11000,
+            year=past_year,
+            status=Sponsorship.FINALIZED,
+        )
+
+        response = self.client.get(reverse("manage_finances") + f"?year={self.year}")
+        yoy = {row["year"]: row for row in response.context["yoy"]}
+
+        current_row = yoy[self.year]
+        # Counted: the applied base sponsorship (150000), approved_current (5000) and finalized_current (7000).
+        self.assertEqual(current_row["total"], 150000 + 5000 + 7000)
+        self.assertEqual(current_row["approved_shown"], 5000)
+        self.assertEqual(current_row["applied_shown"], 150000)
+
+        past_row = yoy[past_year]
+        self.assertEqual(past_row["total"], 11000)  # finalized only; the approved deal doesn't count
+        self.assertEqual(past_row["approved_shown"], 0)
+
+    def test_package_breakdown_by_year_groups_no_package_as_custom(self):
+        """Sponsorships with no package are grouped under 'Custom'."""
+        self.sponsorship.status = Sponsorship.FINALIZED
+        self.sponsorship.save(update_fields=["status"])
+        Sponsorship.objects.create(
+            sponsor=self.sponsor,
+            package=None,
+            sponsorship_fee=3000,
+            year=self.year,
+            status=Sponsorship.FINALIZED,
+        )
+
+        result = self.view._package_breakdown_by_year([self.year], current_year=self.year)  # noqa: SLF001 - helper unit test
+        self.assertIn("Custom", result["packages"])
+        year_idx = result["years"].index(self.year)
+        self.assertEqual(result["series"]["Custom"][year_idx], 3000)
+        self.assertEqual(result["series"][self.package.name][year_idx], 150000)
+
+    def test_program_allocation_splits_proportionally_and_flags_missing_values(self):
+        """Fees split by benefit internal value per program; no-value sponsorships are unallocated."""
+        self.sponsorship.status = Sponsorship.FINALIZED
+        self.sponsorship.sponsorship_fee = 10000
+        self.sponsorship.save(update_fields=["status", "sponsorship_fee"])
+
+        other_program = SponsorshipProgram.objects.create(name="PyCon US", order=1)
+        SponsorBenefit.objects.create(
+            sponsorship=self.sponsorship,
+            program=self.program,
+            program_name=self.program.name,
+            name="Logo",
+            benefit_internal_value=3000,
+        )
+        SponsorBenefit.objects.create(
+            sponsorship=self.sponsorship,
+            program=other_program,
+            program_name=other_program.name,
+            name="Booth",
+            benefit_internal_value=1000,
+        )
+
+        no_value_sponsorship = Sponsorship.objects.create(
+            sponsor=self.sponsor,
+            package=self.package,
+            sponsorship_fee=5000,
+            year=self.year,
+            status=Sponsorship.FINALIZED,
+        )
+        SponsorBenefit.objects.create(
+            sponsorship=no_value_sponsorship,
+            program=self.program,
+            program_name=self.program.name,
+            name="Logo",
+            benefit_internal_value=None,
+        )
+
+        counted = self.view._counted_status_q(self.year)  # noqa: SLF001 - helper unit test
+        qs = Sponsorship.objects.filter(year=self.year).filter(counted)
+        result = self.view._program_allocation(qs)  # noqa: SLF001 - helper unit test
+        rows = {r["name"]: r["amount"] for r in result["rows"]}
+
+        # $10,000 fee split 3000:1000 internal value (3:1) -> 7500 / 2500.
+        self.assertEqual(rows[self.program.name], 7500)
+        self.assertEqual(rows["PyCon US"], 2500)
+        self.assertEqual(rows["Unallocated"], 5000)
+        self.assertEqual(result["no_internal_value_count"], 1)
