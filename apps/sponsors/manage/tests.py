@@ -233,6 +233,35 @@ class BenefitViewTests(SponsorManageTestBase):
         self.assertEqual(response.status_code, 302)
         self.assertFalse(SponsorshipBenefit.objects.filter(pk=pk).exists())
 
+    def test_benefit_edit_contract_rules_collapsed_when_empty(self):
+        response = self.client.get(reverse("manage_benefit_edit", args=[self.benefit.pk]))
+        self.assertContains(response, 'class="manage-section collapsed"')
+
+    def test_benefit_edit_contract_rules_expanded_when_populated(self):
+        clause = LegalClause.objects.create(internal_name="NDA", clause="Some clause text")
+        self.benefit.legal_clauses.add(clause)
+        response = self.client.get(reverse("manage_benefit_edit", args=[self.benefit.pk]))
+        self.assertNotContains(response, 'class="manage-section collapsed"')
+
+    def test_benefit_edit_contract_rules_expanded_on_error(self):
+        other_year_benefit = SponsorshipBenefit.objects.create(
+            name="Other Year Benefit",
+            program=self.program,
+            year=self.year + 1,
+        )
+        response = self.client.post(
+            reverse("manage_benefit_edit", args=[self.benefit.pk]),
+            {
+                "name": "Updated Benefit Name",
+                "program": self.program.pk,
+                "year": self.year,
+                "conflicts": [other_year_benefit.pk],
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Not part of")
+        self.assertNotContains(response, 'class="manage-section collapsed"')
+
 
 class PackageViewTests(SponsorManageTestBase):
     """Test package CRUD views."""

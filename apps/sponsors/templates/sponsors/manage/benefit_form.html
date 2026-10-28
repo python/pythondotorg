@@ -73,6 +73,7 @@
                     <div class="form-group">
                         <label for="id_program">Program</label>
                         {{ form.program }}
+                        {% if form.program.help_text %}<span class="helptext">{{ form.program.help_text }}</span>{% endif %}
                         {% if form.program.errors %}<div class="field-errors">{{ form.program.errors.0 }}</div>{% endif %}
                     </div>
                     <div class="form-group">
@@ -84,6 +85,7 @@
 
                 <div class="form-group">
                     <label>Included in Packages</label>
+                    {% if form.packages.help_text %}<span class="helptext">{{ form.packages.help_text }}</span>{% endif %}
                     <div class="checkbox-list" data-year-filtered>
                         {% for checkbox in form.packages %}
                         {{ checkbox }}
@@ -98,18 +100,30 @@
             <fieldset class="manage-fieldset">
                 <legend>Flags &amp; Visibility</legend>
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-                    <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;padding:8px 12px;background:#f7f8fa;border-radius:4px;">
-                        {{ form.package_only }} Package only
-                    </label>
-                    <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;padding:8px 12px;background:#f7f8fa;border-radius:4px;">
-                        {{ form.new }} New this year
-                    </label>
-                    <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;padding:8px 12px;background:#f7f8fa;border-radius:4px;">
-                        {{ form.unavailable }} Unavailable
-                    </label>
-                    <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;padding:8px 12px;background:#f7f8fa;border-radius:4px;">
-                        {{ form.standalone }} Standalone
-                    </label>
+                    <div style="padding:8px 12px;background:#f7f8fa;border-radius:4px;">
+                        <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;">
+                            {{ form.package_only }} Package only
+                        </label>
+                        {% if form.package_only.help_text %}<span class="helptext" style="margin-top:4px;color:#5f6368;">{{ form.package_only.help_text }}</span>{% endif %}
+                    </div>
+                    <div style="padding:8px 12px;background:#f7f8fa;border-radius:4px;">
+                        <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;">
+                            {{ form.new }} New this year
+                        </label>
+                        {% if form.new.help_text %}<span class="helptext" style="margin-top:4px;color:#5f6368;">{{ form.new.help_text }}</span>{% endif %}
+                    </div>
+                    <div style="padding:8px 12px;background:#f7f8fa;border-radius:4px;">
+                        <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;">
+                            {{ form.unavailable }} Unavailable
+                        </label>
+                        {% if form.unavailable.help_text %}<span class="helptext" style="margin-top:4px;color:#5f6368;">{{ form.unavailable.help_text }}</span>{% endif %}
+                    </div>
+                    <div style="padding:8px 12px;background:#f7f8fa;border-radius:4px;">
+                        <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;">
+                            {{ form.standalone }} Standalone
+                        </label>
+                        {% if form.standalone.help_text %}<span class="helptext" style="margin-top:4px;color:#5f6368;">{{ form.standalone.help_text }}</span>{% endif %}
+                    </div>
                 </div>
             </fieldset>
 
@@ -120,6 +134,7 @@
                 <div class="form-group">
                     <label for="id_internal_description">Internal Notes</label>
                     {{ form.internal_description }}
+                    {% if form.internal_description.help_text %}<span class="helptext">{{ form.internal_description.help_text }}</span>{% endif %}
                 </div>
 
                 <div class="form-row">
@@ -135,42 +150,52 @@
                     </div>
                 </div>
 
-                <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;padding:8px 12px;background:#f7f8fa;border-radius:4px;width:fit-content;">
-                    {{ form.soft_capacity }} Soft capacity (flexible limit)
-                </label>
-            </fieldset>
-
-            <!-- Contract & application rules -->
-            <fieldset class="manage-fieldset">
-                <legend>Contract &amp; Application Rules</legend>
-
-                <div class="form-group">
-                    <label>Legal Clauses</label>
-                    {% if form.fields.legal_clauses.queryset %}
-                    <div class="checkbox-list">
-                        {% for checkbox in form.legal_clauses %}
-                        {{ checkbox }}
-                        {% endfor %}
-                    </div>
-                    {% else %}
-                    <p style="margin:0;color:#777;font-size:13px;">No legal clauses yet. <a href="{% url 'manage_legal_clause_create' %}" style="color:#3776ab;">Create one</a>.</p>
-                    {% endif %}
-                    <span class="helptext">{{ form.legal_clauses.help_text }}</span>
-                    {% if form.legal_clauses.errors %}<div class="field-errors">{{ form.legal_clauses.errors.0 }}</div>{% endif %}
-                </div>
-
-                <div class="form-group">
-                    <label>Conflicts With</label>
-                    <div class="checkbox-list" data-year-filtered style="max-height:260px;overflow-y:auto;">
-                        {% for checkbox in form.conflicts %}
-                        {{ checkbox }}
-                        {% endfor %}
-                    </div>
-                    <span class="helptext year-filter-empty" style="display:none;">No other benefits exist for this year yet.</span>
-                    <span class="helptext">Applicants can pick only one benefit from a group of conflicting benefits.</span>
-                    {% if form.conflicts.errors %}<div class="field-errors">{{ form.conflicts.errors.0 }}</div>{% endif %}
+                <div style="padding:8px 12px;background:#f7f8fa;border-radius:4px;width:fit-content;">
+                    <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;">
+                        {{ form.soft_capacity }} Soft capacity (flexible limit)
+                    </label>
+                    {% if form.soft_capacity.help_text %}<span class="helptext" style="margin-top:4px;color:#5f6368;">{{ form.soft_capacity.help_text }}</span>{% endif %}
                 </div>
             </fieldset>
+
+            <!-- Contract & application rules: rarely used, start collapsed unless it already holds data -->
+            {% with clause_count=form.legal_clauses.value|default_if_none:""|length conflict_count=form.conflicts.value|default_if_none:""|length %}
+            {% with rules_count=clause_count|add:conflict_count %}
+            <div class="manage-section{% if not rules_count and not form.legal_clauses.errors and not form.conflicts.errors %} collapsed{% endif %}">
+                <div class="manage-section-header collapse-toggle">
+                    <h2><span class="collapse-arrow">&#9662;</span> Contract &amp; Application Rules{% if rules_count %} <span class="badge">{{ rules_count }}</span>{% endif %}</h2>
+                </div>
+                <div class="collapse-body">
+                    <div class="form-group">
+                        <label>Legal Clauses</label>
+                        {% if form.fields.legal_clauses.queryset %}
+                        <div class="checkbox-list">
+                            {% for checkbox in form.legal_clauses %}
+                            {{ checkbox }}
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <p style="margin:0;color:#5f6368;font-size:13px;">No legal clauses yet. <a href="{% url 'manage_legal_clause_create' %}" style="color:#3776ab;">Create one</a>.</p>
+                        {% endif %}
+                        <span class="helptext">{{ form.legal_clauses.help_text }}</span>
+                        {% if form.legal_clauses.errors %}<div class="field-errors">{{ form.legal_clauses.errors.0 }}</div>{% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label>Conflicts With</label>
+                        <div class="checkbox-list" data-year-filtered style="max-height:260px;overflow-y:auto;">
+                            {% for checkbox in form.conflicts %}
+                            {{ checkbox }}
+                            {% endfor %}
+                        </div>
+                        <span class="helptext year-filter-empty" style="display:none;">No other benefits exist for this year yet.</span>
+                        <span class="helptext">Applicants can pick only one benefit from a group of conflicting benefits.</span>
+                        {% if form.conflicts.errors %}<div class="field-errors">{{ form.conflicts.errors.0 }}</div>{% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endwith %}
+            {% endwith %}
 
             <div style="display:flex;gap:10px;align-items:center;padding-top:8px;">
                 <button type="submit" class="btn btn-primary">
@@ -303,6 +328,9 @@
                 <h2>Sponsors Using This Benefit <span class="badge">{{ related_sponsorships_count }}</span></h2>
                 <a href="{% url 'manage_benefit_sync' object.pk %}" class="btn btn-sm btn-gold">Sync to Sponsorships</a>
             </div>
+            <p style="font-size:12px;color:#5f6368;margin:0 0 16px;">
+                Sponsorships get their own copy of this benefit when they're created; editing the benefit here does not change copies already handed out. Syncing pushes this benefit's current name, description, value, program, and features onto the copies held by open (non-rejected, not-yet-ended) sponsorships below.
+            </p>
             <table class="manage-table">
                 <thead>
                     <tr>
