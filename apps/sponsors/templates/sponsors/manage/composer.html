@@ -332,6 +332,41 @@
         font-size: 9px;
         padding: 1px 5px;
     }
+    .benefit-hint {
+        all: unset;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 16px;
+        height: 16px;
+        margin-left: 4px;
+        border: 1px solid #c4c9d0;
+        border-radius: 50%;
+        font-size: 10px;
+        font-weight: 700;
+        line-height: 1;
+        color: #5f6368;
+        background: #fff;
+        cursor: help;
+        vertical-align: 1px;
+    }
+    .benefit-hint:hover, .benefit-hint[aria-expanded="true"] { color: #fff; background: #3776ab; border-color: #3776ab; }
+    .benefit-hint:focus-visible { outline: 2px solid #3776ab; outline-offset: 2px; }
+    .benefit-hint-pop {
+        position: fixed;
+        z-index: 1000;
+        max-width: 320px;
+        padding: 8px 10px;
+        border-radius: 4px;
+        background: #3c4043;
+        color: #fff;
+        font-size: 13px;
+        line-height: 1.45;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        white-space: normal;
+        overflow-wrap: anywhere;
+    }
+    .benefit-hint-pop[hidden] { display: none; }
     .benefit-item .benefit-action {
         flex-shrink: 0;
         margin-left: 8px;
@@ -922,7 +957,7 @@ function selectPackage(pkgId) {
                              onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">
                             <div class="benefit-info">
                                 <span class="benefit-name">{{ b.name }}</span>
-                                {% if b.description %}<span title="{{ b.description }}" style="cursor:help;color:#999;font-size:12px;margin-left:4px;">?</span>{% endif %}
+                                {% if b.description %}<button type="button" class="benefit-hint" data-hint="{{ b.description }}" aria-label="About {{ b.name }}">?</button>{% endif %}
                                 {% if b.internal_value %}
                                 <span class="benefit-value">${{ b.internal_value|intcomma }}</span>
                                 {% endif %}
@@ -955,7 +990,7 @@ function selectPackage(pkgId) {
                          {% if b.pk in package_benefit_ids %}data-package="true" style="background:#e8f4fd;"{% endif %}>
                         <div class="benefit-info">
                             <span class="benefit-name">{{ b.name }}</span>
-                            {% if b.description %}<span title="{{ b.description }}" style="cursor:help;color:#999;font-size:12px;margin-left:4px;">?</span>{% endif %}
+                            {% if b.description %}<button type="button" class="benefit-hint" data-hint="{{ b.description }}" aria-label="About {{ b.name }}">?</button>{% endif %}
                             {% if b.internal_value %}
                             <span class="benefit-value">${{ b.internal_value|intcomma }}</span>
                             {% endif %}
@@ -1055,11 +1090,13 @@ function addBenefit(id, name, program, value, description, isPackage) {
     nameSpan.textContent = name;
     infoDiv.appendChild(nameSpan);
     if (description) {
-        var tooltipSpan = document.createElement('span');
-        tooltipSpan.title = description;
-        tooltipSpan.style.cssText = 'cursor:help;color:#999;font-size:12px;margin-left:4px;';
-        tooltipSpan.textContent = '?';
-        infoDiv.appendChild(tooltipSpan);
+        var hintBtn = document.createElement('button');
+        hintBtn.type = 'button';
+        hintBtn.className = 'benefit-hint';
+        hintBtn.setAttribute('data-hint', description);
+        hintBtn.setAttribute('aria-label', 'About ' + name);
+        hintBtn.textContent = '?';
+        infoDiv.appendChild(hintBtn);
     }
     if (value) {
         var valueSpan = document.createElement('span');
@@ -1398,7 +1435,7 @@ refreshAvailable();
                         <span>
                             {{ b.name }}
                             {% if b.pk in package_benefit_ids %}<span style="font-size:9px;color:#3776ab;font-weight:600;margin-left:4px;">Pkg</span>{% endif %}
-                            {% if b.description %}<span title="{{ b.description }}" style="cursor:help;color:#999;font-size:12px;margin-left:4px;">?</span>{% endif %}
+                            {% if b.description %}<button type="button" class="benefit-hint" data-hint="{{ b.description }}" aria-label="About {{ b.name }}">?</button>{% endif %}
                         </span>
                         <span>${{ b.internal_value|default:0|intcomma }}</span>
                     </li>
@@ -1836,6 +1873,97 @@ refreshAvailable();
         ta.selectionStart = ta.selectionEnd = pos + def.length;
         ta.focus();
     };
+})();
+
+/* Benefit description toggletips: hover or focus previews, click pins. Listeners run in the
+   capture phase so the "?" never triggers the benefit row it sits in. */
+(function() {
+    "use strict";
+    var pop = document.createElement("div");
+    pop.className = "benefit-hint-pop";
+    pop.id = "benefit-hint-pop";
+    pop.setAttribute("role", "tooltip");
+    pop.hidden = true;
+    document.body.appendChild(pop);
+    var current = null;
+    var pinned = false;
+
+    function show(btn) {
+        if (current && current !== btn) current.setAttribute("aria-expanded", "false");
+        current = btn;
+        pop.textContent = btn.getAttribute("data-hint");
+        pop.hidden = false;
+        btn.setAttribute("aria-expanded", "true");
+        btn.setAttribute("aria-describedby", pop.id);
+        var r = btn.getBoundingClientRect();
+        var w = pop.offsetWidth;
+        var h = pop.offsetHeight;
+        var left = Math.max(8, Math.min(r.left + r.width / 2 - w / 2, window.innerWidth - w - 8));
+        var top = r.bottom + 6;
+        if (top + h > window.innerHeight - 8) top = Math.max(8, r.top - h - 6);
+        pop.style.left = left + "px";
+        pop.style.top = top + "px";
+    }
+
+    function hide() {
+        if (current) {
+            current.setAttribute("aria-expanded", "false");
+            current.removeAttribute("aria-describedby");
+        }
+        current = null;
+        pinned = false;
+        pop.hidden = true;
+    }
+
+    function hintFrom(e) {
+        return e.target.closest ? e.target.closest(".benefit-hint") : null;
+    }
+
+    document.addEventListener("click", function(e) {
+        var btn = hintFrom(e);
+        if (!btn) {
+            if (pinned) hide();
+            return;
+        }
+        e.preventDefault();
+        e.stopPropagation();
+        if (pinned && current === btn) {
+            hide();
+        } else {
+            show(btn);
+            pinned = true;
+        }
+    }, true);
+
+    document.addEventListener("keydown", function(e) {
+        if (e.key === "Escape" && current) {
+            hide();
+            return;
+        }
+        var btn = hintFrom(e);
+        if (btn && (e.key === "Enter" || e.key === " ")) {
+            e.preventDefault();
+            e.stopPropagation();
+            btn.click();
+        }
+    }, true);
+
+    document.addEventListener("mouseover", function(e) {
+        var btn = hintFrom(e);
+        if (btn && !pinned) show(btn);
+    });
+    document.addEventListener("mouseout", function(e) {
+        if (hintFrom(e) && !pinned) hide();
+    });
+    document.addEventListener("focusin", function(e) {
+        var btn = hintFrom(e);
+        if (btn && !pinned) show(btn);
+    });
+    document.addEventListener("focusout", function(e) {
+        if (hintFrom(e) && !pinned) hide();
+    });
+    window.addEventListener("scroll", function() { if (current) hide(); }, true);
+    window.addEventListener("resize", function() { if (current) hide(); });
 })();
 </script>
 {% endblock manage_content %}
