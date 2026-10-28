@@ -118,11 +118,13 @@ class Step1Tests(ComposerFixesTestBase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(Sponsor.objects.filter(name__iexact="acme corp").count(), 2)
 
-    def test_search_reaches_sponsors_beyond_the_initial_list(self):
+    def test_lists_every_sponsor_and_search_narrows(self):
         Sponsor.objects.bulk_create(
             [Sponsor(name=f"AAA {i:03}", description="x", primary_phone="1", city="c", country="US") for i in range(60)]
         )
-        self.assertNotIn(self.sponsor, list(self.client.get(step_url(1)).context["sponsors"]))
+        listed = list(self.client.get(step_url(1)).context["sponsors"])
+        self.assertEqual(len(listed), Sponsor.objects.count())
+        self.assertIn(self.sponsor, listed)
         response = self.client.get(step_url(1) + "&q=Acme")
         self.assertEqual(list(response.context["sponsors"]), [self.sponsor])
 

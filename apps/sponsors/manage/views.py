@@ -18,7 +18,7 @@ from django.contrib import messages
 from django.contrib.admin.models import ADDITION, CHANGE
 from django.core.mail import EmailMessage
 from django.db import transaction
-from django.db.models import Count, F, Prefetch, Q, Sum
+from django.db.models import Count, F, OuterRef, Prefetch, Q, Subquery, Sum
 from django.http import HttpResponse, QueryDict
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -2793,6 +2793,20 @@ def _default_proposal_body(sponsorship):
     )
 
 
+def _in_progress_message(sponsor, existing):
+    """Explain that the sponsor already has an applied/approved sponsorship, linking to it when known."""
+    if existing is None:
+        return f"{sponsor.name} already has an in-progress sponsorship."
+    return format_html(
+        "{} already has an in-progress sponsorship ({} {}). A sponsor can only have one at a time; "
+        'finalize or reject it first. <a href="{}" style="color:#3776ab;font-weight:600;">View existing</a>',
+        sponsor.name,
+        existing.year or "no year",
+        existing.get_status_display(),
+        reverse("manage_sponsorship_detail", args=[existing.pk]),
+    )
+
+
 class ComposerView(SponsorshipAdminRequiredMixin, View):
     """Multi-step wizard for building a custom sponsorship.
 
@@ -2810,7 +2824,6 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
     """
 
     TOTAL_STEPS = 6
-    SPONSOR_SEARCH_LIMIT = 50
 
     def _get_step(self, request):
         """Return the current step number, clamped to valid range."""
@@ -2887,9 +2900,13 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
             if sponsor_id:
                 try:
                     sponsor = Sponsor.objects.get(pk=int(sponsor_id))
-                    data["sponsor_id"] = sponsor.pk
                 except (Sponsor.DoesNotExist, TypeError, ValueError):
-                    pass
+                    sponsor = None
+                if sponsor is not None:
+                    if blocked := self._in_progress_redirect(request, sponsor):
+                        self._set_composer_data(request, data)
+                        return blocked
+                    data["sponsor_id"] = sponsor.pk
             if request.GET.get("renewal") == "1":
                 data["renewal"] = True
             self._set_composer_data(request, data)
@@ -2949,18 +2966,36 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
 
     # ── Step 1: Select Sponsor ──
 
+    def _in_progress_redirect(self, request, sponsor):
+        """Send staff back to step 1 when the sponsor already has an applied or approved sponsorship.
+
+        Sponsorship.new refuses a second in-progress sponsorship, so say so before any work is done.
+        """
+        existing = Sponsorship.objects.in_progress().filter(sponsor=sponsor).order_by("-applied_on", "-pk").first()
+        if existing is None:
+            return None
+        messages.error(request, _in_progress_message(sponsor, existing))
+        return redirect(self._step_url(1))
+
     def _render_step1(self, request, data, form=None):
         q = request.GET.get("q", "").strip()
-        sponsors = Sponsor.objects.order_by("name")
+        latest = Sponsorship.objects.filter(sponsor=OuterRef("pk")).exclude(status=Sponsorship.REJECTED)
+        latest = latest.order_by(F("year").desc(nulls_last=True), "-applied_on", "-pk")
+        in_progress = Sponsorship.objects.in_progress().filter(sponsor=OuterRef("pk")).order_by("-applied_on", "-pk")
+        sponsors = Sponsor.objects.annotate(
+            last_year=Subquery(latest.values("year")[:1]),
+            last_package=Subquery(latest.values("package__name")[:1]),
+            last_applied=Subquery(latest.values("applied_on")[:1]),
+            in_progress_status=Subquery(in_progress.values("status")[:1]),
+        ).order_by(F("last_year").desc(nulls_last=True), F("last_applied").desc(nulls_last=True), "name")
         if q:
             sponsors = sponsors.filter(name__icontains=q)
+        sponsors = list(sponsors)
         return self._render(
             request,
             1,
             data,
-            sponsors=sponsors[: self.SPONSOR_SEARCH_LIMIT],
-            sponsor_total=sponsors.count(),
-            sponsor_search_limit=self.SPONSOR_SEARCH_LIMIT,
+            sponsors=sponsors,
             search_query=q,
             form=form or ComposerSponsorForm(),
         )
@@ -2973,6 +3008,8 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
             sponsor_id = request.POST.get("sponsor_id")
             if sponsor_id:
                 sponsor = get_object_or_404(Sponsor, pk=sponsor_id)
+                if blocked := self._in_progress_redirect(request, sponsor):
+                    return blocked
                 # Reset all data for fresh start with this sponsor
                 data = {"sponsor_id": sponsor.pk}
                 self._set_composer_data(request, data)
@@ -3237,18 +3274,7 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
             sponsorship = self._create_sponsorship(request, data, sponsor, package, benefits)
         except SponsorWithExistingApplicationError:
             existing = Sponsorship.objects.in_progress().filter(sponsor=sponsor).first()
-            if existing:
-                url = reverse("manage_sponsorship_detail", args=[existing.pk])
-                messages.error(
-                    request,
-                    format_html(
-                        '{} already has an in-progress sponsorship. <a href="{}" style="color:#3776ab;font-weight:600;">View existing</a>',
-                        sponsor.name,
-                        url,
-                    ),
-                )
-            else:
-                messages.error(request, f"{sponsor.name} already has an in-progress sponsorship.")
+            messages.error(request, _in_progress_message(sponsor, existing))
             return redirect(self._step_url(5))
 
         # Create draft contract

@@ -64,45 +64,59 @@
         }
     }
 
-    /* ── Sponsor list ── */
-    .sponsor-list {
-        margin-bottom: 20px;
-        border: 1px solid #e8e8e8;
+    /* ── Sponsor picker ── */
+    .sponsor-search {
+        display: block;
+        width: 100%;
+        padding: 10px 14px;
+        border: 1px solid #c4c9d0;
         border-radius: 6px;
-        overflow: hidden;
-        max-height: 400px;
-        overflow-y: auto;
+        font-size: 15px;
+        font-family: inherit;
+        box-sizing: border-box;
     }
-    .sponsor-list-letter {
-        font-size: 11px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        color: #999;
-        padding: 6px 16px 4px;
-        background: #f7f8fa;
-        border-bottom: 1px solid #e8e8e8;
-        position: sticky;
-        top: 0;
-        z-index: 1;
+    .sponsor-search:focus {
+        outline: none;
+        border-color: #3776ab;
+        box-shadow: 0 0 0 3px rgba(55, 118, 171, 0.2);
+    }
+    .sponsor-search::placeholder {
+        color: #6b7280;
+    }
+    .sponsor-search-status {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        margin: 8px 0 10px;
+        font-size: 13px;
+        color: #5f6368;
+    }
+    .sponsor-list {
+        margin-bottom: 12px;
+        border: 1px solid #e3e6ea;
+        border-radius: 6px;
+        max-height: min(60vh, 560px);
+        overflow-y: auto;
+        overscroll-behavior: contain;
     }
     /* Scoped under .sponsor-list to outrank the site-wide button[type=submit] rules in style.css. */
     .sponsor-list .sponsor-card {
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        gap: 16px;
         width: 100%;
         margin: 0;
         padding: 10px 16px;
         cursor: pointer;
         border: none;
-        border-bottom: 1px solid #f0f0f0;
+        border-bottom: 1px solid #eef0f2;
         border-radius: 0;
         background: #fff;
         box-shadow: none;
         text-shadow: none;
         font-family: inherit;
         text-align: left;
+        white-space: normal;
         transition: background 0.1s;
     }
     .sponsor-card:focus-visible,
@@ -114,25 +128,83 @@
         outline-offset: -2px;
     }
     .sponsor-list .sponsor-card:hover,
-    .sponsor-list .sponsor-card:active {
+    .sponsor-list .sponsor-card:active,
+    .sponsor-list .sponsor-card:focus-visible {
         background: #f0f6fc;
     }
     .sponsor-list .sponsor-card.selected {
         background: #e8f0fe;
-        border-left: 3px solid #3776ab;
     }
     .sponsor-list .sponsor-form:last-child .sponsor-card {
         border-bottom: none;
     }
+    .sponsor-card .sponsor-ident {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        flex: 1;
+    }
     .sponsor-card .sponsor-name {
         font-weight: 600;
         font-size: 14px;
+        line-height: 1.35;
         color: #1a1a2e;
     }
     .sponsor-card .sponsor-meta {
         font-size: 12px;
-        color: #999;
-        margin-left: auto;
+        line-height: 1.4;
+        color: #5f6368;
+    }
+    .sponsor-card .sponsor-last {
+        flex-shrink: 0;
+        font-size: 12px;
+        color: #3c4043;
+        font-variant-numeric: tabular-nums;
+        text-align: right;
+    }
+    .sponsor-card .sponsor-last.none {
+        color: #6b7280;
+    }
+    .sponsor-card .sponsor-current {
+        flex-shrink: 0;
+        font-size: 12px;
+        font-weight: 600;
+        color: #1f5f99;
+        background: #fff;
+        border: 1px solid #b7cde3;
+        border-radius: 999px;
+        padding: 1px 8px;
+    }
+    .sponsor-card .sponsor-busy {
+        flex-shrink: 0;
+        font-size: 12px;
+        font-weight: 600;
+        color: #8a5300;
+        background: #fff8e6;
+        border: 1px solid #f0d9a8;
+        border-radius: 999px;
+        padding: 1px 8px;
+    }
+    .sponsor-empty {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px 12px;
+        padding: 16px;
+        margin-bottom: 12px;
+        border: 1px dashed #c4c9d0;
+        border-radius: 6px;
+        font-size: 14px;
+        color: #3c4043;
+    }
+    .sponsor-empty p {
+        margin: 0;
+    }
+    /* style.css gives form and flex containers an explicit display, which beats the hidden attribute. */
+    .sponsor-list[hidden],
+    .sponsor-list .sponsor-form[hidden],
+    .sponsor-empty[hidden] {
+        display: none;
     }
 
     /* ── Package cards ── */
@@ -555,64 +627,115 @@
         <h2>Select a Sponsor</h2>
     </div>
 
-    <!-- Search: Enter searches every sponsor on the server; typing filters the loaded list -->
-    <form method="get" action="{% url 'manage_composer' %}" role="search" style="display:flex;gap:8px;margin-bottom:6px;">
+    <!-- Every sponsor is loaded, most recently sponsored first; typing filters instantly. -->
+    <form method="get" action="{% url 'manage_composer' %}" role="search" id="sponsor-search-form">
         <input type="hidden" name="step" value="1">
-        <input type="search" name="q" id="sponsor-live-search" aria-label="Search sponsors" value="{{ search_query }}" placeholder="Search all sponsors by name and press Enter..."
-               style="flex:1;padding:10px 14px;border:1px solid #ccc;border-radius:4px;font-size:14px;box-sizing:border-box;"
+        <input type="search" name="q" id="sponsor-live-search" class="sponsor-search" aria-label="Find a sponsor by name"
+               aria-controls="sponsor-list" value="{{ search_query }}" placeholder="Start typing a sponsor name"
                autocomplete="off" autofocus>
-        <button type="submit" class="btn btn-secondary">Search</button>
     </form>
-    <p style="font-size:12px;color:#777;margin:0 0 14px;">
-        {% if sponsor_total > sponsor_search_limit %}
-        Showing the first {{ sponsor_search_limit }} of {{ sponsor_total }} sponsors{% if search_query %} matching "{{ search_query }}"{% endif %}. Search to find others.
-        {% elif search_query %}
-        {{ sponsor_total }} sponsor{{ sponsor_total|pluralize }} matching "{{ search_query }}".
-        {% endif %}
-        {% if search_query %}<a href="{% url 'manage_composer' %}?step=1">Show all</a>{% endif %}
-    </p>
+    <div class="sponsor-search-status">
+        <span id="sponsor-count" aria-live="polite">
+            {% if search_query %}{{ sponsors|length }} sponsor{{ sponsors|length|pluralize }} matching "{{ search_query }}"{% else %}{{ sponsors|length }} sponsor{{ sponsors|length|pluralize }}, most recently sponsored first{% endif %}
+        </span>
+        {% if search_query %}<a href="{% url 'manage_composer' %}?step=1">Show all sponsors</a>{% endif %}
+    </div>
 
-    <!-- Sponsor list -->
-    {% if sponsors %}
-    <div class="sponsor-list" id="sponsor-list">
+    <div class="sponsor-list" id="sponsor-list"{% if not sponsors %} hidden{% endif %}>
         {% for s in sponsors %}
         <form method="post" class="sponsor-form" data-name="{{ s.name|lower }}" style="margin:0;">
             {% csrf_token %}
             <input type="hidden" name="action" value="select_sponsor">
             <input type="hidden" name="sponsor_id" value="{{ s.pk }}">
             <button type="submit" class="sponsor-card {% if data.sponsor_id == s.pk %}selected{% endif %}">
-                <span class="sponsor-name">{{ s.name }}</span>
-                <span class="sponsor-meta">
-                    {{ s.city }}{% if s.city and s.country %}, {% endif %}{% if s.country %}{{ s.country.name }}{% endif %}
+                <span class="sponsor-ident">
+                    <span class="sponsor-name">{{ s.name }}</span>
+                    {% if s.city or s.country %}
+                    <span class="sponsor-meta">{{ s.city }}{% if s.city and s.country %}, {% endif %}{% if s.country %}{{ s.country.name }}{% endif %}</span>
+                    {% endif %}
                 </span>
+                {% if data.sponsor_id == s.pk %}<span class="sponsor-current">Current</span>{% endif %}
+                {% if s.in_progress_status %}<span class="sponsor-busy" title="Already has an {{ s.in_progress_status }} sponsorship; a sponsor can only have one in progress">{{ s.in_progress_status|capfirst }} in progress</span>{% endif %}
+                {% if s.last_applied %}
+                <span class="sponsor-last">{{ s.last_year|default:s.last_applied.year }}{% if s.last_package %} · {{ s.last_package }}{% endif %}</span>
+                {% else %}
+                <span class="sponsor-last none">No sponsorships yet</span>
+                {% endif %}
             </button>
         </form>
         {% endfor %}
     </div>
-    <p id="sponsor-filter-empty" hidden style="font-size:13px;color:#777;margin:-10px 0 20px;">
-        None of the sponsors listed above match. Press Enter to search all sponsors.
-    </p>
+    <div class="sponsor-empty" id="sponsor-empty"{% if sponsors %} hidden{% endif %}>
+        <p id="sponsor-empty-text">{% if search_query %}No sponsors found matching "{{ search_query }}".{% else %}No sponsors yet.{% endif %}</p>
+        <button type="button" class="btn btn-sm btn-primary" id="sponsor-empty-create">Create a new sponsor</button>
+    </div>
     <script>
     (function() {
         var input = document.getElementById('sponsor-live-search');
-        var forms = document.querySelectorAll('.sponsor-form');
-        var empty = document.getElementById('sponsor-filter-empty');
-        input.addEventListener('input', function() {
-            var q = this.value.toLowerCase();
-            var visible = 0;
+        var list = document.getElementById('sponsor-list');
+        var forms = Array.prototype.slice.call(document.querySelectorAll('.sponsor-form'));
+        var count = document.getElementById('sponsor-count');
+        var empty = document.getElementById('sponsor-empty');
+        var emptyText = document.getElementById('sponsor-empty-text');
+        var createBtn = document.getElementById('sponsor-empty-create');
+        var total = forms.length;
+
+        function visibleCards() {
+            return forms.filter(function(f) { return !f.hidden; }).map(function(f) { return f.querySelector('.sponsor-card'); });
+        }
+        function filter() {
+            var q = input.value.trim().toLowerCase();
+            var shown = 0;
             forms.forEach(function(f) {
                 f.hidden = !!q && f.dataset.name.indexOf(q) === -1;
-                if (!f.hidden) visible++;
+                if (!f.hidden) shown++;
             });
-            empty.hidden = visible > 0;
+            list.hidden = shown === 0;
+            empty.hidden = shown > 0;
+            if (q) {
+                count.textContent = shown + ' of ' + total + ' sponsor' + (total === 1 ? '' : 's') + ' match';
+                emptyText.textContent = 'No sponsors found matching \u201c' + input.value.trim() + '\u201d.';
+                createBtn.textContent = 'Create \u201c' + input.value.trim() + '\u201d';
+            } else {
+                count.textContent = total + ' sponsor' + (total === 1 ? '' : 's') + ', most recently sponsored first';
+                createBtn.textContent = 'Create a new sponsor';
+            }
+        }
+        input.addEventListener('input', filter);
+        input.addEventListener('keydown', function(e) {
+            var cards = visibleCards();
+            if (e.key === 'Enter' && cards.length) {
+                // Filtering is instant, so Enter picks the only match or moves into the list.
+                // With no visible match it submits, searching every sponsor on the server.
+                e.preventDefault();
+                if (cards.length === 1) cards[0].click();
+                else cards[0].focus();
+            } else if (e.key === 'ArrowDown' && cards.length) {
+                e.preventDefault();
+                cards[0].focus();
+            }
         });
+        list.addEventListener('keydown', function(e) {
+            if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+            var cards = visibleCards();
+            var i = cards.indexOf(document.activeElement);
+            if (i === -1) return;
+            e.preventDefault();
+            if (e.key === 'ArrowDown' && i < cards.length - 1) cards[i + 1].focus();
+            else if (e.key === 'ArrowUp') (i === 0 ? input : cards[i - 1]).focus();
+        });
+        createBtn.addEventListener('click', function() {
+            var section = document.getElementById('new-sponsor-section');
+            section.classList.add('open');
+            section.querySelector('.collapse-header').setAttribute('aria-expanded', 'true');
+            var name = document.getElementById('id_name');
+            if (name && input.value.trim() && !name.value) name.value = input.value.trim();
+            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            if (name) name.focus({ preventScroll: true });
+        });
+        if (input.value) filter();
     })();
     </script>
-    {% elif search_query %}
-    <div class="empty-state" style="padding:24px;">
-        <p>No sponsors found matching "{{ search_query }}". Create it below.</p>
-    </div>
-    {% endif %}
 
     <!-- Create new sponsor -->
     {% for dup in form.duplicate_sponsors %}

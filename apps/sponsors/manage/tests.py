@@ -1890,6 +1890,51 @@ class ComposerStep1Tests(SponsorManageTestBase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "No sponsors found")
 
+    def test_sponsor_with_in_progress_sponsorship_is_stopped_at_step1(self):
+        existing = Sponsorship.objects.create(
+            sponsor=self.sponsor, submited_by=self.staff_user, year=self.year, status=Sponsorship.APPROVED
+        )
+        url = reverse("manage_composer")
+
+        selected = self.client.post(url + "?step=1", {"action": "select_sponsor", "sponsor_id": self.sponsor.pk})
+        preselected = self.client.get(url + f"?new=1&sponsor_id={self.sponsor.pk}&renewal=1")
+
+        for response in (selected, preselected):
+            self.assertRedirects(response, url + "?step=1", fetch_redirect_response=False)
+        self.assertNotIn("sponsor_id", self.client.session.get("composer", {}))
+        page = self.client.get(url + "?step=1")
+        self.assertContains(page, reverse("manage_sponsorship_detail", args=[existing.pk]))
+        self.assertEqual(
+            {s.pk: s.in_progress_status for s in page.context["sponsors"]}[self.sponsor.pk], Sponsorship.APPROVED
+        )
+
+    def test_sponsor_with_only_finalized_sponsorship_can_start_a_renewal(self):
+        Sponsorship.objects.create(
+            sponsor=self.sponsor, submited_by=self.staff_user, year=self.year, status=Sponsorship.FINALIZED
+        )
+        response = self.client.post(
+            reverse("manage_composer") + "?step=1", {"action": "select_sponsor", "sponsor_id": self.sponsor.pk}
+        )
+        self.assertRedirects(response, reverse("manage_composer") + "?step=2", fetch_redirect_response=False)
+
+    def test_step1_lists_most_recently_sponsored_first(self):
+        lapsed = Sponsor.objects.create(name="Lapsed Inc")
+        Sponsorship.objects.create(
+            sponsor=lapsed, submited_by=self.staff_user, package=self.package, year=self.year - 2
+        )
+        Sponsorship.objects.create(
+            sponsor=lapsed, submited_by=self.staff_user, year=self.year, status=Sponsorship.REJECTED
+        )
+        current = Sponsor.objects.create(name="Zeta Current")
+        Sponsorship.objects.create(sponsor=current, submited_by=self.staff_user, package=self.package, year=self.year)
+
+        response = self.client.get(reverse("manage_composer") + "?step=1")
+
+        sponsors = response.context["sponsors"]
+        self.assertEqual([s.name for s in sponsors], ["Zeta Current", "Lapsed Inc", "Acme Corp"])
+        self.assertEqual((sponsors[1].last_year, sponsors[1].last_package), (self.year - 2, "Visionary"))
+        self.assertIsNone(sponsors[2].last_applied)
+
     def test_step1_select_sponsor(self):
         response = self.client.post(
             reverse("manage_composer") + "?step=1",
