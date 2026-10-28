@@ -987,6 +987,26 @@ class SponsorshipNotifyViewTests(SponsorshipReviewTestBase):
         response = self.client.get(reverse("manage_sponsorship_notify", args=[self.sponsorship.pk]))
         self.assertEqual(response.status_code, 403)
 
+    def test_notify_lists_contacts_under_each_contact_type(self):
+        both = SponsorContact.objects.create(
+            sponsor=self.sponsor, name="Pat", email="pat@example.com", phone="1", primary=True, accounting=True
+        )
+        admin = SponsorContact.objects.create(
+            sponsor=self.sponsor, name="Ana", email="ana@example.com", phone="2", administrative=True
+        )
+        response = self.client.get(reverse("manage_sponsorship_notify", args=[self.sponsorship.pk]))
+        listed = {checkbox.data["value"]: contacts for checkbox, contacts in response.context["contact_type_choices"]}
+        self.assertEqual(
+            listed,
+            {
+                SponsorContact.PRIMARY_CONTACT: [both],
+                SponsorContact.ADMINISTRATIVE_CONTACT: [admin],
+                SponsorContact.ACCOUTING_CONTACT: [both],
+                SponsorContact.MANAGER_CONTACT: [],
+            },
+        )
+        self.assertContains(response, "pat@example.com")
+
     def test_notify_preview_with_custom_content(self):
         SponsorContact.objects.create(
             sponsor=self.sponsor, name="Test Contact", email="test@example.com", phone="555-0001", primary=True

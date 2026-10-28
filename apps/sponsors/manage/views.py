@@ -2129,6 +2129,22 @@ class ContractRegenerateView(SponsorshipAdminRequiredMixin, View):
 class SponsorshipNotifyView(SponsorshipAdminRequiredMixin, View):
     """Send a notification to sponsor contacts for a specific sponsorship."""
 
+    def _render(self, request, sp, form, email_preview=None):
+        """Render the page, pairing each contact-type checkbox with the contacts it would email."""
+        contacts = list(sp.sponsor.contacts.order_by("name")) if sp.sponsor else []
+        contact_type_choices = [
+            (checkbox, [c for c in contacts if getattr(c, checkbox.data["value"])])
+            for checkbox in form["contact_types"]
+        ]
+        context = {
+            "sponsorship": sp,
+            "form": form,
+            "email_preview": email_preview,
+            "template_vars": NOTIFICATION_TEMPLATE_VARS,
+            "contact_type_choices": contact_type_choices,
+        }
+        return render(request, "sponsors/manage/sponsorship_notify.html", context)
+
     def get(self, request, pk):
         """Render the notification form with optional preview."""
         sp = get_object_or_404(Sponsorship.objects.select_related("sponsor"), pk=pk)
@@ -2149,13 +2165,7 @@ class SponsorshipNotifyView(SponsorshipAdminRequiredMixin, View):
             initial["contact_types"] = ["primary", "administrative"]
 
         form = SendSponsorshipNotificationManageForm(initial=initial)
-        context = {
-            "sponsorship": sp,
-            "form": form,
-            "email_preview": None,
-            "template_vars": NOTIFICATION_TEMPLATE_VARS,
-        }
-        return render(request, "sponsors/manage/sponsorship_notify.html", context)
+        return self._render(request, sp, form)
 
     def post(self, request, pk):
         """Preview or send the notification."""
@@ -2170,13 +2180,7 @@ class SponsorshipNotifyView(SponsorshipAdminRequiredMixin, View):
                     form.cleaned_data["contact_types"]
                 )
                 email_preview = notification.get_email_message(sp, **msg_kwargs)
-            context = {
-                "sponsorship": sp,
-                "form": form,
-                "email_preview": email_preview,
-                "template_vars": NOTIFICATION_TEMPLATE_VARS,
-            }
-            return render(request, "sponsors/manage/sponsorship_notify.html", context)
+            return self._render(request, sp, form, email_preview)
 
         if "confirm" in request.POST and form.is_valid():
             use_case = use_cases.SendSponsorshipNotificationUseCase.build()
@@ -2192,13 +2196,7 @@ class SponsorshipNotifyView(SponsorshipAdminRequiredMixin, View):
                 messages.warning(request, f"No matching contacts found for {sp.sponsor.name}. Nothing was sent.")
             return redirect(reverse("manage_sponsorship_detail", args=[pk]))
 
-        context = {
-            "sponsorship": sp,
-            "form": form,
-            "email_preview": email_preview,
-            "template_vars": NOTIFICATION_TEMPLATE_VARS,
-        }
-        return render(request, "sponsors/manage/sponsorship_notify.html", context)
+        return self._render(request, sp, form, email_preview)
 
 
 # ── Notification template CRUD ────────────────────────────────────────

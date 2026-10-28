@@ -32,6 +32,65 @@
         background: #e8f0fe;
         border-color: #3776ab;
     }
+    .notify-contact-type {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        padding: 10px 12px;
+        background: #f7f8fa;
+        border: 1px solid transparent;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 13px;
+    }
+    .notify-contact-type:has(input:checked) {
+        background: #eef4fb;
+        border-color: #b7cde3;
+    }
+    .notify-contact-type-head {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 600;
+        color: #1a1a2e;
+    }
+    .notify-contact-type-head input {
+        margin: 0;
+    }
+    .notify-contact-count {
+        margin-left: auto;
+        font-size: 12px;
+        font-weight: 400;
+        color: #5f6368;
+        font-variant-numeric: tabular-nums;
+    }
+    .notify-contact-list {
+        list-style: none;
+        margin: 0;
+        padding: 0 0 0 22px;
+        color: #3c4043;
+        font-size: 12px;
+        line-height: 1.5;
+    }
+    .notify-contact-list li {
+        margin: 0;
+        overflow-wrap: anywhere;
+    }
+    .notify-contact-name {
+        font-weight: 600;
+        color: #1a1a2e;
+    }
+    .notify-contact-none {
+        padding-left: 22px;
+        font-size: 12px;
+        color: #6b7280;
+    }
+    .notify-recipients {
+        margin: 12px 0 0;
+        font-size: 13px;
+        color: #3c4043;
+        overflow-wrap: anywhere;
+    }
 </style>
 
 <div class="manage-form">
@@ -68,12 +127,45 @@
             <legend>Contact Types</legend>
             <div class="form-group">
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-                    {% for checkbox in form.contact_types %}
-                    <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;padding:8px 12px;background:#f7f8fa;border-radius:4px;">
-                        {{ checkbox.tag }} {{ checkbox.choice_label }}
+                    {% for checkbox, contacts in contact_type_choices %}
+                    <label class="notify-contact-type" data-emails="{% for c in contacts %}{{ c.email }}{% if not forloop.last %},{% endif %}{% endfor %}">
+                        <span class="notify-contact-type-head">
+                            {{ checkbox.tag }} {{ checkbox.choice_label }}
+                            <span class="notify-contact-count">{{ contacts|length }}</span>
+                        </span>
+                        {% if contacts %}
+                        <ul class="notify-contact-list">
+                            {% for c in contacts %}
+                            <li><span class="notify-contact-name">{{ c.name }}</span> {{ c.email }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% else %}
+                        <span class="notify-contact-none">No {{ checkbox.choice_label|lower }} contact</span>
+                        {% endif %}
                     </label>
                     {% endfor %}
                 </div>
+                <p class="notify-recipients" id="notify-recipients" aria-live="polite"></p>
+                <script>
+                (function() {
+                    var cards = document.querySelectorAll('.notify-contact-type');
+                    var out = document.getElementById('notify-recipients');
+                    function update() {
+                        var seen = {}, emails = [];
+                        cards.forEach(function(card) {
+                            if (!card.querySelector('input').checked || !card.dataset.emails) return;
+                            card.dataset.emails.split(',').forEach(function(e) {
+                                if (!seen[e]) { seen[e] = true; emails.push(e); }
+                            });
+                        });
+                        out.textContent = emails.length
+                            ? 'Will send to ' + emails.length + (emails.length === 1 ? ' person: ' : ' people: ') + emails.join(', ')
+                            : 'No recipients selected.';
+                    }
+                    cards.forEach(function(card) { card.querySelector('input').addEventListener('change', update); });
+                    update();
+                })();
+                </script>
                 {% if form.contact_types.errors %}
                 <div class="field-errors">{{ form.contact_types.errors }}</div>
                 {% endif %}
