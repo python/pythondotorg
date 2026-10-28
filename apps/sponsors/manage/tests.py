@@ -1208,6 +1208,18 @@ class NotificationTemplateListViewTests(SponsorManageTestBase):
         everything = self.client.get(url, {"year": "all"})
         self.assertEqual(list(everything.context["templates"]), [current, last, old, evergreen])
 
+    def test_active_year_nudge_from_june_first(self):
+        from apps.sponsors.templatetags.sponsors_manage import active_year_nudge
+
+        cases = [
+            (datetime.date(self.year, 5, 31), None),
+            (datetime.date(self.year, 6, 1), self.year + 1),
+            (datetime.date(self.year + 1, 2, 1), self.year + 1),
+        ]
+        for today, expected in cases:
+            with self.subTest(today=today), mock.patch("django.utils.timezone.localdate", return_value=today):
+                self.assertEqual(active_year_nudge(), expected)
+
     def test_list_specific_year_filter(self):
         old_year = SponsorEmailNotificationTemplate.objects.create(
             internal_name="Old Year Tpl", year=self.year - 1, subject="S", content="C"

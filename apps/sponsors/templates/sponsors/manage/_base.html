@@ -839,6 +839,7 @@
                     <a href="{% url 'manage_legal_clauses' %}"{% if active_tab == 'legal_clauses' %} class="active" aria-current="page"{% endif %}>Legal Clauses</a>
                     <a href="{% url 'manage_assets' %}"{% if active_tab == 'assets' %} class="active" aria-current="page"{% endif %}>Assets</a>
                     <a href="{% url 'manage_clone_year' %}"{% if active_tab == 'clone' %} class="active" aria-current="page"{% endif %}>Clone Year</a>
+                    <a href="{% url 'manage_current_year' %}"{% if active_tab == 'current_year' %} class="active" aria-current="page"{% endif %}>Active Year</a>
                     <a href="{% url 'manage_guide' %}"{% if active_tab == 'guide' %} class="active" aria-current="page"{% endif %}>Guide</a>
                 </div>
             </div>
@@ -880,6 +881,14 @@
         });
     })();
     </script>
+
+    {% active_year_nudge as nudge_year %}
+    {% if nudge_year and active_tab != 'current_year' %}
+    <div class="manage-alert manage-alert-warning" role="status" style="margin-bottom:16px;">
+        The active sponsorship year should probably be <strong>{{ nudge_year }}</strong> by now; it moves to the next year every June 1, after PyCon US.
+        <a href="{% url 'manage_current_year' %}" style="color:#3776ab;font-weight:600;">Change active year</a>
+    </div>
+    {% endif %}
 
     <!-- Breadcrumbs (sub-pages only) -->
     {% block manage_breadcrumbs %}{% endblock %}
