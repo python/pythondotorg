@@ -508,6 +508,23 @@ class SponsorshipListViewTests(SponsorshipReviewTestBase):
         response = self.client.get(reverse("manage_sponsorships") + "?search=Nonexistent")
         self.assertNotContains(response, "Acme Corp")
 
+    def test_list_and_export_filter_by_benefit(self):
+        SponsorBenefit.new_copy(self.benefit, sponsorship=self.sponsorship)
+        other = Sponsor.objects.create(name="Other Co")
+        Sponsorship.objects.create(sponsor=other, submited_by=self.staff_user, package=self.package, year=self.year)
+
+        response = self.client.get(reverse("manage_sponsorships") + f"?benefit={self.benefit.pk}")
+        self.assertEqual(list(response.context["sponsorships"]), [self.sponsorship])
+        self.assertEqual(response.context["count_applied"], 1)
+        self.assertEqual(response.context["filter_benefit"], self.benefit)
+
+        export = self.client.get(reverse("manage_sponsorship_export") + f"?benefit={self.benefit.pk}")
+        rows = list(csv.reader(io.StringIO(export.content.decode())))
+        self.assertEqual([row[0] for row in rows[1:]], ["Acme Corp"])
+
+        response = self.client.get(reverse("manage_sponsorships") + "?benefit=abc")
+        self.assertEqual(list(response.context["sponsorships"]), [])
+
 
 class SponsorshipDetailViewTests(SponsorshipReviewTestBase):
     """Test sponsorship detail view."""

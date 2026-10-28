@@ -4,46 +4,60 @@
 
 {% block manage_content %}
     {% load sponsors_manage %}
-    <!-- Combined toolbar: status pills + filters + actions in one bar -->
-    <div class="manage-filter-bar" style="padding:12px 20px;">
-        <form method="get" style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;">
+    <!-- Toolbar: status pills + actions on top, filters below -->
+    <div class="manage-filter-bar sp-toolbar">
+        <form method="get">
             {% if filter_status %}<input type="hidden" name="status" value="{{ filter_status }}">{% endif %}
             {% if filter_sponsor %}<input type="hidden" name="sponsor" value="{{ filter_sponsor.pk }}">{% endif %}
             {% if current_sort %}<input type="hidden" name="sort" value="{{ current_sort }}">{% endif %}
-            <!-- Status pills inline -->
-            <div style="display:flex;gap:4px;align-items:center;margin-right:8px;">
-                <a href="{% url 'manage_sponsorships' %}{% if pill_query %}?{{ pill_query }}{% endif %}" class="year-pill {% if not filter_status %}active{% endif %}" style="padding:4px 10px;font-size:12px;">All</a>
-                <a href="?status=applied{% if pill_query %}&amp;{{ pill_query }}{% endif %}" class="year-pill {% if filter_status == 'applied' %}active{% endif %}" style="padding:4px 10px;font-size:12px;">Applied {{ count_applied }}</a>
-                <a href="?status=approved{% if pill_query %}&amp;{{ pill_query }}{% endif %}" class="year-pill {% if filter_status == 'approved' %}active{% endif %}" style="padding:4px 10px;font-size:12px;">Approved {{ count_approved }}</a>
-                <a href="?status=finalized{% if pill_query %}&amp;{{ pill_query }}{% endif %}" class="year-pill {% if filter_status == 'finalized' %}active{% endif %}" style="padding:4px 10px;font-size:12px;">Finalized {{ count_finalized }}</a>
-                <a href="?status=rejected{% if pill_query %}&amp;{{ pill_query }}{% endif %}" class="year-pill {% if filter_status == 'rejected' %}active{% endif %}" style="padding:4px 10px;font-size:12px;">Rejected {{ count_rejected }}</a>
+            <div class="sp-toolbar-row">
+                <nav class="sp-status-pills" aria-label="Filter by status">
+                    <a href="{% url 'manage_sponsorships' %}{% if pill_query %}?{{ pill_query }}{% endif %}" class="year-pill {% if not filter_status %}active{% endif %}">All</a>
+                    <a href="?status=applied{% if pill_query %}&amp;{{ pill_query }}{% endif %}" class="year-pill {% if filter_status == 'applied' %}active{% endif %}">Applied {{ count_applied }}</a>
+                    <a href="?status=approved{% if pill_query %}&amp;{{ pill_query }}{% endif %}" class="year-pill {% if filter_status == 'approved' %}active{% endif %}">Approved {{ count_approved }}</a>
+                    <a href="?status=finalized{% if pill_query %}&amp;{{ pill_query }}{% endif %}" class="year-pill {% if filter_status == 'finalized' %}active{% endif %}">Finalized {{ count_finalized }}</a>
+                    <a href="?status=rejected{% if pill_query %}&amp;{{ pill_query }}{% endif %}" class="year-pill {% if filter_status == 'rejected' %}active{% endif %}">Rejected {{ count_rejected }}</a>
+                </nav>
+                <div class="filter-actions sp-toolbar-actions">
+                    <a href="{% url 'manage_sponsorship_export' %}{% if filter_query %}?{{ filter_query }}{% endif %}" class="btn btn-secondary">CSV</a>
+                    <a href="{% url 'manage_sponsor_create' %}" class="btn btn-secondary">+ Sponsor</a>
+                    <a href="{% url 'manage_composer' %}?new=1" class="btn btn-primary">+ Sponsorship</a>
+                </div>
             </div>
-            <div class="filter-field">
-                <select name="year" aria-label="Year" onchange="this.form.submit()">
-                    <option value="">All years</option>
-                    {% for val, label in filter_form.year.field.choices %}
-                    {% if val %}<option value="{{ val }}" {% if val|slugify == filter_year %}selected{% endif %}>{{ label }}</option>{% endif %}
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="filter-field">
-                <input type="text" name="search" id="live-search" aria-label="Search sponsorships" placeholder="Search..." value="{{ filter_search }}" autocomplete="off" style="width:140px;">
-            </div>
-            {% if filter_sponsor %}
-            <div class="filter-field">
-                <span class="tag tag-blue" style="font-size:12px;">Sponsor: {{ filter_sponsor.name }}</span>
-            </div>
-            {% endif %}
-            <div class="filter-actions">
-                <button type="submit" class="btn btn-sm btn-secondary">Go</button>
-                {% if filter_year or filter_search or filter_status or filter_sponsor %}
-                <a href="{% url 'manage_sponsorships' %}" class="btn btn-sm btn-secondary">Clear</a>
+            <div class="sp-toolbar-row sp-toolbar-filters">
+                <div class="filter-field">
+                    <select name="year" aria-label="Year" onchange="if (this.form.benefit) this.form.benefit.value = ''; this.form.submit()">
+                        <option value="">All years</option>
+                        {% for val, label in filter_form.year.field.choices %}
+                        {% if val %}<option value="{{ val }}" {% if val|slugify == filter_year %}selected{% endif %}>{{ label }}</option>{% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="filter-field sp-benefit-field">
+                    <select name="benefit" aria-label="Benefit" onchange="this.form.submit()">
+                        <option value="">All benefits</option>
+                        {% regroup benefit_choices by program.name as benefit_groups %}
+                        {% for group in benefit_groups %}
+                        <optgroup label="{{ group.grouper }}">
+                            {% for b in group.list %}
+                            <option value="{{ b.pk }}" {% if b.pk == filter_benefit.pk %}selected{% endif %}>{{ b.name }}{% if b.year != benefit_year %} ({{ b.year }}){% endif %}</option>
+                            {% endfor %}
+                        </optgroup>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="filter-field sp-search-field">
+                    <input type="search" name="search" id="live-search" aria-label="Search sponsorships" placeholder="Search sponsors..." value="{{ filter_search }}" autocomplete="off">
+                </div>
+                {% if filter_sponsor %}
+                <span class="tag tag-blue">Sponsor: {{ filter_sponsor.name }}</span>
                 {% endif %}
-            </div>
-            <div style="margin-left:auto;display:flex;gap:6px;">
-                <a href="{% url 'manage_sponsorship_export' %}{% if filter_query %}?{{ filter_query }}{% endif %}" class="btn btn-secondary">CSV</a>
-                <a href="{% url 'manage_composer' %}?new=1" class="btn btn-primary">+ Sponsorship</a>
-                <a href="{% url 'manage_sponsor_create' %}" class="btn btn-secondary" style="border:1px solid #ccc !important;">+ Sponsor</a>
+                <div class="filter-actions">
+                    <button type="submit" class="btn btn-secondary">Go</button>
+                    {% if filter_year or filter_search or filter_status or filter_sponsor or request.GET.benefit %}
+                    <a href="{% url 'manage_sponsorships' %}" class="btn btn-secondary">Clear</a>
+                    {% endif %}
+                </div>
             </div>
         </form>
     </div>

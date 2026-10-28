@@ -1047,7 +1047,7 @@ class SponsorshipListView(SponsorshipAdminRequiredMixin, ListView):
         return paginator, page, page.object_list, page.has_other_pages()
 
     def get_context_data(self, **kwargs):
-        """Return context with filter form, encoded filter links, sort links, and status counts."""
+        """Return context with filter form, benefit choices, encoded filter links, sort links, and status counts."""
         context = super().get_context_data(**kwargs)
         filters = self.filters
         context["filter_form"] = SponsorshipFilterForm(self.request.GET)
@@ -1056,6 +1056,17 @@ class SponsorshipListView(SponsorshipAdminRequiredMixin, ListView):
         context["filter_search"] = filters["search"]
         sponsor_pk = _int_or_none(filters["sponsor"])
         context["filter_sponsor"] = Sponsor.objects.filter(pk=sponsor_pk).first() if sponsor_pk else None
+        # Benefits are per-year rows: offer the filtered year's (or the current year's), plus the selected one.
+        benefit_pk = _int_or_none(filters["benefit"])
+        benefit_year = _int_or_none(context["filter_year"]) or SponsorshipCurrentYear.get_year()
+        benefits = list(
+            SponsorshipBenefit.objects.filter(Q(year=benefit_year) | Q(pk=benefit_pk))
+            .select_related("program")
+            .order_by("program__order", "program__name", "order", "name")
+        )
+        context["benefit_choices"] = benefits
+        context["benefit_year"] = benefit_year
+        context["filter_benefit"] = next((b for b in benefits if b.pk == benefit_pk), None)
         context["current_sort"] = filters["sort"]
         context["filter_query"] = _sponsorship_filter_query(filters)
         context["pill_query"] = _sponsorship_filter_query(filters, exclude=("status",))
@@ -2279,7 +2290,7 @@ def _safe_int_pks(raw_ids):
     return pks
 
 
-_SPONSORSHIP_FILTER_KEYS = ("status", "year", "sponsor", "search", "sort")
+_SPONSORSHIP_FILTER_KEYS = ("status", "year", "sponsor", "benefit", "search", "sort")
 
 # ``?sort=<key>`` sorts ascending, ``?sort=-<key>`` descending; the list defaults to newest applications first.
 _SPONSORSHIP_SORT_FIELDS = {
@@ -2348,9 +2359,9 @@ def _filtered_sponsorship_queryset(request, *, ignore_status=False):
     """Build an ordered Sponsorship queryset from request params.
 
     Applies the same filters as SponsorshipListView: status, year (``all`` or
-    blank for every year), sponsor id, and search. ``ignore_status`` drops the
-    status filter entirely (including the default rejected exclusion) so status
-    counts can be computed over the other filters.
+    blank for every year), sponsor id, benefit id, and search. ``ignore_status``
+    drops the status filter entirely (including the default rejected exclusion)
+    so status counts can be computed over the other filters.
     """
     filters = _sponsorship_filter_params(request)
     qs = Sponsorship.objects.select_related("sponsor", "package").order_by(*_sponsorship_ordering(filters["sort"]))
@@ -2371,6 +2382,11 @@ def _filtered_sponsorship_queryset(request, *, ignore_status=False):
         if sponsor_pk is None:
             return qs.none()
         qs = qs.filter(sponsor_id=sponsor_pk)
+    if filters["benefit"]:
+        benefit_pk = _int_or_none(filters["benefit"])
+        if benefit_pk is None:
+            return qs.none()
+        qs = qs.filter(id__in=SponsorBenefit.objects.filter(sponsorship_benefit_id=benefit_pk).values("sponsorship_id"))
     if filters["search"]:
         qs = qs.filter(Q(sponsor__name__icontains=filters["search"]))
 
@@ -2386,6 +2402,8 @@ def _sponsorship_csv_filename(filters):
         parts.append(filters["year"])
     if filters["sponsor"]:
         parts.append(f"sponsor-{filters['sponsor']}")
+    if filters["benefit"]:
+        parts.append(f"benefit-{filters['benefit']}")
     if filters["search"]:
         parts.append(f"search-{filters['search']}")
     return slugify("-".join(parts))[:100] + ".csv"
