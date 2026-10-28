@@ -546,8 +546,17 @@
     .manage-section.collapsed .collapse-body {
         display: none;
     }
+    .collapse-toggle {
+        cursor: pointer;
+        user-select: none;
+    }
     .collapse-toggle:hover h2 {
         color: #3776ab;
+    }
+    .collapse-toggle:focus-visible {
+        outline: 2px solid #3776ab;
+        outline-offset: 2px;
+        border-radius: 4px;
     }
 
     /* ── Clone wizard ── */
@@ -823,6 +832,32 @@
 
 {% block extra_js %}
 <script>
+// Collapsible sections: a .collapse-toggle header shows or hides its .manage-section's .collapse-body.
+// Links, buttons and forms inside the header keep working without toggling.
+(function() {
+    function sync(header) {
+        header.setAttribute('aria-expanded', String(!header.parentElement.classList.contains('collapsed')));
+    }
+    document.querySelectorAll('.collapse-toggle').forEach(function(header) {
+        header.setAttribute('role', 'button');
+        header.setAttribute('tabindex', '0');
+        sync(header);
+        function toggle() {
+            header.parentElement.classList.toggle('collapsed');
+            sync(header);
+        }
+        header.addEventListener('click', function(e) {
+            if (e.target.closest('a, button, form, input, select')) return;
+            toggle();
+        });
+        header.addEventListener('keydown', function(e) {
+            if (e.target !== header || (e.key !== 'Enter' && e.key !== ' ')) return;
+            e.preventDefault();
+            toggle();
+        });
+    });
+})();
+
 // Client-side table sorting for .manage-table tables that hold every row on one page.
 // Paginated tables sort on the server instead and opt out with data-server-sort.
 // Cells may carry data-sort with a machine-readable value (ISO date, number) to sort by.

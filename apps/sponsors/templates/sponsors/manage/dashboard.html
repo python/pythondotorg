@@ -214,7 +214,7 @@
     <!-- Sponsors without sponsorship this year -->
     {% if unsponsored %}
     <div class="manage-section">
-        <div class="manage-section-header collapse-toggle" onclick="this.parentElement.classList.toggle('collapsed')" style="cursor:pointer;user-select:none;">
+        <div class="manage-section-header collapse-toggle">
             <h2>
                 <span class="collapse-arrow">&#9662;</span>
                 No Sponsorship for {{ selected_year }} <span class="badge badge-gray">{{ unsponsored_count }}</span>
@@ -275,7 +275,7 @@
     <!-- Packages overview — collapsible -->
     {% if year_packages %}
     <div class="manage-section collapsed">
-        <div class="manage-section-header collapse-toggle" onclick="this.parentElement.classList.toggle('collapsed')" style="cursor:pointer;user-select:none;">
+        <div class="manage-section-header collapse-toggle">
             <h2>
                 <span class="collapse-arrow">&#9662;</span>
                 Packages <span class="badge">{{ total_packages }}</span>
@@ -312,7 +312,7 @@
     <!-- Benefits by program — collapsible -->
     {% for stat in program_stats %}
     <div class="manage-section collapsed">
-        <div class="manage-section-header collapse-toggle" onclick="this.parentElement.classList.toggle('collapsed')" style="cursor:pointer;user-select:none;">
+        <div class="manage-section-header collapse-toggle">
             <h2>
                 <span class="collapse-arrow">&#9662;</span>
                 {{ stat.program.name }} <span class="badge">{{ stat.count }}</span>

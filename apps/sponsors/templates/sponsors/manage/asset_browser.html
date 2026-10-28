@@ -55,7 +55,7 @@
     {% if grouped_assets %}
     {% for company_name, group in grouped_assets.items %}
     <div class="manage-section{% if not filter_value and not filter_search and not filter_type %} collapsed{% endif %}">
-        <div class="manage-section-header collapse-toggle" onclick="this.parentElement.classList.toggle('collapsed')" style="cursor:pointer;user-select:none;">
+        <div class="manage-section-header collapse-toggle">
             <h2>
                 <span class="collapse-arrow">&#9662;</span>
                 {{ company_name }}
