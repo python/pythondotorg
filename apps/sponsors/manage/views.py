@@ -1153,14 +1153,6 @@ class SponsorshipDetailView(SponsorshipAdminRequiredMixin, DetailView):
         context["history"] = _sponsorship_history(sp)
         # Contracts originally created for this sponsorship, later detached.
         context["historical_contracts"] = sp.contract_history.filter(status=Contract.OUTDATED).order_by("-last_update")
-        # Financial breakdown by program
-        program_values = (
-            sp.benefits.values("program__name").annotate(total=Sum("benefit_internal_value")).order_by("-total")
-        )
-        context["program_breakdown"] = [
-            {"name": pv["program__name"] or "Other", "total": pv["total"] or 0} for pv in program_values
-        ]
-        context["max_program_value"] = max((pv["total"] or 0 for pv in program_values), default=1) or 1
         # Communication history
         context["notification_logs"] = sp.notification_logs.select_related("sent_by").all()[:20]
         # Renewal info

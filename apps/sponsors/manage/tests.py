@@ -3279,24 +3279,3 @@ class FinancesViewTests(SponsorshipReviewTestBase):
     def test_dashboard_revenue_links_to_report(self):
         response = self.client.get(reverse("manage_dashboard"))
         self.assertContains(response, "/sponsors/manage/finances/")
-
-
-class SponsorshipDetailFinancialTests(SponsorshipReviewTestBase):
-    """Test financial breakdown on sponsorship detail page."""
-
-    def test_financial_breakdown_shown(self):
-        self.sponsorship.status = Sponsorship.FINALIZED
-        self.sponsorship.sponsorship_fee = 150000
-        self.sponsorship.save()
-        from apps.sponsors.models import SponsorBenefit
-
-        SponsorBenefit.objects.create(
-            sponsorship=self.sponsorship,
-            sponsorship_benefit=self.benefit,
-            name="Logo",
-            program=self.program,
-            benefit_internal_value=5000,
-        )
-        response = self.client.get(reverse("manage_sponsorship_detail", args=[self.sponsorship.pk]))
-        self.assertContains(response, "Financial Breakdown")
-        self.assertContains(response, "Foundation")
