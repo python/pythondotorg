@@ -22,6 +22,13 @@ urlpatterns = [
     path("release-edit-button/<int:pk>", ReleaseEditButton.as_view(), name="release_edit_button"),
     path("humans.txt", TemplateView.as_view(template_name="humans.txt", content_type="text/plain")),
     path("robots.txt", TemplateView.as_view(template_name="robots.txt", content_type="text/plain")),
+    path(
+        ".well-known/security.txt",
+        TemplateView.as_view(template_name="security.txt", content_type="text/plain"),
+        name="security_txt",
+    ),
+    # RFC 9116 legacy location; redirect to the canonical path.
+    path("security.txt", RedirectView.as_view(pattern_name="security_txt", permanent=True)),
     path("funding.json", views.serve_funding_json, name="funding_json"),
     path("shell/", TemplateView.as_view(template_name="python/shell.html"), name="shell"),
     # python section landing pages
