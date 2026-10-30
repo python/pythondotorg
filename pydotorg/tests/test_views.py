@@ -51,3 +51,12 @@ class ViewsTests(TestCase):
                     status_code=301,
                     fetch_redirect_response=False,
                 )
+
+    def test_security_txt(self):
+        response = self.client.get("/.well-known/security.txt")
+        self.assertEqual(response.status_code, 200)
+        body = response.content.decode()
+        self.assertIn("Contact: https://www.python.org/dev/security/", body)
+
+        response = self.client.get("/security.txt")
+        self.assertRedirects(response, "/.well-known/security.txt", status_code=301, fetch_redirect_response=False)

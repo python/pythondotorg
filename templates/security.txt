@@ -1,0 +1,6 @@
+# Security contact information for python.org.
+Contact: https://www.python.org/dev/security/
+Expires: 2030-11-10T00:00:00.000Z
+Policy: https://www.python.org/dev/security/
+Preferred-Languages: en
+Canonical: https://www.python.org/.well-known/security.txt
