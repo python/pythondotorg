@@ -293,7 +293,7 @@ HONEYPOT_VALUE = "write your message"
 HAYSTACK_CUSTOM_HIGHLIGHTER = "pydotorg.search.Highlighter"
 
 ### Blog Feed URL
-PYTHON_BLOG_FEED_URL = "https://blog.python.org/feeds/posts/default?alt=rss"
+PYTHON_BLOG_FEED_URL = "https://blog.python.org/rss.xml"
 PYTHON_BLOG_URL = "https://blog.python.org"
 
 ### Registration mailing lists
