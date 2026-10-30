@@ -4,7 +4,7 @@ import logging
 from pathlib import Path
 
 from csp.constants import NONCE, SELF, UNSAFE_INLINE
-from decouple import config
+from decouple import Csv, config
 from dj_database_url import parse as dj_database_url_parser
 from django.contrib.messages import constants
 
@@ -283,6 +283,7 @@ DJANGO_STRUCTLOG_STATUS_DEFAULT_LOG_LEVEL = logging.DEBUG
 DJANGO_STRUCTLOG_STATUS_4XX_LOG_LEVEL = logging.DEBUG
 # Client IPs were never logged; keep it that way.
 DJANGO_STRUCTLOG_IP_LOGGING_ENABLED = False
+DJANGO_STRUCTLOG_CELERY_ENABLED = True
 
 ### Honeypot
 HONEYPOT_FIELD_NAME = "email_body_text"
@@ -314,6 +315,12 @@ EVENTS_TO_EMAIL = "events@python.org"
 SPONSORSHIP_NOTIFICATION_FROM_EMAIL = config("SPONSORSHIP_NOTIFICATION_FROM_EMAIL", default="sponsors@python.org")
 SPONSORSHIP_NOTIFICATION_TO_EMAIL = config("SPONSORSHIP_NOTIFICATION_TO_EMAIL", default="psf-sponsors@python.org")
 PYPI_SPONSORS_CSV = str(Path(BASE) / "data" / "pypi-sponsors.csv")
+# Required text assets whose internal name contains one of these markers (case and
+# "_"/"-" insensitive) collect sponsor job postings one job per row instead of as a
+# free-form markdown textarea. See apps/sponsors/job_postings.py.
+SPONSOR_JOB_POSTINGS_ASSET_MARKERS = config(
+    "SPONSOR_JOB_POSTINGS_ASSET_MARKERS", default="job-listing,job-posting", cast=Csv()
+)
 
 # Mail
 DEFAULT_FROM_EMAIL = "noreply@python.org"

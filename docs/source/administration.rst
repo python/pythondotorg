@@ -113,6 +113,21 @@ where sponsors view their sponsorships, update sponsor information, and upload r
 assets. Everything else is done through the admin action buttons on the ``Sponsorship``
 and ``Contract`` models.
 
+Required text asset configurations can set ``max_length`` (enforced on new input, and announced to the sponsor as
+"Up to N characters.") and a ``placeholder`` example, e.g. ``Acme Corp is…``, to keep submissions
+short. Limits of 100 characters or fewer render as a single-line input; longer limits as a 4-row
+textarea. A value already saved before a limit was added or lowered keeps saving until the sponsor
+edits it. Changes to a configuration reach existing sponsorships after running "Update related
+sponsorships" on the sponsorship benefit in the admin.
+
+Required text assets whose internal name contains ``job-listing`` or ``job-posting`` (case and
+``_``/``-`` insensitive, configurable with the ``SPONSOR_JOB_POSTINGS_ASSET_MARKERS`` environment
+variable) ask sponsors for one job per row (title, optional location, link) instead of a markdown
+textarea; the configured help text is replaced by row instructions. Sponsors can add as many rows
+as they need. Rows are stored in the same text asset, one job per line, as
+``Title | Location | URL`` (or ``Title | URL`` without a location), which PyCon-site's sponsor sync
+parses. Existing markdown values are pre-filled as rows where a link can be recovered.
+
 Agreements
 ----------
 
