@@ -1,0 +1,506 @@
+{% extends "sponsors/manage/_base.html" %}
+{% load humanize static %}
+
+{% block page_title %}Finances | Sponsor Management{% endblock %}
+
+{% block manage_breadcrumbs %}
+<div class="manage-crumbs">
+    <a href="{% url 'manage_dashboard' %}">Dashboard</a>
+    <span class="sep">/</span>
+    <span class="current">Finances</span>
+</div>
+{% endblock %}
+
+{% block manage_content %}
+
+<style>
+    .fin-cards { display:grid; grid-template-columns:repeat(4, 1fr); gap:16px; margin-bottom:28px; }
+    .fin-card { background:#fff; border:1px solid #e8e8e8; border-radius:6px; padding:16px 20px; }
+    .fin-card .fin-val { font-size:24px; font-weight:700; color:#1a1a2e; font-variant-numeric:tabular-nums; }
+    .fin-card .fin-label { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; color:#999; margin-top:2px; }
+    .fin-card.gold .fin-val { color:#b8860b; }
+    .fin-card.green .fin-val { color:#4caf50; }
+    .chart-grid { display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-bottom:28px; }
+    .chart-box { background:#fff; border:1px solid #e8e8e8; border-radius:6px; padding:20px; }
+    .chart-box h3 { font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:#3776ab; margin:0 0 16px; }
+    .chart-box canvas { max-height:280px; }
+    .chart-box.wide { grid-column:1 / -1; }
+    .fin-headline { background:#fff; border:1px solid #e8e8e8; border-left:4px solid #3776ab; border-radius:6px; padding:14px 20px; margin-bottom:28px; font-size:15px; color:#1a1a2e; }
+    .fin-headline strong { font-variant-numeric:tabular-nums; }
+    .fin-headline .up { color:#4caf50; font-weight:700; }
+    .fin-headline .down { color:#e74c3c; font-weight:700; }
+    .fin-unapproved { font-size:14px; color:#5f6368; margin-top:4px; }
+    .fin-unapproved strong { color:#1a1a2e; font-variant-numeric:tabular-nums; }
+    .fin-note { font-size:12px; color:#5f6368; margin-top:4px; }
+    .fin-estimate-tag { display:inline-block; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:#5f6368; background:#f0f2f4; border-radius:3px; padding:2px 6px; margin-left:8px; vertical-align:middle; }
+    .fin-accessible-table { width:100%; border-collapse:collapse; margin-top:16px; font-size:12px; }
+    .fin-accessible-table th, .fin-accessible-table td { padding:6px 8px; text-align:right; border-bottom:1px solid #f0f0f0; }
+    .fin-accessible-table th:first-child, .fin-accessible-table td:first-child { text-align:left; }
+    .fin-accessible-table thead th { color:#5f6368; font-weight:600; text-transform:uppercase; letter-spacing:0.3px; font-size:10px; }
+    @media (max-width: 768px) {
+        .fin-cards { grid-template-columns:repeat(2, minmax(0, 1fr)); }
+        .chart-grid { grid-template-columns:minmax(0, 1fr); }
+    }
+</style>
+
+<script src="{% static 'js/libs/chart-4.5.1.umd.min.js' %}"></script>
+
+<!-- Year selector -->
+{% if years %}
+<div class="year-pills" style="margin-bottom:20px;">
+    {% for year in years %}
+    <a href="?year={{ year }}" class="year-pill {% if year == selected_year %}active{% endif %}">{{ year }}</a>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% if selected_year %}
+
+<!-- Summary cards -->
+<div class="fin-cards">
+    <div class="fin-card gold">
+        <div class="fin-val">${{ total_revenue|intcomma }}</div>
+        <div class="fin-label">Total Revenue</div>
+    </div>
+    <div class="fin-card green">
+        <div class="fin-val">${{ finalized_revenue|intcomma }}</div>
+        <div class="fin-label">Finalized</div>
+    </div>
+    <div class="fin-card">
+        <div class="fin-val">${{ approved_revenue|intcomma }}</div>
+        <div class="fin-label">Approved (pending)</div>
+    </div>
+    <div class="fin-card">
+        <div class="fin-val">{{ total_count }}</div>
+        <div class="fin-label" title="Approved and finalized only. The dashboard count also includes applied sponsorships.">Committed sponsorships &middot; ${{ avg_deal|intcomma }} avg</div>
+    </div>
+</div>
+
+{% if cumulative_headline %}
+<div class="fin-headline">
+    {% if cumulative_headline.prev_year_total %}
+        <strong>${{ cumulative_headline.this_year_total|intcomma }}</strong> booked so far in {{ cumulative_headline.year }}
+        vs <strong>${{ cumulative_headline.prev_year_total|intcomma }}</strong> at this point in {{ cumulative_headline.prev_year }}
+        {% if cumulative_headline.pct_change is not None %}
+            {% if cumulative_headline.pct_change >= 0 %}
+            (<span class="up">+{{ cumulative_headline.pct_change }}%</span>)
+            {% else %}
+            (<span class="down">{{ cumulative_headline.pct_change }}%</span>)
+            {% endif %}
+        {% endif %}
+    {% else %}
+        <strong>${{ cumulative_headline.this_year_total|intcomma }}</strong> booked so far in {{ cumulative_headline.year }}
+        &mdash; no comparable bookings recorded at this point in {{ cumulative_headline.prev_year }}.
+    {% endif %}
+    {% if cumulative_headline.applied_pending %}<div class="fin-unapproved">+ <strong>${{ cumulative_headline.applied_pending|intcomma }}</strong> in {{ cumulative_headline.year }} applications not yet approved &rarr; <strong>${{ cumulative_headline.with_unapproved_total|intcomma }}</strong> if all are approved (dashed line below)</div>{% endif %}
+    <div class="fin-note">Booked = approved or finalized revenue for {{ cumulative_headline.year }} vs revenue for {{ cumulative_headline.prev_year }} sponsorships that went on to finalize, counted by booking date (approved, then finalized, then applied date).</div>
+</div>
+{% endif %}
+
+<!-- Cumulative revenue-by-month comparison -->
+{% if chart_years %}
+<div class="chart-grid">
+    <div class="chart-box wide">
+        <h3>Cumulative Revenue vs Prior Years</h3>
+        <canvas id="cumulativeChart"></canvas>
+        <div class="fin-note">Aligned by month relative to Jan 1 of each sponsorship year, since sponsorships are sold across two calendar years. {{ current_sponsorship_year }} counts approved and finalized revenue (solid); the dashed line adds applications that aren't approved yet. Earlier years count finalized revenue only.</div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Charts row 1: YoY revenue trend + status donut -->
+<div class="chart-grid">
+    <div class="chart-box">
+        <h3>Revenue Trend</h3>
+        <canvas id="yoyRevenueChart"></canvas>
+    </div>
+    <div class="chart-box">
+        <h3>{{ selected_year }} Status Breakdown</h3>
+        <canvas id="statusChart"></canvas>
+    </div>
+</div>
+
+<!-- Charts row 2: package breakdown + deal metrics -->
+<div class="chart-grid">
+    <div class="chart-box">
+        <h3>{{ selected_year }} Revenue by Package</h3>
+        <canvas id="packageChart"></canvas>
+    </div>
+    <div class="chart-box">
+        <h3>Deal Count &amp; Avg Size Trend</h3>
+        <canvas id="dealTrendChart"></canvas>
+    </div>
+</div>
+
+<!-- Revenue by package, per year -->
+{% if pkg_by_year.years %}
+<div class="chart-grid">
+    <div class="chart-box wide">
+        <h3>Revenue by Package, per Year</h3>
+        <canvas id="packageYearChart"></canvas>
+        <table class="fin-accessible-table">
+            <caption class="fin-note" style="text-align:left;">Revenue by package and year</caption>
+            <thead>
+                <tr>
+                    <th>Package</th>
+                    {% for year in pkg_by_year.years %}<th>{{ year }}</th>{% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in pkg_by_year.rows %}
+                <tr>
+                    <td>{{ row.name }}</td>
+                    {% for v in row.values %}<td>${{ v|intcomma }}</td>{% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+
+<!-- Program allocation estimate -->
+{% if program_allocation.rows %}
+<div class="chart-grid">
+    <div class="chart-box wide">
+        <h3>Revenue Allocated by Program<span class="fin-estimate-tag">Estimate</span></h3>
+        <div class="fin-note">
+            Allocates each sponsorship's fee across programs proportionally to the internal value of its benefits in that program.
+            {% if program_allocation.no_internal_value_count %}
+                {{ program_allocation.no_internal_value_count }} sponsorship{{ program_allocation.no_internal_value_count|pluralize }} had no recorded benefit internal values and {{ program_allocation.no_internal_value_count|pluralize:"is,are" }} reported as &ldquo;Unallocated&rdquo;.
+            {% endif %}
+        </div>
+        <canvas id="programAllocationChart"></canvas>
+        <table class="fin-accessible-table">
+            <caption class="fin-note" style="text-align:left;">Estimated revenue allocated by program for {{ selected_year }}</caption>
+            <thead><tr><th>Program</th><th>Estimated revenue</th></tr></thead>
+            <tbody>
+                {% for row in program_allocation.rows %}
+                <tr><td>{{ row.name }}</td><td>${{ row.amount|intcomma }}</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+
+<!-- Per-sponsorship breakdown -->
+{% if sponsorships %}
+<div class="manage-section">
+    <div class="manage-section-header">
+        <h2>Committed Sponsorships <span class="badge">{{ total_count }}</span></h2>
+    </div>
+    <table class="manage-table">
+        <thead>
+            <tr>
+                <th>Sponsor</th>
+                <th>Package</th>
+                <th style="text-align:center;">Status</th>
+                <th style="text-align:right;">Fee</th>
+                <th style="text-align:right;">Internal Value</th>
+                <th style="text-align:right;" title="Sponsorship fee as a percentage of the summed internal value of its benefits">Fee / Value</th>
+                <th>Period</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for sp in sponsorships %}
+            <tr>
+                <td>
+                    <a href="{% url 'manage_sponsorship_detail' sp.pk %}" style="font-weight:600;color:#1a1a2e;text-decoration:none;">
+                        {% if sp.sponsor %}{{ sp.sponsor.name }}{% else %}Unknown{% endif %}
+                    </a>
+                </td>
+                <td>
+                    {% if sp.package %}<span class="package-name">{{ sp.package.name }}</span>{% else %}<span class="package-name" style="color:#5f6368;">Custom</span>{% endif %}
+                </td>
+                <td style="text-align:center;">
+                    {% if sp.status == 'approved' %}<span class="tag tag-gold" style="font-size:10px;">Approved</span>
+                    {% elif sp.status == 'finalized' %}<span class="tag tag-green" style="font-size:10px;">Finalized</span>
+                    {% endif %}
+                </td>
+                <td style="text-align:right;font-variant-numeric:tabular-nums;font-weight:600;">
+                    ${{ sp.sponsorship_fee|default:0|intcomma }}
+                </td>
+                <td style="text-align:right;font-variant-numeric:tabular-nums;color:#777;">
+                    ${{ sp.internal_total|intcomma }}
+                </td>
+                <td style="text-align:right;font-variant-numeric:tabular-nums;">
+                    {% if sp.sponsorship_fee and sp.internal_total %}
+                        <span style="color:{% if sp.sponsorship_fee >= sp.internal_total %}#4caf50{% else %}#e74c3c{% endif %};font-weight:600;">{% widthratio sp.sponsorship_fee sp.internal_total 100 %}%</span>
+                    {% else %}
+                    <span style="color:#ccc;">&mdash;</span>
+                    {% endif %}
+                </td>
+                <td style="font-size:12px;color:#777;">
+                    {% if sp.start_date and sp.end_date %}
+                    {{ sp.start_date|date:"M j" }} &ndash; {{ sp.end_date|date:"M j, Y" }}
+                    {% else %}<span style="color:#ccc;">&mdash;</span>{% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr style="font-weight:700;border-top:2px solid #1a1a2e;">
+                <td colspan="3" style="text-align:right;font-size:12px;text-transform:uppercase;color:#999;">Total</td>
+                <td style="text-align:right;font-variant-numeric:tabular-nums;">${{ total_revenue|intcomma }}</td>
+                <td colspan="3"></td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+{% endif %}
+
+{{ chart_data|json_script:"chart-data" }}
+<script>
+(function() {
+    var D = JSON.parse(document.getElementById('chart-data').textContent);
+    var gold = '#b8860b', blue = '#3776ab', green = '#4caf50', red = '#e74c3c',
+        lightBlue = '#5a9fd4', lightGold = '#ffd43b', gray = '#ccc';
+
+    var fmt = function(v) { return '$' + v.toLocaleString(); };
+
+    // --- Revenue Trend (stacked bar: finalized always, approved/applied for current year only) ---
+    new Chart(document.getElementById('yoyRevenueChart'), {
+        type: 'bar',
+        data: {
+            labels: D.yoy_labels,
+            datasets: [
+                {
+                    label: 'Finalized',
+                    data: D.yoy_finalized,
+                    backgroundColor: green,
+                    borderRadius: 2,
+                },
+                {
+                    label: 'Approved',
+                    data: D.yoy_approved,
+                    backgroundColor: lightGold,
+                    borderRadius: 2,
+                },
+                {
+                    label: 'Applied',
+                    data: D.yoy_applied,
+                    backgroundColor: lightBlue,
+                    borderRadius: 2,
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                tooltip: { callbacks: { label: function(c) { return c.dataset.label + ': ' + fmt(c.raw); } } },
+                legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } }
+            },
+            scales: {
+                x: { stacked: true, grid: { display: false } },
+                y: { stacked: true, ticks: { callback: function(v) { return '$' + (v/1000) + 'k'; } }, grid: { color: '#f0f0f0' } }
+            }
+        }
+    });
+
+    // --- Status Donut ---
+    new Chart(document.getElementById('statusChart'), {
+        type: 'doughnut',
+        data: {
+            labels: D.status_labels,
+            datasets: [{
+                data: D.status_counts,
+                backgroundColor: [blue, gold, green, red],
+                borderWidth: 0,
+                hoverOffset: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '60%',
+            plugins: {
+                legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 }, padding: 16 } }
+            }
+        }
+    });
+
+    // --- Package Revenue (horizontal bar) ---
+    new Chart(document.getElementById('packageChart'), {
+        type: 'bar',
+        data: {
+            labels: D.pkg_labels,
+            datasets: [{
+                label: 'Revenue',
+                data: D.pkg_revenue,
+                backgroundColor: [blue, lightBlue, '#8bc1e8', '#b0d4f1', '#d4e8f7', '#e8f0f7'],
+                borderRadius: 3,
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                tooltip: { callbacks: { label: function(c) { return fmt(c.raw) + ' (' + D.pkg_counts[c.dataIndex] + ' deal' + (D.pkg_counts[c.dataIndex] !== 1 ? 's' : '') + ')'; } } },
+                legend: { display: false }
+            },
+            scales: {
+                x: { ticks: { callback: function(v) { return '$' + (v/1000) + 'k'; } }, grid: { color: '#f0f0f0' } },
+                y: { grid: { display: false } }
+            }
+        }
+    });
+
+    // --- Deal Count & Avg Size Trend (combo) ---
+    new Chart(document.getElementById('dealTrendChart'), {
+        type: 'bar',
+        data: {
+            labels: D.yoy_labels,
+            datasets: [
+                {
+                    label: 'Deals',
+                    data: D.yoy_counts,
+                    backgroundColor: blue,
+                    borderRadius: 2,
+                    yAxisID: 'y',
+                    order: 2,
+                },
+                {
+                    label: 'Avg Deal Size',
+                    data: D.yoy_avg,
+                    type: 'line',
+                    borderColor: gold,
+                    backgroundColor: gold,
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                    tension: 0.3,
+                    yAxisID: 'y1',
+                    order: 1,
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                tooltip: { callbacks: { label: function(c) { return c.dataset.label + ': ' + (c.dataset.yAxisID === 'y1' ? fmt(c.raw) : c.raw); } } },
+                legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } }
+            },
+            scales: {
+                y: { position: 'left', title: { display: true, text: 'Deals', font: { size: 11 } }, grid: { color: '#f0f0f0' } },
+                y1: { position: 'right', title: { display: true, text: 'Avg Size', font: { size: 11 } }, ticks: { callback: function(v) { return '$' + (v/1000) + 'k'; } }, grid: { display: false } },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+
+    // --- Cumulative Revenue vs Prior Years (line, aligned by relative month) ---
+    if (document.getElementById('cumulativeChart')) {
+        var cumColors = [gray, lightBlue, blue];
+        var cumDatasets = D.cum_years.map(function(year, i) {
+            var isLast = i === D.cum_years.length - 1;
+            return {
+                label: String(year),
+                data: D.cum_series[year],
+                borderColor: isLast ? gold : cumColors[i % cumColors.length],
+                backgroundColor: 'transparent',
+                borderWidth: isLast ? 3 : 2,
+                pointRadius: 0,
+                tension: 0.15,
+            };
+        });
+        if (D.cum_with_unapproved) {
+            cumDatasets.push({
+                label: D.cum_current_year + ' incl. unapproved',
+                data: D.cum_with_unapproved,
+                borderColor: gold,
+                backgroundColor: 'transparent',
+                borderWidth: 2,
+                borderDash: [6, 4],
+                pointRadius: 0,
+                tension: 0.15,
+            });
+        }
+        new Chart(document.getElementById('cumulativeChart'), {
+            type: 'line',
+            data: { labels: D.cum_labels, datasets: cumDatasets },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: { mode: 'index', intersect: false },
+                plugins: {
+                    tooltip: { callbacks: { label: function(c) { return c.dataset.label + ': ' + fmt(c.raw); } } },
+                    legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } }
+                },
+                scales: {
+                    x: { grid: { display: false }, ticks: { maxRotation: 0, autoSkip: true, maxTicksLimit: 12 } },
+                    y: { ticks: { callback: function(v) { return '$' + (v/1000) + 'k'; } }, grid: { color: '#f0f0f0' } }
+                }
+            }
+        });
+    }
+
+    // --- Revenue by Package, per Year (stacked bar) ---
+    if (document.getElementById('packageYearChart')) {
+        var pkgYearColors = D.pkg_year_palette;
+        var pkgYearDatasets = D.pkg_year_packages.map(function(pkg, i) {
+            return {
+                label: pkg,
+                data: D.pkg_year_series[pkg],
+                backgroundColor: pkgYearColors[i % pkgYearColors.length],
+                borderRadius: 2,
+            };
+        });
+        new Chart(document.getElementById('packageYearChart'), {
+            type: 'bar',
+            data: { labels: D.pkg_year_years, datasets: pkgYearDatasets },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    tooltip: { callbacks: { label: function(c) { return c.dataset.label + ': ' + fmt(c.raw); } } },
+                    legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } }
+                },
+                scales: {
+                    x: { stacked: true, grid: { display: false } },
+                    y: { stacked: true, ticks: { callback: function(v) { return '$' + (v/1000) + 'k'; } }, grid: { color: '#f0f0f0' } }
+                }
+            }
+        });
+    }
+
+    // --- Revenue Allocated by Program (estimate, horizontal bar) ---
+    if (document.getElementById('programAllocationChart')) {
+        new Chart(document.getElementById('programAllocationChart'), {
+            type: 'bar',
+            data: {
+                labels: D.program_labels,
+                datasets: [{
+                    label: 'Estimated Revenue',
+                    data: D.program_values,
+                    backgroundColor: D.program_labels.map(function(l, i) { return D.pkg_year_palette[i % D.pkg_year_palette.length]; }),
+                    borderRadius: 3,
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    tooltip: { callbacks: { label: function(c) { return fmt(c.raw); } } },
+                    legend: { display: false }
+                },
+                scales: {
+                    x: { ticks: { callback: function(v) { return '$' + (v/1000) + 'k'; } }, grid: { color: '#f0f0f0' } },
+                    y: { grid: { display: false } }
+                }
+            }
+        });
+    }
+})();
+</script>
+
+{% else %}
+<div class="empty-state">
+    <div class="empty-icon">&#128200;</div>
+    <p>No sponsorship data found.</p>
+</div>
+{% endif %}
+{% endblock %}

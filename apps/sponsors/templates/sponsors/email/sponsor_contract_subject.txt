@@ -1,1 +1,1 @@
-STATEMENT OF WORK subject email user + verified emails
+PSF Sponsorship Agreement - {{ contract.sponsorship.sponsor.name }}

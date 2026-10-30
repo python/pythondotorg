@@ -6,16 +6,16 @@ from django.contrib.auth import get_user_model
 from django.contrib.messages import ERROR, SUCCESS, WARNING, get_messages
 from django.core import mail
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import TestCase
 from django.urls import reverse
 
 from apps.agreements import workflow
 from apps.agreements.models import Agreement, CustomContract, SigningLink
-from apps.agreements.tests.test_agreements import PDF, make_officer, offer_contract
+from apps.agreements.tests.test_agreements import PDF, PrivateStorageTestCase, make_officer, offer_contract
 
 
-class SigningRecoveryTests(TestCase):
+class SigningRecoveryTests(PrivateStorageTestCase):
     def setUp(self) -> None:
+        super().setUp()
         self.officer = make_officer()
         self.customer = get_user_model().objects.create_user("customer", "customer@example.com", "password")
         self.agreement = offer_contract(self.officer, counterparty_account=self.customer)

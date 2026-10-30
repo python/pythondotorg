@@ -29,6 +29,7 @@ from apps.sponsors.models import (
     SponsorshipPackage,
     SponsorshipProgram,
 )
+from apps.sponsors.validators import validate_signed_contract
 
 SPONSORSHIP_YEAR_SELECT = forms.Select(
     choices=(((None, "---"), *tuple((y, str(y)) for y in range(2021, timezone.now().date().year + 2))))
@@ -474,7 +475,13 @@ class SponsorshipReviewAdminForm(forms.ModelForm):
 class SignedSponsorshipReviewAdminForm(SponsorshipReviewAdminForm):
     """Form to approve sponsorships that already have a signed contract."""
 
-    signed_contract = forms.FileField(help_text="Please upload the final version of the signed contract.")
+    signed_contract = forms.FileField(help_text="Please upload the final version of the signed contract (PDF or DOCX).")
+
+    def clean_signed_contract(self):
+        """Reject uploads that are not genuine PDF or DOCX documents."""
+        signed_contract = self.cleaned_data["signed_contract"]
+        validate_signed_contract(signed_contract)
+        return signed_contract
 
 
 class SponsorBenefitAdminInlineForm(forms.ModelForm):
