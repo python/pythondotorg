@@ -3,10 +3,11 @@
 import posixpath
 import secrets
 import uuid
+from functools import partial
 from itertools import chain
 from pathlib import Path
 
-from django.db import models
+from django.db import models, transaction
 from django.urls import reverse
 from django.utils import timezone
 from markupfield.fields import MarkupField
@@ -14,7 +15,8 @@ from ordered_model.models import OrderedModel
 
 from apps.sponsors.exceptions import InvalidStatusError
 from apps.sponsors.models.sponsorship import Sponsorship
-from apps.sponsors.utils import file_from_storage
+from apps.sponsors.storage import get_contract_storage
+from apps.sponsors.utils import file_from_storage, with_article
 
 
 class LegalClause(OrderedModel):
@@ -84,17 +86,22 @@ class Contract(models.Model):
     document = models.FileField(
         upload_to=FINAL_VERSION_PDF_DIR,
         blank=True,
+        max_length=255,
         verbose_name="Unsigned PDF",
+        storage=get_contract_storage,
     )
     document_docx = models.FileField(
         upload_to=FINAL_VERSION_DOCX_DIR,
         blank=True,
+        max_length=255,
         verbose_name="Unsigned Docx",
+        storage=get_contract_storage,
     )
     signed_document = models.FileField(
         upload_to=signed_contract_random_path,
         blank=True,
         verbose_name="Signed PDF",
+        storage=get_contract_storage,
     )
 
     # Contract information gets populated during object's creation.
@@ -105,6 +112,14 @@ class Contract(models.Model):
         null=True,
         on_delete=models.SET_NULL,
         related_name="contract",
+    )
+    # Preserve the association when a replaced contract is detached.
+    original_sponsorship = models.ForeignKey(
+        "sponsors.Sponsorship",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="contract_history",
     )
     sponsor_info = models.TextField(verbose_name="Sponsor information")
     sponsor_contact = models.TextField(verbose_name="Sponsor contact")
@@ -178,6 +193,7 @@ class Contract(models.Model):
         legal_clauses_text = "\n".join([f"[^{i}]: {c.clause}" for i, c in enumerate(legal_clauses, start=1)])
         return cls.objects.create(
             sponsorship=sponsorship,
+            original_sponsorship=sponsorship,
             sponsor_info=sponsor_info,
             sponsor_contact=sponsor_contact,
             benefits_list="\n".join(list(benefits_list)),
@@ -214,10 +230,12 @@ class Contract(models.Model):
     def set_final_version(self, pdf_file, docx_file=None):
         """Store the final PDF/DOCX files and transition to awaiting signature."""
         if self.AWAITING_SIGNATURE not in self.next_status:
-            msg = f"Can't send a {self.get_status_display()} contract."
+            msg = f"Can't send {with_article(self.get_status_display())} contract."
             raise InvalidStatusError(msg)
 
-        sponsor = self.sponsorship.sponsor.name.upper()
+        # Slashes would create nested directories; clamp the name so the stored path
+        # always fits the FileField column regardless of sponsor name length.
+        sponsor = self.sponsorship.sponsor.name.upper().replace("/", "-")[:100]
 
         # A random token makes the stored path unguessable. Without it the path is
         # derived solely from the sponsor name (e.g. "SoW: <name>.pdf"), so anyone
@@ -226,7 +244,7 @@ class Contract(models.Model):
 
         # save contract as PDF file
         pdf_filename = posixpath.join(self.FINAL_VERSION_PDF_DIR, f"SoW: {sponsor}-{token}.pdf")
-        file = file_from_storage(pdf_filename, mode="wb")
+        file = file_from_storage(pdf_filename, mode="wb", storage=self._meta.get_field("document").storage)
         file.write(pdf_file)
         file.close()
         self.document = pdf_filename
@@ -234,7 +252,7 @@ class Contract(models.Model):
         # save contract as docx file
         if docx_file:
             docx_filename = posixpath.join(self.FINAL_VERSION_DOCX_DIR, f"SoW: {sponsor}-{token}.docx")
-            file = file_from_storage(docx_filename, mode="wb")
+            file = file_from_storage(docx_filename, mode="wb", storage=self._meta.get_field("document_docx").storage)
             file.write(docx_file)
             file.close()
             self.document_docx = docx_filename
@@ -245,7 +263,7 @@ class Contract(models.Model):
     def execute(self, commit=True, force=False):
         """Mark the contract as executed and finalize the sponsorship."""
         if not force and self.EXECUTED not in self.next_status:
-            msg = f"Can't execute a {self.get_status_display()} contract."
+            msg = f"Can't execute {with_article(self.get_status_display())} contract."
             raise InvalidStatusError(msg)
 
         self.status = self.EXECUTED
@@ -259,10 +277,27 @@ class Contract(models.Model):
     def nullify(self, commit=True):
         """Nullify the contract, preventing further use."""
         if self.NULLIFIED not in self.next_status:
-            msg = f"Can't nullify a {self.get_status_display()} contract."
+            msg = f"Can't nullify {with_article(self.get_status_display())} contract."
             raise InvalidStatusError(msg)
 
         self.status = self.NULLIFIED
         if commit:
             self.sponsorship.save()
             self.save()
+
+    def redraft(self, commit=True):
+        """Return a nullified contract to draft, deleting its stale finalized documents."""
+        if self.DRAFT not in self.next_status:
+            msg = f"Can't re-draft {with_article(self.get_status_display())} contract."
+            raise InvalidStatusError(msg)
+
+        stale_files = [(f.storage, f.name) for f in (self.document, self.document_docx) if f]
+        self.status = self.DRAFT
+        self.document = ""
+        self.document_docx = ""
+        self.sent_on = None
+        if commit:
+            self.save()
+            # Delete after commit so a rolled-back redraft never references missing files.
+            for storage, name in stale_files:
+                transaction.on_commit(partial(storage.delete, name))

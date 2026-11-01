@@ -1,4 +1,4 @@
-"""Agreement management is granted by named groups, never user permissions."""
+"""Agreement management is granted by named groups, never user permissions or superuser status."""
 
 from __future__ import annotations
 
@@ -24,9 +24,17 @@ def _in_groups(user: User | AnonymousUser, names: Iterable[str]) -> bool:
     return user.is_authenticated and user.is_active and user.groups.filter(name__in=names).exists()
 
 
+def preparer_groups() -> tuple[str, ...]:
+    """Name every group with editor access: both agreement groups and sponsorship administrators."""
+    # Imported here: the sponsors views load that app's models, and agreement models import this module.
+    from apps.sponsors.manage.views import SponsorshipAdminRequiredMixin
+
+    return (EDITORS, ADMINISTRATORS, SponsorshipAdminRequiredMixin.group_required)
+
+
 def can_prepare(user: User | AnonymousUser) -> bool:
-    """Allow either group to read records and prepare unoffered drafts."""
-    return _in_groups(user, (EDITORS, ADMINISTRATORS))
+    """Allow editor-level groups to read records and prepare unoffered drafts."""
+    return _in_groups(user, preparer_groups())
 
 
 def is_administrator(user: User | AnonymousUser) -> bool:

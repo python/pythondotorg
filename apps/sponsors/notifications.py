@@ -5,9 +5,15 @@ from django.contrib.admin.models import ADDITION, CHANGE, LogEntry
 from django.contrib.contenttypes.models import ContentType
 from django.core.cache import cache
 from django.core.mail import EmailMessage
-from django.template.loader import render_to_string
+from django.template import Context
+from django.template.loader import get_template
 
 from apps.sponsors.models import BenefitFeature
+
+
+def _render_plain_text(template_name, context):
+    """Render a plain-text email template; values like "Code & Supply" must not be HTML-escaped."""
+    return get_template(template_name).template.render(Context(context, autoescape=False)).strip()
 
 
 class BaseEmailSponsorshipNotification:
@@ -19,11 +25,11 @@ class BaseEmailSponsorshipNotification:
 
     def get_subject(self, context):
         """Render and return the email subject from the template."""
-        return render_to_string(self.subject_template, context).strip()
+        return _render_plain_text(self.subject_template, context)
 
     def get_message(self, context):
         """Render and return the email body from the template."""
-        return render_to_string(self.message_template, context).strip()
+        return _render_plain_text(self.message_template, context)
 
     def get_recipient_list(self, context):
         """Return the list of email recipients; must be implemented by subclasses."""
@@ -38,7 +44,11 @@ class BaseEmailSponsorshipNotification:
         return {k: kwargs.get(k) for k in self.email_context_keys}
 
     def notify(self, **kwargs):
-        """Build and send the notification email."""
+        """Build and send the notification email, returning the delivery count."""
+        return self.get_email(**kwargs).send()
+
+    def get_email(self, **kwargs):
+        """Build the message and its attachments."""
         context = self.get_email_context(**kwargs)
 
         email = EmailMessage(
@@ -50,7 +60,7 @@ class BaseEmailSponsorshipNotification:
         for attachment in self.get_attachments(context):
             email.attach(*attachment)
 
-        email.send()
+        return email
 
 
 class AppliedSponsorshipNotificationToPSF(BaseEmailSponsorshipNotification):
@@ -142,12 +152,11 @@ class ContractNotificationToSponsors(BaseEmailSponsorshipNotification):
         contract = context["contract"]
         if contract.document_docx:
             document = contract.document_docx
-            ext, app_type = "docx", "msword"
+            ext, app_type = "docx", "vnd.openxmlformats-officedocument.wordprocessingml.document"
         else:  # fallback to PDF for existing contracts
             document = contract.document
             ext, app_type = "pdf", "pdf"
 
-        document = context["contract"].document
         with document.open("rb") as fd:
             content = fd.read()
         return [(f"Contract.{ext}", content, f"application/{app_type}")]

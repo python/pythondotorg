@@ -1,0 +1,73 @@
+{% extends "sponsors/manage/_base.html" %}
+
+{% block page_title %}Assets | {{ sponsorship.sponsor.name }}{% endblock %}
+
+{% block manage_breadcrumbs %}
+<div class="manage-crumbs">
+    <a href="{% url 'manage_dashboard' %}">Dashboard</a>
+    <span class="sep">/</span>
+    <a href="{% url 'manage_sponsorships' %}">Sponsorships</a>
+    <span class="sep">/</span>
+    <a href="{% url 'manage_sponsorship_detail' sponsorship.pk %}">{{ sponsorship.sponsor.name }}</a>
+    <span class="sep">/</span>
+    <span class="current">Assets</span>
+</div>
+{% endblock %}
+
+{% block manage_content %}
+    <div class="manage-form">
+        <h2 style="font-size:18px;font-weight:700;color:#1a1a2e;margin:0 0 4px;">Required Assets</h2>
+        <p style="font-size:13px;color:#5f6368;margin:0 0 20px;">
+            {{ sponsorship.sponsor.name }} &middot; {{ sponsorship.level_name|default:"No package" }} &middot; {{ sponsorship.year|default:"" }}.
+            Uploads here are saved as if the sponsor submitted them.
+        </p>
+
+        {% if not form.has_input %}
+        <p style="font-size:14px;">This sponsorship has no required assets{% if request.GET.asset %} matching that link{% endif %}.</p>
+        <a href="{% url 'manage_sponsorship_detail' sponsorship.pk %}" class="btn btn-secondary">Back to sponsorship</a>
+        {% else %}
+
+        {% if form.errors %}
+        <div class="form-errors">
+            <strong>Please correct the errors below.</strong>
+            <ul>
+            {% for error in form.non_field_errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+            {% for field in form %}{% if field.errors %}
+                <li><a href="#{{ field.id_for_label }}">{{ field.label }}</a></li>
+            {% endif %}{% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <fieldset class="manage-fieldset">
+                <legend>{% if request.GET.asset %}Asset{% else %}Assets{% endif %}</legend>
+                {% for field in form %}
+                {% with asset=field.field.asset %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">
+                        {{ field.label }}
+                        <span class="tag {% if asset.value %}tag-green{% else %}tag-gold{% endif %}" style="margin-left:6px;">{% if asset.value %}Submitted{% else %}Pending{% endif %}</span>
+                        {% if asset.due_date and not asset.value %}<span style="font-weight:400;font-size:12px;color:#5f6368;margin-left:4px;">due {{ asset.due_date|date:"M j, Y" }}</span>{% endif %}
+                    </label>
+                    {{ field }}
+                    {% if field.help_text %}<span class="helptext">{{ field.help_text }}</span>{% endif %}
+                    <span class="helptext">For benefit: {{ asset.sponsor_benefit.name }}</span>
+                    {% if field.errors %}<div class="field-errors">{{ field.errors.0 }}</div>{% endif %}
+                </div>
+                {% endwith %}
+                {% endfor %}
+            </fieldset>
+
+            <div style="display:flex;gap:10px;align-items:center;padding-top:8px;">
+                <button type="submit" class="btn btn-primary">Save Assets</button>
+                <a href="{% url 'manage_sponsorship_detail' sponsorship.pk %}" class="btn btn-secondary">Cancel</a>
+                {% if request.GET.asset %}<a href="{% url 'manage_sponsorship_assets' sponsorship.pk %}" style="font-size:13px;margin-left:auto;">Edit all assets</a>{% endif %}
+            </div>
+        </form>
+        {% endif %}
+    </div>
+{% endblock %}

@@ -8,7 +8,7 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework.authtoken.admin import TokenAdmin
 from tastypie.admin import ApiKeyInline as TastypieApiKeyInline
 
-from apps.agreements.auth import ADMINISTRATORS, EDITORS
+from apps.agreements.auth import preparer_groups
 from apps.users.actions import export_csv
 from apps.users.models import Membership, User
 
@@ -63,7 +63,7 @@ class UserAdmin(BaseUserAdmin):
             | Q(is_staff=True)
             | Q(user_permissions__isnull=False)
             | Q(groups__permissions__isnull=False)
-            | Q(groups__name__in=(EDITORS, ADMINISTRATORS))
+            | Q(groups__name__in=preparer_groups())
         )
 
     def _can_manage_user(self, request, obj):

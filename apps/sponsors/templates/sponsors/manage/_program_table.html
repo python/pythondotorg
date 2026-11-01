@@ -1,0 +1,45 @@
+<table class="manage-table">
+    <thead>
+        <tr>
+            <th>Program</th>
+            <th>Description</th>
+            <th style="text-align:right;">Benefits in {{ current_year }}</th>
+            <th style="text-align:right;">All years</th>
+            <th style="width:80px;text-align:center;">Move</th>
+            <th style="width:80px;text-align:right;">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for program in rows %}
+        <tr>
+            <td><a href="{% url 'manage_program_edit' program.pk %}" style="font-weight:600;color:#1a1a2e;text-decoration:none;">{{ program.name }}</a></td>
+            <td style="font-size:12px;color:#5f6368;">{{ program.description|default:""|truncatechars:120 }}</td>
+            <td style="text-align:right;font-variant-numeric:tabular-nums;">
+                {% if program.current_benefit_count %}<a href="{% url 'manage_benefit_list' %}?year={{ current_year }}&program={{ program.pk }}" style="color:#3776ab;text-decoration:none;">{{ program.current_benefit_count }}</a>{% else %}<span style="color:#5f6368;">0</span>{% endif %}
+            </td>
+            <td style="text-align:right;font-variant-numeric:tabular-nums;color:#5f6368;">{{ program.benefit_count }}</td>
+            <td style="text-align:center;">
+                <div style="display:flex;gap:2px;justify-content:center;">
+                    {% if not forloop.first %}
+                    <form method="post" action="{% url 'manage_program_move' program.pk %}" style="display:inline;">
+                        {% csrf_token %}
+                        <input type="hidden" name="direction" value="up">
+                        <button type="submit" class="date-quick-btn" title="Move {{ program.name }} up" aria-label="Move {{ program.name }} up" style="padding:2px 6px;font-size:12px;">&#9650;</button>
+                    </form>
+                    {% endif %}
+                    {% if not forloop.last %}
+                    <form method="post" action="{% url 'manage_program_move' program.pk %}" style="display:inline;">
+                        {% csrf_token %}
+                        <input type="hidden" name="direction" value="down">
+                        <button type="submit" class="date-quick-btn" title="Move {{ program.name }} down" aria-label="Move {{ program.name }} down" style="padding:2px 6px;font-size:12px;">&#9660;</button>
+                    </form>
+                    {% endif %}
+                </div>
+            </td>
+            <td style="text-align:right;">
+                <a href="{% url 'manage_program_edit' program.pk %}" style="font-size:12px;color:#3776ab;text-decoration:none;">Edit</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

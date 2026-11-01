@@ -46,7 +46,11 @@ def send_executed_copy(agreement: Agreement) -> None:
     if not agreement.signer_email:
         return
     copy = agreement.signed_copies.filter(kind=SignedCopy.Kind.EXECUTED).first()
-    pdf = bytes(copy.content) if copy is not None else render_pdf(final_markdown(agreement))
+    if copy is None:
+        pdf = render_pdf(final_markdown(agreement))
+    else:
+        with copy.file.open("rb") as stored:
+            pdf = stored.read()
     versions = agreement.terms_versions.select_related("terms")
     attachments = [(f"psf-agreement-{agreement.reference}.pdf", pdf, "application/pdf")]
     attachments.extend(

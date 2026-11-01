@@ -1,5 +1,8 @@
 """Benefit feature and configuration models for the sponsors app."""
 
+import uuid
+from pathlib import PurePosixPath
+
 from django import forms
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, models, transaction
@@ -19,6 +22,12 @@ from apps.sponsors.models.enums import (
 ########################################
 # Benefit features abstract classes
 from apps.sponsors.models.managers import BenefitFeatureQuerySet, NonPolymorphicManager
+from apps.sponsors.storage import get_asset_storage
+
+
+def provided_file_path(instance, filename):
+    """Store each provided file in an unguessable directory while keeping its name for downloads."""
+    return f"sponsors-provided-files/{uuid.uuid4().hex}/{PurePosixPath(filename).name}"
 
 
 ########################################
@@ -180,7 +189,11 @@ class AssetConfigurationMixin:
             kwargs["internal_name"] = f"{self.internal_name}_{new_benefit.year}"
         due_date = kwargs.get("due_date")
         if due_date:
-            kwargs["due_date"] = due_date.replace(year=new_benefit.year)
+            try:
+                kwargs["due_date"] = due_date.replace(year=new_benefit.year)
+            except ValueError:
+                # Feb 29 has no counterpart in a non-leap target year
+                kwargs["due_date"] = due_date.replace(year=new_benefit.year, day=28)
         return kwargs
 
     class Meta:
@@ -278,7 +291,7 @@ class BaseProvidedFileAsset(BaseProvidedAsset):
     help_text = models.CharField(
         max_length=256, help_text="Any helper comment on how the file should be used", default="", blank=True
     )
-    shared_file = models.FileField(blank=True, null=True)
+    shared_file = models.FileField(upload_to=provided_file_path, storage=get_asset_storage, blank=True, null=True)
 
     class Meta(BaseProvidedAsset.Meta):
         """Meta configuration for BaseProvidedFileAsset."""
@@ -493,7 +506,7 @@ class EmailTargetableConfiguration(BaseEmailTargetable, BenefitFeatureConfigurat
 
     def __str__(self):
         """Return string representation."""
-        return "Email targeatable configuration"
+        return "Email targetable configuration"
 
     @property
     def benefit_feature_class(self):

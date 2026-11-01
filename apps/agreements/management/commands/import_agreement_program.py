@@ -1,4 +1,4 @@
-"""Import privately supplied program configuration without committing commercial content."""
+"""Import privately supplied program and terms configuration without committing commercial content."""
 
 from __future__ import annotations
 
@@ -18,9 +18,12 @@ if TYPE_CHECKING:
 
 
 class Command(BaseCommand):
-    """Load a program and optional immutable terms versions from an operator-supplied JSON file."""
+    """Load a program, immutable terms versions, or both from an operator-supplied JSON file."""
 
-    help = "Import an agreement program from private JSON. Use '-' to read stdin. Existing terms versions never change."
+    help = (
+        "Import an agreement program and/or terms from private JSON. Use '-' to read stdin. "
+        "Existing terms versions never change."
+    )
 
     def add_arguments(self, parser: CommandParser) -> None:
         """Accept a private file path or stdin."""
@@ -35,12 +38,12 @@ class Command(BaseCommand):
                 self._import(data)
         except (OSError, json.JSONDecodeError, ValidationError, KeyError, TypeError, ValueError) as exc:
             raise CommandError(str(exc)) from exc
-        self.stdout.write(self.style.SUCCESS("Program configuration imported."))
+        self.stdout.write(self.style.SUCCESS("Agreement configuration imported."))
 
     @staticmethod
     def _import(data: object) -> None:
-        if not isinstance(data, dict) or set(data) - {"program", "terms"}:
-            msg = "Expected an object with 'program' and optional 'terms'."
+        if not isinstance(data, dict) or not data or set(data) - {"program", "terms"}:
+            msg = "Expected an object with 'program', 'terms', or both."
             raise ValueError(msg)
         for entry in data.get("terms", []):
             metadata = {key: entry[key] for key in ("title", "under_review", "is_public") if key in entry}
@@ -61,6 +64,8 @@ class Command(BaseCommand):
                 )
                 version.full_clean(exclude=["sha256"])
                 version.save()
+        if "program" not in data:
+            return
         fields = data["program"]
         if not isinstance(fields, dict) or set(fields) - {"slug", "title", "description", "definition", "is_public"}:
             msg = "Program fields: slug, title, description, definition, is_public."

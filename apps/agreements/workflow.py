@@ -9,15 +9,19 @@ from __future__ import annotations
 
 import hashlib
 import secrets
+from contextlib import contextmanager
 from dataclasses import dataclass
 from datetime import date, datetime, time, timedelta
 from typing import TYPE_CHECKING, cast
 
 if TYPE_CHECKING:
+    from collections.abc import Iterator
+
     from apps.agreements.models import CustomContract, Order, Terms
     from apps.agreements.registry import Kind
     from apps.users.models import User
 
+from django.core.files.base import ContentFile
 from django.db import transaction
 from django.utils import timezone
 
@@ -200,34 +204,53 @@ def create_signing_link(agreement: Agreement, *, name: str, email: str, user: Us
     return link, token
 
 
-def _store_copy(agreement: Agreement, kind: str, upload: Upload, user: User) -> None:
-    SignedCopy.objects.create(
+@contextmanager
+def _atomic_storing_copies() -> Iterator[list[SignedCopy]]:
+    """Run a transaction that may store copies; delete their files if it rolls back.
+
+    Files are written before their rows, so a failed transaction would otherwise leave
+    stored copies that no row refers to.
+    """
+    stored: list[SignedCopy] = []
+    try:
+        with transaction.atomic():
+            yield stored
+    except BaseException:
+        for copy in stored:
+            copy.file.delete(save=False)
+        raise
+
+
+def _store_copy(stored: list[SignedCopy], agreement: Agreement, kind: str, upload: Upload, user: User) -> None:
+    copy = SignedCopy(
         agreement=agreement,
         kind=kind,
         filename=upload.filename[:255],
-        content=upload.content,
         sha256=hashlib.sha256(upload.content).hexdigest(),
         uploaded_by=user,
     )
+    copy.file.save(upload.filename, ContentFile(upload.content), save=False)
+    stored.append(copy)
+    copy.save()
 
 
 def record_signed_copy(
     agreement: Agreement, signature: Signature, *, upload: Upload, user: User, seen_sha256: str
 ) -> Agreement:
     """Record a signature made outside python.org, keeping the signed copy."""
-    with transaction.atomic():
+    with _atomic_storing_copies() as stored:
         agreement = _locked(agreement, Agreement.Status.OFFERED)
         _apply_signature(agreement, signature, Agreement.SignatureMethod.OFFLINE, seen_sha256)
         agreement.signed_at = timezone.make_aware(datetime.combine(cast("date", signature.signed_on), time(12)))
         agreement.signature_recorded_by = user
         agreement.save()
-        _store_copy(agreement, SignedCopy.Kind.CUSTOMER, upload, user)
+        _store_copy(stored, agreement, SignedCopy.Kind.CUSTOMER, upload, user)
     return agreement
 
 
 def countersign(agreement: Agreement, *, user: User, name: str, title: str, upload: Upload | None = None) -> Agreement:
     """Countersign for the PSF; the last signature makes the agreement effective."""
-    with transaction.atomic():
+    with _atomic_storing_copies() as stored:
         agreement = _locked(agreement, Agreement.Status.SIGNED)
         agreement.countersigned_by = user
         agreement.countersigner_name = name
@@ -236,7 +259,7 @@ def countersign(agreement: Agreement, *, user: User, name: str, title: str, uplo
         agreement.status = Agreement.Status.EXECUTED
         agreement.save()
         if upload:
-            _store_copy(agreement, SignedCopy.Kind.EXECUTED, upload, user)
+            _store_copy(stored, agreement, SignedCopy.Kind.EXECUTED, upload, user)
         agreement.kind_obj.executed(agreement)
     return agreement
 

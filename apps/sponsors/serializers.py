@@ -2,7 +2,7 @@
 
 from rest_framework import serializers
 
-from apps.sponsors.models import GenericAsset
+from apps.sponsors.models import FileAsset, GenericAsset
 from apps.sponsors.models.enums import LogoPlacementChoices, PublisherChoices
 
 
@@ -60,10 +60,18 @@ class AssetSerializer(serializers.ModelSerializer):
         return asset.content_type.name.title()
 
     def get_value(self, asset):
-        """Return the asset value, or its file URL if it is a file-based asset."""
+        """Return the asset value, or its file URL if it is a file-based asset.
+
+        Private benefit files resolve to the site's authorized download route, so they are returned as absolute
+        URLs for API consumers; public image URLs are returned unchanged.
+        """
         if not asset.has_value:
             return ""
-        return asset.value if not asset.is_file else asset.value.url
+        if not asset.is_file:
+            return asset.value
+        if isinstance(asset, FileAsset):
+            return self.context["request"].build_absolute_uri(asset.value.url)
+        return asset.value.url
 
     def get_sponsor(self, asset):
         """Return the sponsor name associated with the asset."""

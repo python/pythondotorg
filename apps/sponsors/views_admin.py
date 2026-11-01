@@ -5,7 +5,7 @@ import zipfile
 from functools import wraps
 
 from django.contrib import messages
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -22,6 +22,9 @@ from apps.sponsors.forms import (
     SponsorshipsListForm,
 )
 from apps.sponsors.models import BenefitFeature, EmailTargetable, SponsorshipCurrentYear
+from apps.sponsors.validators import validate_signed_contract
+
+RENDER_FAILURE_EXCEPTIONS = (RuntimeError, OSError, ImportError)
 
 
 def require_change_permission(view):
@@ -46,10 +49,17 @@ def preview_contract_view(model_admin, request, pk):
     """Render a contract preview as PDF or DOCX based on the format query parameter."""
     contract = get_object_or_404(model_admin.get_queryset(request), pk=pk)
     output_format = request.GET.get("format", "pdf")
-    if output_format == "docx":
-        response = render_contract_to_docx_response(request, contract)
-    else:
-        response = render_contract_to_pdf_response(request, contract)
+    try:
+        if output_format == "docx":
+            response = render_contract_to_docx_response(request, contract)
+        else:
+            response = render_contract_to_pdf_response(request, contract)
+    except RENDER_FAILURE_EXCEPTIONS:
+        response = HttpResponse(
+            "This contract could not be rendered for preview. Please try again or contact an administrator.",
+            status=502,
+            content_type="text/plain",
+        )
     response["X-Frame-Options"] = "SAMEORIGIN"
     return response
 
@@ -140,6 +150,8 @@ def approve_signed_sponsorship_view(model_admin, request, pk):
                 model_admin.message_user(request, "Signed sponsorship was approved!", messages.SUCCESS)
             except InvalidStatusError as e:
                 model_admin.message_user(request, str(e), messages.ERROR)
+            except ValidationError as e:
+                model_admin.message_user(request, " ".join(e.messages), messages.ERROR)
 
             redirect_url = reverse("admin:sponsors_sponsorship_change", args=[sponsorship.pk])
             return redirect(redirect_url)
@@ -163,6 +175,12 @@ def send_contract_view(model_admin, request, pk):
             model_admin.message_user(
                 request,
                 f"Contract with status {status} can't be sent.",
+                messages.ERROR,
+            )
+        except RENDER_FAILURE_EXCEPTIONS:
+            model_admin.message_user(
+                request,
+                "The contract could not be rendered. Please try again or contact an administrator.",
                 messages.ERROR,
             )
 
@@ -249,23 +267,31 @@ def execute_contract_view(model_admin, request, pk):
 
     is_post = request.method.upper() == "POST"
     signed_document = request.FILES.get("signed_document")
-    if is_post and request.POST.get("confirm") == "yes" and signed_document:
-        use_case = use_cases.ExecuteContractUseCase.build()
-        try:
-            use_case.execute(contract, signed_document, request=request)
-            model_admin.message_user(request, "Contract was executed!", messages.SUCCESS)
-        except InvalidStatusError:
-            status = contract.get_status_display().title()
-            model_admin.message_user(
-                request,
-                f"Contract with status {status} can't be executed.",
-                messages.ERROR,
-            )
-
-        redirect_url = reverse("admin:sponsors_contract_change", args=[contract.pk])
-        return redirect(redirect_url)
-
     error_msg = ""
+    if is_post and request.POST.get("confirm") == "yes" and signed_document:
+        try:
+            validate_signed_contract(signed_document)
+        except ValidationError as e:
+            error_msg = " ".join(e.messages)
+        else:
+            use_case = use_cases.ExecuteContractUseCase.build()
+            try:
+                use_case.execute(contract, signed_document, request=request)
+                model_admin.message_user(request, "Contract was executed!", messages.SUCCESS)
+            except InvalidStatusError:
+                status = contract.get_status_display().title()
+                model_admin.message_user(
+                    request,
+                    f"Contract with status {status} can't be executed.",
+                    messages.ERROR,
+                )
+            except ValidationError as e:
+                error_msg = " ".join(e.messages)
+
+            if not error_msg:
+                redirect_url = reverse("admin:sponsors_contract_change", args=[contract.pk])
+                return redirect(redirect_url)
+
     if is_post and not signed_document:
         error_msg = "You must submit the signed contract document to execute it."
 
