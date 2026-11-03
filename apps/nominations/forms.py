@@ -197,12 +197,19 @@ class BaseNominationCreateForm(NominationForm):
         super().__init__(*args, **kwargs)
 
     def clean_self_nomination(self):
-        """Validate that self-nominating users have a first and last name set."""
+        """Validate that self-nominating users have a first name, last name, and email set."""
         data = self.cleaned_data["self_nomination"]
         if data and (not self.request.user.first_name or not self.request.user.last_name):
             raise forms.ValidationError(
                 mark_safe(
                     'You must set your First and Last name in your <a href="/users/edit/">User Profile</a> to self nominate.'
+                )
+            )
+        # The confirmation email and supporting-statement instructions both use the account email.
+        if data and not self.request.user.email:
+            raise forms.ValidationError(
+                mark_safe(
+                    'You must set your email address in your <a href="/users/edit/">User Profile</a> to self nominate.'
                 )
             )
 

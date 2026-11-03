@@ -1,0 +1,1 @@
+Your self-nomination for the {{ nomination.election.name }} Election has been received

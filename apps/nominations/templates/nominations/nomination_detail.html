@@ -32,6 +32,9 @@ Nomination for {{ nomination.name }} in {{ nomination.election.name }} Election
     <i>It is no longer editable as nominations are closed.</i>
   {% endif %}
   </center>
+  {% if nomination.nominator == request.user and nomination.election.nominations_open %}
+  {% include "nominations/_supporting_statements.html" %}
+  {% endif %}
 {% elif nomination.nominator == request.user %}
   <center>
     <i>You made this nomination.</i>
