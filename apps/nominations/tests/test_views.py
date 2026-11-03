@@ -11,7 +11,12 @@ from apps.nominations.models import (
     Nomination,
     Nominee,
 )
-from apps.nominations.tests.utils import nomination_payload, open_election, packaging_council_kind
+from apps.nominations.tests.utils import (
+    endorsement_election,
+    nomination_payload,
+    open_election,
+    packaging_council_kind,
+)
 from apps.users.factories import UserFactory
 
 
@@ -410,3 +415,167 @@ class NomineeListPreviewTests(TestCase):
         self.client.force_login(UserFactory(first_name="Guido", last_name="van Rossum"))
         response = self.client.get(self.nominee.get_absolute_url())
         self.assertEqual(response.status_code, 404)
+
+
+class EndorsementCreateTests(TestCase):
+    """The endorsement window is separate from the nomination window."""
+
+    def setUp(self):
+        self.user = UserFactory(first_name="Ellen", last_name="Endorser")
+        self.election = endorsement_election("2026 Board Election")
+        self.candidate = Nominee.objects.create(
+            user=UserFactory(first_name="Grace", last_name="Hopper", email="grace@example.com"),
+            election=self.election,
+            accepted=True,
+            approved=True,
+        )
+        self.client.force_login(self.user)
+
+    def _url(self, election=None):
+        return reverse("nominations:endorsement_create", kwargs={"election": (election or self.election).slug})
+
+    def _payload(self, **overrides):
+        data = {
+            "nominee": self.candidate.pk,
+            "employer": "US Navy",
+            "other_affiliations": "",
+            "nomination_statement": "A strong candidate.",
+        }
+        data.update(overrides)
+        return data
+
+    def test_available_while_nominations_closed(self):
+        self.assertFalse(self.election.nominations_open)
+        response = self.client.get(self._url())
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Submit an Endorsement for")
+
+    def test_404s_when_endorsements_closed_even_if_nominations_open(self):
+        election = open_election("2026 Packaging Council Election", kind=packaging_council_kind())
+        self.assertTrue(election.nominations_open)
+        self.assertFalse(election.endorsements_open)
+        self.assertEqual(self.client.get(self._url(election)).status_code, 404)
+
+    def test_nomination_create_still_404s_during_endorsement_window(self):
+        url = reverse("nominations:nomination_create", kwargs={"election": self.election.slug})
+        self.assertEqual(self.client.get(url).status_code, 404)
+
+    def test_successful_post_links_candidate_without_creating_a_nominee(self):
+        nominee_count = Nominee.objects.count()
+        response = self.client.post(self._url(), self._payload())
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(Nominee.objects.count(), nominee_count)
+        nomination = Nomination.objects.get(election=self.election)
+        self.assertTrue(nomination.is_endorsement)
+        self.assertEqual(nomination.nominee, self.candidate)
+        self.assertEqual(nomination.name, self.candidate.name)
+        self.assertEqual(nomination.email, self.candidate.user.email)
+        self.assertEqual(nomination.nominator, self.user)
+        self.assertFalse(nomination.accepted)
+        self.assertFalse(nomination.approved)
+
+    def test_ineligible_candidate_is_rejected(self):
+        pending = Nominee.objects.create(user=UserFactory(), election=self.election, accepted=True)
+        response = self.client.post(self._url(), self._payload(nominee=pending.pk))
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(Nomination.objects.filter(election=self.election).exists())
+
+    def test_self_endorsement_is_rejected(self):
+        myself = Nominee.objects.create(user=self.user, election=self.election, accepted=True, approved=True)
+        response = self.client.post(self._url(), self._payload(nominee=myself.pk))
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(Nomination.objects.filter(election=self.election).exists())
+
+
+class EndorsementAcceptTests(TestCase):
+    """A nominee can accept an endorsement while the endorsement window is open."""
+
+    def _endorsement(self, election):
+        candidate = Nominee.objects.create(
+            user=UserFactory(first_name="Grace", last_name="Hopper"),
+            election=election,
+            accepted=True,
+            approved=True,
+        )
+        return Nomination.objects.create(
+            election=election,
+            nominator=UserFactory(),
+            nominee=candidate,
+            name=candidate.name,
+            email=candidate.user.email,
+            nomination_statement="A strong candidate.",
+            is_endorsement=True,
+        )
+
+    def _accept(self, endorsement):
+        self.client.force_login(endorsement.nominee.user)
+        url = reverse(
+            "nominations:nomination_accept",
+            kwargs={"election": endorsement.election.slug, "pk": endorsement.pk},
+        )
+        return self.client.post(url, {"accepted": True})
+
+    def test_nominee_can_accept_during_endorsement_window(self):
+        endorsement = self._endorsement(endorsement_election("2026 Board Election"))
+        response = self._accept(endorsement)
+        self.assertEqual(response.status_code, 302)
+        endorsement.refresh_from_db()
+        self.assertTrue(endorsement.accepted)
+
+    def test_nominee_denied_after_endorsement_window(self):
+        now = datetime.datetime.now(datetime.UTC)
+        election = Election.objects.create(
+            name="2026 Board Election",
+            date=datetime.date(2026, 12, 1),
+            endorsements_open_at=now - datetime.timedelta(days=2),
+            endorsements_close_at=now - datetime.timedelta(days=1),
+        )
+        endorsement = self._endorsement(election)
+        self.assertEqual(self._accept(endorsement).status_code, 403)
+
+
+class EndorsementEditTests(TestCase):
+    """Editing an endorsement must not let the endorser rewrite the candidate."""
+
+    def setUp(self):
+        self.nominator = UserFactory(first_name="Ellen", last_name="Endorser")
+        self.election = endorsement_election("2026 Board Election")
+        self.candidate = Nominee.objects.create(
+            user=UserFactory(first_name="Grace", last_name="Hopper", email="grace@example.com"),
+            election=self.election,
+            accepted=True,
+            approved=True,
+        )
+        self.endorsement = Nomination.objects.create(
+            election=self.election,
+            nominator=self.nominator,
+            nominee=self.candidate,
+            name=self.candidate.name,
+            email=self.candidate.user.email,
+            nomination_statement="A strong candidate.",
+            is_endorsement=True,
+        )
+        self.client.force_login(self.nominator)
+        self.url = reverse(
+            "nominations:nomination_edit",
+            kwargs={"election": self.election.slug, "pk": self.endorsement.pk},
+        )
+
+    def test_posted_candidate_identity_is_ignored(self):
+        response = self.client.post(
+            self.url,
+            {
+                "name": "Tampered",
+                "email": "tampered@example.com",
+                "employer": "US Navy",
+                "other_affiliations": "",
+                "nomination_statement": "Updated statement.",
+            },
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.endorsement.refresh_from_db()
+        self.assertEqual(self.endorsement.name, "Grace Hopper")
+        self.assertEqual(self.endorsement.email, "grace@example.com")
+        self.assertEqual(self.endorsement.employer, "US Navy")
