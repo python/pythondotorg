@@ -644,6 +644,20 @@ html[xmlns] .slides { display: block; }
   .no-touch .default-page .main-navigation {
     position: relative;
     margin-bottom: -.0625em; } }
+/* - - - Smaller than 640px - - - */
+/* Hide the top menu on small screens. Only the list is hidden so the
+   "Skip to content" link inside the nav stays available to assistive tech.
+   #top stays as an empty, zero-height block so "Back to Top" links still
+   have a target. */
+@media (max-width: 39.9375em) {
+  .top-bar {
+    border-bottom: 0; }
+  .top-bar .menu {
+    display: none; }
+  /* The header's dark top border is now the first pixel on the page,
+     so drop it too */
+  .main-header {
+    border-top: 0; } }
 /* - - - Larger than 640px - - - */
 @media (min-width: 40em) {
   body:after {
@@ -734,8 +748,6 @@ html[xmlns] .slides { display: block; }
     .meta-navigation .say-no-more {
       display: none;
       visibility: hidden; }
-    .meta-navigation .jump-link {
-      display: none; }
     .meta-navigation li {
       float: left;
       width: 16.6666667%;
