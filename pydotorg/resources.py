@@ -4,9 +4,9 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
 from tastypie.authentication import ApiKeyAuthentication
 from tastypie.authorization import Authorization
-from tastypie.exceptions import Unauthorized
-from tastypie.http import HttpUnauthorized
-from tastypie.resources import ModelResource
+from tastypie.exceptions import ImmediateHttpResponse, NotFound, Unauthorized, UnsupportedDeserializationFormat
+from tastypie.http import HttpNotFound, HttpUnauthorized, HttpUnsupportedMediaType
+from tastypie.resources import ModelResource, sanitize
 from tastypie.throttle import CacheThrottle
 
 API_KEY_AUTHENTICATED_ATTR = "_pydotorg_api_key_authenticated"
@@ -184,3 +184,21 @@ class GenericResource(ModelResource):
         detail_allowed_methods = ["get", "delete"]
         throttle = CacheThrottle(throttle_at=600)  # default is 150 req/hr
         abstract = True
+
+    def deserialize(self, request, data, format="application/json"):  # noqa: A002 - tastypie hook signature
+        """Return a 415 for unsupported request content types without firing the 500 signal."""
+        try:
+            return super().deserialize(request, data, format=format)
+        except UnsupportedDeserializationFormat as exc:
+            response = self.error_response(
+                request, {"error": sanitize(str(exc))}, response_class=HttpUnsupportedMediaType
+            )
+            raise ImmediateHttpResponse(response=response) from exc
+
+    def get_detail(self, request, **kwargs):
+        """Return a 404 for malformed detail lookups without firing the 500 signal."""
+        try:
+            return super().get_detail(request, **kwargs)
+        except NotFound as exc:
+            response = self.error_response(request, {"error": sanitize(str(exc))}, response_class=HttpNotFound)
+            raise ImmediateHttpResponse(response=response) from exc
