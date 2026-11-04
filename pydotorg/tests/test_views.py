@@ -60,3 +60,13 @@ class ViewsTests(TestCase):
 
         response = self.client.get("/security.txt")
         self.assertRedirects(response, "/.well-known/security.txt", status_code=301, fetch_redirect_response=False)
+
+    def test_api_v1_root_ignores_browser_accept_header(self):
+        url = reverse("api_v1_top_level", kwargs={"api_name": "v1"})
+        browser_accept = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+
+        response = self.client.get(url, headers={"accept": browser_accept})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "application/json")
+        self.assertIn("pages/page", response.json())
