@@ -737,6 +737,31 @@ class DownloadApiV1ViewsTest(BaseDownloadApiViewsTest, BaseDownloadTests):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(self.get_json(response)), 0)
 
+    def test_unsupported_request_content_type_returns_415(self):
+        url = self.create_url("os")
+        cases = [
+            ("application/yaml", "name: Unsupported OS\nslug: unsupported-os\n"),
+            ("application/x-www-form-urlencoded", "name=Unsupported+OS&slug=unsupported-os"),
+        ]
+
+        for content_type, body in cases:
+            with self.subTest(content_type=content_type):
+                response = self.client.post(
+                    url, body, content_type=content_type, headers={"authorization": self.Authorization}
+                )
+
+                self.assertEqual(response.status_code, 415)
+                self.assertIn(content_type, response.json()["error"])
+                self.assertFalse(OS.objects.filter(slug="unsupported-os").exists())
+
+    def test_non_integer_detail_lookup_returns_404(self):
+        url = self.create_url("release", "latest")
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json()["error"], "Invalid resource lookup data provided (mismatched type).")
+
 
 class DownloadApiV2ViewsTest(BaseDownloadApiViewsTest, BaseDownloadTests, APITestCase):
     api_version = "v2"
