@@ -3,6 +3,7 @@
 from django.urls import re_path
 from rest_framework import routers
 from tastypie.api import Api
+from tastypie.serializers import Serializer
 
 from apps.downloads.api import (
     OSResource,
@@ -15,7 +16,14 @@ from apps.downloads.api import (
 from apps.pages.api import PageResource, PageViewSet
 from apps.sponsors.api import LogoPlacementeAPIList, SponsorshipAssetsAPIList
 
-v1_api = Api(api_name="v1")
+
+class JSONOnlySerializer(Serializer):
+    """JSON-only serializer for the v1 API index."""
+
+    formats = ("json",)
+
+
+v1_api = Api(api_name="v1", serializer_class=JSONOnlySerializer)
 v1_api.register(PageResource())
 v1_api.register(OSResource())
 v1_api.register(ReleaseResource())
