@@ -1,0 +1,28 @@
+{% autoescape off %}Hi {{ nomination.nominator.first_name }},
+
+Your self-nomination for the {{ nomination.election.name }} Election has been received.
+
+What you need to know:
+
+- Your nomination is already marked as accepted. You don't need to accept it again.
+- You can edit it until nominations close{% if nomination.election.nominations_close_at %} on {{ nomination.election.nominations_close_at|date:"F j, Y, P T" }}{% endif %}.
+- PSF staff will review your nomination before it is published.
+- Approved nominees are listed publicly once nominations close.
+
+View or edit your nomination:
+{{ submitted_url }}
+
+Getting supporting statements
+
+Other people can support your candidacy by submitting their own nomination for you. Share this link with them:
+{{ nomination_create_url }}
+
+- They need to sign in with their own python.org account.
+- Ask them to leave "self nomination" unchecked and enter your name and {{ nomination.nominator.email }}, the email address on your python.org account, so their nomination can be matched to you.
+- Once a supporting nomination is linked to you, accept it from your nominations: {{ user_nominations_url }}
+  Only accepted nominations are published.
+- Supporting nominations must be submitted before nominations close.
+
+Thank you,
+The Python Software Foundation
+{% endautoescape %}

@@ -1,0 +1,12 @@
+{% url 'nominations:nomination_create' election=nomination.election.slug as nomination_create_url %}
+<div class="nomination-supporting-statements">
+  <h2>Getting supporting statements</h2>
+  <p>Other people can support your candidacy by submitting their own nomination for you. Share this link with them:</p>
+  <p><a href="{{ nomination_create_url }}">{{ request.scheme }}://{{ request.get_host }}{{ nomination_create_url }}</a></p>
+  <ul>
+    <li>They need to sign in with their own python.org account.</li>
+    <li>Ask them to leave “self nomination” unchecked and enter your name and <b>{{ request.user.email }}</b>, the email address on your python.org account, so their nomination can be matched to you.</li>
+    <li>Once a supporting nomination is linked to you, accept it from <a href="{% url 'users:user_nominations_view' %}">your nominations</a>. Only accepted nominations are published.</li>
+    <li>Supporting nominations must be submitted before nominations close.</li>
+  </ul>
+</div>

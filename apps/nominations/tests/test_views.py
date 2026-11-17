@@ -1,6 +1,7 @@
 import datetime
 
 from django.contrib.auth import get_user_model
+from django.core import mail
 from django.test import TestCase
 from django.urls import reverse
 
@@ -194,6 +195,62 @@ class NominationCreatePersistenceTests(TestCase):
         nomination = Nomination.objects.get(election=election)
         self.assertTrue(nomination.coc_acknowledged)
         self.assertTrue(nomination.eligibility_confirmed)
+
+
+class NominationSubmittedTests(TestCase):
+    def setUp(self):
+        self.user = UserFactory(first_name="Grace", last_name="Hopper")
+        self.client.force_login(self.user)
+        self.election = open_election("2026 Board Election")
+        self.create_url = reverse("nominations:nomination_create", kwargs={"election": self.election.slug})
+
+    def test_self_nomination_redirects_to_next_steps(self):
+        response = self.client.post(self.create_url, nomination_payload(self_nomination="on", coc_acknowledged="on"))
+        nomination = Nomination.objects.get(election=self.election)
+        submitted_url = reverse(
+            "nominations:nomination_submitted", kwargs={"election": self.election.slug, "pk": nomination.pk}
+        )
+        self.assertRedirects(response, submitted_url)
+
+    def test_third_party_nomination_redirects_to_detail(self):
+        response = self.client.post(self.create_url, nomination_payload())
+        nomination = Nomination.objects.get(election=self.election)
+        self.assertRedirects(response, nomination.get_absolute_url())
+
+    def test_next_steps_forbidden_to_other_users(self):
+        self.client.post(self.create_url, nomination_payload(self_nomination="on", coc_acknowledged="on"))
+        nomination = Nomination.objects.get(election=self.election)
+        self.client.force_login(UserFactory(is_staff=True))
+        response = self.client.get(
+            reverse("nominations:nomination_submitted", kwargs={"election": self.election.slug, "pk": nomination.pk})
+        )
+        self.assertEqual(response.status_code, 403)
+
+
+class SelfNominationEmailTests(TestCase):
+    def setUp(self):
+        self.user = UserFactory(first_name="Grace", last_name="Hopper", email="grace@python.example")
+        self.client.force_login(self.user)
+        self.election = open_election("2026 Board Election")
+        self.create_url = reverse("nominations:nomination_create", kwargs={"election": self.election.slug})
+
+    def test_self_nomination_emails_candidate_next_steps(self):
+        self.client.post(self.create_url, nomination_payload(self_nomination="on", coc_acknowledged="on"))
+        nomination = Nomination.objects.get(election=self.election)
+
+        self.assertEqual(len(mail.outbox), 1)
+        email = mail.outbox[0]
+        self.assertEqual(email.to, ["grace@python.example"])
+        submitted_path = reverse(
+            "nominations:nomination_submitted", kwargs={"election": self.election.slug, "pk": nomination.pk}
+        )
+        self.assertIn(f"http://testserver{submitted_path}", email.body)
+        self.assertIn(f"http://testserver{self.create_url}", email.body)
+
+    def test_third_party_nomination_sends_no_email(self):
+        self.client.post(self.create_url, nomination_payload())
+        self.assertTrue(Nomination.objects.filter(election=self.election).exists())
+        self.assertEqual(mail.outbox, [])
 
 
 class NominationStatementPreviewTests(TestCase):
