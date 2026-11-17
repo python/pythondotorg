@@ -8,6 +8,7 @@ from django.urls import reverse
 from tastypie.models import ApiKey
 
 from apps.agreements.auth import ADMINISTRATORS, EDITORS, can_prepare
+from apps.sponsors.manage.views import SponsorshipAdminRequiredMixin
 from apps.users.models import User
 
 
@@ -17,6 +18,7 @@ class UserAdminSecurityTests(TestCase):
     def setUpTestData(cls):
         cls.editors, _ = Group.objects.get_or_create(name=EDITORS)
         cls.administrators, _ = Group.objects.get_or_create(name=ADMINISTRATORS)
+        cls.sponsorship_admins, _ = Group.objects.get_or_create(name=SponsorshipAdminRequiredMixin.group_required)
         cls.social_group = Group.objects.create(name="User admin test social group")
         cls.permission = Permission.objects.get(content_type__app_label="users", codename="change_user")
         cls.operator = cls.make_user("operator", is_staff=True)
@@ -38,6 +40,8 @@ class UserAdminSecurityTests(TestCase):
         cls.editor.groups.add(cls.editors)
         cls.administrator = cls.make_user("administrator")
         cls.administrator.groups.add(cls.administrators)
+        cls.sponsorship_admin = cls.make_user("sponsorship-admin")
+        cls.sponsorship_admin.groups.add(cls.sponsorship_admins)
         cls.permission_holder = cls.make_user("permission-holder")
         cls.permission_holder.user_permissions.add(cls.permission)
         cls.group_permission_holder = cls.make_user("group-permission-holder")
@@ -65,6 +69,7 @@ class UserAdminSecurityTests(TestCase):
             self.staff,
             self.editor,
             self.administrator,
+            self.sponsorship_admin,
             self.permission_holder,
             self.group_permission_holder,
             self.inactive_editor,
@@ -100,8 +105,8 @@ class UserAdminSecurityTests(TestCase):
                 data.update({name: value for name, value in values.items() if value is not None and value is not False})
         return data
 
-    def test_staff_cannot_enroll_self_in_either_agreements_role(self):
-        for role in (self.editors, self.administrators):
+    def test_staff_cannot_enroll_self_in_any_agreements_role(self):
+        for role in (self.editors, self.administrators, self.sponsorship_admins):
             with self.subTest(role=role.name):
                 response = self.client.post(
                     self.change_url(self.operator),
@@ -119,7 +124,7 @@ class UserAdminSecurityTests(TestCase):
             self.assertNotIn(field, response.context["adminform"].form.fields)
         data = self.profile_data(self.ordinary)
         data.update(
-            groups=[self.editors.pk, self.administrators.pk],
+            groups=[self.editors.pk, self.administrators.pk, self.sponsorship_admins.pk],
             user_permissions=[self.permission.pk],
             is_staff="on",
             is_superuser="on",

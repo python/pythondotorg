@@ -20,6 +20,7 @@ from apps.sponsors.forms import (
     SponsorshipsBenefitsForm,
     SponsorshipsListForm,
 )
+from apps.sponsors.manage.forms import SponsorshipEditForm
 from apps.sponsors.models import (
     ImgAsset,
     RequiredImgAssetConfiguration,
@@ -898,3 +899,50 @@ class CloneApplicationConfigFormTests(TestCase):
         form = CloneApplicationConfigForm(data=data)
         self.assertFalse(form.is_valid())
         self.assertIn("target_year", form.errors)
+
+
+class SponsorshipEditYearTests(TestCase):
+    def setUp(self):
+        self.package = baker.make(SponsorshipPackage, year=2026)
+        self.next_package = baker.make(SponsorshipPackage, year=2027)
+        self.sponsorship = baker.make(Sponsorship, year=2026, package=self.package)
+        template = baker.make(SponsorshipBenefit, year=2026)
+        self.benefit = SponsorBenefit.new_copy(template, sponsorship=self.sponsorship)
+
+    def test_posted_year_cannot_hide_existing_benefits(self):
+        form = SponsorshipEditForm(
+            data={"year": 2027, "package": self.package.pk, "sponsorship_fee": 100},
+            instance=self.sponsorship,
+        )
+        self.assertTrue(form.is_valid(), form.errors)
+        form.save()
+        self.sponsorship.refresh_from_db()
+        self.assertEqual(self.sponsorship.year, 2026)
+        self.assertEqual(self.sponsorship.sponsorship_fee, 100)
+        self.assertQuerySetEqual(
+            self.sponsorship.benefits.filter(sponsorship_benefit__year=self.sponsorship.year),
+            [self.benefit],
+        )
+
+    def test_posted_year_cannot_select_another_years_package(self):
+        form = SponsorshipEditForm(
+            data={"year": 2027, "package": self.next_package.pk, "sponsorship_fee": 100},
+            instance=self.sponsorship,
+        )
+        self.assertFalse(form.is_valid())
+        self.assertIn("package", form.errors)
+        self.sponsorship.refresh_from_db()
+        self.assertEqual(self.sponsorship.year, 2026)
+        self.assertEqual(self.sponsorship.package, self.package)
+
+    def test_unset_year_can_still_be_assigned(self):
+        sponsorship = baker.make(Sponsorship, year=None)
+        form = SponsorshipEditForm(
+            data={"year": 2027, "package": self.next_package.pk, "sponsorship_fee": 0},
+            instance=sponsorship,
+        )
+        self.assertTrue(form.is_valid(), form.errors)
+        form.save()
+        sponsorship.refresh_from_db()
+        self.assertEqual(sponsorship.year, 2027)
+        self.assertEqual(sponsorship.package, self.next_package)

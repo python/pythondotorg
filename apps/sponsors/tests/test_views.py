@@ -1,5 +1,6 @@
 import json
 
+from allauth.account.models import EmailAddress
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.models import Group
@@ -185,6 +186,7 @@ class NewSponsorshipApplicationViewTests(TestCase):
     def setUp(self):
         self.current_year = SponsorshipCurrentYear.get_year()
         self.user = baker.make(settings.AUTH_USER_MODEL, is_staff=True, email="bernardo@companyemail.com")
+        baker.make(EmailAddress, user=self.user, email=self.user.email, verified=True)
         self.client.force_login(self.user)
         self.psf = baker.make("sponsors.SponsorshipProgram", name="PSF")
         self.program_1_benefits = baker.make(SponsorshipBenefit, program=self.psf, _quantity=3, year=self.current_year)

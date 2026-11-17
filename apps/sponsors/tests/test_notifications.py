@@ -5,8 +5,9 @@ from django.conf import settings
 from django.contrib.admin.models import ADDITION, CHANGE, LogEntry
 from django.contrib.contenttypes.models import ContentType
 from django.core import mail
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.template.loader import render_to_string
-from django.test import RequestFactory, TestCase
+from django.test import RequestFactory, TestCase, override_settings
 from django.utils import timezone
 from model_bakery import baker
 
@@ -35,6 +36,19 @@ class AppliedSponsorshipNotificationToPSFTests(TestCase):
         self.assertEqual(expected_content, email.body)
         self.assertEqual(settings.SPONSORSHIP_NOTIFICATION_FROM_EMAIL, email.from_email)
         self.assertEqual([settings.SPONSORSHIP_NOTIFICATION_TO_EMAIL], email.to)
+
+    def test_sponsor_input_is_not_html_escaped(self):
+        self.sponsorship.sponsor.name = "Code & Supply"
+        self.sponsorship.sponsor.description = "Tools <for> teams"
+        self.sponsorship.sponsor.save()
+
+        self.notification.notify(sponsorship=self.sponsorship)
+
+        email = mail.outbox[0]
+        self.assertIn("Code & Supply", email.subject)
+        self.assertIn("Code & Supply", email.body)
+        self.assertIn("Tools <for> teams", email.body)
+        self.assertNotIn("&amp;", email.subject + email.body)
 
 
 class AppliedSponsorshipNotificationToSponsorsTests(TestCase):
@@ -70,11 +84,11 @@ class AppliedSponsorshipNotificationToSponsorsTests(TestCase):
         self.assertEqual(expected_subject, email.subject)
         self.assertEqual(expected_content, email.body)
         self.assertEqual(settings.SPONSORSHIP_NOTIFICATION_FROM_EMAIL, email.from_email)
-        self.assertCountEqual([self.user.email, self.verified_email.email], email.to)
+        self.assertCountEqual([self.verified_email.email], email.to)
 
     def test_send_email_to_correct_recipients(self):
         context = {"user": self.user, "sponsorship": self.sponsorship}
-        expected_contacts = ["foo@foo.com", self.verified_email.email]
+        expected_contacts = [self.verified_email.email]
         self.assertCountEqual(expected_contacts, self.notification.get_recipient_list(context))
 
     def test_list_required_assets_in_email_context(self):
@@ -127,6 +141,10 @@ class RejectedSponsorshipNotificationToSponsorsTests(TestCase):
             _fill_optional=["rejected_on", "sponsor"],
             submited_by=self.user,
         )
+        self.contact = baker.make(
+            "sponsors.SponsorContact", sponsor=self.sponsorship.sponsor, email="contact@example.com"
+        )
+        baker.make(EmailAddress, email=self.contact.email, verified=True)
         self.subject_template = "sponsors/email/sponsor_rejected_sponsorship_subject.txt"
         self.content_template = "sponsors/email/sponsor_rejected_sponsorship.txt"
 
@@ -142,7 +160,7 @@ class RejectedSponsorshipNotificationToSponsorsTests(TestCase):
         self.assertEqual(expected_subject, email.subject)
         self.assertEqual(expected_content, email.body)
         self.assertEqual(settings.SPONSORSHIP_NOTIFICATION_FROM_EMAIL, email.from_email)
-        self.assertEqual([self.user.email], email.to)
+        self.assertEqual([self.contact.email], email.to)
 
 
 class ContractNotificationToPSFTests(TestCase):
@@ -187,6 +205,7 @@ class ContractNotificationToPSFTests(TestCase):
         self.assertEqual(content, expected_content)
 
 
+@override_settings(STORAGES={"default": {"BACKEND": "django.core.files.storage.InMemoryStorage"}})
 class ContractNotificationToSponsorsTests(TestCase):
     def setUp(self):
         self.notification = notifications.ContractNotificationToSponsors()
@@ -197,11 +216,13 @@ class ContractNotificationToSponsorsTests(TestCase):
             _fill_optional=["approved_on", "sponsor"],
             submited_by=self.user,
         )
+        self.contact = baker.make("sponsors.SponsorContact", sponsor=sponsorship.sponsor, email="contact@example.com")
+        baker.make(EmailAddress, email=self.contact.email, verified=True)
         self.contract = baker.make_recipe(
             "apps.sponsors.tests.awaiting_signature_contract",
             sponsorship=sponsorship,
-            _fill_optional=["document", "document_docx"],
-            _create_files=True,
+            document=SimpleUploadedFile("contract.pdf", b"%PDF-1.7 PDF contract"),
+            document_docx=SimpleUploadedFile("contract.docx", b"PK\x03\x04 DOCX contract"),
         )
         self.subject_template = "sponsors/email/sponsor_contract_subject.txt"
         self.content_template = "sponsors/email/sponsor_contract.txt"
@@ -218,7 +239,7 @@ class ContractNotificationToSponsorsTests(TestCase):
         self.assertEqual(expected_subject, email.subject)
         self.assertEqual(expected_content, email.body)
         self.assertEqual(settings.SPONSORSHIP_NOTIFICATION_FROM_EMAIL, email.from_email)
-        self.assertEqual([self.user.email], email.to)
+        self.assertEqual([self.contact.email], email.to)
 
     def test_attach_contract_pdf_by_default(self):
         self.assertTrue(self.contract.document.name)
@@ -251,7 +272,7 @@ class ContractNotificationToSponsorsTests(TestCase):
         self.assertEqual(len(email.attachments), 1)
         name, content, mime = email.attachments[0]
         self.assertEqual(name, "Contract.docx")
-        self.assertEqual(mime, "application/msword")
+        self.assertEqual(mime, "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
         self.assertEqual(content, expected_content)
 
 
@@ -449,11 +470,11 @@ class AssetCloseToDueDateNotificationToSponsorsTestCase(TestCase):
         self.assertEqual(expected_subject, email.subject)
         self.assertEqual(expected_content, email.body)
         self.assertEqual(settings.SPONSORSHIP_NOTIFICATION_FROM_EMAIL, email.from_email)
-        self.assertCountEqual([self.user.email, self.verified_email.email], email.to)
+        self.assertCountEqual([self.verified_email.email], email.to)
 
     def test_send_email_to_correct_recipients(self):
         context = {"user": self.user, "sponsorship": self.sponsorship}
-        expected_contacts = ["foo@foo.com", self.verified_email.email]
+        expected_contacts = [self.verified_email.email]
         self.assertCountEqual(expected_contacts, self.notification.get_recipient_list(context))
 
     def test_list_required_assets_in_email_context(self):

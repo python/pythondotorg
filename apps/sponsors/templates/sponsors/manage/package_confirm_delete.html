@@ -1,0 +1,73 @@
+{% extends "sponsors/manage/_base.html" %}
+
+{% block page_title %}Delete {{ object.name }} | Sponsor Management{% endblock %}
+
+{% block topbar_actions %}{% endblock %}
+
+{% block manage_breadcrumbs %}
+<div class="manage-crumbs">
+    <a href="{% url 'manage_dashboard' %}">Dashboard</a>
+    <span class="sep">/</span>
+    <a href="{% url 'manage_packages' %}">Packages</a>
+    <span class="sep">/</span>
+    <a href="{% url 'manage_package_edit' object.pk %}">{{ object.name }}</a>
+    <span class="sep">/</span>
+    <span class="current">Delete</span>
+</div>
+{% endblock %}
+
+{% block manage_content %}
+    <div class="delete-confirm">
+        <h2>Delete Package</h2>
+
+        {% if package_sponsorships %}
+        <p>
+            <strong>{{ object.name }}</strong> ({{ object.year }}) can't be deleted while sponsorships use it.
+        </p>
+        <div class="manage-alert manage-alert-warning" style="margin-bottom:20px;">
+            <strong>{{ package_sponsorships|length }}</strong> sponsorship{{ package_sponsorships|length|pluralize }}
+            use{{ package_sponsorships|length|pluralize:"s," }} this package. Deleting it would clear their package and level name.
+            Move them to another package first:
+            <ul style="margin:8px 0 0 16px;padding:0;">
+                {% for sp in package_sponsorships %}
+                <li><a href="{% url 'manage_sponsorship_detail' sp.pk %}" style="color:#3776ab;">{% if sp.sponsor %}{{ sp.sponsor.name }}{% else %}Unknown sponsor{% endif %}</a> ({{ sp.year|default:"no year" }}, {{ sp.get_status_display }})</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="actions">
+            <a href="{% url 'manage_package_edit' object.pk %}" class="btn btn-secondary">Back to Package</a>
+        </div>
+        {% else %}
+        <p>
+            Are you sure you want to delete <strong>{{ object.name }}</strong> ({{ object.year }})?
+        </p>
+
+        {% with bc=object.benefits.count %}
+        {% if bc or tiered_configs %}
+        <div class="manage-alert manage-alert-warning" style="margin-bottom:20px;">
+            {% if bc %}
+            <strong>{{ bc }}</strong> benefit{{ bc|pluralize }} will no longer be part of this package; the benefits themselves are kept.
+            {% endif %}
+            {% if tiered_configs %}
+            {% if bc %}<br>{% endif %}
+            <strong>{{ tiered_configs|length }}</strong> tiered benefit configuration{{ tiered_configs|length|pluralize }} for this package will be deleted:
+            <ul style="margin:8px 0 0 16px;padding:0;">
+                {% for cfg in tiered_configs %}
+                <li><a href="{% url 'manage_benefit_edit' cfg.benefit_id %}" style="color:#3776ab;">{{ cfg.benefit.name }}</a> ({{ cfg.display_label|default:cfg.quantity }})</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="actions">
+                <button type="submit" class="btn btn-danger">Yes, Delete</button>
+                <a href="{% url 'manage_package_edit' object.pk %}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+        {% endif %}
+    </div>
+{% endblock %}

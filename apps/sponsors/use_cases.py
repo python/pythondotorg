@@ -4,20 +4,26 @@ Use cases (UCs) are an indirection layer that triggers sponsorship business rule
 keeping core logic and state management out of the views.
 """
 
+import logging
 from abc import ABC, abstractmethod
 
 from django.db import transaction
 
 from apps.sponsors import notifications
 from apps.sponsors.contracts import render_contract_to_docx_file, render_contract_to_pdf_file
+from apps.sponsors.exceptions import InvalidStatusError
 from apps.sponsors.models import (
     Contract,
     SponsorContact,
     SponsorEmailNotificationTemplate,
     Sponsorship,
     SponsorshipBenefit,
+    SponsorshipNotificationLog,
     SponsorshipPackage,
 )
+from apps.sponsors.validators import validate_signed_contract
+
+logger = logging.getLogger(__name__)
 
 
 class BaseUseCaseWithNotifications(ABC):
@@ -82,28 +88,31 @@ class RejectSponsorshipApplicationUseCase(BaseUseCaseWithNotifications):
 
 
 class ApproveSponsorshipApplicationUseCase(BaseUseCaseWithNotifications):
-    """Approve a sponsorship application, create a contract, and log the approval."""
+    """Approve a sponsorship application, reusing or creating its contract, and log the approval."""
 
     notifications = [
         notifications.SponsorshipApprovalLogger(),
     ]
 
+    REUSABLE_CONTRACT_STATUSES = (Contract.DRAFT, Contract.AWAITING_SIGNATURE)
+
+    @transaction.atomic
     def execute(self, sponsorship, start_date, end_date, **kwargs):
-        """Approve the sponsorship, set dates and fees, and create a contract."""
+        """Approve using the current database state and preserve any reusable contract."""
+        sponsorship = Sponsorship.objects.select_for_update().get(pk=sponsorship.pk)
         sponsorship.approve(start_date, end_date)
+
         package = kwargs.get("package")
-        fee = kwargs.get("sponsorship_fee")
-        renewal = kwargs.get("renewal", False)
         if package:
             sponsorship.package = package
             sponsorship.level_name = package.name
-        if fee:
-            sponsorship.sponsorship_fee = fee
-        if renewal:
+        if "sponsorship_fee" in kwargs and kwargs["sponsorship_fee"] is not None:
+            sponsorship.sponsorship_fee = kwargs["sponsorship_fee"]
+        if kwargs.get("renewal"):
             sponsorship.renewal = True
 
         sponsorship.save()
-        contract = Contract.new(sponsorship)
+        contract = self._get_or_create_contract(sponsorship)
 
         self.notify(
             request=kwargs.get("request"),
@@ -112,6 +121,19 @@ class ApproveSponsorshipApplicationUseCase(BaseUseCaseWithNotifications):
         )
 
         return sponsorship
+
+    def _get_or_create_contract(self, sponsorship):
+        """Reuse a draft or awaiting-signature contract without changing its terms or files."""
+        try:
+            contract = Contract.objects.select_for_update().get(sponsorship=sponsorship)
+        except Contract.DoesNotExist:
+            return Contract.new(sponsorship)
+
+        if contract.status not in self.REUSABLE_CONTRACT_STATUSES:
+            msg = f"Sponsorship already has a {contract.get_status_display()} contract."
+            raise InvalidStatusError(msg)
+
+        return contract
 
 
 class SendContractUseCase(BaseUseCaseWithNotifications):
@@ -149,6 +171,7 @@ class ExecuteExistingContractUseCase(BaseUseCaseWithNotifications):
 
     def execute(self, contract, contract_file, **kwargs):
         """Attach the signed document, execute the contract, and handle overlaps."""
+        validate_signed_contract(contract_file)
         contract.signed_document = contract_file
         contract.execute(force=self.force_execute)
         overlapping_sponsorship = (
@@ -204,27 +227,53 @@ class SendSponsorshipNotificationUseCase(BaseUseCaseWithNotifications):
         notifications.SendSponsorNotificationLogger(),
     ]
 
-    def execute(self, notification: SponsorEmailNotificationTemplate, sponsorships, contact_types, **kwargs):
-        """Send the notification email to each sponsorship's matching contacts."""
-        msg_kwargs = {
+    @staticmethod
+    def message_kwargs(contact_types):
+        """Map selected contact types to the ``get_email_message`` recipient flags."""
+        return {
             "to_primary": SponsorContact.PRIMARY_CONTACT in contact_types,
             "to_administrative": SponsorContact.ADMINISTRATIVE_CONTACT in contact_types,
             "to_accounting": SponsorContact.ACCOUTING_CONTACT in contact_types,
             "to_manager": SponsorContact.MANAGER_CONTACT in contact_types,
         }
 
+    def execute(self, notification: SponsorEmailNotificationTemplate, sponsorships, contact_types, **kwargs):
+        """Send the notification email to each sponsorship's matching contacts."""
+        msg_kwargs = self.message_kwargs(contact_types)
+        request = kwargs.get("request")
+        sent_count = 0
+
         for sponsorship in sponsorships:
             email = notification.get_email_message(sponsorship, **msg_kwargs)
-            if not email:
+            if not email or not email.send():
                 continue
-            email.send()
+            sent_count += 1
+
+            # Persist notification log (best-effort, don't break sending)
+            try:
+                sent_by = None
+                if request and hasattr(request, "user") and getattr(request.user, "is_authenticated", False):
+                    sent_by = request.user
+                SponsorshipNotificationLog.objects.create(
+                    sponsorship=sponsorship,
+                    template=notification if notification.pk else None,
+                    subject=getattr(email, "subject", ""),
+                    content=getattr(email, "body", ""),
+                    recipients=", ".join(getattr(email, "to", [])),
+                    contact_types=", ".join(contact_types),
+                    sent_by=sent_by,
+                )
+            except Exception:
+                logger.exception("Failed to persist notification log for sponsorship %s", sponsorship.pk)
 
             self.notify(
                 notification=notification,
                 sponsorship=sponsorship,
                 contact_types=contact_types,
-                request=kwargs.get("request"),
+                request=request,
             )
+
+        return sent_count
 
 
 class CloneSponsorshipYearUseCase(BaseUseCaseWithNotifications):

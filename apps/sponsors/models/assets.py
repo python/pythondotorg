@@ -11,10 +11,11 @@ from pathlib import Path
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
-from django.db.models.fields.files import FileField, ImageFieldFile
+from django.db.models.fields.files import FieldFile
 from polymorphic.models import PolymorphicModel
 
 from apps.sponsors.models.managers import GenericAssetQuerySet, NonPolymorphicManager
+from apps.sponsors.storage import get_asset_storage
 
 
 def generic_asset_path(instance, filename):
@@ -62,7 +63,7 @@ class GenericAsset(PolymorphicModel):
     @property
     def is_file(self):
         """Return True if this asset's value is a file-based field."""
-        return isinstance(self.value, FileField | ImageFieldFile)
+        return isinstance(self.value, FieldFile)
 
     @property
     def from_sponsorship(self):
@@ -146,6 +147,7 @@ class FileAsset(GenericAsset):
 
     file = models.FileField(
         upload_to=generic_asset_path,
+        storage=get_asset_storage,
         blank=False,
         null=True,
     )

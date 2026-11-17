@@ -1,4 +1,8 @@
-from unittest.mock import Mock, patch
+import io
+import zipfile
+from pathlib import Path
+from tempfile import TemporaryDirectory
+from unittest.mock import Mock
 
 import pypandoc
 from django.http import HttpRequest
@@ -27,7 +31,9 @@ class TestRenderContract(TestCase):
         self.contract.sponsorship.renewal = False
         response = render_contract_to_docx_response(request, self.contract)
 
-        self.assertEqual(response.get("Content-Disposition"), "attachment; filename=sponsorship-contract-Sponsor.docx")
+        self.assertEqual(
+            response.get("Content-Disposition"), 'attachment; filename="sponsorship-contract-Sponsor.docx"'
+        )
         self.assertEqual(
             response.get("Content-Type"), "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
         )
@@ -38,7 +44,7 @@ class TestRenderContract(TestCase):
         self.contract.sponsorship.renewal = True
         response = render_contract_to_docx_response(request, self.contract)
 
-        self.assertEqual(response.get("Content-Disposition"), "attachment; filename=sponsorship-renewal-Sponsor.docx")
+        self.assertEqual(response.get("Content-Disposition"), 'attachment; filename="sponsorship-renewal-Sponsor.docx"')
         self.assertEqual(
             response.get("Content-Type"), "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
         )
@@ -92,16 +98,6 @@ class ContractPandocHardeningTests(TestCase):
             "apps.sponsors.tests.empty_contract", sponsorship__start_date=timezone.now().date()
         )
 
-    def test_pdf_render_uses_hardened_reader_format(self):
-        with patch("apps.sponsors.contracts.pypandoc.convert_text") as convert:
-            render_contract_to_pdf_file(self.contract)
-        self.assertEqual(convert.call_args.kwargs["format"], CONTRACT_MARKDOWN_FORMAT)
-
-    def test_docx_render_uses_hardened_reader_format(self):
-        with patch("apps.sponsors.contracts.pypandoc.convert_text") as convert:
-            render_contract_to_docx_file(self.contract)
-        self.assertEqual(convert.call_args.kwargs["format"], CONTRACT_MARKDOWN_FORMAT)
-
     def test_hardened_format_parses_tex_and_math_as_literal_text(self):
         # A backslash command or $math$ in the input becomes a literal Str, never a
         # RawInline/RawBlock (raw TeX) or Math node, so it can't reach the LaTeX engine.
@@ -122,3 +118,31 @@ class ContractPandocHardeningTests(TestCase):
         # End-to-end: the raw_attribute rewrites must produce valid LaTeX that compiles.
         pdf = render_contract_to_pdf_file(self.contract)
         self.assertTrue(pdf.startswith(b"%PDF"))
+
+    def test_staff_markdown_cannot_embed_local_resources(self):
+        with TemporaryDirectory(prefix="contract_probe_") as directory:
+            image = Path(directory) / "synthetic.png"
+            image.write_bytes((Path(__file__).resolve().parents[3] / "static/img/python-logo.png").read_bytes())
+            self.contract.benefits_list = f"![resource]({image})"
+            for renderer in (render_contract_to_docx_file, render_contract_to_pdf_file):
+                with self.subTest(renderer=renderer.__name__), self.assertRaises(RuntimeError):
+                    renderer(self.contract)
+
+    def test_staff_legal_clauses_cannot_execute_raw_output(self):
+        with TemporaryDirectory(prefix="contract_probe_") as directory:
+            private_text = Path(directory) / "synthetic.tex"
+            private_text.write_text("Confidential synthetic marker")
+            self.contract.legal_clauses = f"`\\input{{{private_text}}}`{{=latex}}"
+            for renderer in (render_contract_to_docx_file, render_contract_to_pdf_file):
+                with self.subTest(renderer=renderer.__name__), self.assertRaises(RuntimeError):
+                    renderer(self.contract)
+
+    def test_docx_preserves_text_formatting_and_template_page_breaks(self):
+        self.contract.benefits_list = "**Visible benefit** with *emphasis*"
+        document = render_contract_to_docx_file(self.contract)
+        with zipfile.ZipFile(io.BytesIO(document)) as archive:
+            xml = archive.read("word/document.xml").decode()
+        self.assertIn("Visible benefit", xml)
+        self.assertIn("<w:b", xml)
+        self.assertIn("<w:i", xml)
+        self.assertIn('w:type="page"', xml)

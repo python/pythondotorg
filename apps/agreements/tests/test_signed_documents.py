@@ -1,16 +1,18 @@
+import hashlib
 from unittest.mock import patch
 
 from django.core import mail
-from django.test import TestCase
+from django.core.files.base import ContentFile
 from django.utils import timezone
 
 from apps.agreements import documents, notifications
 from apps.agreements.models import Agreement, SignedCopy, Terms, TermsVersion
-from apps.agreements.tests.test_agreements import make_officer, offer_contract
+from apps.agreements.tests.test_agreements import PrivateStorageTestCase, make_officer, offer_contract
 
 
-class SignedDocumentTests(TestCase):
+class SignedDocumentTests(PrivateStorageTestCase):
     def setUp(self) -> None:
+        super().setUp()
         self.officer = make_officer()
         self.agreement = offer_contract(
             self.officer,
@@ -28,13 +30,15 @@ class SignedDocumentTests(TestCase):
         self.agreement.save()
 
     def store_copy(self, kind: SignedCopy.Kind, content: bytes) -> SignedCopy:
-        return SignedCopy.objects.create(
+        copy = SignedCopy(
             agreement=self.agreement,
             kind=kind,
             filename=f"{kind}.pdf",
-            content=content,
+            sha256=hashlib.sha256(content).hexdigest(),
             uploaded_by=self.officer,
         )
+        copy.file.save(copy.filename, ContentFile(content))
+        return copy
 
     def test_signature_record_renders_counterparty_name_literally_for_all_methods(self) -> None:
         for method in Agreement.SignatureMethod.values:

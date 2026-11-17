@@ -1,11 +1,14 @@
 """Django settings for local development."""
 
+from decouple import Csv
+
 from pydotorg.settings.base import *
 
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 INTERNAL_IPS = ["127.0.0.1"]
+CSRF_TRUSTED_ORIGINS = config("CSRF_TRUSTED_ORIGINS", default="", cast=Csv())
 
 # Set the path to the location of the content files for python.org
 PYTHON_ORG_CONTENT_SVN_PATH = ""

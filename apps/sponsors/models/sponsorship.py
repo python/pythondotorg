@@ -30,6 +30,7 @@ from apps.sponsors.models.managers import (
     SponsorshipQuerySet,
 )
 from apps.sponsors.models.sponsors import SponsorBenefit
+from apps.sponsors.utils import with_article
 
 YEAR_VALIDATORS = [
     MinValueValidator(limit_value=2022, message="The min year value is 2022."),
@@ -307,7 +308,7 @@ class Sponsorship(models.Model):
     def reject(self):
         """Transition the sponsorship to rejected status."""
         if self.REJECTED not in self.next_status:
-            msg = f"Can't reject a {self.get_status_display()} sponsorship."
+            msg = f"Can't reject {with_article(self.get_status_display())} sponsorship."
             raise InvalidStatusError(msg)
         self.status = self.REJECTED
         self.locked = True
@@ -316,7 +317,7 @@ class Sponsorship(models.Model):
     def approve(self, start_date, end_date):
         """Transition the sponsorship to approved status with the given date range."""
         if self.APPROVED not in self.next_status:
-            msg = f"Can't approve a {self.get_status_display()} sponsorship."
+            msg = f"Can't approve {with_article(self.get_status_display())} sponsorship."
             raise InvalidStatusError(msg)
         if start_date >= end_date:
             msg = "Start date greater or equal than end date"
@@ -331,13 +332,16 @@ class Sponsorship(models.Model):
         """Roll back the sponsorship to applied status, deleting any draft contract."""
         accepts_rollback = [self.APPLIED, self.APPROVED, self.REJECTED]
         if self.status not in accepts_rollback:
-            msg = f"Can't rollback to edit a {self.get_status_display()} sponsorship."
+            msg = f"Can't rollback to edit {with_article(self.get_status_display())} sponsorship."
             raise InvalidStatusError(msg)
 
         try:
             if not self.contract.is_draft:
                 status = self.contract.get_status_display()
-                msg = f"Can't rollback to edit a sponsorship with a {status} Contract."
+                msg = (
+                    f"Can't rollback to edit a sponsorship with {with_article(status)} contract. "
+                    "Re-draft the contract first (nullify it first if it is awaiting signature)."
+                )
                 raise InvalidStatusError(msg)
             self.contract.delete()
         except ObjectDoesNotExist:
@@ -354,11 +358,8 @@ class Sponsorship(models.Model):
 
     @property
     def verified_emails(self):
-        """Return verified email addresses for the submitter and sponsor contacts."""
-        emails = [self.submited_by.email]
-        if self.sponsor:
-            emails = self.sponsor.verified_emails(initial_emails=emails)
-        return emails
+        """Return verified sponsor contact addresses."""
+        return self.sponsor.verified_emails() if self.sponsor else []
 
     @property
     def admin_url(self):
@@ -570,17 +571,19 @@ class SponsorshipBenefit(OrderedModel):
         return self.features_config.instance_of(TieredBenefitConfiguration).count() > 0
 
     @transaction.atomic
-    def clone(self, year: int):
+    def clone(self, year: int, *, clone_packages: bool = True):
         """Generate a clone of the current benefit for a custom year.
 
         Clone the benefit and all its related objects (packages,
-        legal clauses, feature configurations).
+        legal clauses, feature configurations). With ``clone_packages=False``
+        the new benefit is left without packages and none are created.
         """
         defaults = {
             "description": self.description,
             "program": self.program,
             "package_only": self.package_only,
-            "new": self.new,
+            # "New this year" describes the source year, not the cloned one
+            "new": False,
             "unavailable": self.unavailable,
             "standalone": self.standalone,
             "internal_description": self.internal_description,
@@ -593,8 +596,9 @@ class SponsorshipBenefit(OrderedModel):
 
         # if new, all related objects should be cloned too
         if created:
-            pkgs = [p.clone(year)[0] for p in self.packages.all()]
-            new_benefit.packages.add(*pkgs)
+            if clone_packages:
+                pkgs = [p.clone(year)[0] for p in self.packages.all()]
+                new_benefit.packages.add(*pkgs)
             clauses = [lc.clone() for lc in self.legal_clauses.all()]
             new_benefit.legal_clauses.add(*clauses)
             for cfg in self.features_config.all():

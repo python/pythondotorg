@@ -1,0 +1,181 @@
+{% extends "sponsors/manage/_base.html" %}
+
+{% block page_title %}{% if is_create %}New Sponsor{% else %}Edit {{ object.name }}{% endif %} | Sponsor Management{% endblock %}
+
+{% block manage_breadcrumbs %}
+<div class="manage-crumbs">
+    <a href="{% url 'manage_dashboard' %}">Dashboard</a>
+    <span class="sep">/</span>
+    <a href="{% url 'manage_sponsors' %}">Sponsors</a>
+    <span class="sep">/</span>
+    {% if from_sponsorship %}
+    <a href="{% url 'manage_sponsorship_detail' from_sponsorship %}">{{ object.name }}</a>
+    <span class="sep">/</span>
+    {% endif %}
+    <span class="current">{% if is_create %}New Sponsor{% else %}Edit Sponsor{% endif %}</span>
+</div>
+{% endblock %}
+
+{% block manage_content %}
+    <div class="manage-form">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+            <h2 style="font-size:18px;font-weight:700;color:#1a1a2e;margin:0;">{% if is_create %}New Sponsor{% else %}Edit Sponsor: {{ object.name }}{% endif %}</h2>
+            {% if not is_create and object %}
+            <div style="display:flex;gap:6px;">
+                <a href="{% url 'manage_contact_create' object.pk %}" style="font-size:12px;color:#3776ab;text-decoration:none;font-weight:500;padding:4px 10px;border:1px solid #ccc;border-radius:3px;">+ Contact</a>
+                <a href="{% url 'manage_composer' %}?new=1&sponsor_id={{ object.pk }}" style="font-size:12px;color:#fff;text-decoration:none;font-weight:500;padding:4px 10px;border:1px solid #3776ab;border-radius:3px;background:#3776ab;">+ Sponsorship</a>
+            </div>
+            {% endif %}
+        </div>
+
+        {% if form.errors %}
+        <div class="form-errors">
+            <strong>Please correct the errors below:</strong>
+            <ul>
+            {% for field in form %}
+                {% for error in field.errors %}<li>{{ field.label }}: {{ error }}</li>{% endfor %}
+            {% endfor %}
+            {% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        {% if form.duplicate_sponsors %}
+        <div class="manage-alert manage-alert-warning">
+            Existing sponsor{{ form.duplicate_sponsors|length|pluralize }} with this name:
+            {% for dup in form.duplicate_sponsors %}
+            <a href="{% url 'manage_sponsor_edit' dup.pk %}">{{ dup.name }}{% if dup.city %} ({{ dup.city }}){% endif %}</a>{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {% if from_sponsorship %}<input type="hidden" name="from_sponsorship" value="{{ from_sponsorship }}">{% endif %}
+
+            <p style="font-size:12px;color:#777;margin:0 0 12px;"><span style="color:#c0392b;">*</span> Required</p>
+
+            <fieldset class="manage-fieldset">
+                <legend>Company Info</legend>
+
+                <div class="form-group">
+                    <label for="id_name">Name <span style="color:#c0392b;">*</span></label>
+                    {{ form.name }}
+                    {% if form.duplicate_sponsors %}
+                    <label style="display:inline-flex;align-items:center;gap:6px;font-weight:400;margin-top:6px;">
+                        {{ form.allow_duplicate }} {{ form.allow_duplicate.label }}
+                    </label>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_description">Description <span style="color:#c0392b;">*</span></label>
+                    {{ form.description }}
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="id_landing_page_url">Website</label>
+                        {{ form.landing_page_url }}
+                    </div>
+                    <div class="form-group">
+                        <label for="id_primary_phone">Phone <span style="color:#c0392b;">*</span></label>
+                        {{ form.primary_phone }}
+                    </div>
+                </div>
+            </fieldset>
+
+            <fieldset class="manage-fieldset">
+                <legend>Address</legend>
+
+                <div class="form-group">
+                    <label for="id_mailing_address_line_1">Address Line 1 <span style="color:#c0392b;">*</span></label>
+                    {{ form.mailing_address_line_1 }}
+                </div>
+                <div class="form-group">
+                    <label for="id_mailing_address_line_2">Address Line 2</label>
+                    {{ form.mailing_address_line_2 }}
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="id_city">City <span style="color:#c0392b;">*</span></label>
+                        {{ form.city }}
+                    </div>
+                    <div class="form-group">
+                        <label for="id_state">State / Province</label>
+                        {{ form.state }}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="id_postal_code">Postal Code <span style="color:#c0392b;">*</span></label>
+                        {{ form.postal_code }}
+                    </div>
+                    <div class="form-group">
+                        <label for="id_country">Country <span style="color:#c0392b;">*</span></label>
+                        {{ form.country }}
+                    </div>
+                </div>
+            </fieldset>
+
+            <fieldset class="manage-fieldset">
+                <legend>Logos</legend>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="id_web_logo">{{ form.web_logo.label }}</label>
+                        {{ form.web_logo }}
+                        <span class="helptext">{{ form.web_logo.help_text }}</span>
+                        {% if form.web_logo.errors %}<div class="field-errors">{{ form.web_logo.errors.0 }}</div>{% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="id_print_logo">{{ form.print_logo.label }}</label>
+                        {{ form.print_logo }}
+                        <span class="helptext">{{ form.print_logo.help_text }}</span>
+                        {% if form.print_logo.errors %}<div class="field-errors">{{ form.print_logo.errors.0 }}</div>{% endif %}
+                    </div>
+                </div>
+            </fieldset>
+
+            <div style="display:flex;gap:10px;align-items:center;padding-top:8px;">
+                <button type="submit" class="btn btn-primary">{% if is_create %}Create Sponsor{% else %}Save Changes{% endif %}</button>
+                {% if from_sponsorship %}
+                <a href="{% url 'manage_sponsorship_detail' from_sponsorship %}" class="btn btn-secondary">Cancel</a>
+                {% else %}
+                <a href="{% url 'manage_sponsors' %}" class="btn btn-secondary">Cancel</a>
+                {% endif %}
+            </div>
+        </form>
+
+        {% if not is_create and object %}
+        <fieldset class="manage-fieldset" id="contacts" style="margin-top:24px;">
+            <legend>Contacts</legend>
+            {% if contacts %}
+            <table class="manage-table">
+                <thead>
+                    <tr><th>Name</th><th>Email</th><th>Phone</th><th>Roles</th><th style="text-align:right;">Actions</th></tr>
+                </thead>
+                <tbody>
+                    {% for contact in contacts %}
+                    <tr>
+                        <td style="font-weight:600;">{{ contact.name }}</td>
+                        <td>{{ contact.email }}</td>
+                        <td>{{ contact.phone }}</td>
+                        <td style="font-size:12px;color:#666;">{{ contact.type|default:"&mdash;" }}</td>
+                        <td style="text-align:right;white-space:nowrap;">
+                            <a href="{% url 'manage_contact_edit' contact.pk %}" style="font-size:12px;color:#3776ab;text-decoration:none;margin-right:10px;">Edit</a>
+                            <form method="post" action="{% url 'manage_contact_delete' contact.pk %}" style="display:inline;margin:0;" onsubmit="return confirm('Remove this contact?');">
+                                {% csrf_token %}
+                                <button type="submit" style="background:none;border:none;color:#c0392b;cursor:pointer;font-size:12px;padding:0;">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p style="font-size:13px;color:#777;margin:0;">No contacts yet. <a href="{% url 'manage_contact_create' object.pk %}">Add one</a>.</p>
+            {% endif %}
+        </fieldset>
+        {% endif %}
+    </div>
+{% endblock %}
