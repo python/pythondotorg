@@ -7,7 +7,7 @@ from django.utils import timezone
 from django.utils.safestring import mark_safe
 from markupfield.widgets import MarkupTextarea
 
-from apps.nominations.models import ElectionKind, Nomination
+from apps.nominations.models import ElectionKind, Nomination, Nominee
 
 COC_LABEL = mark_safe(
     "I agree to adhere to the Python Software Foundation's "
@@ -270,6 +270,63 @@ class PackagingCouncilNominationCreateForm(BaseNominationCreateForm):
         """Meta configuration for PackagingCouncilNominationCreateForm."""
 
         fields = (*NominationForm.Meta.fields, "coc_acknowledged", "eligibility_confirmed")
+
+
+class EndorsementEditForm(forms.ModelForm):
+    """Edit an endorsement. The candidate is fixed at submission time and not editable."""
+
+    #: Acknowledgment plumbing the shared nomination_form.html template expects.
+    acknowledgment_field_names = ()
+    acknowledgment_fields = ()
+
+    def __init__(self, *args, **kwargs):
+        """Accept (and ignore) the election kwarg the nomination views pass."""
+        self.election = kwargs.pop("election", None)
+        super().__init__(*args, **kwargs)
+
+    class Meta:
+        """Meta configuration for EndorsementEditForm."""
+
+        model = Nomination
+        fields = (
+            "employer",
+            "other_affiliations",
+            "nomination_statement",
+        )
+        widgets = {"nomination_statement": MarkupTextarea()}
+        help_texts = {
+            "employer": "Nominee's current employer.",
+            "other_affiliations": "Any other relevant affiliations the Nominee has.",
+            "nomination_statement": "Markdown syntax supported.",
+        }
+
+
+class EndorsementCreateForm(EndorsementEditForm):
+    """Endorse an already-approved candidate other than yourself, picked from a list."""
+
+    nominee = forms.ModelChoiceField(
+        queryset=Nominee.objects.none(),
+        label="Candidate",
+        help_text="Only candidates already accepted and approved for this election can be endorsed.",
+    )
+
+    def __init__(self, *args, **kwargs):
+        """Scope the candidate choices to the election's approved nominees, excluding the requester."""
+        self.request = kwargs.pop("request", None)
+        super().__init__(*args, **kwargs)
+        queryset = (
+            Nominee.objects.filter(election=self.election, accepted=True, approved=True)
+            .exclude(user=None)
+            .select_related("user")
+        )
+        if self.request is not None:
+            queryset = queryset.exclude(user=self.request.user)
+        self.fields["nominee"].queryset = queryset
+
+    class Meta(EndorsementEditForm.Meta):
+        """Meta configuration for EndorsementCreateForm."""
+
+        fields = ("nominee", *EndorsementEditForm.Meta.fields)
 
 
 class NominationAcceptForm(forms.ModelForm):

@@ -28,6 +28,21 @@ def open_election(name, kind=None, **extra):
     )
 
 
+def endorsement_election(name, kind=None, **extra):
+    """Create an election whose nominations have closed but whose endorsements are open."""
+    now = timezone.now()
+    return Election.objects.create(
+        name=name,
+        date=(now + datetime.timedelta(days=30)).date(),
+        kind=kind,
+        nominations_open_at=now - datetime.timedelta(days=10),
+        nominations_close_at=now - datetime.timedelta(days=5),
+        endorsements_open_at=now - datetime.timedelta(days=1),
+        endorsements_close_at=now + datetime.timedelta(days=1),
+        **extra,
+    )
+
+
 def nomination_payload(**overrides):
     """Return a minimally valid nomination POST payload."""
     data = {

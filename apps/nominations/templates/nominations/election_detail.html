@@ -37,6 +37,10 @@
       <li>Nominations Close: {{ election.nominations_close_at|date:"r" }}</li>
     {% endif %}
   {% endif %}
+  {% if election.endorsements_open %}
+    <li><a href="{% url 'nominations:endorsement_create' election=election.slug %}">Endorse a candidate</a></li>
+    <li>Endorsements Close: {{ election.endorsements_close_at|date:"r" }}</li>
+  {% endif %}
   </ul>
   {% endtimezone %}
 </div>

@@ -69,6 +69,8 @@ Update Nomination
         <header class="article-header">
             {% if form_action == 'update' %}
             <h1 class="page-title">Update <a href="{{ object.get_absolute_url }}">{{ object.job_title }}</a></h1>
+            {% elif is_endorsement %}
+            <h1 class="page-title">Submit an Endorsement for {{ election.name }} Election</h1>
             {% else %}
             <h1 class="page-title">Submit a Nomination for {{ election.name }} Election</h1>
             {% endif %}
