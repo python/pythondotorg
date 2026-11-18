@@ -361,6 +361,8 @@ CONTENT_SECURITY_POLICY_REPORT_ONLY = {
             # EthicalAds fetches ad decisions as JSONP <script> tags
             "https://server.ethicalads.io",
             "https://ajax.googleapis.com",
+            # PSF fundraiser banner, loaded in 'templates/base.html'
+            "https://donate.python.org",
         ],
         "style-src": [
             SELF,
@@ -375,7 +377,12 @@ CONTENT_SECURITY_POLICY_REPORT_ONLY = {
             "data:",
             "https:",
         ],
-        "font-src": [SELF, "data:"],
+        "font-src": [
+            SELF,
+            "data:",
+            # Font files for the PSF fundraiser banner
+            "https://donate.python.org",
+        ],
         "connect-src": [
             SELF,
             "https://console.python.org",
