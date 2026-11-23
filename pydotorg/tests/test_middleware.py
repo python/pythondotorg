@@ -44,6 +44,9 @@ class GlobalSurrogateKeyTests(TestCase):
 
         # returns None
         self.assertIsNone(middleware.get_section_key("/"))
+        self.assertIsNone(middleware.get_section_key("/downloads. \r3"))
+        self.assertIsNone(middleware.get_section_key("/\nURL"))
+        self.assertIsNone(middleware.get_section_key("/downloads. 3"))
 
         self.assertEqual(middleware.get_section_key("/downloads"), "downloads")
         self.assertEqual(middleware.get_section_key("downloads/"), "downloads")
@@ -65,3 +68,10 @@ class GlobalSurrogateKeyTests(TestCase):
         self.assertTrue(response.has_header("Surrogate-Key"))
         surrogate_key = response["Surrogate-Key"]
         self.assertEqual(surrogate_key, "pydotorg-app")
+
+    @override_settings(GLOBAL_SURROGATE_KEY="pydotorg-app")
+    def test_surrogate_key_header_skips_unsafe_section(self):
+        """A CR or LF in the first path segment must not reach the header."""
+        response = self.client.get("/downloads.%20%0D3")
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response["Surrogate-Key"], "pydotorg-app")
