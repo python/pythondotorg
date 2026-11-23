@@ -1,6 +1,10 @@
 """Middleware for cache control and surrogate keys."""
 
+import re
+
 from django.conf import settings
+
+SECTION_KEY_RE = re.compile(r"[A-Za-z0-9._-]+")
 
 
 class AdminNoCaching:
@@ -32,16 +36,20 @@ class GlobalSurrogateKey:
     def get_section_key(self, path):
         """Extract section surrogate key from URL path.
 
+        The first segment is only used when it is a plain name (letters, digits,
+        ".", "_", "-"), so the key is always a single valid header token.
+
         Examples:
             /downloads/ -> downloads
             /downloads/release/python-3141/ -> downloads
             /events/python-events/ -> events
             / -> None
+            /downloads. 3/ -> None
 
         """
-        parts = path.strip("/").split("/")
-        if parts and parts[0]:
-            return parts[0]
+        section = path.strip("/").split("/")[0]
+        if SECTION_KEY_RE.fullmatch(section):
+            return section
         return None
 
     def __call__(self, request):
